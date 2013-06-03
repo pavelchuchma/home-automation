@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration debug="true"
+                     xmlns:log4j='http://jakarta.apache.org/log4j/'>
+
+    <appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <!--<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss} [%t] %5p %c{1} - %m%n"/>-->
+            <param name="ConversionPattern" value="%d{ABSOLUTE} [%t] %5p %c{1} - %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="fileAppender" class="org.apache.log4j.RollingFileAppender">
+        <param name="append" value="false"/>
+        <param name="file" value="out/app.log"/>
+        <param name="MaxFileSize" value="100MB"/>
+        <param name="MaxBackupIndex" value="100"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ABSOLUTE} [%t] %-5p [%c{1}] %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="messagesFile" class="org.apache.log4j.RollingFileAppender">
+        <param name="append" value="false"/>
+        <param name="file" value="out/messages.log"/>
+        <param name="MaxFileSize" value="100MB"/>
+        <param name="MaxBackupIndex" value="100"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+        </layout>
+    </appender>
+
+    <category name="packet.PacketUartIO.msg" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="messagesFile"/>
+    </category>
+
+
+    <category name="packet.PacketUartIO" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="consoleAppender"/>
+    </category>
+
+    <category name="NodeTest" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="consoleAppender"/>
+    </category>
+
+    <root>
+        <level value="INFO"/>
+        <appender-ref ref="consoleAppender"/>
+    </root>
+
+
+</log4j:configuration>
