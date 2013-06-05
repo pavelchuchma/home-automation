@@ -1,5 +1,6 @@
 package node;
 
+import com.sun.corba.se.impl.interceptors.PICurrent;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
@@ -152,7 +153,7 @@ public class NodeTest {
                     Pic.appFlags_uartReceiveBufferErrCount, Pic.appFlags_uartReceiveCrcErrCount,
                     Pic.PIE1, Pic.PIR1, Pic.INTCON, Pic.TRISC, Pic.PORTC,
                     Pic.receiveQueue + 13, Pic.receiveQueue + 14, Pic.receiveQueue + 15,
-                    Pic.TXSTA, Pic.RCSTA, Pic.BAUDCON,
+                    Pic.TXSTA, Pic.RCSTA, Pic.BAUDCON1,
             });
             node.setPortValue('C', Bits.bit5, ((i & 1) == 0) ? 0 : 255);
             node.setPortValue('C', Bits.bit4, ((i & 1) == 1) ? 0 : 255);
@@ -171,7 +172,7 @@ public class NodeTest {
                 Pic.appFlags_uartReceiveBufferErrCount, Pic.appFlags_uartReceiveCrcErrCount,
                 Pic.PIE1, Pic.PIR1, Pic.INTCON, Pic.TRISC, Pic.PORTC,
                 Pic.receiveQueue + 13, Pic.receiveQueue + 14, Pic.receiveQueue + 15,
-                Pic.TXSTA, Pic.RCSTA, Pic.BAUDCON,
+                Pic.TXSTA, Pic.RCSTA, Pic.BAUDCON1,
                 Pic.portConfig_oldValueA, Pic.portConfig_oldValueB, Pic.portConfig_oldValueC, Pic.portConfig_oldValueD,
                 Pic.portConfig_eventMaskA, Pic.portConfig_eventMaskB, Pic.portConfig_eventMaskC, Pic.portConfig_eventMaskD,
         });
@@ -196,19 +197,46 @@ public class NodeTest {
         }
     }
 
+
+    @Test
+    public void testListen() throws Exception {
+        PacketUartIO packetUartIO = new PacketUartIO("COM1", 19200);
+
+        while (true) {
+            Thread.sleep(2000);
+        }
+    }
+
     @Test
     public void testTmp() throws Exception {
         PacketUartIO packetUartIO = new PacketUartIO("COM1", 19200);
 
         final Node node1 = new Node(1, packetUartIO);
-        System.out.println(node1.getBuildTime());
+        final Node node2 = new Node(2, packetUartIO);
+        //node2.setHeartBeatPeriod(1);
+
         System.out.println("id: " + node1.getNodeId());
-        for (int i = 0; i < 255; i++) {
-            System.out.println(i);
-            node1.setPortValue('B', Bits.bit7, (i & 1) != 0 ? 255 : 0, 0, 0xFF ^ Bits.bit0 ^ Bits.bit7);
-            node1.writeMemory(Pic.displayValue, 0xFF, i);
-            Thread.sleep(200);
-        }
+        System.out.println(node1.getBuildTime());
+//        System.out.println("id: " + node2.getNodeId());
+//        System.out.println(node2.getBuildTime());
+//        System.out.println("id: " + node2.getNodeId());
+//        System.out.println(node2.getBuildTime());
+    while (true) {
+        node2.dumpMemory(new int[]{Pic.canReceiveLongMsgCount, Pic.canReceiveMismatch, Pic.COMSTAT, Pic.CANSTAT, Pic.CANCON, Pic.ECANCON,
+                Pic.RXB0CON, Pic.RXB1CON, Pic.B0CON, Pic.B1CON, Pic.B2CON, Pic.B3CON, Pic.B4CON, Pic.B5CON,
+                Pic.RXB0DLC, Pic.RXB1DLC,Pic.B0DLC, Pic.B1DLC,
+                Pic.RXB0D0, Pic.RXB0D1, Pic.RXB0D2, Pic.RXB0D3, Pic.RXB0D4, Pic.RXB1D0, Pic.B0D0, Pic.B0D1, Pic.B0D2, Pic.B0D3, Pic.B0D4, Pic.B1D0, Pic.B2D0, Pic.B3D0, Pic.PIR5
+        });
+        System.out.println("=====================\n");
+        Thread.sleep(2000);
+    }
+
+//        for (int i = 0; i < 255; i++) {
+//            System.out.println(i);
+//            node1.setPortValue('B', Bits.bit7, (i & 1) != 0 ? 255 : 0, 0, 0xFF ^ Bits.bit0 ^ Bits.bit7);
+//            node1.writeMemory(Pic.displayValue, 0xFF, i);
+//            Thread.sleep(200);
+//        }
     }
 
     @Test
@@ -230,7 +258,7 @@ public class NodeTest {
             @Override
             public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, InvalidArgumentException {
                 node.setPortValue('B', Bits.bit7, 0x00, 0x00, 0xFF ^ Bits.bit7 ^ Bits.bit0);
-                node.setHeartBeatPeriod(3);
+                node.setHeartBeatPeriod(10);
             }
         });
 
@@ -260,16 +288,16 @@ public class NodeTest {
                             node2.setPwmValue(pwmValue);
                             System.out.println("PWM: " + pwmValue);
                             break;
-                        case Node.pinB0: //SW1 button1
+                        case Node.pinB0: //SW3 button1
                             node2.setPortValue('C', Bits.bit6, 0x00);
                             break;
-                        case Node.pinB1: //SW1 button2
+                        case Node.pinB1: //SW3 button2
                             node2.setPortValue('C', Bits.bit6, 0xFF);
                             break;
-                        case Node.pinC5: //SW1 button3
+                        case Node.pinC5: //SW3 button3
                             node2.setPortValue('C', Bits.bit7, 0xFF);
                             break;
-                        case Node.pinC4: //SW1 button4
+                        case Node.pinC4: //SW3 button4
                             node2.setPortValue('C', Bits.bit7, 0x00);
                             break;
 
@@ -324,7 +352,7 @@ public class NodeTest {
                         0xFF ^ Bits.bit2 ^ Bits.bit6 ^ Bits.bit7
                 );
                 //node.setPortValue('B', Bits.bit4 | Bits.bit5, 0, 0, 0xFF ^ Bits.bit4 ^ Bits.bit5);
-                node.setHeartBeatPeriod(3);
+                node.setHeartBeatPeriod(1);
 
                 //todo: 62.5 khz. CPU frequency 4 instead of 16 MHz!!!
                 //node.enablePwm(16, 3, 0); //62.5 khz
@@ -332,7 +360,10 @@ public class NodeTest {
             }
         });
         while (true) {
-            Thread.sleep(5000);
+            Thread.sleep(1000);
+            //node2.setPortValue('C', Bits.bit6, 0xFF);
+            Thread.sleep(1000);
+            //node2.setPortValue('C', Bits.bit6, 0x00);
 //            node2.dumpMemory(new int[]{node.Pic.CCPR1L});
 //            node1.dumpMemory(new int[]{node.Pic.PORTB, node.Pic.TRISB});
         }

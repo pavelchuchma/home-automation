@@ -32,35 +32,31 @@ volatile unsigned short long displayValue;
 volatile unsigned short long displayValueOld;
 volatile char displaySegments[6];
 
-volatile char canReceiveLongMsgCount @300;
-volatile char canReceiveMismatch @301;
+volatile char canReceiveLongMsgCount;
+volatile char canReceiveMismatch;
 
 /* Refer to the device datasheet for information about available
 oscillator configurations. */
 void configureOscillator(char freqMHz) {
     // Oscilator setup
+    OSCTUNE = 0b00000000; //INTSRC PLLEN ? TUN4 TUN3 TUN2 TUN1 TUN0
     if (freqMHz == 16) {
         // todo: Nefunguje!!!, nastavi na 4MHz
-        OSCCON = 0b01100010; //IDLEN IRCF2 IRCF1 IRCF0 OSTS IOFS SCS1 SCS0
-        OSCTUNE = 0b01000000; //INTSRC PLLEN ? TUN4 TUN3 TUN2 TUN1 TUN0
-    } else if (freqMHz == 8) {
         OSCCON = 0b01110010; //IDLEN IRCF2 IRCF1 IRCF0 OSTS IOFS SCS1 SCS0
-        OSCTUNE = 0b00000000; //INTSRC PLLEN ? TUN4 TUN3 TUN2 TUN1 TUN0
-    } else if (freqMHz == 4) {
+    } else if (freqMHz == 8) {
         OSCCON = 0b01100010; //IDLEN IRCF2 IRCF1 IRCF0 OSTS IOFS SCS1 SCS0
-        OSCTUNE = 0b00000000; //INTSRC PLLEN ? TUN4 TUN3 TUN2 TUN1 TUN0
-    } else if (freqMHz == 2) {
+    } else if (freqMHz == 4) {
         OSCCON = 0b01010010; //IDLEN IRCF2 IRCF1 IRCF0 OSTS IOFS SCS1 SCS0
-        OSCTUNE = 0b00000000; //INTSRC PLLEN ? TUN4 TUN3 TUN2 TUN1 TUN0
+    } else if (freqMHz == 2) {
+        OSCCON = 0b01000010; //IDLEN IRCF2 IRCF1 IRCF0 OSTS IOFS SCS1 SCS0
     } else {
         //set 1 MHz
-        OSCCON = 0b01000010; //IDLEN IRCF2 IRCF1 IRCF0 OSTS IOFS SCS1 SCS0
-        OSCTUNE = 0b00000000; //INTSRC PLLEN ? TUN4 TUN3 TUN2 TUN1 TUN0
+        OSCCON = 0b00110010; //IDLEN IRCF2 IRCF1 IRCF0 OSTS IOFS SCS1 SCS0
     }
 
     // wait until new clock source is stable
 #if !defined (__DEBUG)
-    while (!OSCCONbits.IOFS);
+    while (!OSCCONbits.HFIOFS);
 #endif
 
 

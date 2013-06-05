@@ -47,9 +47,27 @@
 /* Fill in your configuration bits here using the config generator.      */
 
 //#pragma config CONFIG1H = 0x08
+
+#if defined(PIC18F26K80)
+//  details: file:///C:/Program%20Files%20%28x86%29/Microchip/xc8/v1.12/docs/chips/18f66k80.html
+
+#pragma config SOSCSEL = DIG
+#pragma config XINST = OFF
+#pragma config FOSC = INTIO2
+#pragma config PLLCFG = OFF
+#pragma config IESO  = ON
+#pragma config WDTEN = OFF
+#pragma config CANMX = PORTB
+
+
+#elif defined(PIC18F2680)
 // details: file:///C:/Program%20Files%20%28x86%29/HI-TECH%20Software/PICC-18/9.80/docs/18f2680.html
 #pragma config OSC = IRCIO67
 // Set PortB:5 as I/O
 #pragma config LVP = OFF
 // Disable WDT
 #pragma config WDT = OFF
+
+#else
+#error Unknown device
+#endif

@@ -114,7 +114,7 @@ void main(void) {
     } perfTestData = {0, 0, 0, 0};
 
     while (1) {
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 4; i++) {
             // invalidate current packet
             receivedPacket.length = 0;
             // an UART packet received
@@ -151,8 +151,8 @@ void main(void) {
                         perfTestData.waitForFreeBuffer = (*(MsgUartTransmitPerfTestRequest*) &receivedPacket).waitForFreeOutput;
                     } else if (receivedPacket.messageType == MSG_SetUartBaudRate) {
                         // set new UART baud rate
-                        SPBRGH = receivedPacket.data[0];
-                        SPBRG = receivedPacket.data[1];
+                        SPBRGH1 = receivedPacket.data[0];
+                        SPBRG1 = receivedPacket.data[1];
                     } else if (receivedPacket.messageType == MSG_ReadRamRequest) {
                         // send byte from required memory possition
                         processReadRamRequest();

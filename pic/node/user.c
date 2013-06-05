@@ -47,26 +47,27 @@ void InitApp(void) {
     TMR0 = 0xFF - 1000;
 
     // setup IO ports
+    ANCON0 = 0x00;
+    ANCON1 = 0x00;
+
     ADCON1 = 0b00001111; //? ? VCFG1 VCFG0 PCFG3 PCFG2 PCFG1 PCFG0 to set all ports as I/O ports
     TRISA = 0xFF; // All input
     TRISB = 0xFF; // All input
     TRISC = 0xFF; // All input
-    PORTA = 0;
-    PORTB = 0;
-    PORTC = 0;
+    PORTA = 0x00;
+    PORTB = 0x00;
+    PORTC = 0x00;
 
     // setup USART if NODE_ROUTER
     if (nodeId == NODE_ROUTER) {
         // setup TRIS for display
         TRISA &= 0b00010000;
-        TRISBbits.RB0 = 0;
+        TRISB0 = 0;
         TRISC &= 0b11000000;
 
         // 832 (0x0340) for 300 Bauds @ 1 MHz clock (250 kHz clock cycle)
         // 12 (0x000C) for 19230 Bauds @ 1 MHz clock (250 kHz clock cycle)
         setupUart(0x00, 0x0C);
-
-
     }
 
     WDTCONbits.SWDTEN = 0; // disable watchdog
@@ -103,21 +104,21 @@ void InitApp(void) {
 }
 
 void setupUart(char highByte, char lowByte) {
-    TRISCbits.RC7 = 1; //RX
-    TRISCbits.RC6 = 0; //TX
+    TRISC7 = 1; //RX
+    TRISC6 = 0; //TX
 
     TXSTA = 0b00100100; //CSRC TX9 TXEN SYNC SENDB BRGH TRMT TX9D
     RCSTA = 0b10010000; //SPEN RX9 SREN CREN ADDEN FERR OERR RX9D
-    BAUDCON = 0b00001000; //ABDOVF RCIDL ? SCKP BRG16 ? WUE ABDEN
+    BAUDCON1 = 0b00001000; //ABDOVF RCIDL ? SCKP BRG16 ? WUE ABDEN
     // 832 (0x0340) for 300 Bauds @ 1 MHz clock (250 kHz clock cycle)
     // 12 (0x000C) for 19230 Bauds @ 1 MHz clock (250 kHz clock cycle)
-    SPBRGH = highByte;
-    SPBRG = lowByte;
+    SPBRGH1 = highByte;
+    SPBRG1 = lowByte;
 }
 
 void setupCanBus(char baudRatePrescaller) {
-    TRISBbits.RB3 = 1; //CAN RX
-    TRISBbits.RB2 = 0; //CAN TX
+    TRISB3 = 1; //CAN RX
+    TRISB2 = 0; //CAN TX
 
     // switch to configuration mode and wait for propagation
     CANCON = 0b10000000;
@@ -125,6 +126,9 @@ void setupCanBus(char baudRatePrescaller) {
 
     //MDSEL = Enhanced FIFO mode (Mode 2)
     ECANCON = 0b10110000; //MDSEL1 MDSEL0 FIFOWM EWIN4 EWIN3 EWIN2 EWIN1 EWIN0
+
+    // set all can buffers as FIFO receive buffers
+    BSEL0 = 0b00000000; //B5TXEN B4TXEN B3TXEN B2TXEN B1TXEN B0TXEN ? ?
 
     // Set CAN to 62.5 kHz (using internal 1Mhz oscilator)
     // Synchronized Jump Width = 1 (2 x TQ)
@@ -231,7 +235,7 @@ void processGetBuildTimeRequest() {
 
 void setCCP1PwmValue(char value) {
         // set tris of CCP1
-        TRISCbits.RC2 = 0;
+        TRISC2 = 0;
         // set duty cycle and enable PWM
         CCPR1L = value >> 2;
         CCP1CON = (CCP1CON & 0b00001111) | ((value & 0b00000011) << 4);
@@ -266,7 +270,7 @@ void processEnablePwmRequest() {
         appFlags.enabledPwmModules |= CCP_CCP1;
 
         // set tris of CCP1
-        TRISCbits.RC2 = 0;
+        TRISC2 = 0;
         // set duty cycle and enable PWM
         CCPR1L = 0;
         CCP1CON = 0b00001111; //? ? DC1B1 DC1B0 CCP1M3 CCP1M2 CCP1M1 CCP1M0

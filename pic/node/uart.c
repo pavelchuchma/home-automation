@@ -3,11 +3,11 @@
 /******************************************************************************/
 
 #if defined(__XC)
-    #include <xc.h>         /* XC8 General Include File */
+#include <xc.h>         /* XC8 General Include File */
 #elif defined(HI_TECH_C)
-    #include <htc.h>        /* HiTech General Include File */
+#include <htc.h>        /* HiTech General Include File */
 #elif defined(__18CXX)
-    #include <p18cxxx.h>    /* C18 General Include File */
+#include <p18cxxx.h>    /* C18 General Include File */
 #endif
 
 #if defined(__XC) || defined(HI_TECH_C)
@@ -42,7 +42,7 @@ char uart_sendPacket(Packet *source) {
     char eighthBits = 128;
     char i;
 
-    for (i=0; i<source->length; i++) {
+    for (i = 0; i < source->length; i++) {
         unsigned char c = source->bytes[i];
         crc += c;
         sendPacketBuffer.data[i] = (c & 127) + 128;
@@ -57,8 +57,6 @@ char uart_sendPacket(Packet *source) {
     PIE1bits.TXIE = 1;
     return 0;
 }
-
-
 
 /**
  * Puts char to receiveQueue
@@ -106,7 +104,7 @@ void uart_readPacket() {
 
     char dataLen = 0;
     char i, crcByte, eighthBits;
-    for (i=0;i<9;i++) {
+    for (i = 0; i < 9; i++) {
         // read char from buffer
         char c = receiveQueue.buff[receiveQueue.r];
         receiveQueue.r = (receiveQueue.r + 1) & 31;
@@ -159,12 +157,12 @@ void uart_readPacket() {
 eighthBitsDone:
 
         // check crc
-        if ((crc & 127)  == crcByte) {
+        if ((crc & 127) == crcByte) {
             receivedPacket.length = dataLen;
             receivedPacket.isUart = 1;
             return;
         } else {
-             //crc failure, report CRC error
+            //crc failure, report CRC error
             appFlags.uartReceiveCrcErrCount++;
         }
     } else {
@@ -173,17 +171,48 @@ eighthBitsDone:
     }
 }
 
+/**
+ * Returns pointer to RXCON register.
+ * Access tp all registers by indirect mapping of RXB0CON using EWIN does not work!!!
+ * But it is usable for other buffers registers.
+ *
+ * @param buffIndex
+ * @return
+ */
+static unsigned char* can_getBufferConReg(unsigned char buffIndex) {
+    switch (buffIndex) {
+        case 0:
+            return (unsigned char*)&RXB0CON; // return pointer to correct buffer
+        case 1:
+            return (unsigned char*)&RXB1CON;
+        case 2:
+            return (unsigned char*)&B0CON;
+        case 3:
+            return (unsigned char*)&B1CON;
+        case 4:
+            return (unsigned char*)&B2CON;
+        case 5:
+            return (unsigned char*)&B3CON;
+        case 6:
+            return (unsigned char*)&B4CON;
+        default: //case 7:
+            return (unsigned char*)&B5CON;
+    }
+}
+
 void can_readPacket() {
     if (!COMSTATbits.NOT_FIFOEMPTY) {
         receivedPacket.length = 0;
         return;
     }
-    // set EWIN4-0 to 00010ccc, where 'ccc' are 3 lowest bites of (CANCON.FP3-0)
-    ECANCON = ECANCON & 0b11100000 | 0b00010000 | (CANCON & 0b00001111);
+    // set EWIN4-0 to 00010ccc, where 'ccc' are 3 lowest bits of (CANCON.FP3-0)
+    ECANCONbits.EWIN = 0b00010000 | CANCON;
+    unsigned char *rxCon = can_getBufferConReg(CANCON & 0b00000111);
 
     if (RXB0DLC & 0b00001111 <= 6) {
         canReceiveLongMsgCount++;
-    } else if (!RXB0CONbits.RXFUL) {
+    } else if (!(*rxCon & 0b10000000)) {
+        // no RXFUL in selected buffer
         canReceiveMismatch++;
     } else {
         receivedPacket.nodeId = RXB0SIDH;
@@ -197,8 +226,8 @@ void can_readPacket() {
         receivedPacket.length = (RXB0DLC & 0b00000111) + 1;
         receivedPacket.isUart = 0;
     }
-    // clear full flag
-    RXB0CONbits.RXFUL = 0;
+    // clear RXFUL flag
+    *rxCon &= 0b01111111;
 }
 
 char can_sendPacket(Packet *source) {

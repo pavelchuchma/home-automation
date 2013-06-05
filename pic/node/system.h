@@ -24,7 +24,7 @@ enum NodeId {
     NODE_ALL = 255,
 };
 
-#define NODE_ID NODE_2
+#define NODE_ID NODE_3
 #define RUN_TESTS 0
 
 typedef volatile struct {
