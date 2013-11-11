@@ -195,20 +195,19 @@ void main(void) {
                         appFlags.onPingTimer = 1;
 
                     } else if (receivedPacket.messageType == MSG_OnDebug) {
-                        // send can message
-                        if (receivedPacket.data[0] == 0) {
-                            setupCanBus(0);
-                        } else if (receivedPacket.data[0] == 1) {
-                            //set to normal mode
-                            CANCON = 0b10000000;
-                            while (!(CANSTAT & 0b10000000));
-                            CANCON = 0b00000000;
-                        } else if (receivedPacket.data[0] == 2) {
-                            //set to loopback mode
-                            CANCON = 0b10000000;
-                            while (!(CANSTAT & 0b10000000));
-                            CANCON = 0b01000000;
-                        }
+                       
+                    } else if (receivedPacket.messageType == MSG_SetFrequencyRequest) {
+                        // set change CPU frequency
+                        processSetFrequencyRequest();
+
+                        // send response to proper destination
+                        sendResponse();
+                    } else if (receivedPacket.messageType == MSG_SetManualPwmValueRequest) {
+                        // set change CPU frequency
+                        processSetManualPwmValueRequest();
+
+                        // send response to proper destination
+                        sendResponse();
                     }
                 } else if (nodeId == NODE_ROUTER) {
                     //message is not for me, but I'm a router
@@ -264,6 +263,8 @@ void main(void) {
                 // break display loop because recalculateDisplayValue() is slow enough
                 break;
             }
+
+            doManualPwm();
         }
         checkInputChange();
         if (nodeId == NODE_ROUTER) {

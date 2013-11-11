@@ -18,3 +18,6 @@ void processWriteRamRequest();
 void processGetBuildTimeRequest();
 void processEnablePwmRequest();
 void processSetPwmValue();
+void processSetFrequencyRequest();
+void processSetManualPwmValueRequest();
+void doManualPwm();

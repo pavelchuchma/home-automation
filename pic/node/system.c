@@ -35,6 +35,8 @@ volatile char displaySegments[6];
 volatile char canReceiveLongMsgCount;
 volatile char canReceiveMismatch;
 
+volatile ManualPwmData manualPwmPortData[3];
+
 /* Refer to the device datasheet for information about available
 oscillator configurations. */
 void configureOscillator(char freqMHz) {
@@ -123,6 +125,9 @@ void processSetPort() {
 }
 
 void checkInputChange() {
+
+    if (!(portConfig.eventMask[0] | portConfig.eventMask[1] | portConfig.eventMask[2] | portConfig.eventMask[3])) return;
+
     outPacket.nodeId = nodeId;
     outPacket.length = 4;
 

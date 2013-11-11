@@ -8,6 +8,13 @@
 #ifndef CONSTANTS_H
 #define	CONSTANTS_H
 
+
+enum ErrorCodes {
+    ERR_OK = 0,
+    ERR_BAD_PARAMS = 1,
+
+};
+
 enum CcpModuleEnum {
     CCP_CCP1 = 1,
     CCP_CCP2 = 2,
@@ -15,6 +22,12 @@ enum CcpModuleEnum {
     CCP_CCP4 = 8,
     CCP_ECCP1 = 16,
     CCP_ECCP2 = 32,
+};
+
+enum PortEnum {
+    PORT_A = 0,
+    PORT_B = 1,
+    PORT_C = 2,
 };
 
 enum Commands {
@@ -44,12 +57,17 @@ enum Commands {
     MSG_OnDebug = 45, //
     MSG_GetBuildTimeRequest = 47, // no data
     MSG_GetBuildTimeResponse = 48, // 5 bytes: ymdhm
-    MSG_EnablePwmRequest = 49, // data: 0-ccpMask (CcpModuleEnum), 1-cpuFredata, 2-canBaudRatePrescaler, 3-pwm value
+    MSG_EnablePwmRequest = 49, // data: 0-ccpMask (CcpModuleEnum), 1-cpuFreqData, 2-canBaudRatePrescaler, 3-pwm value
     MSG_EnablePwmResponse = 50, //1 byte listing enabled CCP modules
     MSG_SetPwmValueRequest = 51, //1 byte CcpModuleEnum, 1 byte value
     MSG_SetPwmValueResponse = 52, //1 byte CcpModuleEnum, 1 byte set value
     MSG_OnReboot = 53, // 1 byte pingCounter, 1 byte RCON value - PIC asks for initialization
     MSG_InitializationFinished = 54, // sends PC to finish initialization
+    MSG_SetFrequencyRequest = 55,  // 0-cpuFreqData, 1-canBaudRatePrescaler
+    MSG_SetFrequencyResponse = 56,
+    MSG_SetManualPwmValueRequest = 57, // 0(0:3) port, 0(4:7) pin, 1-value
+    MSG_SetManualPwmValueResponse = 58, //0-ErrorCodes
+
 //End Commands
 };
 

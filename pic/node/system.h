@@ -21,11 +21,28 @@ enum NodeId {
     NODE_ROUTER = 1,
     NODE_2 = 2,
     NODE_3 = 3,
+    NODE_4 = 4,
+    NODE_5 = 5,
+    NODE_6 = 6,
+    NODE_7 = 7,
+    NODE_8 = 8,
+    NODE_9 = 9,
+    NODE_10 = 10,
+    NODE_11 = 11,
+    NODE_12 = 12,
+    NODE_13 = 13,
+    NODE_14 = 14,
+    NODE_15 = 15,
+    NODE_16 = 16,
+    NODE_17 = 17,
+    NODE_18 = 18,
+    NODE_19 = 19,
     NODE_ALL = 255,
 };
 
-#define NODE_ID NODE_3
+#define NODE_ID NODE_8
 #define RUN_TESTS 0
+#define PWM_RESOLUTION 16
 
 typedef volatile struct {
     struct {
@@ -43,11 +60,16 @@ typedef struct {
     char eventMask[4];
 } PortConfig;
 
+typedef struct {
+    char mask;
+    char data[PWM_RESOLUTION];
+} ManualPwmData;
+
 extern volatile PortConfig portConfig;
 
 extern char nodeId;
 
-extern AppFlags appFlags;
+extern volatile AppFlags appFlags;
 extern volatile char heartBeatCounter;
 extern volatile char heartBeatPeriod;
 extern volatile unsigned short long displayValue;
@@ -57,6 +79,7 @@ extern volatile char displaySegments[6];
 extern volatile char canReceiveLongMsgCount;
 extern volatile char canReceiveMismatch;
 
+extern volatile ManualPwmData manualPwmPortData[3];
 
 #define MAPPED_CONbits  RXB0CONbits
 #define MAPPED_CON	RXB0CON

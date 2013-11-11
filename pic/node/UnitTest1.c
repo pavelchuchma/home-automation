@@ -25,7 +25,8 @@
 #define ASSERT_EQUALS(a,b) if ((a) != (b)) while(1)
 
 void testRunAll() {
-    testDisplay();
+    testProcessSetManualPwmValueRequest();
+//    testDisplay();
 //    testEnablePwm();
 //    testSetPortRequest();
 //    testCheckInputChange();
@@ -414,6 +415,63 @@ void testDisplay() {
     ASSERT_EQUALS(appFlags.currentSegment, 0);
 
 
+}
+
+void testProcessSetManualPwmValueRequest() {
+    receivedPacket.messageType = MSG_SetManualPwmValueRequest;
+    TRISC = 0xFF;
+    // C4 to 7
+    receivedPacket.data[0] = 0x42; //pin 4 on potc (2)
+    receivedPacket.data[1] = 7;
+    receivedPacket.length = 4;
+
+    processSetManualPwmValueRequest();
+    ASSERT_EQUALS(manualPwmPortData[2].mask, 1 << 4);
+    char expectedTris = ~(1 << 4);
+    ASSERT_EQUALS(TRISC, expectedTris);
+
+    // C3 to 15
+    receivedPacket.data[0] = 0x32; //pin 3 on potc (2)
+    receivedPacket.data[1] = 15;
+
+    processSetManualPwmValueRequest();
+    ASSERT_EQUALS(manualPwmPortData[2].mask, (1 << 4) + (1 << 3));
+    char expectedTris = ~((1 << 4) + (1 << 3));
+    ASSERT_EQUALS(TRISC, expectedTris);
+
+    // C0 to 4
+    receivedPacket.data[0] = 0x02; //pin 0 on potc (2)
+    receivedPacket.data[1] = 4;
+
+    processSetManualPwmValueRequest();
+    ASSERT_EQUALS(manualPwmPortData[2].mask, (1 << 4) + (1 << 3) + 1);
+    char expectedTris = ~((1 << 4) + (1 << 3) + 1);
+    ASSERT_EQUALS(TRISC, expectedTris);
+
+    ASSERT_EQUALS(manualPwmPortData[2].data[0], (1 << 4) + (1 << 3) + 1);
+    ASSERT_EQUALS(manualPwmPortData[2].data[3], (1 << 4) + (1 << 3) + 1);
+    ASSERT_EQUALS(manualPwmPortData[2].data[4], (1 << 4) + (1 << 3));
+    ASSERT_EQUALS(manualPwmPortData[2].data[6], (1 << 4) + (1 << 3));
+    ASSERT_EQUALS(manualPwmPortData[2].data[7], (1 << 3));
+    ASSERT_EQUALS(manualPwmPortData[2].data[14], (1 << 3));
+    ASSERT_EQUALS(manualPwmPortData[2].data[15], 0);
+
+    // C4 to 5
+    receivedPacket.data[0] = 0x42; //pin 4 on potc (2)
+    receivedPacket.data[1] = 5;
+
+    processSetManualPwmValueRequest();
+    ASSERT_EQUALS(manualPwmPortData[2].mask, (1 << 4) + (1 << 3) + 1);
+    ASSERT_EQUALS(manualPwmPortData[2].data[0], (1 << 4) + (1 << 3) + 1);
+    ASSERT_EQUALS(manualPwmPortData[2].data[3], (1 << 4) + (1 << 3) + 1);
+    ASSERT_EQUALS(manualPwmPortData[2].data[4], (1 << 4) + (1 << 3));
+    ASSERT_EQUALS(manualPwmPortData[2].data[5], (1 << 3));
+    ASSERT_EQUALS(manualPwmPortData[2].data[6], (1 << 3));
+    ASSERT_EQUALS(manualPwmPortData[2].data[7], (1 << 3));
+    ASSERT_EQUALS(manualPwmPortData[2].data[14], (1 << 3));
+    ASSERT_EQUALS(manualPwmPortData[2].data[15], 0);
+
+    return;
 }
 
 #endif

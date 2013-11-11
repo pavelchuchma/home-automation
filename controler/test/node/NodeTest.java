@@ -398,4 +398,135 @@ public class NodeTest {
 
         node2.dumpMemory(new int[]{Pic.CCP1CON, Pic.CCPR1L, Pic.CCPR1H, Pic.BRGCON1, Pic.PR2, Pic.T2CON, Pic.TMR2, Pic.TMR2, Pic.TMR2, Pic.TMR2});
     }
+
+
+    @Test
+    public void testManualPwm() throws Exception {
+        PacketUartIO packetUartIO = new PacketUartIO("COM1", 19200);
+
+        final Node node1 = new Node(1, packetUartIO);
+        final Node node2 = new Node(2, packetUartIO);
+
+        node1.addListener(new Node.Listener() {
+            @Override
+            public void onButtonDown(Node node, int pin) {
+            }
+
+            @Override
+            public void onButtonUp(Node node, int pin, int downTime) {
+            }
+
+            @Override
+            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, InvalidArgumentException {
+                node.setPortValue('B', Bits.bit7, 0x00, 0x00, 0xFF ^ Bits.bit7 ^ Bits.bit0);
+                node.setHeartBeatPeriod(10);
+            }
+        });
+
+        node2.addListener(new Node.Listener() {
+            int pwmValue = 0;
+            int step = 8;
+
+            @Override
+            public void onButtonDown(Node node, int pin) {
+                try {
+                    switch (pin) {
+                        case Node.pinA0:
+                            node1.setPortValueNoWait('B', Bits.bit7, 0x00);
+                            break;
+                        case Node.pinA2:
+                            pwmValue -= step;
+                            if (pwmValue < 0) pwmValue = 0;
+                            node2.setPwmValue(pwmValue);
+                            System.out.println("PWM: " + pwmValue);
+                            break;
+                        case Node.pinA3:
+                            node1.setPortValueNoWait('B', Bits.bit7, 0xFF);
+                            break;
+                        case Node.pinA5:
+                            pwmValue += step;
+                            if (pwmValue > 63) pwmValue = 63;
+                            node2.setPwmValue(pwmValue);
+                            System.out.println("PWM: " + pwmValue);
+                            break;
+                        case Node.pinB0: //SW3 button1
+                            node2.setPortValue('C', Bits.bit6, 0x00);
+                            break;
+                        case Node.pinB1: //SW3 button2
+                            node2.setPortValue('C', Bits.bit6, 0xFF);
+                            break;
+                        case Node.pinC5: //SW3 button3
+                            node2.setPortValue('C', Bits.bit7, 0xFF);
+                            break;
+                        case Node.pinC4: //SW3 button4
+                            node2.setPortValue('C', Bits.bit7, 0x00);
+                            break;
+
+                        case Node.pinC3: //SW2 button1
+                            node2.setPortValue('C', Bits.bit2, 0x00);
+                            break;
+                        case Node.pinC1: //SW2 button2
+                            node2.setPortValue('C', Bits.bit2, 0xFF);
+                            break;
+                        case Node.pinC0: //SW2 button3
+                            node2.setPortValue('A', Bits.bit7, 0xFF);
+                            break;
+                        case Node.pinA6: //SW2 button4
+                            node2.setPortValue('A', Bits.bit7, 0x00);
+                            break;
+                    }
+                } catch (Exception e) {
+                    log.error(e);
+                }
+            }
+
+            @Override
+            public void onButtonUp(Node node, int pin, int downTime) {
+                try {
+                    switch (pin) {
+                        case Node.pinC1:
+                            break;
+                        case Node.pinC2:
+                            break;
+                        case Node.pinC3:
+//                            node2.setPortValueNoWait('C', node.Bits.bit4, led3);
+                            break;
+                    }
+                } catch (Exception e) {
+                    log.error(e);
+                }
+            }
+
+            @Override
+            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, InvalidArgumentException {
+                //To change body of implemented methods use File | Settings | File Templates.
+                node.setPortValue('A', 0, 0,
+                        Bits.bit0 | Bits.bit2 | Bits.bit3 | Bits.bit5 | Bits.bit6,
+                        0xFF ^ Bits.bit7
+                );
+                node.setPortValue('B', 0, 0,
+                        Bits.bit0 | Bits.bit1,
+                        0xFF ^ Bits.bit4 ^ Bits.bit5
+                );
+                node.setPortValue('C', 0, 0,
+                        Bits.bit0 | Bits.bit1 | Bits.bit3 | Bits.bit4 | Bits.bit5,
+                        0xFF ^ Bits.bit2 ^ Bits.bit6 ^ Bits.bit7
+                );
+                //node.setPortValue('B', Bits.bit4 | Bits.bit5, 0, 0, 0xFF ^ Bits.bit4 ^ Bits.bit5);
+                node.setHeartBeatPeriod(1);
+
+                //todo: 62.5 khz. CPU frequency 4 instead of 16 MHz!!!
+                //node.enablePwm(16, 3, 0); //62.5 khz
+                //node2.setPwmValue(pwmValue);
+            }
+        });
+        while (true) {
+            Thread.sleep(1000);
+            //node2.setPortValue('C', Bits.bit6, 0xFF);
+            Thread.sleep(1000);
+            //node2.setPortValue('C', Bits.bit6, 0x00);
+//            node2.dumpMemory(new int[]{node.Pic.CCPR1L});
+//            node1.dumpMemory(new int[]{node.Pic.PORTB, node.Pic.TRISB});
+        }
+    }
 }

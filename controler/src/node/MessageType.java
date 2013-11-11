@@ -28,12 +28,16 @@ public class MessageType {
     public static final byte MSG_OnDebug = 45; //
     public static final byte MSG_GetBuildTimeRequest = 47; // no data
     public static final byte MSG_GetBuildTimeResponse = 48; // 5 bytes: ymdhm
-    public static final byte MSG_EnablePwmRequest = 49; // data: 0-ccpMask (CcpModuleEnum), 1-cpuFredata, 2-canBaudRatePrescaler, 3-pwm value
+    public static final byte MSG_EnablePwmRequest = 49; // data: 0-ccpMask (CcpModuleEnum), 1-cpuFreqData, 2-canBaudRatePrescaler, 3-pwm value
     public static final byte MSG_EnablePwmResponse = 50; //1 byte listing enabled CCP modules
     public static final byte MSG_SetPwmValueRequest = 51; //1 byte CcpModuleEnum, 1 byte value
     public static final byte MSG_SetPwmValueResponse = 52; //1 byte CcpModuleEnum, 1 byte set value
     public static final byte MSG_OnReboot = 53; // 1 byte pingCounter, 1 byte RCON value - PIC asks for initialization
     public static final byte MSG_InitializationFinished = 54; // sends PC to finish initialization
+    public static final byte MSG_SetFrequencyRequest = 55;  // 0-cpuFreqData, 1-canBaudRatePrescaler
+    public static final byte MSG_SetFrequencyResponse = 56;
+    public static final byte MSG_SetManualPwmValueRequest = 57; // 0(0:3) port, 0(4:7) pin, 1-value
+    public static final byte MSG_SetManualPwmValueResponse = 58;
 
     public static String toString(int type) {
         switch (type) {
@@ -68,6 +72,10 @@ public class MessageType {
             case MSG_SetPwmValueResponse: return "MSG_SetPwmValueResponse";
             case MSG_OnReboot: return "MSG_OnReboot";
             case MSG_InitializationFinished: return "MSG_InitializationFinished";
+            case MSG_SetFrequencyRequest: return "MSG_SetFrequencyRequest";
+            case MSG_SetFrequencyResponse: return "MSG_SetFrequencyResponse";
+            case MSG_SetManualPwmValueRequest: return "MSG_SetManualPwmValueRequest";
+            case MSG_SetManualPwmValueResponse: return "MSG_SetManualPwmValueResponse";
         }
         return "Unknown(" + type + ")";
      }

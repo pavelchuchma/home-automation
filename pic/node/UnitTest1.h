@@ -18,6 +18,7 @@ void testSetPortRequest();
 void testCheckInputChange();
 void testEnablePwm();
 void testDisplay();
+void testProcessSetManualPwmValueRequest();
 
 #endif	/* UNITTEST1_H */
 

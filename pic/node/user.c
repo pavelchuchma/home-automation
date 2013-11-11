@@ -3,11 +3,11 @@
 /******************************************************************************/
 
 #if defined(__XC)
-    #include <xc.h>         /* XC8 General Include File */
+#include <xc.h>         /* XC8 General Include File */
 #elif defined(HI_TECH_C)
-    #include <htc.h>        /* HiTech General Include File */
+#include <htc.h>        /* HiTech General Include File */
 #elif defined(__18CXX)
-    #include <p18cxxx.h>    /* C18 General Include File */
+#include <p18cxxx.h>    /* C18 General Include File */
 #endif
 
 #if defined(__XC) || defined(HI_TECH_C)
@@ -33,7 +33,7 @@ void InitApp(void) {
     receiveQueue.r = receiveQueue.w = receiveQueue.packetCount = 0;
 
     // init appFlags;
-    *((char*)&appFlags) = 0;
+    *((char*) &appFlags) = 0;
     appFlags.uartReceiveBufferErrCount = appFlags.uartReceiveCrcErrCount = 0;
     appFlags.enabledPwmModules = 0;
 
@@ -87,6 +87,15 @@ void InitApp(void) {
     heartBeatPeriod = 20; // 10s
     displayValue = 0;
     displayValueOld = 255;
+
+
+    // init manualPwm
+    for (char i = 0; i < 3; i++) {
+        manualPwmPortData[i].mask = 0;
+        for (char j = PWM_RESOLUTION; j;) {
+            manualPwmPortData[i].data[--j] = 0;
+        }
+    }
 
     /* Initialize User Ports/Peripherals/Project here */
 
@@ -167,8 +176,8 @@ void setupCanBus(char baudRatePrescaller) {
     RXFCON0 = 0x00000001; //RXF7EN RXF6EN RXF5EN RXF4EN RXF3EN RXF2EN RXF1EN RXF0EN
     RXFCON1 = 0x00000000; //RXF15EN RXF14EN RXF13EN RXF12EN RXF11EN RXF10EN RXF9EN RXF8EN
 
-//    switch to LOOPBACK mode and wait for propagation
-//    CANCON = 0b01000000;
+    //    switch to LOOPBACK mode and wait for propagation
+    //    CANCON = 0b01000000;
     // switch to NORMAL mode and wait for propagation
     CANCON = 0b00000000;
 
@@ -234,13 +243,13 @@ void processGetBuildTimeRequest() {
 }
 
 void setCCP1PwmValue(char value) {
-        // set tris of CCP1
-        TRISC2 = 0;
-        // set duty cycle and enable PWM
-        CCPR1L = value >> 2;
-        CCP1CON = (CCP1CON & 0b00001111) | ((value & 0b00000011) << 4);
+    // set tris of CCP1
+    TRISC2 = 0;
+    // set duty cycle and enable PWM
+    CCPR1L = value >> 2;
+    CCP1CON = (CCP1CON & 0b00001111) | ((value & 0b00000011) << 4);
 
-        outPacket.data[1] = ((CCP1CON >> 4) & 0x11) | (CCPR1L << 2);
+    outPacket.data[1] = ((CCP1CON >> 4) & 0x11) | (CCPR1L << 2);
 }
 
 void processEnablePwmRequest() {
@@ -299,4 +308,67 @@ void processSetPwmValue() {
     }
 
     outPacket.data[0] = appFlags.enabledPwmModules;
+}
+
+void processSetFrequencyRequest() {
+    outPacket.nodeId = nodeId;
+    outPacket.messageType = MSG_SetFrequencyResponse;
+    outPacket.length = 2;
+
+    // change CPU frequency
+    configureOscillator(receivedPacket.data[1]);
+    setupCanBus(receivedPacket.data[2]);
+}
+
+void processSetManualPwmValueRequest() {
+
+    outPacket.nodeId = nodeId;
+    outPacket.messageType = MSG_SetManualPwmValueResponse;
+    outPacket.data[0] = ERR_OK;
+    outPacket.length = 3;
+
+    char portIndex = receivedPacket.data[0] & 0x0F;
+
+    if (portIndex > 2) {  //verify port
+        outPacket.data[0] = ERR_BAD_PARAMS;
+        return;
+    }
+
+
+    char pin = receivedPacket.data[0] >> 4;
+    if (receivedPacket.data[1] > PWM_RESOLUTION) receivedPacket.data[1] = PWM_RESOLUTION;
+
+    volatile ManualPwmData *pwmData = manualPwmPortData + portIndex;
+
+    char mask = 1 << pin;
+    pwmData->mask |= mask;
+
+    *(&TRISA + portIndex) &= ~pwmData->mask;
+
+    for (char i = 0; i < receivedPacket.data[1]; i++) {
+        pwmData->data[i] |= mask;
+    }
+    // invert mask
+    mask ^= 0xFF;
+    for (char i = receivedPacket.data[1]; i < PWM_RESOLUTION; i++) {
+        pwmData->data[i] &= mask;
+    }
+}
+
+#define SET_PORT_MANUAL_PWM(port, index) \
+    if (manualPwmPortData[index].mask) {    \
+        port |= (manualPwmPortData[index].mask & manualPwmPortData[index].data[position]); /*set ones */ \
+        port &= ((~manualPwmPortData[index].mask) | manualPwmPortData[index].data[position]); /* set zeros */ \
+    }
+
+
+void doManualPwm() {
+    static char position = 0;
+
+    SET_PORT_MANUAL_PWM(PORTA, 0);
+    SET_PORT_MANUAL_PWM(PORTB, 1);
+    SET_PORT_MANUAL_PWM(PORTC, 2);
+
+    position++;
+    if (position == PWM_RESOLUTION) position = 0;
 }

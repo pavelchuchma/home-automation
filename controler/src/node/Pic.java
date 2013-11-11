@@ -11,9 +11,10 @@ public class Pic {
     public static final int displayValueOld = 0x67;
     public static final int heartBeatCounter = 0x6A;
     public static final int heartBeatPeriod = 0x3F;
-    public static final int nodeId = 0xA1;
+    public static final int manualPwmData = 0x8E;
+    public static final int nodeId = 0xB2;
     public static final int outPacket = 0x4B;
-    public static final int portConfig = 0x8E;
+    public static final int portConfig = 0x9F;
     public static final int receivedPacket = 0x53;
     public static final int receiveQueue = 0x6B;
     public static final int sendPacketBuffer = 0x41;
@@ -486,6 +487,7 @@ public class Pic {
             case displayValueOld: return "displayValueOld";
             case heartBeatCounter: return "heartBeatCounter";
             case heartBeatPeriod: return "heartBeatPeriod";
+            case manualPwmData: return "manualPwmData";
             case nodeId: return "nodeId";
             case outPacket: return "outPacket";
             case receivedPacket: return "receivedPacket";
