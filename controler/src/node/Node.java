@@ -149,7 +149,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return response.data[0];
     }
 
-    Date getBuildTime() throws IOException {
+    public Date getBuildTime() throws IOException {
         log.debug("getBuildTime");
         Packet response = packetUartIO.send(Packet.createMsgGetBuildTime(nodeId), MessageType.MSG_GetBuildTimeResponse, 300);
         log.debug("getBuildTime -> " + response);
@@ -241,6 +241,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         log.debug("packetReceived: " + packet);
         if (packet.nodeId != nodeId) throw new RuntimeException("Bad handler " + packet.nodeId + "!=" + nodeId);
 
+        // on pin change
         if (packet.messageType >= MessageType.MSG_OnPortAPinChange && packet.messageType <= MessageType.MSG_OnPortDPinChange) {
             int port = packet.messageType - MessageType.MSG_OnPortAPinChange;
             int eventMask = packet.data[0];
@@ -254,25 +255,25 @@ public class Node implements PacketUartIO.PacketReceivedListener {
                         //button UP
                         long downTime = new Date().getTime() - downTimes[pin];
                         log.info("button '" + pinToString(pin) + "' UP (" + downTime + "ms)");
-                        for (int l = 0; l < listeners.size(); l++) {
-                            listeners.get(l).onButtonUp(this, pin, (int) downTime);
+                        for (Listener listener : listeners) {
+                            listener.onButtonUp(this, pin, (int) downTime);
                         }
                     } else {
                         //button DOWN
                         log.info("button '" + pinToString(pin) + "' DOWN");
                         downTimes[pin] = new Date().getTime();
-                        for (int l = 0; l < listeners.size(); l++) {
-                            listeners.get(l).onButtonDown(this, pin);
+                        for (Listener listener : listeners) {
+                            listener.onButtonDown(this, pin);
                         }
                     }
 
                 }
             }
-
+        // on reboot
         } else if (packet.messageType == MessageType.MSG_OnReboot) {
             log.info(String.format("#%d: Reboot received", nodeId));
-            for (int l = 0; l < listeners.size(); l++) {
-                listeners.get(l).onReboot(this, packet.data[0], packet.data[1]);
+            for (Listener listener : listeners) {
+                listener.onReboot(this, packet.data[0], packet.data[1]);
             }
             setInitializationFinished();
         }

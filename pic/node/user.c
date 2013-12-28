@@ -343,11 +343,14 @@ void processSetManualPwmValueRequest() {
     char mask = 1 << pin;
     pwmData->mask |= mask;
 
+    // set all TRIS bits corresponding to the mask to output (0)
     *(&TRISA + portIndex) &= ~pwmData->mask;
 
+    // set '1' to data from 0 to 'value-1'
     for (char i = 0; i < receivedPacket.data[1]; i++) {
         pwmData->data[i] |= mask;
     }
+    // set '0' to data from 'value' to PWM_RESOLUTION-1
     // invert mask
     mask ^= 0xFF;
     for (char i = receivedPacket.data[1]; i < PWM_RESOLUTION; i++) {

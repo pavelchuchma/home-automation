@@ -142,9 +142,20 @@ public class PacketUartIO implements SerialPortEventListener {
         }
     }
 
-    void processPacket(Packet packet) {
+    void processPacket(final Packet packet) {
         msgLog.debug(" > " + packet);
 
+        // process each packet in new thread
+        // todo: replace threads by producer/consumer pattern
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                processPacketImpl(packet);
+            }
+        }).start();
+    }
+
+    private void processPacketImpl(Packet packet) {
         PacketReceivedListener specificListener = specificListeners.get(createSpecificListenerKey(packet.nodeId, packet.messageType));
         if (specificListener != null) {
             log.debug("Calling processPacket.specificListener (" + specificListener + ") for: " + packet);
@@ -160,7 +171,6 @@ public class PacketUartIO implements SerialPortEventListener {
         for (PacketReceivedListener e : listeners) {
             e.packetReceived(packet);
         }
-
     }
 
     public void addReceivedPacketListener(PacketReceivedListener listener) {
