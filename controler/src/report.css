@@ -1,0 +1,26 @@
+td
+{
+    vertical-align: top;
+}
+
+td.errorValue
+{
+  color: red;
+}
+
+td.fineValue
+{
+  color: black;
+}
+
+td.messageLog
+{
+    font-size: smaller;
+    border-top-style: dashed;
+    border-top-width: 2px;
+}
+
+div.sentMessage
+{
+    color: blue;
+}
