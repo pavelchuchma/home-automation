@@ -10,7 +10,7 @@
         </layout>
     </appender>
 
-    <appender name="fileAppender" class="org.apache.log4j.RollingFileAppender">
+    <appender name="applicationLog" class="org.apache.log4j.RollingFileAppender">
         <param name="append" value="false"/>
         <param name="file" value="out/app.log"/>
         <param name="MaxFileSize" value="100MB"/>
@@ -33,22 +33,18 @@
     <category name="packet.PacketUartIO.msg" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="messagesFile"/>
+        <appender-ref ref="applicationLog"/>
     </category>
 
 
     <category name="packet.PacketUartIO" additivity="false">
-        <level value="INFO"/>
-        <appender-ref ref="consoleAppender"/>
-    </category>
-
-    <category name="NodeTest" additivity="false">
         <level value="DEBUG"/>
-        <appender-ref ref="consoleAppender"/>
+        <appender-ref ref="applicationLog"/>
     </category>
 
     <root>
         <level value="INFO"/>
-        <appender-ref ref="consoleAppender"/>
+        <appender-ref ref="applicationLog"/>
     </root>
 
 

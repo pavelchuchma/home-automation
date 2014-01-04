@@ -49,8 +49,13 @@ public class PacketUartIO implements SerialPortEventListener {
         void notifyRegistered(PacketUartIO packetUartIO);
     }
 
-    protected List<PacketReceivedListener> listeners = new ArrayList<PacketReceivedListener>();
-    protected Map<String, PacketReceivedListener> specificListeners = new HashMap<String, PacketReceivedListener>();
+    public interface PacketSentListener {
+        void packetSent(Packet packet);
+    }
+
+    protected List<PacketReceivedListener> receivedListeners = new ArrayList<PacketReceivedListener>();
+    protected Map<String, PacketReceivedListener> specificReceivedListeners = new HashMap<String, PacketReceivedListener>();
+    protected List<PacketSentListener> sentListeners = new ArrayList<PacketSentListener>();
 
     SerialPort serialPort;
     InputStream inputStream;
@@ -156,34 +161,42 @@ public class PacketUartIO implements SerialPortEventListener {
     }
 
     private void processPacketImpl(Packet packet) {
-        PacketReceivedListener specificListener = specificListeners.get(createSpecificListenerKey(packet.nodeId, packet.messageType));
+        PacketReceivedListener specificListener = specificReceivedListeners.get(createSpecificListenerKey(packet.nodeId, packet.messageType));
+        // callbacks for nodeId + messageType
         if (specificListener != null) {
             log.debug("Calling processPacket.specificListener (" + specificListener + ") for: " + packet);
             specificListener.packetReceived(packet);
         }
 
-        specificListener = specificListeners.get(createSpecificListenerKey(packet.nodeId, -1));
+        // callbacks for nodeId + all message types
+        specificListener = specificReceivedListeners.get(createSpecificListenerKey(packet.nodeId, -1));
         if (specificListener != null) {
             log.debug("Calling processPacket.specificListener (" + specificListener + ") for: " + packet);
             specificListener.packetReceived(packet);
         }
 
-        for (PacketReceivedListener e : listeners) {
+        // callbacks for all messages
+        for (PacketReceivedListener e : receivedListeners) {
             e.packetReceived(packet);
         }
     }
 
     public void addReceivedPacketListener(PacketReceivedListener listener) {
         log.debug("addReceivedPacketListener: " + listener);
-        listeners.add(listener);
+        receivedListeners.add(listener);
         listener.notifyRegistered(this);
     }
 
     public void addSpecificReceivedPacketListener(PacketReceivedListener listener, int nodeId, int messageType) {
         String key = createSpecificListenerKey(nodeId, messageType);
-        log.debug("addSpecificReceivedPacketListener: " + listener + "for " + key);
-        specificListeners.put(key, listener);
+        log.debug("addSpecificReceivedPacketListener: " + listener + " for " + key);
+        specificReceivedListeners.put(key, listener);
         listener.notifyRegistered(this);
+    }
+
+    public void addSentPacketListener(PacketSentListener listener) {
+        log.debug("addSentPacketListener: " + listener);
+        sentListeners.add(listener);
     }
 
     private String createSpecificListenerKey(int nodeId, int messageType) {
@@ -193,6 +206,9 @@ public class PacketUartIO implements SerialPortEventListener {
     public void send(Packet packet) throws IOException {
         msgLog.debug(" < " + packet);
         packetSerializer.writePacket(packet, serialPort.getOutputStream());
+        for (PacketSentListener listener : sentListeners) {
+            listener.packetSent(packet);
+        }
     }
 
     public Packet send(Packet packet, int responseType, int timeout) throws IOException {

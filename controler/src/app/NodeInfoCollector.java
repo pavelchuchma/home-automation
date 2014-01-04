@@ -1,5 +1,7 @@
 package app;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
+import node.Bits;
 import node.MessageType;
 import node.Node;
 import org.apache.log4j.Logger;
@@ -10,75 +12,129 @@ import packet.ReceivedPacketHandler;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class NodeInfoCollector {
     static Logger log = Logger.getLogger(NodeInfoCollector.class.getName());
     PacketUartIO packetUartIO;
-    final Map<Integer, NodeInfo> nodes = new ConcurrentHashMap<Integer, NodeInfo>();
+    NodeInfo[] nodeInfoArray = new NodeInfo[50];
 
     public NodeInfoCollector(final PacketUartIO packetUartIO) {
         this.packetUartIO = packetUartIO;
 
+        Node node03 = new Node(3, packetUartIO);
+        node03.addListener(new Node.Listener() {
+            @Override
+            public void onButtonDown(Node node, int pin) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void onButtonUp(Node node, int pin, int downTime) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, InvalidArgumentException {
+                Packet response = node.setPortValue('C', Bits.bit1, 0xFF, 0, 0xFF ^ Bits.bit1);
+                if (response == null) {
+                    throw new IllegalStateException("Cannot set Node port value");
+                }
+            }
+        });
+        addNode(node03);
+
         packetUartIO.addReceivedPacketListener(new ReceivedPacketHandler() {
             @Override
             public void packetReceived(Packet packet) {
-                if (packet.messageType == MessageType.MSG_OnReboot || packet.messageType == MessageType.MSG_OnHeartBeat) {
-                    NodeInfo nodeInfo = nodes.get(packet.nodeId);
-                    if (nodeInfo == null || packet.messageType == MessageType.MSG_OnReboot) {
-                        // on reboot, or no such node present
-                        nodeInfo = registerNewNode(packet, packetUartIO);
-                    }
-                    // check build time is set
-                    if (nodeInfo.buildTime == null) {
-                        try {
-                            nodeInfo.buildTime = nodeInfo.node.getBuildTime();
-                        } catch (IOException e) {
-                            log.error("Cannot get build time of node #" + packet.nodeId, e);
+                NodeInfo nodeInfo = getOrCreateNodeInfo(packet);
+                // set boot time in case of reboot message
+                if (packet.messageType == MessageType.MSG_OnReboot) {
+                    nodeInfo.setBootTime(new Date());
+                }
+
+                // Check if build time is set.
+                // But do it in double-checked section to prevent parallel getBuildTime calls to one node.
+                if (nodeInfo.buildTime == null) {
+                    synchronized (nodeInfo) {
+                        if (nodeInfo.buildTime == null) {
+                            try {
+                                log.info("Getting buidTime node: " + packet.nodeId + " nodeInfo: " + nodeInfo);
+                                nodeInfo.buildTime = nodeInfo.node.getBuildTime();
+                            } catch (IOException e) {
+                                log.error("Cannot get build time of node #" + packet.nodeId, e);
+                            }
                         }
                     }
-                    nodeInfo.setLastPingTime(new Date());
                 }
+                nodeInfo.setLastPingTime(new Date());
+                nodeInfo.addReceivedSentMessage(packet);
+            }
+        });
+
+        packetUartIO.addSentPacketListener(new PacketUartIO.PacketSentListener() {
+            @Override
+            public void packetSent(Packet packet) {
+                getOrCreateNodeInfo(packet).addSentLogMessage(packet);
             }
         });
     }
 
-    private NodeInfo registerNewNode(Packet packet, PacketUartIO packetUartIO) {
-        nodes.remove(packet.nodeId);
-
-        log.debug("Registering node #" + packet.nodeId);
-        Node node = new Node(packet.nodeId, packetUartIO);
-        Date buildTime = null;
-        NodeInfo nodeInfo = new NodeInfo(node, buildTime);
-        if (packet.messageType == MessageType.MSG_OnReboot) {
-            nodeInfo.setBootTime(new Date());
+    public void addNode(Node node) {
+        log.debug("Node #" + node.getNodeId() + " added");
+        if (nodeInfoArray[node.getNodeId()] != null) {
+            nodeInfoArray[node.getNodeId()].node = node;
+        } else {
+            nodeInfoArray[node.getNodeId()] = new NodeInfo(node);
         }
-        nodes.put(packet.nodeId, nodeInfo);
-        return nodeInfo;
+    }
+
+    private NodeInfo getOrCreateNodeInfo(Packet packet) {
+        if (nodeInfoArray[packet.nodeId] == null) {
+            log.debug("Registering node #" + packet.nodeId);
+            Node node = new Node(packet.nodeId, packetUartIO);
+            nodeInfoArray[packet.nodeId] = new NodeInfo(node);
+        }
+        return nodeInfoArray[packet.nodeId];
     }
 
     public String getReport() {
         StringBuilder builder = new StringBuilder();
 
         builder.append("<html>" +
-                "<meta http-equiv='refresh' content='1' >" +
+                "<meta http-equiv='refresh' content='1'/>" +
+                "<head>" +
+                "<link href='../report.css' rel='stylesheet' type='text/css'/>\n" +
+                "</head>" +
                 "<body>" +
-                "<table class=''>\n" +
-                "<tr><td class=''>Node #<td class=''>Last Ping Time<td class=''>Boot Time<td class=''>Build Time");
+                "<table class='nodeTable'>\n" +
+                "<tr><th class=''>Node #<th class=''>Last Ping Time<th class=''>Boot Time<th class=''>Build Time<th class=''>MessageLog");
 
-
-        Set<Integer> idSet = nodes.keySet();
-        Integer[] idArray = idSet.toArray(new Integer[idSet.size()]);
-        Arrays.sort(idArray);
-        for (Integer i : idArray) {
-            NodeInfo info = nodes.get(i);
+        for (NodeInfo info : nodeInfoArray) {
             if (info != null) {
-                builder.append(String.format("<tr><td>%d<td>%s s<td>%s<td>%s\n", info.node.getNodeId(), (info.lastPingTime != null) ? (new Date().getTime() - info.lastPingTime.getTime()) / 1000 : '-', info.bootTime, info.buildTime));
+                String lastPingClass = "errorValue";
+                String lastPingString = "-";
+                long lastPing;
+                if (info.lastPingTime != null) {
+                    lastPing = (new Date().getTime() - info.lastPingTime.getTime()) / 1000;
+                    if (lastPing <= 10) lastPingClass = "fineValue";
+                    lastPingString = lastPing + " s";
+                }
+                builder.append(String.format("<tr><td>%d<td class='%s'>%s<td>%s<td>%s<td class='messageLog'>", info.node.getNodeId(), lastPingClass, lastPingString, info.bootTime, info.buildTime));
+
+                for (LogMessage m : info.getMessageLog()) {
+                    builder.append(String.format("<div class='%s'>%s%s</div>",
+                            (m.received) ? "receivedMessage" : "sentMessage",
+                            MessageType.toString(m.packet.messageType),
+                            (m.packet.data != null) ? Arrays.toString(m.packet.data) : ""));
+                }
+                builder.append("\n");
             }
         }
         builder.append("</table></body></html>");
         return builder.toString();
+    }
+
+    public Node getNode(int i) {
+        return (nodeInfoArray[i] != null) ? nodeInfoArray[i].node : null;
     }
 }

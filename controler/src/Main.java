@@ -1,4 +1,7 @@
 import app.NodeInfoCollector;
+import com.sun.javaws.exceptions.InvalidArgumentException;
+import node.Bits;
+import node.Node;
 import packet.Packet;
 import packet.PacketUartIO;
 import packet.PacketUartIOException;
@@ -16,8 +19,21 @@ public class Main {
             NodeInfoCollector nodeInfoCollector = new NodeInfoCollector(packetUartIO);
 
             System.out.println("Listening ...");
-            for (int i = 0; i<200; i++) {
+            int val = 0;
+            while (true) {
                 Thread.sleep(1000);
+                Node node3 = nodeInfoCollector.getNode(3);
+                if (node3 != null) {
+                    try {
+                        if (false) node3.setPortValue('C', Bits.bit1, val);
+                        val ^= 0xFF;
+                    } catch (IOException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    } catch (InvalidArgumentException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
+                }
+
                 PrintStream out = null;
                 try {
                     out = new PrintStream(new FileOutputStream("out\\report.html"));
@@ -27,7 +43,6 @@ public class Main {
                 }
             }
 
-            packetUartIO.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (PacketUartIOException e) {

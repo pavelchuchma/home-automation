@@ -9,7 +9,7 @@ import java.util.List;
 public class PacketSerializer {
     List<Integer> buff = new ArrayList<Integer>();
 
-    public void reset() {
+    private void reset() {
         buff.clear();
     }
 
@@ -49,7 +49,7 @@ public class PacketSerializer {
         return result;
     }
 
-    public void writePacket(Packet packet, OutputStream outputStream) throws IOException {
+    synchronized public void writePacket(Packet packet, OutputStream outputStream) throws IOException {
         byte[] buff = new byte[packet.length + 2];
         buff[0] = (byte) packet.nodeId;
         buff[1] = (byte) packet.messageType;

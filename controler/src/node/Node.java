@@ -46,7 +46,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     public static final int pinD6 = 30;
     public static final int pinD7 = 31;
 
-    interface Listener {
+    public interface Listener {
         void onButtonDown(Node node, int pin);
 
         void onButtonUp(Node node, int pin, int downTime);
@@ -165,11 +165,11 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
     }
 
-    Packet setPortValue(char port, int valueMask, int value) throws IOException, InvalidArgumentException {
+    public Packet setPortValue(char port, int valueMask, int value) throws IOException, InvalidArgumentException {
         return setPortValue(port, valueMask, value, -1, -1);
     }
 
-    Packet setPortValue(char port, int valueMask, int value, int eventMask, int trisValue) throws IOException, InvalidArgumentException {
+    public Packet setPortValue(char port, int valueMask, int value, int eventMask, int trisValue) throws IOException, InvalidArgumentException {
         log.debug("setPortValue");
         Packet response = packetUartIO.send(
                 Packet.createMsgSetPort(nodeId, port, valueMask, value, eventMask, trisValue),
@@ -269,13 +269,17 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
                 }
             }
-        // on reboot
+            // on reboot
         } else if (packet.messageType == MessageType.MSG_OnReboot) {
             log.info(String.format("#%d: Reboot received", nodeId));
-            for (Listener listener : listeners) {
-                listener.onReboot(this, packet.data[0], packet.data[1]);
+            try {
+                for (Listener listener : listeners) {
+                    listener.onReboot(this, packet.data[0], packet.data[1]);
+                }
+                setInitializationFinished();
+            } catch (RuntimeException e) {
+                log.error("Exception caught from onReboot call of node #" + nodeId, e);
             }
-            setInitializationFinished();
         }
     }
 
