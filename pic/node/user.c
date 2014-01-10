@@ -125,13 +125,18 @@ void setupUart(char highByte, char lowByte) {
     SPBRG1 = lowByte;
 }
 
+
+void switchCanBusToConfigMode() {
+    CANCON = 0b10000000;
+    while (!(CANSTAT & 0b10000000));
+}
+
 void setupCanBus(char baudRatePrescaller) {
     TRISB3 = 1; //CAN RX
     TRISB2 = 0; //CAN TX
 
     // switch to configuration mode and wait for propagation
-    CANCON = 0b10000000;
-    while (!(CANSTAT & 0b10000000));
+    switchCanBusToConfigMode();
 
     //MDSEL = Enhanced FIFO mode (Mode 2)
     ECANCON = 0b10110000; //MDSEL1 MDSEL0 FIFOWM EWIN4 EWIN3 EWIN2 EWIN1 EWIN0
@@ -315,9 +320,11 @@ void processSetFrequencyRequest() {
     outPacket.messageType = MSG_SetFrequencyResponse;
     outPacket.length = 2;
 
+    // disable CAN module to don't do a mess on wire while changing frequency
+    switchCanBusToConfigMode();
     // change CPU frequency
-    configureOscillator(receivedPacket.data[1]);
-    setupCanBus(receivedPacket.data[2]);
+    configureOscillator(receivedPacket.data[0]);
+    setupCanBus(receivedPacket.data[1]);
 }
 
 void processSetManualPwmValueRequest() {
