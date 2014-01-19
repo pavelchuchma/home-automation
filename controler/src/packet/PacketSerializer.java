@@ -32,7 +32,7 @@ public class PacketSerializer {
                         if (i>1) packetData[i-2] = (buff.get(i) & 0xFF);
                     }
                     // validate crc
-                    if ((crc & 127) != b) throw new IOException("CRC Failed: " + (crc & 127) + " != " + b);
+                    if ((crc & 127) != b) throw new IOException("CRC FAILED: " + (crc & 127) + " != " + b);
                     result = new Packet(buff.get(0), buff.get(1), packetData);
                     reset();
                     break;

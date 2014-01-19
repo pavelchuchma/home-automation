@@ -53,7 +53,7 @@ public class NodeInfo {
         }
     }
 
-    public Collection<LogMessage> getMessageLog() {
+    public LogMessage[] getMessageLog() {
         synchronized (messageLog) {
             long threshold = new Date().getTime() - 5 * 1000;
             Iterator<LogMessage> i = messageLog.descendingIterator();
@@ -66,7 +66,7 @@ public class NodeInfo {
                     break;
                 }
             }
-            return messageLog;
+            return messageLog.toArray(new LogMessage[messageLog.size()]);
         }
     }
 }

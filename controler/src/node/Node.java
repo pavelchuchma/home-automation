@@ -158,6 +158,13 @@ public class Node implements PacketUartIO.PacketReceivedListener {
                 : null;
     }
 
+    public char echo(int a, int b) throws IOException {
+        log.debug("echo");
+        Packet response = packetUartIO.send(Packet.createMsgEchoRequest(nodeId, a, b), MessageType.MSG_EchoResponse, 300);
+        log.debug("echo -> " + response);
+        return (char) ((response != null) ? response.data[1] : 0);
+    }
+
     void setPortValueNoWait(char port, int valueMask, int value) throws IOException, InvalidArgumentException {
         log.debug("setPortValueNoWait");
         packetUartIO.send(Packet.createMsgSetPort(nodeId, port, valueMask, value, -1, -1));
@@ -209,32 +216,48 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         packetUartIO.send(req);
     }
 
-    synchronized void setInitializationFinished() throws IOException {
+    synchronized public void setManualPwmValue(char port, int pin, int value) throws IOException, InvalidArgumentException {
+        log.debug("setPwmValue");
+        Packet req = Packet.createMsgMSGSetManualPwmValue(nodeId, port, pin, value);
+        packetUartIO.send(req);
+    }
+
+    synchronized public void setInitializationFinished() throws IOException {
         log.debug("setInitializationFinished");
         Packet req = Packet.createMsgInitializationFinished(nodeId);
         packetUartIO.send(req);
     }
 
-    synchronized void setHeartBeatPeriod(int seconds) throws IOException {
+    synchronized public void setHeartBeatPeriod(int seconds) throws IOException {
         log.debug("setHeartBeatPeriod");
         Packet req = Packet.createMsgSetHeartBeatPeriod(nodeId, seconds);
         packetUartIO.send(req);
     }
 
+    synchronized public boolean setFrequency(int cpuFrequency) throws IOException, InvalidArgumentException {
+        log.debug("setFrequency");
+        if (cpuFrequency != 1 && cpuFrequency != 2 && cpuFrequency != 8 && cpuFrequency != 16) throw new InvalidArgumentException(new String[]{"Unsupported frequency value"});
+        Packet req = Packet.createMsgSetFrequency(nodeId, cpuFrequency, cpuFrequency - 1);
+        Packet response = packetUartIO.send(req, MessageType.MSG_SetFrequencyResponse, 300);
+        if (response == null) return false;
+
+        log.debug("  < " + response);
+        return true;
+    }
+
     @Override
     public void packetReceived(final Packet packet) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    packetReceivedImpl(packet);
-                } catch (IOException e) {
-                    log.error(e);
-                } catch (InvalidArgumentException e) {
-                    log.error(e);
-                }
-            }
-        }).start();
+        //new Thread(new Runnable() {
+        //      public void run() {
+        try {
+            packetReceivedImpl(packet);
+        } catch (IOException e) {
+            log.error(e);
+        } catch (InvalidArgumentException e) {
+            log.error(e);
+        }
+        //}
+        //    }).start();
     }
 
     public void packetReceivedImpl(Packet packet) throws IOException, InvalidArgumentException {

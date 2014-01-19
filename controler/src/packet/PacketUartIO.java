@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PacketUartIO implements SerialPortEventListener {
     private class ResponseWrapper implements PacketReceivedListener {
@@ -54,7 +55,7 @@ public class PacketUartIO implements SerialPortEventListener {
     }
 
     protected List<PacketReceivedListener> receivedListeners = new ArrayList<PacketReceivedListener>();
-    protected Map<String, PacketReceivedListener> specificReceivedListeners = new HashMap<String, PacketReceivedListener>();
+    protected Map<String, PacketReceivedListener> specificReceivedListeners = new ConcurrentHashMap<String, PacketReceivedListener>();
     protected List<PacketSentListener> sentListeners = new ArrayList<PacketSentListener>();
 
     SerialPort serialPort;
@@ -162,6 +163,7 @@ public class PacketUartIO implements SerialPortEventListener {
 
     private void processPacketImpl(Packet packet) {
         PacketReceivedListener specificListener = specificReceivedListeners.get(createSpecificListenerKey(packet.nodeId, packet.messageType));
+
         // callbacks for nodeId + messageType
         if (specificListener != null) {
             log.debug("Calling processPacket.specificListener (" + specificListener + ") for: " + packet);
@@ -175,9 +177,11 @@ public class PacketUartIO implements SerialPortEventListener {
             specificListener.packetReceived(packet);
         }
 
-        // callbacks for all messages
-        for (PacketReceivedListener e : receivedListeners) {
-            e.packetReceived(packet);
+        synchronized (receivedListeners) {
+            // callbacks for all messages
+            for (PacketReceivedListener e : receivedListeners) {
+                e.packetReceived(packet);
+            }
         }
     }
 

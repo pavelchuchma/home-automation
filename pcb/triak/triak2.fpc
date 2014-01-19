@@ -69,10 +69,10 @@ routing_grid_spacing: 635000.000000
   routing_grid_item: 3.33326772MIL
   routing_grid_item: 4MIL
   routing_grid_item: 5MIL
-  routing_grid_item: 6.6661811MIL
+  routing_grid_item: 6.66610236MIL
   routing_grid_item: 10MIL
   routing_grid_item: 12.5MIL
-  routing_grid_item: 16.6661811MIL
+  routing_grid_item: 16.66610236MIL
   routing_grid_item: 20MIL
   routing_grid_item: 25MIL
   routing_grid_item: 40MIL
@@ -457,28 +457,6 @@ name: "6 PIN"
       inner_pad: 0 0 0 0 0 0
       bottom_pad: 5 95 30 30 0
 
-name: "LED"
-  units: MIL
-  sel_rect: -45 -95 145 95
-  ref_text: 50 35 105 0 7
-  value_text: 50 35 5 0 7
-  centroid: 1 50 0 0
-  outline_polyline: 10 -30 0
-    next_corner: 50 80 1
-    next_corner: 130 0 1
-  outline_polyline: 10 -30 0
-    next_corner: 50 -80 2
-    next_corner: 130 0 2
-  n_pins: 2
-    pin: "1" 26 100 0 0
-      top_pad: 1 50 25 25 0
-      inner_pad: 0 0 0 0 0 0
-      bottom_pad: 1 50 25 25 0
-    pin: "2" 26 0 0 0
-      top_pad: 1 50 25 25 0
-      inner_pad: 0 0 0 0 0 0
-      bottom_pad: 1 50 25 25 0
-
 name: "28DIP300-PIC"
 author: "Ivex"
 source: "DIGIKEY CATALOG NO. 941, PAGE 64"
@@ -769,7 +747,7 @@ part: BUS
   shape: "6 PIN"
   pos: 111760000 -77470000 0 180 0
 
-part: R10
+part: FUSE
   ref_text: 1270000 177800 0 1400000 2600000 1
   package: ""
   shape: "FUSE"
@@ -831,7 +809,7 @@ part: R3
 part: R11
   ref_text: 635000 177800 0 1270000 254000 1
   package: ""
-  value: "330R" 635000 177800 0 -127000 -762000 0
+  value: "330R" 635000 177800 0 -127000 -762000 1
   shape: "R0805-Bold"
   pos: 12700000 -35560000 1 90 0
 
@@ -908,7 +886,7 @@ part: R21
   shape: "R0805-Bold"
   pos: 35560000 -35560000 1 90 0
 
-part: Triak9
+part: Triak5
   ref_text: 1270000 177800 0 2540000 3556000 -842150451
   package: ""
   shape: "BT136"
@@ -926,7 +904,7 @@ part: 6DIP8
   shape: "6DIP300b-MOC3041"
   pos: 45720000 -33020000 0 0 0
 
-part: Triak10
+part: Triak6
   ref_text: 1270000 177800 0 2540000 3556000 -842150451
   package: ""
   shape: "BT136"
@@ -974,7 +952,7 @@ part: R39
   shape: "R0805-Bold"
   pos: 50800000 -35560000 1 90 0
 
-part: Triak11
+part: Triak7
   ref_text: 1270000 177800 0 2540000 3556000 -842150451
   package: ""
   shape: "BT136"
@@ -992,7 +970,7 @@ part: 6DIP10
   shape: "6DIP300b-MOC3041"
   pos: 60960000 -33020000 0 0 0
 
-part: Triak12
+part: Triak8
   ref_text: 1270000 177800 0 2540000 3556000 -842150451
   package: ""
   shape: "BT136"
@@ -1040,7 +1018,7 @@ part: R45
   shape: "R0805-Bold"
   pos: 66040000 -35560000 1 90 0
 
-part: Triak13
+part: Triak9
   ref_text: 1270000 177800 0 2540000 3556000 -842150451
   package: ""
   shape: "BT136"
@@ -1058,7 +1036,7 @@ part: 6DIP12
   shape: "6DIP300b-MOC3041"
   pos: 76200000 -33020000 0 0 0
 
-part: Triak14
+part: Triak10
   ref_text: 1270000 177800 0 2540000 3556000 -842150451
   package: ""
   shape: "BT136"
@@ -1106,7 +1084,7 @@ part: R51
   shape: "R0805-Bold"
   pos: 81280000 -35560000 1 90 0
 
-part: Triak17
+part: Triak13
   ref_text: 1270000 177800 0 2540000 3556000 -842150451
   package: ""
   shape: "BT136"
@@ -1124,7 +1102,7 @@ part: 6DIP16
   shape: "6DIP300b-MOC3041"
   pos: 106680000 -33020000 0 0 0
 
-part: Triak18
+part: Triak14
   ref_text: 1270000 177800 0 2540000 3556000 -842150451
   package: ""
   shape: "BT136"
@@ -1172,7 +1150,7 @@ part: R63
   shape: "R0805-Bold"
   pos: 111760000 -35560000 1 90 0
 
-part: Triak19
+part: Triak11
   ref_text: 1270000 177800 0 2540000 3556000 -842150451
   package: ""
   shape: "BT136"
@@ -1190,7 +1168,7 @@ part: 6DIP18
   shape: "6DIP300b-MOC3041"
   pos: 91440000 -33020000 0 0 0
 
-part: Triak20
+part: Triak12
   ref_text: 1270000 177800 0 2540000 3556000 -842150451
   package: ""
   shape: "BT136"
@@ -1238,7 +1216,7 @@ part: 6DIP19
   shape: "6DIP300b-MOC3041"
   pos: 83820000 -33020000 0 0 0
 
-part: Triak21
+part: Triak20
   ref_text: 1270000 177800 0 2540000 3556000 -842150451
   package: ""
   shape: "BT136"
@@ -1256,7 +1234,7 @@ part: 6DIP20
   shape: "6DIP300b-MOC3041"
   pos: 53340000 -50800000 0 180 0
 
-part: Triak22
+part: Triak19
   ref_text: 1270000 177800 0 2540000 3556000 -842150451
   package: ""
   shape: "BT136"
@@ -1304,7 +1282,7 @@ part: R75
   shape: "R0805-Bold"
   pos: 48260000 -48260000 1 270 0
 
-part: Triak23
+part: Triak18
   ref_text: 1270000 177800 0 2540000 3556000 -842150451
   package: ""
   shape: "BT136"
@@ -1322,7 +1300,7 @@ part: 6DIP22
   shape: "6DIP300b-MOC3041"
   pos: 38100000 -50800000 0 180 0
 
-part: Triak24
+part: Triak17
   ref_text: 1270000 177800 0 2540000 3556000 -842150451
   package: ""
   shape: "BT136"
@@ -1370,7 +1348,7 @@ part: R81
   shape: "R0805-Bold"
   pos: 33020000 -48260000 1 270 0
 
-part: Triak25
+part: Triak16
   ref_text: 1270000 177800 0 2540000 3556000 -842150451
   package: ""
   shape: "BT136"
@@ -1388,7 +1366,7 @@ part: 6DIP24
   shape: "6DIP300b-MOC3041"
   pos: 22860000 -50800000 0 180 0
 
-part: Triak26
+part: Triak15
   ref_text: 1270000 177800 0 2540000 3556000 -842150451
   package: ""
   shape: "BT136"
@@ -1457,7 +1435,7 @@ part: R25
 [nets]
 
 net: "N00002_$G14" 3 3 0 0 0 0 1
-  pin: 1 Triak21.2
+  pin: 1 Triak20.2
   pin: 2 Conn10.1
   pin: 3 R72.2
   connect: 1 1 2 2 0
@@ -1495,7 +1473,7 @@ net: "N00003_$G1_$G6_$G10" 2 1 0 0 0 0 1
 
 net: "N00002_$G1_$G6_$G10" 3 2 0 0 0 0 1
   pin: 1 Conn7.3
-  pin: 2 Triak14.2
+  pin: 2 Triak10.2
   pin: 3 R46.2
   connect: 1 2 1 2 0
     vtx: 1 76200000 -12700000 11 0 0 0 0
@@ -1547,14 +1525,12 @@ net: "Vdd4" 2 1 0 0 0 0 1
 net: "N00006_$G4" 2 1 0 0 0 0 1
   pin: 1 PIC.17
   pin: 2 R24.9
-  connect: 1 0 1 3 0
+  connect: 1 0 1 2 0
     vtx: 1 76200000 -55880000 11 0 0 0 0
     seg: 1 13 635000 0 0
-    vtx: 2 76200000 -57150000 0 0 0 0 0
+    vtx: 2 76200000 -60960000 0 0 0 0 0
     seg: 2 13 635000 0 0
-    vtx: 3 76200000 -60960000 0 0 0 0 0
-    seg: 3 13 635000 0 0
-    vtx: 4 78740000 -63500000 11 0 0 0 0
+    vtx: 3 78740000 -63500000 11 0 0 0 0
 
 net: "N00001_$G6_$G14" 2 1 0 0 0 0 1
   pin: 1 6DIP23.6
@@ -1593,7 +1569,7 @@ net: "N00002_$G1_$G6_$G11" 0 0 0 0 0 0 1
 net: "N00005_$G6_$G11" 0 0 0 0 0 0 1
 
 net: "N00004_$G1_$G6_$G10" 2 1 0 0 0 0 1
-  pin: 1 Triak14.3
+  pin: 1 Triak10.3
   pin: 2 R47.2
   connect: 1 1 0 1 0
     vtx: 1 81280000 -15240000 11 0 0 0 0
@@ -1669,7 +1645,7 @@ net: "VSS" 6 5 0 635000 1270000 355600 1
     vtx: 5 86360000 -48260000 11 0 0 0 0
 
 net: "VDD" 25 24 0 635000 711200 355600 1
-  pin: 1 R10.1
+  pin: 1 FUSE.1
   pin: 2 6DIP.1
   pin: 3 6DIP1.1
   pin: 4 6DIP2.1
@@ -1898,22 +1874,20 @@ net: "VDD" 25 24 0 635000 711200 355600 1
     vtx: 6 67310000 -60960000 0 0 0 0 0
     seg: 6 13 635000 0 0
     vtx: 7 67310000 -55880000 11 0 0 0 0
-  connect: 24 24 16 4 0
+  connect: 24 24 16 3 0
     vtx: 1 67310000 -55880000 11 0 0 0 0
     seg: 1 13 635000 0 0
     vtx: 2 67310000 -53340000 0 0 0 0 0
     seg: 2 13 635000 0 0
     vtx: 3 60960000 -53340000 0 0 0 0 0
     seg: 3 13 635000 0 0
-    vtx: 4 60960000 -52070000 0 0 0 0 0
-    seg: 4 13 635000 0 0
-    vtx: 5 60960000 -50800000 11 0 0 0 0
+    vtx: 4 60960000 -50800000 11 0 0 0 0
 
 net: "BUS_VDD" 0 0 0 0 0 0 1
 
 net: "VDD-Unfused" 2 1 0 0 0 0 1
   pin: 1 BUS.1
-  pin: 2 R10.2
+  pin: 2 FUSE.2
   connect: 1 1 0 2 0
     vtx: 1 111506000 -68580000 13 0 0 0 0
     seg: 1 13 635000 0 0
@@ -1938,7 +1912,7 @@ net: "N_$G12" 0 0 0 0 0 0 1
 
 net: "N00002_$G1_$G6_$G12" 3 2 0 0 0 0 1
   pin: 1 Conn9.3
-  pin: 2 Triak18.2
+  pin: 2 Triak14.2
   pin: 3 R58.2
   connect: 1 2 1 2 0
     vtx: 1 106680000 -12700000 11 0 0 0 0
@@ -1959,7 +1933,7 @@ net: "N00005_$G6_$G12" 1 0 0 0 0 0 1
 net: "N00004_$G1_$G6_$G11" 0 0 0 0 0 0 1
 
 net: "N00002_$G6_$G10" 3 2 0 2540000 1270000 355600 1
-  pin: 1 Triak13.2
+  pin: 1 Triak9.2
   pin: 2 Conn7.1
   pin: 3 R48.2
   connect: 1 1 2 2 0
@@ -1977,7 +1951,7 @@ net: "N00002_$G6_$G10" 3 2 0 2540000 1270000 355600 1
 
 net: "N00002_$G1_$G6_$G8" 3 2 0 0 0 0 1
   pin: 1 Conn5.3
-  pin: 2 Triak10.2
+  pin: 2 Triak6.2
   pin: 3 R34.2
   connect: 1 2 1 2 0
     vtx: 1 45720000 -12700000 11 0 0 0 0
@@ -2023,7 +1997,7 @@ net: "N00001_$G1_$G6_$G14" 2 2 0 0 0 0 1
 
 net: "N00002_$G1_$G6_$G8_$G14" 3 2 0 0 0 0 1
   pin: 1 Conn12.3
-  pin: 2 Triak26.2
+  pin: 2 Triak15.2
   pin: 3 R82.2
   connect: 1 2 1 2 0
     vtx: 1 22860000 -71120000 11 0 0 0 0
@@ -2040,7 +2014,7 @@ net: "N00002_$G1_$G6_$G8_$G14" 3 2 0 0 0 0 1
 
 net: "N00010" 2 1 0 0 0 0 1
   pin: 1 R59.2
-  pin: 2 Triak18.3
+  pin: 2 Triak14.3
   connect: 1 0 1 1 0
     vtx: 1 111760000 -15240000 11 0 0 0 0
     seg: 1 13 635000 0 0
@@ -2058,7 +2032,7 @@ net: "N00009_$G6_$G10" 2 1 0 0 0 0 1
 
 net: "N00002_$G1_$G6_$G9" 3 2 0 0 0 0 1
   pin: 1 Conn6.3
-  pin: 2 Triak12.2
+  pin: 2 Triak8.2
   pin: 3 R40.2
   connect: 1 2 1 2 0
     vtx: 1 60960000 -12700000 11 0 0 0 0
@@ -2082,7 +2056,7 @@ net: "N00009_$G6_$G8" 2 1 0 0 0 0 1
     vtx: 2 48260000 -33020000 11 0 0 0 0
 
 net: "N00004_$G6_$G8" 2 1 0 0 0 0 1
-  pin: 1 Triak9.3
+  pin: 1 Triak5.3
   pin: 2 R37.2
   connect: 1 0 1 1 0
     vtx: 1 40640000 -12700000 11 0 0 0 0
@@ -2160,7 +2134,7 @@ net: "N00003_$G1_$G6_$G14" 2 1 0 0 0 0 1
     vtx: 2 33020000 -58420000 11 0 0 0 0
 
 net: "N00004_$G1_$G14" 2 1 0 0 0 0 1
-  pin: 1 Triak22.3
+  pin: 1 Triak19.3
   pin: 2 R71.2
   connect: 1 1 0 1 0
     vtx: 1 48260000 -68580000 11 0 0 0 0
@@ -2169,7 +2143,7 @@ net: "N00004_$G1_$G14" 2 1 0 0 0 0 1
 
 net: "N00002_$G1_$G6_$G14" 3 2 0 0 0 0 1
   pin: 1 Conn11.3
-  pin: 2 Triak24.2
+  pin: 2 Triak17.2
   pin: 3 R76.2
   connect: 1 2 1 2 0
     vtx: 1 38100000 -71120000 11 0 0 0 0
@@ -2191,7 +2165,7 @@ net: "VSS_$G1_$G6_$G10_$G13" 2 0 0 0 0 0 1
   pin: 2 R69.1
 
 net: "N00002_$G6_$G12" 3 2 0 2540000 1270000 355600 1
-  pin: 1 Triak17.2
+  pin: 1 Triak13.2
   pin: 2 Conn9.1
   pin: 3 R60.2
   connect: 1 1 2 2 0
@@ -2218,7 +2192,7 @@ net: "N00009_$G6_$G9" 2 1 0 0 0 0 1
     vtx: 2 63500000 -33020000 11 0 0 0 0
 
 net: "N00004_$G6_$G9" 2 1 0 0 0 0 1
-  pin: 1 Triak11.3
+  pin: 1 Triak7.3
   pin: 2 R43.2
   connect: 1 0 1 1 0
     vtx: 1 55880000 -12700000 11 0 0 0 0
@@ -2260,7 +2234,7 @@ net: "N00012" 2 1 0 0 0 0 1
 net: "VSS_$G1_$G6_$G10_$G14" 0 0 0 0 0 0 1
 
 net: "N00004_$G1_$G6_$G14" 2 1 0 0 0 0 1
-  pin: 1 Triak24.3
+  pin: 1 Triak17.3
   pin: 2 R77.2
   connect: 1 1 0 1 0
     vtx: 1 33020000 -68580000 11 0 0 0 0
@@ -2333,7 +2307,7 @@ net: "N00013" 2 1 0 0 0 0 1
     vtx: 4 30480000 -43180000 11 0 0 0 0
 
 net: "N00002_$G6_$G14" 3 2 0 0 0 0 1
-  pin: 1 Triak23.2
+  pin: 1 Triak18.2
   pin: 2 Conn11.1
   pin: 3 R78.2
   connect: 1 1 2 2 0
@@ -2384,7 +2358,7 @@ net: "N00009_$G6_$G10_$G13" 2 1 0 0 0 0 1
     vtx: 2 93980000 -33020000 11 0 0 0 0
 
 net: "N00004_$G1_$G6_$G10_$G13" 2 1 0 0 0 0 1
-  pin: 1 Triak20.3
+  pin: 1 Triak12.3
   pin: 2 R65.2
   connect: 1 1 0 1 0
     vtx: 1 96520000 -15240000 11 0 0 0 0
@@ -2520,7 +2494,7 @@ net: "N00003_$G1_$G6_$G10_$G13" 2 1 0 0 0 0 1
 
 net: "N00002_$G1_$G6_$G10_$G13" 3 2 0 0 0 0 1
   pin: 1 Conn8.3
-  pin: 2 Triak20.2
+  pin: 2 Triak12.2
   pin: 3 R64.2
   connect: 1 2 1 2 0
     vtx: 1 91440000 -12700000 11 0 0 0 0
@@ -2636,22 +2610,22 @@ net: "F-input" 21 20 0 1270000 1270000 355600 1
   pin: 3 R4.1
   pin: 4 Triak3.1
   pin: 5 Triak4.1
-  pin: 6 Triak9.1
-  pin: 7 Triak10.1
-  pin: 8 Triak11.1
-  pin: 9 Triak12.1
-  pin: 10 Triak13.1
-  pin: 11 Triak14.1
-  pin: 12 Triak17.1
-  pin: 13 Triak18.1
-  pin: 14 Triak19.1
-  pin: 15 Triak20.1
-  pin: 16 Triak21.1
-  pin: 17 Triak22.1
-  pin: 18 Triak23.1
-  pin: 19 Triak24.1
-  pin: 20 Triak25.1
-  pin: 21 Triak26.1
+  pin: 6 Triak5.1
+  pin: 7 Triak6.1
+  pin: 8 Triak7.1
+  pin: 9 Triak8.1
+  pin: 10 Triak9.1
+  pin: 11 Triak10.1
+  pin: 12 Triak13.1
+  pin: 13 Triak14.1
+  pin: 14 Triak11.1
+  pin: 15 Triak12.1
+  pin: 16 Triak20.1
+  pin: 17 Triak19.1
+  pin: 18 Triak18.1
+  pin: 19 Triak17.1
+  pin: 20 Triak16.1
+  pin: 21 Triak15.1
   connect: 1 19 18 3 0
     vtx: 1 27940000 -66040000 11 0 0 0 0
     seg: 1 13 1270000 0 0
@@ -2832,25 +2806,23 @@ net: "N00005_$G2_$G4" 2 1 0 0 0 0 1
 net: "N00016" 2 1 0 0 0 0 1
   pin: 1 PIC.21
   pin: 2 R24.6
-  connect: 1 0 1 6 0
+  connect: 1 0 1 5 0
     vtx: 1 86360000 -55880000 11 0 0 0 0
     seg: 1 13 635000 0 0
     vtx: 2 86360000 -57150000 0 0 0 0 0
     seg: 2 13 635000 0 0
-    vtx: 3 85090000 -58420000 0 0 0 0 0
+    vtx: 3 82550000 -60960000 0 0 0 0 0
     seg: 3 13 635000 0 0
-    vtx: 4 82550000 -60960000 0 0 0 0 0
-    seg: 4 13 635000 0 0
-    vtx: 5 82550000 -62230000 0 0 0 0 0
-    seg: 5 13 508000 0 0
-    vtx: 6 82550000 -64770000 0 0 0 0 0
-    seg: 6 13 635000 0 0
-    vtx: 7 83820000 -66040000 11 0 0 0 0
+    vtx: 4 82550000 -62230000 0 0 0 0 0
+    seg: 4 13 508000 0 0
+    vtx: 5 82550000 -64770000 0 0 0 0 0
+    seg: 5 13 635000 0 0
+    vtx: 6 83820000 -66040000 11 0 0 0 0
 
 net: "N00001_$G1_$G6_$G10_$G14" 0 0 0 0 0 0 1
 
 net: "N00004_$G1_$G6_$G8_$G14" 2 1 0 0 0 0 1
-  pin: 1 Triak26.3
+  pin: 1 Triak15.3
   pin: 2 R83.2
   connect: 1 1 0 1 0
     vtx: 1 17780000 -68580000 11 0 0 0 0
@@ -2866,7 +2838,7 @@ net: "N00001_$G6_$G8_$G14" 2 1 0 0 0 0 1
     vtx: 2 30480000 -60960000 11 0 0 0 0
 
 net: "N00002_$G6_$G8_$G14" 3 2 0 0 0 0 1
-  pin: 1 Triak25.2
+  pin: 1 Triak16.2
   pin: 2 Conn12.1
   pin: 3 R84.2
   connect: 1 1 2 2 0
@@ -3033,7 +3005,7 @@ net: "N00007_$G6_$G9" 2 2 0 0 0 0 1
     vtx: 2 58420000 -32893000 13 0 0 0 0
 
 net: "N00002_$G6_$G8" 3 2 0 2540000 1270000 355600 1
-  pin: 1 Triak9.2
+  pin: 1 Triak5.2
   pin: 2 Conn5.1
   pin: 3 R36.2
   connect: 1 1 2 2 0
@@ -3185,7 +3157,7 @@ net: "N00008_$G14" 1 0 0 0 0 0 1
   pin: 1 Led21.2
 
 net: "N00004_$G6_$G8_$G14" 2 1 0 0 0 0 1
-  pin: 1 Triak25.3
+  pin: 1 Triak16.3
   pin: 2 R85.2
   connect: 1 0 1 1 0
     vtx: 1 27940000 -71120000 11 0 0 0 0
@@ -3197,7 +3169,7 @@ net: "N00005_$G6_$G9_$G14" 0 0 0 0 0 0 1
 net: "N00007_$G6_$G11" 0 0 0 0 0 0 1
 
 net: "N00002_$G6_$G9" 3 2 0 2540000 1270000 355600 1
-  pin: 1 Triak11.2
+  pin: 1 Triak7.2
   pin: 2 Conn6.1
   pin: 3 R42.2
   connect: 1 1 2 2 0
@@ -3261,7 +3233,7 @@ net: "N00007_$G6_$G9_$G14" 0 0 0 0 0 0 1
 
 net: "N00002_$G1_$G14" 3 2 0 0 0 0 1
   pin: 1 Conn10.3
-  pin: 2 Triak22.2
+  pin: 2 Triak19.2
   pin: 3 R70.2
   connect: 1 2 1 2 0
     vtx: 1 53340000 -71120000 11 0 0 0 0
@@ -3293,7 +3265,7 @@ net: "N00007_$G6_$G12" 2 2 0 0 0 0 1
     vtx: 2 104140000 -32893000 13 0 0 0 0
 
 net: "N00004_$G6_$G10" 2 1 0 0 0 0 1
-  pin: 1 Triak13.3
+  pin: 1 Triak9.3
   pin: 2 R49.2
   connect: 1 0 1 1 0
     vtx: 1 71120000 -12700000 11 0 0 0 0
@@ -3444,7 +3416,7 @@ net: "N00008_$G6_$G10_$G13" 2 0 0 0 0 0 1
   pin: 2 R68.1
 
 net: "N00004_$G6_$G12" 2 1 0 0 0 0 1
-  pin: 1 Triak17.3
+  pin: 1 Triak13.3
   pin: 2 R61.2
   connect: 1 0 1 1 0
     vtx: 1 101600000 -12700000 11 0 0 0 0
@@ -3473,7 +3445,7 @@ net: "N00006_$G6_$G9" 1 0 0 0 0 0 1
   pin: 1 Led12.1
 
 net: "N00004_$G1_$G6_$G8" 2 1 0 0 0 0 1
-  pin: 1 Triak10.3
+  pin: 1 Triak6.3
   pin: 2 R35.2
   connect: 1 1 0 1 0
     vtx: 1 50800000 -15240000 11 0 0 0 0
@@ -3541,7 +3513,7 @@ net: "N00008_$G6_$G10_$G14" 0 0 0 0 0 0 1
 net: "N00001_$G1_$G6_$G9_$G14" 0 0 0 0 0 0 1
 
 net: "N00004_$G14" 2 1 0 0 0 0 1
-  pin: 1 Triak21.3
+  pin: 1 Triak20.3
   pin: 2 R73.2
   connect: 1 0 1 1 0
     vtx: 1 58420000 -71120000 11 0 0 0 0
@@ -3557,7 +3529,7 @@ net: "N00009_$G6_$G8_$G14" 2 1 0 0 0 0 1
     vtx: 2 20320000 -50800000 11 0 0 0 0
 
 net: "N00004_$G6_$G10_$G13" 2 1 0 0 0 0 1
-  pin: 1 Triak19.3
+  pin: 1 Triak11.3
   pin: 2 R67.2
   connect: 1 0 1 1 0
     vtx: 1 86360000 -12700000 11 0 0 0 0
@@ -3568,7 +3540,7 @@ net: "N00006_$G6_$G10_$G13" 1 0 0 0 0 0 1
   pin: 1 Led20.1
 
 net: "N00002_$G6_$G10_$G13" 3 2 0 0 0 0 1
-  pin: 1 Triak19.2
+  pin: 1 Triak11.2
   pin: 2 Conn8.1
   pin: 3 R66.2
   connect: 1 1 2 2 0
@@ -3595,7 +3567,7 @@ net: "N00008_$G6_$G10" 2 0 0 0 0 0 1
   pin: 2 R50.1
 
 net: "N00004_$G1_$G6_$G9" 2 1 0 0 0 0 1
-  pin: 1 Triak12.3
+  pin: 1 Triak8.3
   pin: 2 R41.2
   connect: 1 1 0 1 0
     vtx: 1 66040000 -15240000 11 0 0 0 0
@@ -3694,7 +3666,7 @@ net: "N00006_$G6_$G10_$G14" 0 0 0 0 0 0 1
 net: "N00002_$G6_$G10_$G14" 0 0 0 0 0 0 1
 
 net: "N00004_$G6_$G14" 2 1 0 0 0 0 1
-  pin: 1 Triak23.3
+  pin: 1 Triak18.3
   pin: 2 R79.2
   connect: 1 0 1 1 0
     vtx: 1 43180000 -71120000 11 0 0 0 0

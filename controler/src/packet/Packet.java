@@ -6,10 +6,10 @@ import node.MessageType;
 import java.util.Arrays;
 
 public class Packet {
-    public int nodeId;
-    public int messageType;
-    public int[] data = new int[5];
-    int length;
+    public final int nodeId;
+    public final int messageType;
+    public final int[] data;
+    final int length;
 
     public Packet(int nodeId, int messageType, int[] data) {
         if (data != null && data.length > 5) throw new IllegalArgumentException("Too long data: " + data.length);
@@ -34,6 +34,10 @@ public class Packet {
 
     public static Packet createMsgEchoRequest(int nodeId, int dataLen) {
         return new Packet(nodeId, MessageType.MSG_EchoRequest, Arrays.copyOf(new int[]{'A', 'B', 'C', 'D', 'E'}, dataLen));
+    }
+
+    public static Packet createMsgEchoRequest(int nodeId, int a, int b) {
+        return new Packet(nodeId, MessageType.MSG_EchoRequest, new int[]{a, b, a + 1, a + 2, a + 3});
     }
 
     public static Packet createMsgGetBuildTime(int nodeId) {
@@ -68,6 +72,18 @@ public class Packet {
 
     public static Packet createMsgSetHeartBeatPeriod(int nodeId, int seconds) {
         return new Packet(nodeId, MessageType.MSG_SetHeartBeatPeriod, new int[]{seconds});
+    }
+
+    public static Packet createMsgMSGSetManualPwmValue(int nodeId, char port, int pin, int value) throws InvalidArgumentException {
+        int portNum = port - 'A';
+        if (port < 'A' || port > 'C') throw new InvalidArgumentException(new String[]{"Invalid port value"});
+        if (pin < 0 || pin > 7) throw new InvalidArgumentException(new String[]{"Invalid pin value"});
+        if (value < 0 || value > 15) throw new InvalidArgumentException(new String[]{"Invalid pwm value"});
+        return new Packet(nodeId, MessageType.MSG_SetManualPwmValueRequest, new int[]{portNum + (pin << 4), value});
+    }
+
+    public static Packet createMsgSetFrequency(int nodeId, int cpuFrequency, int canBaudRatePrescaler) {
+        return new Packet(nodeId, MessageType.MSG_SetFrequencyRequest, new int[]{cpuFrequency & 0xFF, canBaudRatePrescaler & 0xFF});
     }
 
     @Override

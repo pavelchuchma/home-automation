@@ -1,6 +1,5 @@
 package node;
 
-import com.sun.corba.se.impl.interceptors.PICurrent;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
@@ -221,15 +220,15 @@ public class NodeTest {
 //        System.out.println(node2.getBuildTime());
 //        System.out.println("id: " + node2.getNodeId());
 //        System.out.println(node2.getBuildTime());
-    while (true) {
-        node2.dumpMemory(new int[]{Pic.canReceiveLongMsgCount, Pic.canReceiveMismatch, Pic.COMSTAT, Pic.CANSTAT, Pic.CANCON, Pic.ECANCON,
-                Pic.RXB0CON, Pic.RXB1CON, Pic.B0CON, Pic.B1CON, Pic.B2CON, Pic.B3CON, Pic.B4CON, Pic.B5CON,
-                Pic.RXB0DLC, Pic.RXB1DLC,Pic.B0DLC, Pic.B1DLC,
-                Pic.RXB0D0, Pic.RXB0D1, Pic.RXB0D2, Pic.RXB0D3, Pic.RXB0D4, Pic.RXB1D0, Pic.B0D0, Pic.B0D1, Pic.B0D2, Pic.B0D3, Pic.B0D4, Pic.B1D0, Pic.B2D0, Pic.B3D0, Pic.PIR5
-        });
-        System.out.println("=====================\n");
-        Thread.sleep(2000);
-    }
+        while (true) {
+            node2.dumpMemory(new int[]{Pic.canReceiveLongMsgCount, Pic.canReceiveMismatch, Pic.COMSTAT, Pic.CANSTAT, Pic.CANCON, Pic.ECANCON,
+                    Pic.RXB0CON, Pic.RXB1CON, Pic.B0CON, Pic.B1CON, Pic.B2CON, Pic.B3CON, Pic.B4CON, Pic.B5CON,
+                    Pic.RXB0DLC, Pic.RXB1DLC, Pic.B0DLC, Pic.B1DLC,
+                    Pic.RXB0D0, Pic.RXB0D1, Pic.RXB0D2, Pic.RXB0D3, Pic.RXB0D4, Pic.RXB1D0, Pic.B0D0, Pic.B0D1, Pic.B0D2, Pic.B0D3, Pic.B0D4, Pic.B1D0, Pic.B2D0, Pic.B3D0, Pic.PIR5
+            });
+            System.out.println("=====================\n");
+            Thread.sleep(2000);
+        }
 
 //        for (int i = 0; i < 255; i++) {
 //            System.out.println(i);
@@ -528,5 +527,22 @@ public class NodeTest {
 //            node2.dumpMemory(new int[]{node.Pic.CCPR1L});
 //            node1.dumpMemory(new int[]{node.Pic.PORTB, node.Pic.TRISB});
         }
+    }
+
+    @Test
+    public void testCheckFrequency() throws Exception {
+        PacketUartIO packetUartIO = new PacketUartIO("COM1", 19200);
+
+        Node node = new Node(3, packetUartIO);
+        node.dumpMemory(new int[]{Pic.OSCCON, Pic.BRGCON1, Pic.T0CON});
+        log.info("** SETING ***");
+        node.setFrequency(2);
+        //node.setFrequency(4);
+        //node.setFrequency(8);
+        //node.setFrequency(16);
+        log.info("** DONE **");
+        node.dumpMemory(new int[]{Pic.OSCCON, Pic.BRGCON1, Pic.T0CON});
+        log.info("*****");
+        Thread.sleep(20000);
     }
 }

@@ -1,9 +1,10 @@
 package app;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
-import node.Bits;
 import node.MessageType;
 import node.Node;
+import nodeImpl.Node03Listener;
+import nodeImpl.Node11Listener;
 import org.apache.log4j.Logger;
 import packet.Packet;
 import packet.PacketUartIO;
@@ -15,33 +16,24 @@ import java.util.Date;
 
 public class NodeInfoCollector {
     static Logger log = Logger.getLogger(NodeInfoCollector.class.getName());
+
+
     PacketUartIO packetUartIO;
     NodeInfo[] nodeInfoArray = new NodeInfo[50];
+    static int counter = 0;
 
     public NodeInfoCollector(final PacketUartIO packetUartIO) {
         this.packetUartIO = packetUartIO;
 
         Node node03 = new Node(3, packetUartIO);
-        node03.addListener(new Node.Listener() {
-            @Override
-            public void onButtonDown(Node node, int pin) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void onButtonUp(Node node, int pin, int downTime) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, InvalidArgumentException {
-                Packet response = node.setPortValue('C', Bits.bit1, 0xFF, 0, 0xFF ^ Bits.bit1);
-                if (response == null) {
-                    throw new IllegalStateException("Cannot set Node port value");
-                }
-            }
-        });
+        node03.addListener(new Node03Listener(this));
         addNode(node03);
+
+
+        Node node11 = new Node(11, packetUartIO);
+        node11.addListener(new Node11Listener(this));
+        addNode(node11);
+
 
         packetUartIO.addReceivedPacketListener(new ReceivedPacketHandler() {
             @Override
@@ -54,12 +46,13 @@ public class NodeInfoCollector {
 
                 // Check if build time is set.
                 // But do it in double-checked section to prevent parallel getBuildTime calls to one node.
-                if (nodeInfo.buildTime == null) {
+                if (nodeInfo.buildTime == null && packet.messageType == MessageType.MSG_OnHeartBeat) {
                     synchronized (nodeInfo) {
                         if (nodeInfo.buildTime == null) {
                             try {
                                 log.info("Getting buidTime node: " + packet.nodeId + " nodeInfo: " + nodeInfo);
                                 nodeInfo.buildTime = nodeInfo.node.getBuildTime();
+                                //nodeInfo.node.echo((char) (nodeInfo.node.getNodeId()), counter++);
                             } catch (IOException e) {
                                 log.error("Cannot get build time of node #" + packet.nodeId, e);
                             }
