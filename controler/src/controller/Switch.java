@@ -1,5 +1,6 @@
 package controller;
 
+import controller.actor.Actor;
 import node.Pin;
 
 public class Switch {
@@ -7,15 +8,15 @@ public class Switch {
     int nodeId;
     Pin pin;
 
-    Action[] buttonDownActions;
-    Action[] buttonUpActions;
+    Actor[] buttonDownActors;
+    Actor[] buttonUpActors;
 
-    public Switch(String id, int nodeId, Pin pin, Action[] buttonDownActions, Action[] buttonUpActions) {
+    public Switch(String id, int nodeId, Pin pin, Actor[] buttonDownActors, Actor[] buttonUpActors) {
         this.id = id;
         this.nodeId = nodeId;
         this.pin = pin;
-        this.buttonDownActions = buttonDownActions;
-        this.buttonUpActions = buttonUpActions;
+        this.buttonDownActors = buttonDownActors;
+        this.buttonUpActors = buttonUpActors;
     }
 
     public String getId() {
@@ -30,11 +31,11 @@ public class Switch {
         return pin;
     }
 
-    public Action[] getButtonDownActions() {
-        return buttonDownActions;
+    public Actor[] getButtonDownActors() {
+        return buttonDownActors;
     }
 
-    public Action[] getButtonUpActions() {
-        return buttonUpActions;
+    public Actor[] getButtonUpActors() {
+        return buttonUpActors;
     }
 }

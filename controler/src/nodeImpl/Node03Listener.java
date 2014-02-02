@@ -10,10 +10,6 @@ import java.io.IOException;
 public class Node03Listener extends AbstractNodeListener {
 
 
-    public Node03Listener(NodeInfoCollector collector) {
-        super(collector);
-    }
-
     public void initNode(Node node) throws IOException, IllegalArgumentException {
 //        node.setHeartBeatPeriod(2);
         //node.setFrequency(2, 3); //  2 MHz

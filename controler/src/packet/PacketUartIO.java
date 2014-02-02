@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class PacketUartIO implements SerialPortEventListener {
     private class ResponseWrapper implements PacketReceivedListener {
@@ -61,6 +63,7 @@ public class PacketUartIO implements SerialPortEventListener {
     SerialPort serialPort;
     InputStream inputStream;
     PacketSerializer packetSerializer = new PacketSerializer();
+    ExecutorService threadPool = Executors.newCachedThreadPool();
 
     public PacketUartIO(String portName, int baudRate) throws PacketUartIOException {
         log.debug("Creating '" + portName + "' @" + baudRate + " bauds...");
@@ -70,7 +73,6 @@ public class PacketUartIO implements SerialPortEventListener {
             CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
             if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
                 if (portId.getName().equals(portName)) {
-                    // if (portId.getName().equals("/dev/term/a")) {
                     try {
                         serialPort = (SerialPort) portId.open("SimpleReadApp", 2000);
                         inputStream = serialPort.getInputStream();
@@ -153,12 +155,12 @@ public class PacketUartIO implements SerialPortEventListener {
 
         // process each packet in new thread
         // todo: replace threads by producer/consumer pattern
-        new Thread(new Runnable() {
+        threadPool.execute(new Runnable() {
             @Override
             public void run() {
                 processPacketImpl(packet);
             }
-        }).start();
+        });
     }
 
     private void processPacketImpl(Packet packet) {

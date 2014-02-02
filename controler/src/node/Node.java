@@ -218,17 +218,13 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
     @Override
     public void packetReceived(final Packet packet) {
-        //new Thread(new Runnable() {
-        //      public void run() {
         try {
             packetReceivedImpl(packet);
         } catch (IOException e) {
-            log.error(e);
+            log.error("Error in packetReceived()", e);
         } catch (IllegalArgumentException e) {
-            log.error(e);
+            log.error("Error in packetReceived()", e);
         }
-        //}
-        //    }).start();
     }
 
     public void packetReceivedImpl(Packet packet) throws IOException, IllegalArgumentException {
@@ -260,7 +256,6 @@ public class Node implements PacketUartIO.PacketReceivedListener {
                             listener.onButtonDown(this, pin);
                         }
                     }
-
                 }
             }
             // on reboot

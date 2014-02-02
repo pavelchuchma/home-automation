@@ -1,6 +1,5 @@
 package node;
 
-import controller.Action;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -546,10 +545,6 @@ public class NodeTest {
         Thread.sleep(20000);
     }
 
-    @Test
-    public void testEnum() {
-        Action a = new Action();
-    }
 
     @Test
     public void testPinGetters() throws Exception {

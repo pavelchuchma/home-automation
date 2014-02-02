@@ -16,8 +16,7 @@ public class Node11Listener extends AbstractNodeListener {
     int a3 = 0;
     int a4 = 0;
 
-    public Node11Listener(NodeInfoCollector collector) {
-        super(collector);
+    public Node11Listener() {
     }
 
     public void initNode(Node node) throws IOException, IllegalArgumentException {
@@ -42,8 +41,9 @@ public class Node11Listener extends AbstractNodeListener {
 
     @Override
     public void onButtonDown(Node node, Pin pin) {
+        /*
         try {
-            Node node3 = collector.getNode(3);
+            Node node3 = NodeInfoCollector.getInstance().getNode(3);
             if (node3 != null) {
                 switch (pin) {
                     case pinB0:
@@ -61,14 +61,12 @@ public class Node11Listener extends AbstractNodeListener {
                         node.setPinValue(Pin.pinC7, a2);
                         break;
                     case pinC5:
-//                        node3.setPortValue('C', Bits.bit2, a3);
                         for (int i=0; i<5; i++) {
                             if (node3.setPinValue(Pin.pinC0, a3) != null) break;
                         }
                         a3 = 0xFF ^ a3;
                         break;
                     case pinC4:
-//                        node3.setPortValue('A', Bits.bit7, a4);
                         for (int i=0; i<5; i++) {
                             if (node3.setPinValue(Pin.pinA6, a4) != null) break;
                         }
@@ -81,6 +79,7 @@ public class Node11Listener extends AbstractNodeListener {
         } catch (IOException e) {
             log.error("onButtonDown ERROR:", e);
         }
+        */
     }
 
     @Override

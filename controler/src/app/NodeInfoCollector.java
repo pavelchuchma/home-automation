@@ -1,10 +1,8 @@
 package app;
 
 import controller.actor.AbstractActor;
-import controller.Switch;
 import node.MessageType;
 import node.Node;
-import node.Pin;
 import nodeImpl.Node03Listener;
 import nodeImpl.Node11Listener;
 import org.apache.log4j.Logger;
@@ -19,33 +17,32 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class NodeInfoCollector {
     static Logger log = Logger.getLogger(NodeInfoCollector.class.getName());
-
+    static NodeInfoCollector instance;
 
     PacketUartIO packetUartIO;
     NodeInfo[] nodeInfoArray = new NodeInfo[50];
 
-    ConcurrentHashMap<String, Switch> switchMap = new ConcurrentHashMap<String, Switch>();
-    ConcurrentHashMap<String, AbstractActor> actorMap = new ConcurrentHashMap<String, AbstractActor>();
-    Node.Listener genericNodeListener = createGenericNodeListener();
+    SwitchListener switchListener = new SwitchListener();
 
-    void addSwitch(Switch sw) {
-        switchMap.put(createNodePinKey(sw.getNodeId(), sw.getPin()), sw);
+    public SwitchListener getSwitchListener() {
+        return switchListener;
     }
 
-    public NodeInfoCollector(final PacketUartIO packetUartIO) {
-        this.packetUartIO = packetUartIO;
+    public static NodeInfoCollector getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("Not created yet!");
+        }
+        return instance;
+    }
 
-
+    public void start() {
         Node node03 = new Node(3, packetUartIO);
-        node03.addListener(new Node03Listener(this));
+        node03.addListener(new Node03Listener());
         addNode(node03);
 
-
         Node node11 = new Node(11, packetUartIO);
-        node11.addListener(new Node11Listener(this));
+        node11.addListener(new Node11Listener());
         addNode(node11);
-
-
 
         packetUartIO.addReceivedPacketListener(new ReceivedPacketHandler() {
             @Override
@@ -62,9 +59,8 @@ public class NodeInfoCollector {
                     synchronized (nodeInfo) {
                         if (nodeInfo.buildTime == null) {
                             try {
-                                log.info("Getting buidTime node: " + packet.nodeId + " nodeInfo: " + nodeInfo);
+                                log.info(String.format("Getting buidtime of node: %d nodeInfo: %s", packet.nodeId, nodeInfo));
                                 nodeInfo.buildTime = nodeInfo.node.getBuildTime();
-                                //nodeInfo.node.echo((char) (nodeInfo.node.getNodeId()), counter++);
                             } catch (IOException e) {
                                 log.error("Cannot get build time of node #" + packet.nodeId, e);
                             }
@@ -84,15 +80,24 @@ public class NodeInfoCollector {
         });
     }
 
+    public NodeInfoCollector(final PacketUartIO packetUartIO) {
+        if (instance != null) {
+            throw new IllegalStateException("Already created!!!");
+        }
+        instance = this;
+
+        this.packetUartIO = packetUartIO;
+    }
+
     public void addNode(Node node) {
-        log.debug("Node #" + node.getNodeId() + " added");
-        node.addListener(genericNodeListener);
+        log.debug(String.format("Node #%d added", node.getNodeId()));
 
         if (nodeInfoArray[node.getNodeId()] != null) {
             nodeInfoArray[node.getNodeId()].node = node;
         } else {
             nodeInfoArray[node.getNodeId()] = new NodeInfo(node);
         }
+        node.addListener(switchListener);
     }
 
     private NodeInfo getOrCreateNodeInfo(Packet packet) {
@@ -143,53 +148,5 @@ public class NodeInfoCollector {
 
     public Node getNode(int i) {
         return (nodeInfoArray[i] != null) ? nodeInfoArray[i].node : null;
-    }
-
-    public static String createNodePinKey(int nodeId, Pin pin) {
-        return String.format("%d:%s", nodeId, pin);
-    }
-
-    private Node.Listener createGenericNodeListener() {
-        return new Node.Listener() {
-            @Override
-            public void onButtonDown(Node node, Pin pin) {
-                String swKey = createNodePinKey(node.getNodeId(), pin);
-                Switch sw = switchMap.get(swKey);
-                if (sw != null) {
-
-                }
-            }
-
-            @Override
-            public void onButtonUp(Node node, Pin pin, int downTime) {
-            }
-
-            @Override
-            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, IllegalArgumentException {
-
-                int inputMasks = 0x00000000;
-                int outputMasks = 0x00000000;
-                // go through all switches to get initial settings
-                for (Switch sw : switchMap.values()) {
-                    if (node.getNodeId() == sw.getNodeId()) {
-                        // todo: presunut rotaci jako actor
-                        inputMasks |= 2 << sw.getPin().ordinal();
-                    }
-                }
-                for (AbstractActor act : actorMap.values()) {
-                    if (node.getNodeId() == act.getNodeId()) {
-                        inputMasks |= act.getPinOutputMask();
-                    }
-                }
-
-                for (int i = 0; i < 4; i++) {
-                    int eventMask = (inputMasks >> i * 8) & 0xFF;
-                    if (eventMask != 0) {
-                        // todo: check TRIS to don't break CAN/UART settings
-                        node.setPortValue((char) ('A' + i), 0x00, 0x00, eventMask, 0xFF);
-                    }
-                }
-            }
-        };
     }
 }

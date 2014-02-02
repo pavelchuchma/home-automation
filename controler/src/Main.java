@@ -1,25 +1,26 @@
 import app.NodeInfoCollector;
+import controller.Switch;
+import controller.actor.Actor;
+import controller.actor.OnOffActor;
 import node.Node;
+import node.Pin;
 import org.apache.log4j.Logger;
 import packet.PacketUartIO;
 import packet.PacketUartIOException;
 import servlet.Servlet;
-
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
 
 public class Main {
     static Logger log = Logger.getLogger(Main.class.getName());
 
     public static void main(String[] args) {
         try {
-            PacketUartIO packetUartIO = new PacketUartIO("/dev/ttyS80", 19200);
-            //PacketUartIO packetUartIO = new PacketUartIO("COM1", 19200);
+            String port = (System.getenv("COMPUTERNAME") != null) ? "COM1" :  "/dev/ttyS80";
+            PacketUartIO packetUartIO = new PacketUartIO(port, 19200);
             NodeInfoCollector nodeInfoCollector = new NodeInfoCollector(packetUartIO);
 
+            configure(nodeInfoCollector);
+
+            nodeInfoCollector.start();
             System.out.println("Listening ...");
             int val = 0;
 
@@ -98,5 +99,17 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+    }
+
+    private static void configure(NodeInfoCollector nodeInfoCollector) {
+        OnOffActor koupelna = new OnOffActor("koupelna", 3, Pin.pinC3, 1, 0, false, 11, Pin.pinC6);
+        OnOffActor jidelna = new OnOffActor("jidelna", 3, Pin.pinC1, 1, 0, true, 11, Pin.pinC7);
+        OnOffActor spajza =  new OnOffActor("spajza", 3, Pin.pinC0, 1, 0);
+        OnOffActor pradelna =  new OnOffActor("pradelna", 3, Pin.pinA6, 1, 0);
+
+        nodeInfoCollector.getSwitchListener().addSwitch(new Switch("obyvakASW31", 11, Pin.pinB0, new Actor[]{koupelna}, null));
+        nodeInfoCollector.getSwitchListener().addSwitch(new Switch("obyvakASW32", 11, Pin.pinB1, new Actor[]{jidelna}, null));
+        nodeInfoCollector.getSwitchListener().addSwitch(new Switch("obyvakASW33", 11, Pin.pinC5, new Actor[]{spajza}, null));
+        nodeInfoCollector.getSwitchListener().addSwitch(new Switch("obyvakASW34", 11, Pin.pinC4, new Actor[]{pradelna}, null));
     }
 }

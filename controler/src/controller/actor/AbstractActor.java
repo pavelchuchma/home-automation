@@ -2,7 +2,7 @@ package controller.actor;
 
 import node.Pin;
 
-public abstract class AbstractActor {
+public abstract class AbstractActor implements Actor{
     String id;
     int nodeId;
     Pin pin;
