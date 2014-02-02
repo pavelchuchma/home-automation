@@ -1,9 +1,9 @@
 package nodeImpl;
 
 import app.NodeInfoCollector;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import node.Bits;
 import node.Node;
+import node.Pin;
 
 import java.io.IOException;
 
@@ -14,7 +14,7 @@ public class Node03Listener extends AbstractNodeListener {
         super(collector);
     }
 
-    public void initNode(Node node) throws IOException, InvalidArgumentException {
+    public void initNode(Node node) throws IOException, IllegalArgumentException {
 //        node.setHeartBeatPeriod(2);
         //node.setFrequency(2, 3); //  2 MHz
 //        node.setFrequency(4, 7); //  4 MHz
@@ -26,16 +26,16 @@ public class Node03Listener extends AbstractNodeListener {
     }
 
     @Override
-    public void onButtonDown(Node node, int pin) {
+    public void onButtonDown(Node node, Pin pin) {
     }
 
     @Override
-    public void onButtonUp(Node node, int pin, int downTime) {
+    public void onButtonUp(Node node, Pin pin, int downTime) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, InvalidArgumentException {
+    public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, IllegalArgumentException {
         initNode(node);
     }
 }

@@ -1,6 +1,5 @@
 package packet;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import node.MessageType;
 
 import java.util.Arrays;
@@ -44,9 +43,9 @@ public class Packet {
         return new Packet(nodeId, MessageType.MSG_GetBuildTimeRequest, null);
     }
 
-    public static Packet createMsgSetPort(int nodeId, char port, int valueMask, int value, int eventMask, int trisValue) throws InvalidArgumentException {
+    public static Packet createMsgSetPort(int nodeId, char port, int valueMask, int value, int eventMask, int trisValue) throws IllegalArgumentException {
         if (port < 'A' || port > 'D')
-            throw new InvalidArgumentException(new String[]{"Only ports A, B, C and D are valid"});
+            throw new IllegalArgumentException("Only ports A, B, C and D are valid");
         int[] data;
         if (eventMask < 0) {
             data = new int[]{valueMask, value};
@@ -74,11 +73,11 @@ public class Packet {
         return new Packet(nodeId, MessageType.MSG_SetHeartBeatPeriod, new int[]{seconds});
     }
 
-    public static Packet createMsgMSGSetManualPwmValue(int nodeId, char port, int pin, int value) throws InvalidArgumentException {
+    public static Packet createMsgMSGSetManualPwmValue(int nodeId, char port, int pin, int value) throws IllegalArgumentException {
         int portNum = port - 'A';
-        if (port < 'A' || port > 'C') throw new InvalidArgumentException(new String[]{"Invalid port value"});
-        if (pin < 0 || pin > 7) throw new InvalidArgumentException(new String[]{"Invalid pin value"});
-        if (value < 0 || value > 15) throw new InvalidArgumentException(new String[]{"Invalid pwm value"});
+        if (port < 'A' || port > 'C') throw new IllegalArgumentException("Invalid port value");
+        if (pin < 0 || pin > 7) throw new IllegalArgumentException("Invalid pin value");
+        if (value < 0 || value > 15) throw new IllegalArgumentException("Invalid pwm value");
         return new Packet(nodeId, MessageType.MSG_SetManualPwmValueRequest, new int[]{portNum + (pin << 4), value});
     }
 

@@ -1,5 +1,7 @@
 package packet;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -7,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PacketSerializer {
+    static Logger log = Logger.getLogger(PacketSerializer.class.getName());
     List<Integer> buff = new ArrayList<Integer>();
 
     private void reset() {
@@ -32,7 +35,13 @@ public class PacketSerializer {
                         if (i>1) packetData[i-2] = (buff.get(i) & 0xFF);
                     }
                     // validate crc
-                    if ((crc & 127) != b) throw new IOException("CRC FAILED: " + (crc & 127) + " != " + b);
+                    if ((crc & 127) != b) {
+                        StringBuilder sb = new StringBuilder();
+                        for (Integer i : buff) {
+                            sb.append(i).append(", ").toString();
+                        }
+                        throw new IOException(String.format("CRC FAILED: %d != %d (%d)-[%s]", crc & 127, b, buff.size(), sb));
+                    }
                     result = new Packet(buff.get(0), buff.get(1), packetData);
                     reset();
                     break;

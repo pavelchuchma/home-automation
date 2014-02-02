@@ -1,6 +1,6 @@
 package node;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
+import controller.Action;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -247,15 +247,15 @@ public class NodeTest {
 
         node1.addListener(new Node.Listener() {
             @Override
-            public void onButtonDown(Node node, int pin) {
+            public void onButtonDown(Node node, Pin pin) {
             }
 
             @Override
-            public void onButtonUp(Node node, int pin, int downTime) {
+            public void onButtonUp(Node node, Pin pin, int downTime) {
             }
 
             @Override
-            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, InvalidArgumentException {
+            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, IllegalArgumentException {
                 node.setPortValue('B', Bits.bit7, 0x00, 0x00, 0xFF ^ Bits.bit7 ^ Bits.bit0);
                 node.setHeartBeatPeriod(10);
             }
@@ -266,50 +266,50 @@ public class NodeTest {
             int step = 8;
 
             @Override
-            public void onButtonDown(Node node, int pin) {
+            public void onButtonDown(Node node, Pin pin) {
                 try {
                     switch (pin) {
-                        case Node.pinA0:
+                        case pinA0:
                             node1.setPortValueNoWait('B', Bits.bit7, 0x00);
                             break;
-                        case Node.pinA2:
+                        case pinA2:
                             pwmValue -= step;
                             if (pwmValue < 0) pwmValue = 0;
                             node2.setPwmValue(pwmValue);
                             System.out.println("PWM: " + pwmValue);
                             break;
-                        case Node.pinA3:
+                        case pinA3:
                             node1.setPortValueNoWait('B', Bits.bit7, 0xFF);
                             break;
-                        case Node.pinA5:
+                        case pinA5:
                             pwmValue += step;
                             if (pwmValue > 63) pwmValue = 63;
                             node2.setPwmValue(pwmValue);
                             System.out.println("PWM: " + pwmValue);
                             break;
-                        case Node.pinB0: //SW3 button1
+                        case pinB0: //SW3 button1
                             node2.setPortValue('C', Bits.bit6, 0x00);
                             break;
-                        case Node.pinB1: //SW3 button2
+                        case pinB1: //SW3 button2
                             node2.setPortValue('C', Bits.bit6, 0xFF);
                             break;
-                        case Node.pinC5: //SW3 button3
+                        case pinC5: //SW3 button3
                             node2.setPortValue('C', Bits.bit7, 0xFF);
                             break;
-                        case Node.pinC4: //SW3 button4
+                        case pinC4: //SW3 button4
                             node2.setPortValue('C', Bits.bit7, 0x00);
                             break;
 
-                        case Node.pinC3: //SW2 button1
+                        case pinC3: //SW2 button1
                             node2.setPortValue('C', Bits.bit2, 0x00);
                             break;
-                        case Node.pinC1: //SW2 button2
+                        case pinC1: //SW2 button2
                             node2.setPortValue('C', Bits.bit2, 0xFF);
                             break;
-                        case Node.pinC0: //SW2 button3
+                        case pinC0: //SW2 button3
                             node2.setPortValue('A', Bits.bit7, 0xFF);
                             break;
-                        case Node.pinA6: //SW2 button4
+                        case pinA6: //SW2 button4
                             node2.setPortValue('A', Bits.bit7, 0x00);
                             break;
                     }
@@ -319,14 +319,14 @@ public class NodeTest {
             }
 
             @Override
-            public void onButtonUp(Node node, int pin, int downTime) {
+            public void onButtonUp(Node node, Pin pin, int downTime) {
                 try {
                     switch (pin) {
-                        case Node.pinC1:
+                        case pinC1:
                             break;
-                        case Node.pinC2:
+                        case pinC2:
                             break;
-                        case Node.pinC3:
+                        case pinC3:
 //                            node2.setPortValueNoWait('C', node.Bits.bit4, led3);
                             break;
                     }
@@ -336,7 +336,7 @@ public class NodeTest {
             }
 
             @Override
-            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, InvalidArgumentException {
+            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, IllegalArgumentException {
                 //To change body of implemented methods use File | Settings | File Templates.
                 node.setPortValue('A', 0, 0,
                         Bits.bit0 | Bits.bit2 | Bits.bit3 | Bits.bit5 | Bits.bit6,
@@ -408,15 +408,15 @@ public class NodeTest {
 
         node1.addListener(new Node.Listener() {
             @Override
-            public void onButtonDown(Node node, int pin) {
+            public void onButtonDown(Node node, Pin pin) {
             }
 
             @Override
-            public void onButtonUp(Node node, int pin, int downTime) {
+            public void onButtonUp(Node node, Pin pin, int downTime) {
             }
 
             @Override
-            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, InvalidArgumentException {
+            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, IllegalArgumentException {
                 node.setPortValue('B', Bits.bit7, 0x00, 0x00, 0xFF ^ Bits.bit7 ^ Bits.bit0);
                 node.setHeartBeatPeriod(10);
             }
@@ -427,50 +427,50 @@ public class NodeTest {
             int step = 8;
 
             @Override
-            public void onButtonDown(Node node, int pin) {
+            public void onButtonDown(Node node, Pin pin) {
                 try {
                     switch (pin) {
-                        case Node.pinA0:
+                        case pinA0:
                             node1.setPortValueNoWait('B', Bits.bit7, 0x00);
                             break;
-                        case Node.pinA2:
+                        case pinA2:
                             pwmValue -= step;
                             if (pwmValue < 0) pwmValue = 0;
                             node2.setPwmValue(pwmValue);
                             System.out.println("PWM: " + pwmValue);
                             break;
-                        case Node.pinA3:
+                        case pinA3:
                             node1.setPortValueNoWait('B', Bits.bit7, 0xFF);
                             break;
-                        case Node.pinA5:
+                        case pinA5:
                             pwmValue += step;
                             if (pwmValue > 63) pwmValue = 63;
                             node2.setPwmValue(pwmValue);
                             System.out.println("PWM: " + pwmValue);
                             break;
-                        case Node.pinB0: //SW3 button1
+                        case pinB0: //SW3 button1
                             node2.setPortValue('C', Bits.bit6, 0x00);
                             break;
-                        case Node.pinB1: //SW3 button2
+                        case pinB1: //SW3 button2
                             node2.setPortValue('C', Bits.bit6, 0xFF);
                             break;
-                        case Node.pinC5: //SW3 button3
+                        case pinC5: //SW3 button3
                             node2.setPortValue('C', Bits.bit7, 0xFF);
                             break;
-                        case Node.pinC4: //SW3 button4
+                        case pinC4: //SW3 button4
                             node2.setPortValue('C', Bits.bit7, 0x00);
                             break;
 
-                        case Node.pinC3: //SW2 button1
+                        case pinC3: //SW2 button1
                             node2.setPortValue('C', Bits.bit2, 0x00);
                             break;
-                        case Node.pinC1: //SW2 button2
+                        case pinC1: //SW2 button2
                             node2.setPortValue('C', Bits.bit2, 0xFF);
                             break;
-                        case Node.pinC0: //SW2 button3
+                        case pinC0: //SW2 button3
                             node2.setPortValue('A', Bits.bit7, 0xFF);
                             break;
-                        case Node.pinA6: //SW2 button4
+                        case pinA6: //SW2 button4
                             node2.setPortValue('A', Bits.bit7, 0x00);
                             break;
                     }
@@ -480,14 +480,14 @@ public class NodeTest {
             }
 
             @Override
-            public void onButtonUp(Node node, int pin, int downTime) {
+            public void onButtonUp(Node node, Pin pin, int downTime) {
                 try {
                     switch (pin) {
-                        case Node.pinC1:
+                        case pinC1:
                             break;
-                        case Node.pinC2:
+                        case pinC2:
                             break;
-                        case Node.pinC3:
+                        case pinC3:
 //                            node2.setPortValueNoWait('C', node.Bits.bit4, led3);
                             break;
                     }
@@ -497,7 +497,7 @@ public class NodeTest {
             }
 
             @Override
-            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, InvalidArgumentException {
+            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, IllegalArgumentException {
                 //To change body of implemented methods use File | Settings | File Templates.
                 node.setPortValue('A', 0, 0,
                         Bits.bit0 | Bits.bit2 | Bits.bit3 | Bits.bit5 | Bits.bit6,
@@ -544,5 +544,44 @@ public class NodeTest {
         node.dumpMemory(new int[]{Pic.OSCCON, Pic.BRGCON1, Pic.T0CON});
         log.info("*****");
         Thread.sleep(20000);
+    }
+
+    @Test
+    public void testEnum() {
+        Action a = new Action();
+    }
+
+    @Test
+    public void testPinGetters() throws Exception {
+        Assert.assertEquals('A', Pin.pinA0.getPort());
+        Assert.assertEquals('B', Pin.pinB7.getPort());
+        Assert.assertEquals('C', Pin.pinC3.getPort());
+        Assert.assertEquals('D', Pin.pinD7.getPort());
+        Assert.assertEquals(1, Pin.pinA0.getBitMask());
+        Assert.assertEquals(1, Pin.pinC0.getBitMask());
+        Assert.assertEquals(128, Pin.pinC7.getBitMask());
+    }
+
+    @Test
+    public void testSetPinValue() throws Exception {
+        PacketUartIO packetUartIO = new PacketUartIO("COM1", 19200);
+
+        int a = 1;
+        switch (a) {
+            case 0:
+                break;
+            case 1:
+                for (int x = 0; x < 10; x++) {
+                    if (x > 1) break;
+                    System.out.print("x:" + x);
+                }
+                System.out.print("contine");
+                break;
+            default:
+        }
+
+
+        Node node = new Node(3, packetUartIO);
+        node.setPinValue(Pin.pinB2, 1);
     }
 }

@@ -6,7 +6,7 @@
     <appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
             <!--<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss} [%t] %5p %c{1} - %m%n"/>-->
-            <param name="ConversionPattern" value="%d{ABSOLUTE} [%t] %5p %c{1} - %m%n"/>
+            <param name="ConversionPattern" value="%d{DATE} [%t] %5p %c{1} - %m%n"/>
         </layout>
     </appender>
 
@@ -16,7 +16,7 @@
         <param name="MaxFileSize" value="100MB"/>
         <param name="MaxBackupIndex" value="100"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{ABSOLUTE} [%t] %-5p [%c{1}] %m%n"/>
+            <param name="ConversionPattern" value="%d{DATE} [%t] %-5p [%c{1}] %m%n"/>
         </layout>
     </appender>
 
@@ -26,7 +26,7 @@
         <param name="MaxFileSize" value="100MB"/>
         <param name="MaxBackupIndex" value="100"/>
         <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{ABSOLUTE} [%t] %-5p [%c{1}] %m%n"/>
+            <param name="ConversionPattern" value="%d{DATE} [%t] %-5p [%c{1}] %m%n"/>
         </layout>
     </appender>
 
@@ -38,6 +38,11 @@
 
 
     <category name="packet.PacketUartIO" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="applicationLog"/>
+    </category>
+
+    <category name="packet.PacketSerializer" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="applicationLog"/>
     </category>

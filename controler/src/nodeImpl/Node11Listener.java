@@ -1,13 +1,15 @@
 package nodeImpl;
 
 import app.NodeInfoCollector;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import node.Bits;
 import node.Node;
+import node.Pin;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
 public class Node11Listener extends AbstractNodeListener {
+    static Logger log = Logger.getLogger(Node11Listener.class.getName());
 
     int a1 = 0;
     int a2 = 0;
@@ -18,7 +20,7 @@ public class Node11Listener extends AbstractNodeListener {
         super(collector);
     }
 
-    public void initNode(Node node) throws IOException, InvalidArgumentException {
+    public void initNode(Node node) throws IOException, IllegalArgumentException {
 //        node.setHeartBeatPeriod(2);
         //node.setFrequency(2, 3); //  2 MHz
 //        node.setFrequency(4, 7); //  4 MHz
@@ -26,7 +28,7 @@ public class Node11Listener extends AbstractNodeListener {
 
         // set switch on SW3
         /*
-        	BTN1    21 - RB0/AN10/C1INA/FLT0/INT0
+            BTN1    21 - RB0/AN10/C1INA/FLT0/INT0
             BTN2    22 - RB1/AN8/C1INB/P1B/CTDIN/INT1
             BTN3    16 - RC5/SDO
             BTN4    15 - RC4/SDA/SDI
@@ -39,47 +41,55 @@ public class Node11Listener extends AbstractNodeListener {
     }
 
     @Override
-    public void onButtonDown(Node node, int pin) {
+    public void onButtonDown(Node node, Pin pin) {
         try {
             Node node3 = collector.getNode(3);
             if (node3 != null) {
                 switch (pin) {
-                    case Node.pinB0:
-                        node3.setPortValue('C', Bits.bit3, a1);
-                        node.setPortValue('C', Bits.bit6, a1);
+                    case pinB0:
+                        for (int i=0; i<5; i++) {
+                            if (node3.setPinValue(Pin.pinC3, a1) != null) break;
+                        }
+                        node.setPinValue(Pin.pinC6, a1);
                         a1 = 0xFF ^ a1;
                         break;
-                    case Node.pinB1:
-                        node3.setPortValue('C', Bits.bit1, a2);
+                    case pinB1:
+                        for (int i=0; i<5; i++) {
+                            if (node3.setPinValue(Pin.pinC1, a2) != null) break;
+                        }
                         a2 = 0xFF ^ a2;
-                        node.setPortValue('C', Bits.bit7, a2);
+                        node.setPinValue(Pin.pinC7, a2);
                         break;
-                    case Node.pinC5:
+                    case pinC5:
 //                        node3.setPortValue('C', Bits.bit2, a3);
-                        node3.setPortValue('C', Bits.bit0, a3);
+                        for (int i=0; i<5; i++) {
+                            if (node3.setPinValue(Pin.pinC0, a3) != null) break;
+                        }
                         a3 = 0xFF ^ a3;
                         break;
-                    case Node.pinC4:
+                    case pinC4:
 //                        node3.setPortValue('A', Bits.bit7, a4);
-                        node3.setPortValue('A', Bits.bit6, a4);
+                        for (int i=0; i<5; i++) {
+                            if (node3.setPinValue(Pin.pinA6, a4) != null) break;
+                        }
                         a4 = 0xFF ^ a4;
                         break;
                 }
             }
-        } catch (InvalidArgumentException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (IllegalArgumentException e) {
+            log.error("onButtonDown ERROR:", e);
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error("onButtonDown ERROR:", e);
         }
     }
 
     @Override
-    public void onButtonUp(Node node, int pin, int downTime) {
+    public void onButtonUp(Node node, Pin pin, int downTime) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, InvalidArgumentException {
+    public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, IllegalArgumentException {
         initNode(node);
     }
 }

@@ -1,6 +1,5 @@
 package node;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.apache.log4j.Logger;
 import packet.Packet;
 import packet.PacketUartIO;
@@ -10,48 +9,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+
 public class Node implements PacketUartIO.PacketReceivedListener {
     static Logger log = Logger.getLogger(Node.class.getName());
 
-    public static final int pinA0 = 0;
-    public static final int pinA1 = 1;
-    public static final int pinA2 = 2;
-    public static final int pinA3 = 3;
-    public static final int pinA4 = 4;
-    public static final int pinA5 = 5;
-    public static final int pinA6 = 6;
-    public static final int pinA7 = 7;
-    public static final int pinB0 = 8;
-    public static final int pinB1 = 9;
-    public static final int pinB2 = 10;
-    public static final int pinB3 = 11;
-    public static final int pinB4 = 12;
-    public static final int pinB5 = 13;
-    public static final int pinB6 = 14;
-    public static final int pinB7 = 15;
-    public static final int pinC0 = 16;
-    public static final int pinC1 = 17;
-    public static final int pinC2 = 18;
-    public static final int pinC3 = 19;
-    public static final int pinC4 = 20;
-    public static final int pinC5 = 21;
-    public static final int pinC6 = 22;
-    public static final int pinC7 = 23;
-    public static final int pinD0 = 24;
-    public static final int pinD1 = 25;
-    public static final int pinD2 = 26;
-    public static final int pinD3 = 27;
-    public static final int pinD4 = 28;
-    public static final int pinD5 = 29;
-    public static final int pinD6 = 30;
-    public static final int pinD7 = 31;
-
     public interface Listener {
-        void onButtonDown(Node node, int pin);
+        void onButtonDown(Node node, Pin pin);
 
-        void onButtonUp(Node node, int pin, int downTime);
+        void onButtonUp(Node node, Pin pin, int downTime);
 
-        void onReboot(Node node, int pingCounter, int rconValue) throws IOException, InvalidArgumentException;
+        void onReboot(Node node, int pingCounter, int rconValue) throws IOException, IllegalArgumentException;
     }
 
 
@@ -165,24 +132,28 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return (char) ((response != null) ? response.data[1] : 0);
     }
 
-    void setPortValueNoWait(char port, int valueMask, int value) throws IOException, InvalidArgumentException {
+    void setPortValueNoWait(char port, int valueMask, int value) throws IOException, IllegalArgumentException {
         log.debug("setPortValueNoWait");
         packetUartIO.send(Packet.createMsgSetPort(nodeId, port, valueMask, value, -1, -1));
         log.debug("setPortValueNoWait: done.");
 
     }
 
-    public Packet setPortValue(char port, int valueMask, int value) throws IOException, InvalidArgumentException {
+    public Packet setPortValue(char port, int valueMask, int value) throws IOException, IllegalArgumentException {
         return setPortValue(port, valueMask, value, -1, -1);
     }
 
-    public Packet setPortValue(char port, int valueMask, int value, int eventMask, int trisValue) throws IOException, InvalidArgumentException {
+    public Packet setPortValue(char port, int valueMask, int value, int eventMask, int trisValue) throws IOException, IllegalArgumentException {
         log.debug("setPortValue");
         Packet response = packetUartIO.send(
                 Packet.createMsgSetPort(nodeId, port, valueMask, value, eventMask, trisValue),
                 MessageType.MSG_SetPortResponse, 300);
         log.debug("setPortValue: done.");
         return response;
+    }
+
+    public Packet setPinValue(Pin pin, int value) throws IOException, IllegalArgumentException {
+        return setPortValue(pin.getPort(), pin.getBitMask(), (value != 0) ? 0xFF : 0x00);
     }
 
     public boolean dumpMemory(int[] addresses) {
@@ -216,7 +187,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         packetUartIO.send(req);
     }
 
-    synchronized public void setManualPwmValue(char port, int pin, int value) throws IOException, InvalidArgumentException {
+    synchronized public void setManualPwmValue(char port, int pin, int value) throws IOException, IllegalArgumentException {
         log.debug("setPwmValue");
         Packet req = Packet.createMsgMSGSetManualPwmValue(nodeId, port, pin, value);
         packetUartIO.send(req);
@@ -234,9 +205,9 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         packetUartIO.send(req);
     }
 
-    synchronized public boolean setFrequency(int cpuFrequency) throws IOException, InvalidArgumentException {
+    synchronized public boolean setFrequency(int cpuFrequency) throws IOException, IllegalArgumentException {
         log.debug("setFrequency");
-        if (cpuFrequency != 1 && cpuFrequency != 2 && cpuFrequency != 8 && cpuFrequency != 16) throw new InvalidArgumentException(new String[]{"Unsupported frequency value"});
+        if (cpuFrequency != 1 && cpuFrequency != 2 && cpuFrequency != 8 && cpuFrequency != 16) throw new IllegalArgumentException("Unsupported frequency value");
         Packet req = Packet.createMsgSetFrequency(nodeId, cpuFrequency, cpuFrequency - 1);
         Packet response = packetUartIO.send(req, MessageType.MSG_SetFrequencyResponse, 300);
         if (response == null) return false;
@@ -253,14 +224,14 @@ public class Node implements PacketUartIO.PacketReceivedListener {
             packetReceivedImpl(packet);
         } catch (IOException e) {
             log.error(e);
-        } catch (InvalidArgumentException e) {
+        } catch (IllegalArgumentException e) {
             log.error(e);
         }
         //}
         //    }).start();
     }
 
-    public void packetReceivedImpl(Packet packet) throws IOException, InvalidArgumentException {
+    public void packetReceivedImpl(Packet packet) throws IOException, IllegalArgumentException {
         log.debug("packetReceived: " + packet);
         if (packet.nodeId != nodeId) throw new RuntimeException("Bad handler " + packet.nodeId + "!=" + nodeId);
 
@@ -273,18 +244,18 @@ public class Node implements PacketUartIO.PacketReceivedListener {
                 int pinMask = 1 << i;
                 if ((pinMask & eventMask) != 0) {
                     //event on pin[i]
-                    int pin = port * 8 + i;
+                    Pin pin = Pin.get(port, i);
                     if ((pinMask & eventValue) != 0) {
                         //button UP
-                        long downTime = new Date().getTime() - downTimes[pin];
-                        log.info("button '" + pinToString(pin) + "' UP (" + downTime + "ms)");
+                        long downTime = new Date().getTime() - downTimes[pin.ordinal()];
+                        log.info("button '" + pin + "' UP (" + downTime + "ms)");
                         for (Listener listener : listeners) {
                             listener.onButtonUp(this, pin, (int) downTime);
                         }
                     } else {
                         //button DOWN
-                        log.info("button '" + pinToString(pin) + "' DOWN");
-                        downTimes[pin] = new Date().getTime();
+                        log.info("button '" + pin + "' DOWN");
+                        downTimes[pin.ordinal()] = new Date().getTime();
                         for (Listener listener : listeners) {
                             listener.onButtonDown(this, pin);
                         }
