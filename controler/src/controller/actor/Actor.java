@@ -1,13 +1,11 @@
 package controller.actor;
 
-import node.Pin;
+import node.NodePin;
 
 public interface Actor {
     public String getId();
-    public int getNodeId();
-    public Pin getPin();
-    public int getInitValue();
-    public abstract int getPinOutputMask();
+
+    public abstract NodePin[] getOutputPins();
 
     public void perform();
 }

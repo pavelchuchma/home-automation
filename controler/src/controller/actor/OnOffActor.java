@@ -2,7 +2,7 @@ package controller.actor;
 
 import app.NodeInfoCollector;
 import node.Node;
-import node.Pin;
+import node.NodePin;
 import org.apache.log4j.Logger;
 import packet.Packet;
 
@@ -16,59 +16,57 @@ public class OnOffActor extends AbstractActor {
     int value;
 
     boolean invertIndicatorValue;
-    int indicatorNodeId;
-    Pin indicatorPin;
+    NodePin indicator;
     private int retryCount = 5;
 
-    public OnOffActor(String id, int nodeId, Pin pin, int initValue, int onValue) {
-        this(id, nodeId, pin, initValue, onValue, false, -1, null);
+    public OnOffActor(String id, NodePin output, int initValue, int onValue) {
+        this(id, output, initValue, onValue, false, null);
     }
 
-    public OnOffActor(String id, int nodeId, Pin pin, int initValue, int onValue, boolean invertIndicatorValue, int indicatorNodeId, Pin indicatorPin) {
-        super(id, nodeId, pin, initValue);
+    public OnOffActor(String id, NodePin output, int initValue, int onValue, boolean invertIndicatorValue, NodePin indicator) {
+        super(id, output, initValue);
         this.onValue = onValue;
 
         this.value = initValue;
         this.invertIndicatorValue = invertIndicatorValue;
-        this.indicatorNodeId = indicatorNodeId;
-        this.indicatorPin = indicatorPin;
+        this.indicator = indicator;
     }
 
     public String toString() {
-        String val = String.format("OnOffActor(%s) node%d.%s", id, nodeId, pin);
-        if (indicatorPin != null) {
-            val += String.format(", indicator: node%d.%s", indicatorNodeId, indicatorPin);
+        String val = String.format("OnOffActor(%s) %s", id, output);
+        if (indicator != null) {
+            val += String.format(", indicator: %s", indicator);
         }
         return val;
     }
 
     @Override
-    public int getPinOutputMask() {
-        return 2 << pin.ordinal();
+    public NodePin[] getOutputPins() {
+        return (indicator != null) ? new NodePin[]{output, indicator} : new NodePin[]{output};
     }
 
     public void perform() {
         value = (value ^ 1) & 1;
 
-        if (doAction(nodeId, pin, value, retryCount)) {
-            if (indicatorPin != null) {
+        if (doAction(output, value, retryCount)) {
+            if (indicator != null) {
                 int indVal = (invertIndicatorValue) ? (value ^ 1) & 1 : value;
-                doAction(indicatorNodeId, indicatorPin, indVal, retryCount);
+                doAction(indicator, indVal, retryCount);
             }
         }
     }
 
-    private static boolean doAction(int nodeId, Pin pin, int value, int retryCount) {
+    private static boolean doAction(NodePin nodePin, int value, int retryCount) {
         NodeInfoCollector nodeInfoCollector = NodeInfoCollector.getInstance();
-        Node node = nodeInfoCollector.getNode(nodeId);
+        Node node = nodeInfoCollector.getNode(nodePin.getNodeId());
         if (node == null) {
-            throw new IllegalStateException(String.format("Node #%d not found in repository.", nodeId));
+            throw new IllegalStateException(String.format("Node #%d not found in repository.", nodePin.getNodeId()));
         }
 
         for (int i = 0; i < retryCount; i++) {
             try {
-                log.debug(String.format("Setting pin %s on node #d to: %d", pin, nodeId, value));
-                Packet response = node.setPinValue(pin, value);
+                log.debug(String.format("Setting pin %s to: %d", nodePin, value));
+                Packet response = node.setPinValue(nodePin.getPin(), value);
                 if (response == null) {
                     throw new IOException("No response.");
                 }
@@ -76,12 +74,12 @@ public class OnOffActor extends AbstractActor {
                     throw new IOException(String.format("Unexpected response length %s", response.toString()));
                 }
 
-                int setVal = ((response.data[1] & pin.getBitMask()) != 0) ? 1 : 0;
-                log.info(String.format("Node%d.%s set to: %d", nodeId, pin, setVal));
+                int setVal = ((response.data[1] & nodePin.getPin().getBitMask()) != 0) ? 1 : 0;
+                log.info(String.format("%s set to: %d", nodePin, setVal));
                 return true;
 
             } catch (IOException e) {
-                log.error(String.format("SetPin %s on node #d failed.", pin.toString(), nodeId), e);
+                log.error(String.format("SetPin %s failed.", nodePin.toString()), e);
             }
         }
         return false;

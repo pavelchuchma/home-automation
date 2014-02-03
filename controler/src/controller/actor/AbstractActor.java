@@ -1,17 +1,15 @@
 package controller.actor;
 
-import node.Pin;
+import node.NodePin;
 
-public abstract class AbstractActor implements Actor{
+public abstract class AbstractActor implements Actor {
     String id;
-    int nodeId;
-    Pin pin;
+    NodePin output;
     int initValue;
 
-    public AbstractActor(String id, int nodeId, Pin pin, int initValue) {
+    public AbstractActor(String id, NodePin output, int initValue) {
         this.id = id;
-        this.nodeId = nodeId;
-        this.pin = pin;
+        this.output = output;
         this.initValue = initValue;
     }
 
@@ -19,17 +17,7 @@ public abstract class AbstractActor implements Actor{
         return id;
     }
 
-    public int getNodeId() {
-        return nodeId;
-    }
-
-    public Pin getPin() {
-        return pin;
-    }
-
     public int getInitValue() {
         return initValue;
     }
-
-    public abstract int getPinOutputMask();
 }

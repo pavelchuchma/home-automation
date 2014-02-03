@@ -1,6 +1,6 @@
 package app;
 
-import controller.Switch;
+import controller.ActionBinding;
 import controller.actor.Actor;
 import node.Node;
 import node.Pin;
@@ -11,17 +11,17 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SwitchListener extends AbstractNodeListener {
-    ConcurrentHashMap<String, Switch> switchMap = new ConcurrentHashMap<String, Switch>();
+    ConcurrentHashMap<String, ActionBinding> switchMap = new ConcurrentHashMap<String, ActionBinding>();
     static Logger log = Logger.getLogger(SwitchListener.class.getName());
 
     public static String createNodePinKey(int nodeId, Pin pin) {
         return String.format("%d:%s", nodeId, pin);
     }
 
-    public void addSwitch(Switch sw) {
-        String key = createNodePinKey(sw.getNodeId(), sw.getPin());
+    public void addActionBinding(ActionBinding sw) {
+        String key = createNodePinKey(sw.getTrigger().getNodeId(), sw.getTrigger().getPin());
         switchMap.put(key, sw);
-        log.info(String.format("Switch '%s' added", sw.getId()));
+        log.info(String.format("ActionBinding '%s' added", sw));
         for (Actor a : sw.getButtonDownActors()) {
             log.info("  - " + a.toString());
         }
@@ -30,9 +30,9 @@ public class SwitchListener extends AbstractNodeListener {
     @Override
     public void onButtonDown(Node node, Pin pin) {
         String swKey = createNodePinKey(node.getNodeId(), pin);
-        Switch sw = switchMap.get(swKey);
+        ActionBinding sw = switchMap.get(swKey);
         if (sw != null) {
-            log.debug(String.format("Executing switch: %s", sw.getId()));
+            log.debug(String.format("Executing ActionBinding: %s", sw));
             for (Actor a : sw.getButtonDownActors()) {
                 log.debug(String.format("-> action: %s", a.getId()));
                 a.perform();
@@ -51,7 +51,7 @@ public class SwitchListener extends AbstractNodeListener {
         int inputMasks = 0x00000000;
         int outputMasks = 0x00000000;
         // go through all switches to get initial settings
-        for (Switch sw : switchMap.values()) {
+        for (ActionBinding sw : switchMap.values()) {
             if (node.getNodeId() == sw.getNodeId()) {
                 // todo: presunut rotaci jako actor
                 inputMasks |= 2 << sw.getPin().ordinal();
