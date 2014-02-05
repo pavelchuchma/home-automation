@@ -1,9 +1,9 @@
 import app.NodeInfoCollector;
 import controller.ActionBinding;
-import controller.device.OutputDevice;
-import controller.device.WallSwitch;
 import controller.actor.Actor;
 import controller.actor.OnOffActor;
+import controller.device.OutputDevice;
+import controller.device.WallSwitch;
 import node.Node;
 import org.apache.log4j.Logger;
 import packet.PacketUartIO;
@@ -15,7 +15,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            String port = (System.getenv("COMPUTERNAME") != null) ? "COM1" :  "/dev/ttyS80";
+            String port = (System.getenv("COMPUTERNAME") != null) ? "COM1" : "/dev/ttyS80";
             PacketUartIO packetUartIO = new PacketUartIO(port, 19200);
             NodeInfoCollector nodeInfoCollector = new NodeInfoCollector(packetUartIO);
 
@@ -104,33 +104,25 @@ public class Main {
 
     private static void configure(NodeInfoCollector nodeInfoCollector) {
 
-        WallSwitch obyvakA3 = new WallSwitch("obyvakA3", 11, 3);
-        OutputDevice triacActor3 = new OutputDevice("triacActor3", 3, 2);
+        Node brige = nodeInfoCollector.createNode(1, "Bridge");
+        Node triak1 = nodeInfoCollector.createNode(3, "Triak1");
+        Node obyvakSpinacABC = nodeInfoCollector.createNode(11, "ObyvakSpinacABC");
 
+        WallSwitch obyvakA3sw = new WallSwitch("obyvakA3sw", obyvakSpinacABC, 3);
+        OutputDevice triak1Actor2 = new OutputDevice("triak1Actor2", triak1, 2);
 
-        OnOffActor svKoupelna = new OnOffActor("svKoupelna", triacActor3.getOut1(), 1, 0, false, obyvakA3.getGreenLed());
-        OnOffActor svJidelna = new OnOffActor("svJidelna", triacActor3.getOut2(), 1, 0, true, obyvakA3.getRedLed());
-        OnOffActor svSpajza =  new OnOffActor("svSpajza", triacActor3.getOut3(), 1, 0);
-        OnOffActor svPradelna =  new OnOffActor("svPradelna", triacActor3.getOut4(), 1, 0);
+        OnOffActor svKoupelna = new OnOffActor("svKoupelna", triak1Actor2.getOut1(), 1, 0, false, obyvakA3sw.getGreenLed());
+        OnOffActor svJidelna = new OnOffActor("svJidelna", triak1Actor2.getOut2(), 1, 0, true, obyvakA3sw.getRedLed());
+        OnOffActor svSpajza = new OnOffActor("svSpajza", triak1Actor2.getOut3(), 1, 0);
+        OnOffActor svPradelna = new OnOffActor("svPradelna", triak1Actor2.getOut4(), 1, 0);
 
-        nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding(obyvakA3.getButton1(), new Actor[]{svKoupelna}, null));
-        nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding(obyvakA3.getButton2(), new Actor[]{svJidelna}, null));
-        nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding(obyvakA3.getButton3(), new Actor[]{svSpajza}, null));
-        nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding(obyvakA3.getButton4(), new Actor[]{svPradelna}, null));
+        nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding(obyvakA3sw.getButton1(), new Actor[]{svKoupelna}, null));
+        nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding(obyvakA3sw.getButton2(), new Actor[]{svJidelna}, null));
+        nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding(obyvakA3sw.getButton3(), new Actor[]{svSpajza}, null));
+        nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding(obyvakA3sw.getButton4(), new Actor[]{svPradelna}, null));
 
-
-/*
-        OnOffActor koupelna = new OnOffActor("koupelna", 3, Pin.pinC3, 1, 0, false, 11, Pin.pinC6);
-        OnOffActor jidelna = new OnOffActor("jidelna", 3, Pin.pinC1, 1, 0, true, 11, Pin.pinC7);
-        OnOffActor spajza =  new OnOffActor("spajza", 3, Pin.pinC0, 1, 0);
-        OnOffActor pradelna =  new OnOffActor("pradelna", 3, Pin.pinA6, 1, 0);
-
-        nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding("obyvakASW31", 11, Pin.pinB0, new Actor[]{koupelna}, null));
-        nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding("obyvakASW32", 11, Pin.pinB1, new Actor[]{jidelna}, null));
-        nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding("obyvakASW33", 11, Pin.pinC5, new Actor[]{spajza}, null));
-        nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding("obyvakASW34", 11, Pin.pinC4, new Actor[]{pradelna}, null));
-
- */
+//        triak1.initialize();
+//        obyvakSpinacABC.initialize();
 
     }
 }

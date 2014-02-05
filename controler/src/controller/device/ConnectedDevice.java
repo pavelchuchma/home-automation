@@ -1,12 +1,13 @@
 package controller.device;
 
+import node.Node;
 import node.NodePin;
 import node.Pin;
 
-public class ConnectedDevice {
+public abstract class ConnectedDevice {
     NodePin[] pins = new NodePin[6];
 
-    public ConnectedDevice(String id, int nodeId, int connectorPosition, String[] names) {
+    public ConnectedDevice(String id, Node node, int connectorPosition, String[] names) {
         Pin[][] layout = {
                 {Pin.pinA5, Pin.pinA3, Pin.pinA2, Pin.pinA0, Pin.pinB4, Pin.pinB5},
                 {Pin.pinC3, Pin.pinC1, Pin.pinC0, Pin.pinA6, Pin.pinC2, Pin.pinA7},
@@ -21,7 +22,21 @@ public class ConnectedDevice {
         }
 
         for (int i = 0; i < 6; i++) {
-            pins[i] = new NodePin(String.format("%s:%d.%s", id, connectorPosition, names[i]), nodeId, layout[connectorPosition-1][i]);
+            pins[i] = new NodePin(String.format("%s:%d.%s", id, connectorPosition, names[i]), node.getNodeId(), layout[connectorPosition-1][i]);
         }
+
+        node.addDevice(this);
     }
+
+    protected int createMask(Pin[] pins) {
+        int result = 0;
+        for (Pin pin : pins) {
+            result|= 1 << pin.ordinal();
+        }
+        return result;
+    }
+
+    abstract public int getEventMask();
+    abstract public int getOutputMasks();
+    abstract public int getInitialOutputValues();
 }

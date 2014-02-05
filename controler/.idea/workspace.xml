@@ -6,35 +6,34 @@
     </artifacts-to-build>
   </component>
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/src/node/Node.java" line="201" mnemonic="1" />
+    <bookmark url="file://$PROJECT_DIR$/src/node/Node.java" line="192" mnemonic="1" />
   </component>
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="82455535-c405-4c4b-a371-b0bc707cb60b" name="Default" comment="">
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/META-INF" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/controller/device" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/servlet" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/controller/device/ConnectedDevice.java" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Java_EE_6_Java_EE_6.xml" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/node/NodePin.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/controller/device/OutputDevice.java" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/servlet/Servlet.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/controller/device/WallSwitch.java" />
       <change type="DELETED" beforePath="C:\home\chuma\work\HomeAutomation\controler\src\controller\Controller.java" afterPath="" />
-      <change type="DELETED" beforePath="C:\home\chuma\work\HomeAutomation\controler\src\nodeImpl\GenericNodeListener.java" afterPath="" />
+      <change type="DELETED" beforePath="C:\home\chuma\work\HomeAutomation\controler\src\nodeImpl\Node03Listener.java" afterPath="" />
+      <change type="DELETED" beforePath="C:\home\chuma\work\HomeAutomation\controler\src\nodeImpl\Node11Listener.java" afterPath="" />
       <change type="MOVED" beforePath="C:\home\chuma\work\HomeAutomation\controler\src\controller\Switch.java" afterPath="$PROJECT_DIR$/src/controller/ActionBinding.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/actor/AbstractActor.java" afterPath="$PROJECT_DIR$/src/controller/actor/AbstractActor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/nodeImpl/AbstractNodeListener.java" afterPath="$PROJECT_DIR$/src/nodeImpl/AbstractNodeListener.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/actor/Actor.java" afterPath="$PROJECT_DIR$/src/controller/actor/Actor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/device/ConnectedDevice.java" afterPath="$PROJECT_DIR$/src/controller/device/ConnectedDevice.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Main.java" afterPath="$PROJECT_DIR$/src/Main.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/nodeImpl/Node03Listener.java" afterPath="$PROJECT_DIR$/src/nodeImpl/Node03Listener.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/nodeImpl/Node11Listener.java" afterPath="$PROJECT_DIR$/src/nodeImpl/Node11Listener.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/node/Node.java" afterPath="$PROJECT_DIR$/src/node/Node.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/app/NodeInfoCollector.java" afterPath="$PROJECT_DIR$/src/app/NodeInfoCollector.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/node/NodeTest.java" afterPath="$PROJECT_DIR$/test/node/NodeTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/actor/OnOffActor.java" afterPath="$PROJECT_DIR$/src/controller/actor/OnOffActor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/device/OutputDevice.java" afterPath="$PROJECT_DIR$/src/controller/device/OutputDevice.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/packet/Packet.java" afterPath="$PROJECT_DIR$/src/packet/Packet.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/packet/PacketSerializer.java" afterPath="$PROJECT_DIR$/src/packet/PacketSerializer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/packet/PacketTest.java" afterPath="$PROJECT_DIR$/test/packet/PacketTest.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/app/SwitchListener.java" afterPath="$PROJECT_DIR$/src/app/SwitchListener.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/device/WallSwitch.java" afterPath="$PROJECT_DIR$/src/controller/device/WallSwitch.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/comm.xml" afterPath="$PROJECT_DIR$/.idea/libraries/comm.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/controler.iml" afterPath="$PROJECT_DIR$/controler.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/log4j.xml" afterPath="$PROJECT_DIR$/src/log4j.xml" />
@@ -43,13 +42,13 @@
     <ignored path="controler.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/SimpleRead.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1359062493323" ignored="false" />
-    <file path="/fragment.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391467450277" ignored="false" />
+    <file path="/fragment.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391636142958" ignored="false" />
     <file path="/PacketType.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1358983682067" ignored="false" />
     <file path="$PROJECT_DIR$/src/MsgUartTransmitPerfTestRequest.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1358978816013" ignored="false" />
     <file path="$PROJECT_DIR$/src/MsgUartTransmitPerfTestRequestImpl.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1358978829937" ignored="false" />
     <file path="/Packet.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1390693090883" ignored="false" />
     <file path="/Class.txt.ft" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1358979754586" ignored="false" />
-    <file path="/PacketTest.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1365541261617" ignored="false" />
+    <file path="/PacketTest.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391638389515" ignored="false" />
     <file path="/ActionScript File Header.txt.ft" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1358979784732" ignored="false" />
     <file path="/File Header.txt.ft" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1358979833885" ignored="false" />
     <file path="/PacketReader.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1359322690232" ignored="false" />
@@ -59,12 +58,12 @@
     <file path="/PacketHandlerTest.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1359067131842" ignored="false" />
     <file path="/Dummy.txt" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1390865508642" ignored="false" />
     <file path="/PacketHandlerException.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1359066720117" ignored="false" />
-    <file path="/Main.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391467761483" ignored="false" />
+    <file path="/Main.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391637002832" ignored="false" />
     <file path="/PacketUartIO.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391381056881" ignored="false" />
     <file path="/log4j.xml" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391378254935" ignored="false" />
     <file path="/PacketUartIOTest.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1365541300335" ignored="false" />
     <file path="/ReceivedPacketHandler.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1365458436391" ignored="false" />
-    <file path="/Node.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391374689165" ignored="false" />
+    <file path="/Node.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391636611603" ignored="false" />
     <file path="/NodeTest.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391298277143" ignored="false" />
     <file path="/MessageType.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1359327840033" ignored="false" />
     <file path="/Bits.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1359580567947" ignored="false" />
@@ -82,7 +81,7 @@
     <file path="$PROJECT_DIR$/SerialPort/SerialPort.vcxproj.filters" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1365540813513" ignored="false" />
     <file path="$PROJECT_DIR$/Test01/mplab8proj/system.p1" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1365540813513" ignored="false" />
     <file path="$PROJECT_DIR$/Test01/mplab8proj/system.pre" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1365540813513" ignored="false" />
-    <file path="/NodeInfoCollector.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391376397296" ignored="false" />
+    <file path="/NodeInfoCollector.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391636963877" ignored="false" />
     <file path="/NodeInfo.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1389388853447" ignored="false" />
     <file path="/NodeArray.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1388348761017" ignored="false" />
     <file path="/report.css" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1388352997959" ignored="false" />
@@ -94,7 +93,7 @@
     <file path="/Actor.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391462485676" ignored="false" />
     <file path="/Switch.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391375839242" ignored="false" />
     <file path="/Action.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1390167968446" ignored="false" />
-    <file path="/Pin.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391354502037" ignored="false" />
+    <file path="/Pin.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391637494863" ignored="false" />
     <file path="/Controller.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1390169258928" ignored="false" />
     <file path="/AbstractActor.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391464540054" ignored="false" />
     <file path="/GenericNodeListener.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1390694628114" ignored="false" />
@@ -103,13 +102,14 @@
     <file path="/Hi.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1390435392826" ignored="false" />
     <file path="/Servlet.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1390865699983" ignored="false" />
     <file path="/HttpServer.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1390865316788" ignored="false" />
-    <file path="/SwitchListener.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391468013914" ignored="false" />
+    <file path="/SwitchListener.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391635689654" ignored="false" />
     <file path="/AddressedPin.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391463041161" ignored="false" />
     <file path="/NodePin.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391462975391" ignored="false" />
-    <file path="/WallSwitch.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391466656167" ignored="false" />
-    <file path="/ConnectedDevice.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391466506498" ignored="false" />
+    <file path="/WallSwitch.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391548403953" ignored="false" />
+    <file path="/ConnectedDevice.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391548337827" ignored="false" />
     <file path="/ActionBinding.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391468458070" ignored="false" />
-    <file path="/OutputDevice.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391467547491" ignored="false" />
+    <file path="/OutputDevice.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391546670967" ignored="false" />
+    <file path="/a.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391551891978" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -174,7 +174,7 @@
         <option name="CONDITION" value="" />
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/test/node/NodeTest.java" line="534" class="node.NodeTest" package="node">
+      <breakpoint url="file://$PROJECT_DIR$/test/node/NodeTest.java" line="523" class="node.NodeTest" package="node">
         <option name="ENABLED" value="true" />
         <option name="LOG_ENABLED" value="false" />
         <option name="LOG_EXPRESSION_ENABLED" value="false" />
@@ -188,7 +188,7 @@
         <option name="CONDITION" value="" />
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/test/node/NodeTest.java" line="579" class="node.NodeTest" package="node">
+      <breakpoint url="file://$PROJECT_DIR$/test/node/NodeTest.java" line="568" class="node.NodeTest" package="node">
         <option name="ENABLED" value="true" />
         <option name="LOG_ENABLED" value="false" />
         <option name="LOG_EXPRESSION_ENABLED" value="false" />
@@ -202,7 +202,7 @@
         <option name="CONDITION" value="" />
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/test/node/NodeTest.java" line="570" class="node.NodeTest" package="node">
+      <breakpoint url="file://$PROJECT_DIR$/test/node/NodeTest.java" line="559" class="node.NodeTest" package="node">
         <option name="ENABLED" value="true" />
         <option name="LOG_ENABLED" value="false" />
         <option name="LOG_EXPRESSION_ENABLED" value="false" />
@@ -216,7 +216,21 @@
         <option name="CONDITION" value="" />
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/src/Main.java" line="118" class="Main" package="">
+      <breakpoint url="file://$PROJECT_DIR$/src/Main.java" line="123" class="Main" package="">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/test/packet/PacketTest.java" line="1" class="PacketTest.java" package="">
         <option name="ENABLED" value="true" />
         <option name="LOG_ENABLED" value="false" />
         <option name="LOG_EXPRESSION_ENABLED" value="false" />
@@ -240,13 +254,58 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="OnOffActor.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/controller/actor/OnOffActor.java">
+      <file leaf-file-name="Main.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="47" column="12" selection-start="1301" selection-end="1301" vertical-scroll-proportion="0.4040067">
+            <state line="108" column="21" selection-start="4933" selection-end="4933" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="NodeInfoCollector.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/app/NodeInfoCollector.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MessageType.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/node/MessageType.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="43" column="17" selection-start="3026" selection-end="3026" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Pin.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/node/Pin.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="53" column="50" selection-start="1024" selection-end="1066" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PacketTest.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/test/packet/PacketTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ReflectiveCallable.class" pinned="false" current="false" current-in-tab="false">
+        <entry file="jar://$APPLICATION_HOME_DIR$/lib/junit-4.10.jar!/org/junit/internal/runners/model/ReflectiveCallable.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="11" column="40" selection-start="388" selection-end="388" vertical-scroll-proportion="-6.8">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -254,88 +313,37 @@
       <file leaf-file-name="NodePin.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/node/NodePin.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="30" column="27" selection-start="579" selection-end="579" vertical-scroll-proportion="0.0">
+            <state line="2" column="13" selection-start="28" selection-end="28" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Main.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Main.java">
+      <file leaf-file-name="Pic.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/node/Pic.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="118" column="41" selection-start="5794" selection-end="5794" vertical-scroll-proportion="0.0">
+            <state line="4" column="13" selection-start="105" selection-end="105" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Actor.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/controller/actor/Actor.java">
+      <file leaf-file-name="Bits.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/node/Bits.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="17" selection-start="66" selection-end="66" vertical-scroll-proportion="0.0">
+            <state line="2" column="13" selection-start="28" selection-end="28" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AbstractActor.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/controller/actor/AbstractActor.java">
+      <file leaf-file-name="Node.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/node/Node.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="44" selection-start="203" selection-end="203" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ActionBinding.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/controller/ActionBinding.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="21" column="18" selection-start="496" selection-end="496" vertical-scroll-proportion="0.0">
+            <state line="44" column="55" selection-start="1223" selection-end="1223" vertical-scroll-proportion="0.0">
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#748#765#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SwitchListener.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/app/SwitchListener.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="12" column="13" selection-start="273" selection-end="273" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ConnectedDevice.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/controller/device/ConnectedDevice.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="0" selection-start="664" selection-end="664" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="WallSwitch.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/controller/device/WallSwitch.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="13" selection-start="63" selection-end="63" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="OutputDevice.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/controller/device/OutputDevice.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="13" column="0" selection-start="351" selection-end="351" vertical-scroll-proportion="0.0">
-              <folding />
             </state>
           </provider>
         </entry>
@@ -360,22 +368,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/packet/PacketUartIO.java" />
-        <option value="$PROJECT_DIR$/src/node/AddressedPin.java" />
-        <option value="$PROJECT_DIR$/src/controller/actor/OnOffActor.java" />
-        <option value="$PROJECT_DIR$/src/controller/PCBPins.java" />
-        <option value="$PROJECT_DIR$/src/controller/ConnectedDevice.java" />
-        <option value="$PROJECT_DIR$/src/controller/WallSwitch.java" />
-        <option value="$PROJECT_DIR$/src/controller/Switch.java" />
-        <option value="$PROJECT_DIR$/src/node/NodePin.java" />
         <option value="$PROJECT_DIR$/src/controller/SwitchingDevice.java" />
         <option value="$PROJECT_DIR$/src/controller/OuputDevice.java" />
         <option value="$PROJECT_DIR$/src/controller/OutputDevice.java" />
-        <option value="$PROJECT_DIR$/src/app/SwitchListener.java" />
-        <option value="$PROJECT_DIR$/src/Main.java" />
         <option value="$PROJECT_DIR$/src/controller/ActionBinding.java" />
         <option value="$PROJECT_DIR$/src/controller/actor/Actor.java" />
         <option value="$PROJECT_DIR$/src/controller/actor/AbstractActor.java" />
+        <option value="$PROJECT_DIR$/test/node/NodeTest.java" />
+        <option value="$PROJECT_DIR$/src/controller/device/ConnectedDevice.java" />
+        <option value="$PROJECT_DIR$/src/controller/device/WallSwitch.java" />
+        <option value="$PROJECT_DIR$/src/controller/device/OutputDevice.java" />
+        <option value="$PROJECT_DIR$/src/app/SwitchListener.java" />
+        <option value="$PROJECT_DIR$/src/Main.java" />
+        <option value="$PROJECT_DIR$/src/node/Node.java" />
+        <option value="$PROJECT_DIR$/src/app/NodeInfoCollector.java" />
+        <option value="$PROJECT_DIR$/src/node/Pin.java" />
+        <option value="$PROJECT_DIR$/test/packet/PacketTest.java" />
       </list>
     </option>
   </component>
@@ -660,7 +668,7 @@
     <property name="GoToClass.includeLibraries" value="false" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="GoToFile.includeJavaFiles" value="false" />
-    <property name="options.lastSelected" value="fileTemplates" />
+    <property name="options.lastSelected" value="preferences.sourceCode" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
     <property name="MemberChooser.copyJavadoc" value="false" />
@@ -693,7 +701,7 @@
       <recent name="N:\work\MPLab\controler" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Main">
+  <component name="RunManager" selected="JUnit.PacketTest.testEn">
     <configuration default="false" name="Main" type="Application" factoryName="Application" temporary="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <option name="MAIN_CLASS_NAME" value="Main" />
@@ -718,40 +726,6 @@
       <method>
         <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_backup logs" />
       </method>
-    </configuration>
-    <configuration default="false" name="NodeTest.testCheckFrequency" type="JUnit" factoryName="JUnit" temporary="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-        <pattern>
-          <option name="PATTERN" value="node.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <module name="controler" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" value="" />
-      <option name="PACKAGE_NAME" value="node" />
-      <option name="MAIN_CLASS_NAME" value="node.NodeTest" />
-      <option name="METHOD_NAME" value="testCheckFrequency" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" value="-Djava.library.path=lib -Dlog4j.configuration=log4j.xml" />
-      <option name="PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <envs />
-      <patterns />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Debug" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
     </configuration>
     <configuration default="false" name="NodeTest.testEnum" type="JUnit" factoryName="JUnit" temporary="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
@@ -853,6 +827,38 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
+    <configuration default="false" name="PacketTest.testEn" type="JUnit" factoryName="JUnit" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="packet.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="controler" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" value="" />
+      <option name="PACKAGE_NAME" value="packet" />
+      <option name="MAIN_CLASS_NAME" value="packet.PacketTest" />
+      <option name="METHOD_NAME" value="testEn" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-Djava.library.path=lib -Dlog4j.configuration=log4j.xml" />
+      <option name="PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <ConfigurationWrapper RunnerId="Debug" />
+      <method />
+    </configuration>
     <configuration default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="false" />
       <option name="SERVER_MODE" value="false" />
@@ -915,18 +921,18 @@
     <list size="6">
       <item index="0" class="java.lang.String" itemvalue="Remote.Pi" />
       <item index="1" class="java.lang.String" itemvalue="Application.Main" />
-      <item index="2" class="java.lang.String" itemvalue="JUnit.NodeTest.testCheckFrequency" />
-      <item index="3" class="java.lang.String" itemvalue="JUnit.NodeTest.testEnum" />
-      <item index="4" class="java.lang.String" itemvalue="JUnit.NodeTest.testSetPinValue" />
-      <item index="5" class="java.lang.String" itemvalue="JUnit.NodeTest.testPinGetters" />
+      <item index="2" class="java.lang.String" itemvalue="JUnit.NodeTest.testEnum" />
+      <item index="3" class="java.lang.String" itemvalue="JUnit.NodeTest.testSetPinValue" />
+      <item index="4" class="java.lang.String" itemvalue="JUnit.NodeTest.testPinGetters" />
+      <item index="5" class="java.lang.String" itemvalue="JUnit.PacketTest.testEn" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Application.Main" />
-        <item index="1" class="java.lang.String" itemvalue="JUnit.NodeTest.testSetPinValue" />
-        <item index="2" class="java.lang.String" itemvalue="JUnit.NodeTest.testPinGetters" />
-        <item index="3" class="java.lang.String" itemvalue="JUnit.NodeTest.testEnum" />
-        <item index="4" class="java.lang.String" itemvalue="JUnit.NodeTest.testCheckFrequency" />
+        <item index="0" class="java.lang.String" itemvalue="JUnit.PacketTest.testEn" />
+        <item index="1" class="java.lang.String" itemvalue="Application.Main" />
+        <item index="2" class="java.lang.String" itemvalue="JUnit.NodeTest.testSetPinValue" />
+        <item index="3" class="java.lang.String" itemvalue="JUnit.NodeTest.testPinGetters" />
+        <item index="4" class="java.lang.String" itemvalue="JUnit.NodeTest.testEnum" />
       </list>
     </recent_temporary>
   </component>
@@ -1011,7 +1017,7 @@
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27783453" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.340143" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27272728" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
@@ -1023,8 +1029,8 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32986537" sideWeight="0.7164179" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1280683" sideWeight="0.659857" order="1" side_tool="false" content_ui="combo" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24919957" sideWeight="0.659857" order="7" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1280683" sideWeight="0.6292135" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24919957" sideWeight="0.6292135" order="7" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32073545" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -1091,79 +1097,50 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/packet/PacketUartIO.java">
+    <entry file="file://$PROJECT_DIR$/test/node/NodeTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="59" column="134" selection-start="1886" selection-end="1886" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#5813#5950#0" expanded="true" />
-            <element signature="e#5939#5940#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/nodeImpl/Node11Listener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="11" selection-start="374" selection-end="374" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/app/NodeInfoCollector.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="26" selection-start="720" selection-end="720" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/node/Pin.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="12" selection-start="27" selection-end="27" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/node/Node.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="209" column="129" selection-start="7804" selection-end="7828" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/controller/device/ConnectedDevice.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="0" selection-start="664" selection-end="664" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/node/NodePin.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="27" selection-start="579" selection-end="579" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/controller/device/OutputDevice.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="0" selection-start="351" selection-end="351" vertical-scroll-proportion="0.0">
+        <state line="17" column="25" selection-start="450" selection-end="450" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/controller/device/WallSwitch.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="13" selection-start="63" selection-end="63" vertical-scroll-proportion="0.0">
+        <state line="47" column="32" selection-start="1093" selection-end="1093" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/controller/ActionBinding.java">
+    <entry file="file://$PROJECT_DIR$/src/controller/device/OutputDevice.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="18" selection-start="496" selection-end="496" vertical-scroll-proportion="0.0">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/controller/device/ConnectedDevice.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="26" column="38" selection-start="1073" selection-end="1073" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/nodeImpl/AbstractNodeListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="22" selection-start="90" selection-end="90" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/app/SwitchListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="28" column="0" selection-start="979" selection-end="979" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1172,40 +1149,75 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="118" column="41" selection-start="5794" selection-end="5794" vertical-scroll-proportion="0.0">
+        <state line="108" column="21" selection-start="4933" selection-end="4933" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/app/SwitchListener.java">
+    <entry file="file://$PROJECT_DIR$/src/app/NodeInfoCollector.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="13" selection-start="273" selection-end="273" vertical-scroll-proportion="0.0">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/controller/actor/AbstractActor.java">
+    <entry file="file://$PROJECT_DIR$/src/node/Pic.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="44" selection-start="203" selection-end="203" vertical-scroll-proportion="0.0">
+        <state line="4" column="13" selection-start="105" selection-end="105" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/controller/actor/Actor.java">
+    <entry file="file://$PROJECT_DIR$/src/node/Bits.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="17" selection-start="66" selection-end="66" vertical-scroll-proportion="0.0">
+        <state line="2" column="13" selection-start="28" selection-end="28" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/controller/actor/OnOffActor.java">
+    <entry file="file://$PROJECT_DIR$/src/node/NodePin.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="12" selection-start="1301" selection-end="1301" vertical-scroll-proportion="0.4040067">
+        <state line="2" column="13" selection-start="28" selection-end="28" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/node/Node.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="44" column="55" selection-start="1223" selection-end="1223" vertical-scroll-proportion="0.0">
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="e#748#765#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/node/Pin.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="53" column="50" selection-start="1024" selection-end="1066" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/node/MessageType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="43" column="17" selection-start="3026" selection-end="3026" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$APPLICATION_HOME_DIR$/lib/junit-4.10.jar!/org/junit/internal/runners/model/ReflectiveCallable.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="40" selection-start="388" selection-end="388" vertical-scroll-proportion="-6.8">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/packet/PacketTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
         </state>
       </provider>
     </entry>

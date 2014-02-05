@@ -1,10 +1,7 @@
 package app;
 
-import controller.actor.AbstractActor;
 import node.MessageType;
 import node.Node;
-import nodeImpl.Node03Listener;
-import nodeImpl.Node11Listener;
 import org.apache.log4j.Logger;
 import packet.Packet;
 import packet.PacketUartIO;
@@ -13,7 +10,6 @@ import packet.ReceivedPacketHandler;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class NodeInfoCollector {
     static Logger log = Logger.getLogger(NodeInfoCollector.class.getName());
@@ -36,14 +32,6 @@ public class NodeInfoCollector {
     }
 
     public void start() {
-        Node node03 = new Node(3, packetUartIO);
-        node03.addListener(new Node03Listener());
-        addNode(node03);
-
-        Node node11 = new Node(11, packetUartIO);
-        node11.addListener(new Node11Listener());
-        addNode(node11);
-
         packetUartIO.addReceivedPacketListener(new ReceivedPacketHandler() {
             @Override
             public void packetReceived(Packet packet) {
@@ -89,7 +77,7 @@ public class NodeInfoCollector {
         this.packetUartIO = packetUartIO;
     }
 
-    public void addNode(Node node) {
+    public synchronized void addNode(Node node) {
         log.debug(String.format("Node #%d added", node.getNodeId()));
 
         if (nodeInfoArray[node.getNodeId()] != null) {
@@ -100,7 +88,7 @@ public class NodeInfoCollector {
         node.addListener(switchListener);
     }
 
-    private NodeInfo getOrCreateNodeInfo(Packet packet) {
+    private synchronized NodeInfo getOrCreateNodeInfo(Packet packet) {
         if (nodeInfoArray[packet.nodeId] == null) {
             log.debug("Registering node #" + packet.nodeId);
             Node node = new Node(packet.nodeId, packetUartIO);
@@ -131,7 +119,7 @@ public class NodeInfoCollector {
                     if (lastPing <= 10) lastPingClass = "fineValue";
                     lastPingString = lastPing + " s";
                 }
-                builder.append(String.format("<tr><td>%d<td class='%s'>%s<td>%s<td>%s<td class='messageLog'>", info.node.getNodeId(), lastPingClass, lastPingString, info.bootTime, info.buildTime));
+                builder.append(String.format("<tr><td>%d-%s<td class='%s'>%s<td>%s<td>%s<td class='messageLog'>", info.node.getNodeId(), info.node.getName(), lastPingClass, lastPingString, info.bootTime, info.buildTime));
 
                 for (LogMessage m : info.getMessageLog()) {
                     builder.append(String.format("<div class='%s'>%s%s</div>",
@@ -146,7 +134,13 @@ public class NodeInfoCollector {
         return builder.toString();
     }
 
-    public Node getNode(int i) {
+    public synchronized Node getNode(int i) {
         return (nodeInfoArray[i] != null) ? nodeInfoArray[i].node : null;
+    }
+
+    public Node createNode(int i, String name) {
+        Node node = new Node(i, name, packetUartIO);
+        addNode(node);
+        return node;
     }
 }

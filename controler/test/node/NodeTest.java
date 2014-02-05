@@ -13,17 +13,6 @@ public class NodeTest {
     static Logger log = Logger.getLogger(NodeTest.class.getName());
 
     @Test
-    public void testNodeCreation() {
-        Node n1 = new Node(10, null, "00001111", "00000011", "11110000", "11110000");
-
-        Assert.assertEquals(10, n1.getNodeId());
-        Assert.assertEquals(15, n1.getPortCTris());
-        Assert.assertEquals(3, n1.getPortCEventMask());
-        Assert.assertEquals(240, n1.getPortCValueMask());
-        Assert.assertEquals(240, n1.getPortCValue());
-    }
-
-    @Test
     public void testReadRam() throws Exception {
         PacketUartIO packetUartIO = new PacketUartIO("COM1", 19200);
         Node node = new Node(1, packetUartIO);

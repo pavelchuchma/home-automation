@@ -1,5 +1,6 @@
 package node;
 
+import controller.device.ConnectedDevice;
 import org.apache.log4j.Logger;
 import packet.Packet;
 import packet.PacketUartIO;
@@ -23,11 +24,9 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
 
     int nodeId;
+    String name;
     PacketUartIO packetUartIO;
-    int portCTris;
-    int portCEventMask;
-    int portCValueMask;
-    int portCValue;
+    List<ConnectedDevice> devices = new ArrayList<ConnectedDevice>();
 
     protected List<Listener> listeners = new ArrayList<Listener>();
     protected long[] downTimes = new long[32];
@@ -37,40 +36,32 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         listeners.add(listener);
     }
 
+    public void addDevice(ConnectedDevice device) {
+        devices.add(device);
+    }
+
 
     public Node(int nodeId, PacketUartIO packetUartIO) {
+        this(nodeId, "unknown" + nodeId, packetUartIO);
+    }
+
+    public Node(int nodeId, String name, PacketUartIO packetUartIO) {
         this.nodeId = nodeId;
+        this.name = name;
         this.packetUartIO = packetUartIO;
         packetUartIO.addSpecificReceivedPacketListener(this, nodeId, -1);
     }
 
-    public Node(int nodeId, PacketUartIO packetUartIO, String portCTris, String portCEventMask, String portCValueMask, String portCValue) {
-        this(nodeId, packetUartIO);
-
-        this.portCTris = Integer.parseInt(portCTris, 2);
-        this.portCEventMask = Integer.parseInt(portCEventMask, 2);
-        this.portCValueMask = Integer.parseInt(portCValueMask, 2);
-        this.portCValue = Integer.parseInt(portCValue, 2);
+    public String toString() {
+        return String.format("Node%d[%s]", nodeId, name);
     }
 
     public int getNodeId() {
         return nodeId;
     }
 
-    public int getPortCTris() {
-        return portCTris;
-    }
-
-    public int getPortCEventMask() {
-        return portCEventMask;
-    }
-
-    public int getPortCValueMask() {
-        return portCValueMask;
-    }
-
-    public int getPortCValue() {
-        return portCValue;
+    public String getName() {
+        return name;
     }
 
     private static String asBinary(int i) {
@@ -207,7 +198,8 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
     synchronized public boolean setFrequency(int cpuFrequency) throws IOException, IllegalArgumentException {
         log.debug("setFrequency");
-        if (cpuFrequency != 1 && cpuFrequency != 2 && cpuFrequency != 8 && cpuFrequency != 16) throw new IllegalArgumentException("Unsupported frequency value");
+        if (cpuFrequency != 1 && cpuFrequency != 2 && cpuFrequency != 8 && cpuFrequency != 16)
+            throw new IllegalArgumentException("Unsupported frequency value");
         Packet req = Packet.createMsgSetFrequency(nodeId, cpuFrequency, cpuFrequency - 1);
         Packet response = packetUartIO.send(req, MessageType.MSG_SetFrequencyResponse, 300);
         if (response == null) return false;
@@ -275,5 +267,37 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     @Override
     public void notifyRegistered(PacketUartIO packetUartIO) {
 
+    }
+
+    public void initialize() {
+        int commonOutputMask = 0;
+        int commonEventMask = 0;
+        int commonInitialOutputValues = 0;
+        for (ConnectedDevice device : devices) {
+            commonOutputMask |= device.getOutputMasks();
+            commonEventMask |= device.getEventMask();
+            commonInitialOutputValues |= device.getInitialOutputValues();
+        }
+
+        for (int i = 0; i < 4; i++) {
+            int valueMask = (commonOutputMask >> i * 8) & 0xFF;
+            int trisMask = (valueMask ^ 0xFF) & 0xFF;
+            int eventMask = (commonEventMask >> i * 8) & 0xFF;
+            int value = (commonInitialOutputValues >> i * 8) & 0xFF;
+
+            try {
+                if (valueMask != 0 || eventMask != 0) {
+                    if (i == 1) {
+                        // don't modify tris for Can port
+                        //TRISB3 = 1; //CAN RX
+                        //TRISB2 = 0; //CAN TX
+                        trisMask = trisMask & 0xF3 | 0x08; //11110011 | 00001000;
+                    }
+                    setPortValue((char) ('A' + i), valueMask, value, eventMask, trisMask);
+                }
+            } catch (IOException e) {
+                log.error("Node initialization failed!", e);
+            }
+        }
     }
 }
