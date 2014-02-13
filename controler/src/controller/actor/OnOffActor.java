@@ -15,43 +15,52 @@ public class OnOffActor extends AbstractActor {
 
     int value;
 
-    boolean invertIndicatorValue;
-    NodePin indicator;
+    Indicator[] indicators;
     private int retryCount = 5;
 
-    public OnOffActor(String id, NodePin output, int initValue, int onValue) {
-        this(id, output, initValue, onValue, false, null);
-    }
-
-    public OnOffActor(String id, NodePin output, int initValue, int onValue, boolean invertIndicatorValue, NodePin indicator) {
+    public OnOffActor(String id, NodePin output, int initValue, int onValue, Indicator... indicators) {
         super(id, output, initValue);
         this.onValue = onValue;
 
         this.value = initValue;
-        this.invertIndicatorValue = invertIndicatorValue;
-        this.indicator = indicator;
+        this.indicators = indicators;
     }
 
     public String toString() {
-        String val = String.format("OnOffActor(%s) %s", id, output);
-        if (indicator != null) {
-            val += String.format(", indicator: %s", indicator);
+        StringBuilder val = new StringBuilder(String.format("OnOffActor(%s) %s", id, output));
+        if (indicators != null) {
+            val.append(", indicators: ");
+            for (Indicator i : indicators) {
+                val.append(i.getPin());
+                val.append(", ");
+            }
         }
-        return val;
+        return val.toString();
     }
 
     @Override
     public NodePin[] getOutputPins() {
-        return (indicator != null) ? new NodePin[]{output, indicator} : new NodePin[]{output};
+        if (indicators == null) {
+            return new NodePin[]{output};
+        } else {
+            NodePin[] res = new NodePin[1 + indicators.length];
+            res[0] = output;
+            for (int i = 0; i < indicators.length; i++) {
+                res[i + 1] = indicators[i].getPin();
+            }
+            return res;
+        }
     }
 
     public void perform() {
         value = (value ^ 1) & 1;
 
         if (doAction(output, value, retryCount)) {
-            if (indicator != null) {
-                int indVal = (invertIndicatorValue) ? (value ^ 1) & 1 : value;
-                doAction(indicator, indVal, retryCount);
+            if (indicators != null) {
+                for (Indicator i : indicators) {
+                    int indVal = (i.IsInverted()) ? (value ^ 1) & 1 : value;
+                    doAction(i.getPin(), indVal, retryCount);
+                }
             }
         }
     }

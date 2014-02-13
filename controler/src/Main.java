@@ -107,19 +107,41 @@ public class Main {
         Node brige = nodeInfoCollector.createNode(1, "Bridge");
         Node triak1 = nodeInfoCollector.createNode(3, "Triak1");
         Node obyvakSpinacABC = nodeInfoCollector.createNode(11, "ObyvakSpinacABC");
+        Node chodbaDole = nodeInfoCollector.createNode(8, "ChodbaDole");
+        Node koupelnaHore = nodeInfoCollector.createNode(10, "KoupelnaHore");
+
 
         WallSwitch obyvakA3sw = new WallSwitch("obyvakA3sw", obyvakSpinacABC, 3);
         OutputDevice triak1Actor2 = new OutputDevice("triak1Actor2", triak1, 2);
 
-        OnOffActor svKoupelna = new OnOffActor("svKoupelna", triak1Actor2.getOut1(), 1, 0, false, obyvakA3sw.getGreenLed());
-        OnOffActor svJidelna = new OnOffActor("svJidelna", triak1Actor2.getOut2(), 1, 0, true, obyvakA3sw.getRedLed());
+        WallSwitch koupelnaHoreSwA = new WallSwitch("koupelnaHoreSwA", koupelnaHore, 1);
+        WallSwitch chodbaDoldeSwA = new WallSwitch("chodbaDoldeSwA", chodbaDole, 1);
+
+        OnOffActor svKoupelna = new OnOffActor("svKoupelna", triak1Actor2.getOut1(), 1, 0, obyvakA3sw.getGreenLedIndicator(false), koupelnaHoreSwA.getGreenLedIndicator(false), koupelnaHoreSwA.getRedLedIndicator(true));
+        OnOffActor svJidelna = new OnOffActor("svJidelna", triak1Actor2.getOut2(), 1, 0, obyvakA3sw.getRedLedIndicator(true));
         OnOffActor svSpajza = new OnOffActor("svSpajza", triak1Actor2.getOut3(), 1, 0);
-        OnOffActor svPradelna = new OnOffActor("svPradelna", triak1Actor2.getOut4(), 1, 0);
+        OnOffActor svPradelna = new OnOffActor("svPradelna", triak1Actor2.getOut4(), 1, 0, chodbaDoldeSwA.getGreenLedIndicator(false), chodbaDoldeSwA.getRedLedIndicator(true));
 
         nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding(obyvakA3sw.getButton1(), new Actor[]{svKoupelna}, null));
         nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding(obyvakA3sw.getButton2(), new Actor[]{svJidelna}, null));
         nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding(obyvakA3sw.getButton3(), new Actor[]{svSpajza}, null));
         nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding(obyvakA3sw.getButton4(), new Actor[]{svPradelna}, null));
+
+        nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding(koupelnaHoreSwA.getButton1(), new Actor[]{svKoupelna}, null));
+        nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding(koupelnaHoreSwA.getButton2(), new Actor[]{svKoupelna}, null));
+
+        nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding(chodbaDoldeSwA.getButton1(), new Actor[]{svPradelna}, null));
+        nodeInfoCollector.getSwitchListener().addActionBinding(new ActionBinding(chodbaDoldeSwA.getButton2(), new Actor[]{svPradelna}, null));
+
+
+
+
+        //WallSwitch chodbaDoleSwA = new WallSwitch("chodbaDoleSwA", chodbaDole, 1);
+        //WallSwitch chodbaDoleSwB = new WallSwitch("chodbaDoleSwB", chodbaDole, 3);
+
+
+
+
 
 //        triak1.initialize();
 //        obyvakSpinacABC.initialize();

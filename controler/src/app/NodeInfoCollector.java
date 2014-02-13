@@ -103,7 +103,7 @@ public class NodeInfoCollector {
         builder.append("<html>" +
                 "<meta http-equiv='refresh' content='1'/>" +
                 "<head>" +
-                "<link href='../report.css' rel='stylesheet' type='text/css'/>\n" +
+                "<link href='report.css' rel='stylesheet' type='text/css'/>\n" +
                 "</head>" +
                 "<body>" +
                 "<table class='nodeTable'>\n" +
