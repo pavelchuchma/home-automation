@@ -41,9 +41,9 @@ enum NodeId {
 };
 
 #define NODE_ID NODE_3
-#define RUN_TESTS 1
+#define RUN_TESTS 0
 #define PWM_RESOLUTION 16
-#define PIN_CHANGE_LOOP_COUNT 10
+#define PIN_CHANGE_LOOP_COUNT 37
 
 typedef volatile struct {
     struct {
