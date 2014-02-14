@@ -1,9 +1,9 @@
 #if defined(__XC)
-    #include <xc.h>        /* XC8 General Include File */
+#include <xc.h>        /* XC8 General Include File */
 #elif defined(HI_TECH_C)
-    #include <htc.h>       /* HiTech General Include File */
+#include <htc.h>       /* HiTech General Include File */
 #elif defined(__18CXX)
-    #include <p18cxxx.h>   /* C18 General Include File */
+#include <p18cxxx.h>   /* C18 General Include File */
 #endif
 
 #if defined(__XC) || defined(HI_TECH_C)
@@ -27,18 +27,16 @@
 void testRunAll() {
     testButonEvents();
     //testProcessSetManualPwmValueRequest();
-//    testDisplay();
-//    testEnablePwm();
-//    testSetPortRequest();
-//    testCheckInputChange();
+    //    testDisplay();
+    //    testEnablePwm();
+    //    testSetPortRequest();
+    //    testCheckInputChange();
     //    testTmp();
-//    testWriteRamRequest();
-//    testUartSendInterrupt();
-//    testReceiveBuffer();
-//    testUart01();
+    //    testWriteRamRequest();
+    //    testUartSendInterrupt();
+    //    testReceiveBuffer();
+    //    testUart01();
 }
-
-
 
 void testButonEvents() {
     portConfig.eventMask[1] = 0b00101000;
@@ -46,55 +44,53 @@ void testButonEvents() {
     PORTB = 0;
     // clear packet
     outPacket.messageType = outPacket.data[0] = outPacket.data[1] = 0xFF;
-    checkInputChange();
 
-    PORTB = 0b00101111;
-    for (char i=0; i<8; i++) {
-        if (i == 5) {
-            PORTB = 0b00100111;
-            checkInputChange();
-            PORTB = 0b00101111;
-        }
-        checkInputChange();
-        ASSERT_EQUALS(outPacket.data[0], 0xFF);
-    }
+    PORTB = portConfig.oldValues[1] = 0b00001111;
+
+    // does nothng
+    checkInputChange();
+    ASSERT_EQUALS(outPacket.data[0], 0xFF);
+
+    // clear      ,
+    PORTB = 0b00000111;
     checkInputChange();
     ASSERT_EQUALS(outPacket.messageType, MSG_OnPortBPinChange);
-    ASSERT_EQUALS(outPacket.data[0], 0b00100000);
-    ASSERT_EQUALS(outPacket.data[1], 0b00100000);
-
+    ASSERT_EQUALS(outPacket.data[0], 0b00001000);
+    ASSERT_EQUALS(outPacket.data[1], 0b00000000);
     // clear packet
     outPacket.messageType = outPacket.data[0] = outPacket.data[1] = 0xFF;
 
-    for (char i=0; i<5; i++) {
+    // set back   ,
+    PORTB = 0b00001111;
+    checkInputChange();
+    // must do nothing
+    ASSERT_EQUALS(outPacket.data[0], 0xFF);
+
+    // clear      ,
+    PORTB = 0b00000111;
+    checkInputChange();
+    // must do nothing
+    ASSERT_EQUALS(outPacket.data[0], 0xFF);
+
+    // set back   ,
+    PORTB = 0b00001111;
+    checkInputChange();
+    // must do nothing
+    ASSERT_EQUALS(outPacket.data[0], 0xFF);
+
+
+    for (char i = 0; i < PIN_CHANGE_LOOP_COUNT - 3; i++) {
         checkInputChange();
         ASSERT_EQUALS(outPacket.data[0], 0xFF);
     }
     checkInputChange();
     ASSERT_EQUALS(outPacket.messageType, MSG_OnPortBPinChange);
     ASSERT_EQUALS(outPacket.data[0], 0b00001000);
-    ASSERT_EQUALS(outPacket.data[1], 0b00101000);
-
+    ASSERT_EQUALS(outPacket.data[1], 0b00001000);
     // clear packet
     outPacket.messageType = outPacket.data[0] = outPacket.data[1] = 0xFF;
 
-    for (char i=0; i<50; i++) {
-        checkInputChange();
-        ASSERT_EQUALS(outPacket.data[0], 0xFF);
-    }
-
-    PORTB = 0b00100111;
-    for (char i=0; i<9; i++) {
-        checkInputChange();
-        ASSERT_EQUALS(outPacket.data[0], 0xFF);
-    }
-    checkInputChange();
-    ASSERT_EQUALS(outPacket.messageType, MSG_OnPortBPinChange);
-    ASSERT_EQUALS(outPacket.data[0], 0b00001000);
-    ASSERT_EQUALS(outPacket.data[1], 0b00100000);
 }
-
-
 
 void comparePacketBuffer(PacketBuffer *pb, char data[]) {
     char a = data[0];
@@ -122,18 +118,18 @@ void putDataToReceiveBuffer(char *c) {
 }
 
 void testUart01() {
-    char packets[][sizeof(Packet)] = {
-            {10,200,127,128,255,100,100,5},
-            {25,33,100,5,5,5,5,3},
-            {25,33,100,101,130,255,125,7},
-        };
+    char packets[][sizeof (Packet)] = {
+        {10, 200, 127, 128, 255, 100, 100, 5},
+        {25, 33, 100, 5, 5, 5, 5, 3},
+        {25, 33, 100, 101, 130, 255, 125, 7},
+    };
 
-    char expectedPBs[][11] = { //length + 9 bytes of ddata
-        {7, 138, 200, 255, 128, 255, 154, 111, 0, 0, 0},// #0
-        {5,153,161,228,128,33,0,0,0,0,0},               // #1
-        {9,153,161,228,229,130,255,253,176,56,0},       // #2
-        {5,153,161,228,128,44,0,0,0,0,0},               // #3 bad CRC
-        {10,153,161,228,128,144,223,135,145,222,100},   // #4 too long, bad CRC
+    char expectedPBs[][11] = {//length + 9 bytes of ddata
+        {7, 138, 200, 255, 128, 255, 154, 111, 0, 0, 0}, // #0
+        {5, 153, 161, 228, 128, 33, 0, 0, 0, 0, 0}, // #1
+        {9, 153, 161, 228, 229, 130, 255, 253, 176, 56, 0}, // #2
+        {5, 153, 161, 228, 128, 44, 0, 0, 0, 0, 0}, // #3 bad CRC
+        {10, 153, 161, 228, 128, 144, 223, 135, 145, 222, 100}, // #4 too long, bad CRC
     };
 
     // put 1st 4 packets to receivedPacketBuffer
@@ -218,7 +214,7 @@ void testReceiveBuffer() {
 void testUartSendInterrupt() {
     //allow interrupts to test uart sending
     char INTCONbckp = INTCON;
-    INTCON = 0b11000000;    //GIE/GIEH PEIE/GIEL TMR0IE INT0IE RBIE TMR0IF INT0IF RBIF
+    INTCON = 0b11000000; //GIE/GIEH PEIE/GIEL TMR0IE INT0IE RBIE TMR0IF INT0IF RBIF
     // send 1 byte long packet
     sendPacketBuffer.data[0] = 'a';
     sendPacketBuffer.dataLength = 1;
@@ -253,22 +249,22 @@ void testUartSendInterrupt() {
 }
 
 void testTmp() {
-//    char a[200];
-//    a[10] = 0xFE;
-//
-//    char h = 0x0F;
-//    char l = 0xFA;
-//
-//    FSR1H = h;
-//    FSR1L = l;
-//    char z = INDF1;
+    //    char a[200];
+    //    a[10] = 0xFE;
+    //
+    //    char h = 0x0F;
+    //    char l = 0xFA;
+    //
+    //    FSR1H = h;
+    //    FSR1L = l;
+    //    char z = INDF1;
 }
 
 void testWriteRamRequest() {
     char tmp[200];
     tmp[10] = 123;
 
-    *((short*)&(*(MsgWriteRamRequest*)&receivedPacket).addressL) = (short)tmp+10;
+    *((short*) &(*(MsgWriteRamRequest*) & receivedPacket).addressL) = (short) tmp + 10;
     receivedPacket.nodeId = NODE_ID;
     receivedPacket.messageType = MSG_WriteRamRequest;
     receivedPacket.length = 6;
@@ -326,7 +322,7 @@ void testCheckInputChange() {
     clearOutPacket();
     TRISA = 0;
     portConfig.oldValues[0] = 0b00111011;
-    PORTA =                   0b11110101;
+    PORTA = 0b11110101;
     portConfig.eventMask[0] = 0b01010110;
     portConfig.eventMask[1] = portConfig.eventMask[2] = portConfig.eventMask[3] = 0;
     clearOutPacket();
@@ -342,10 +338,10 @@ void testCheckInputChange() {
     clearOutPacket();
     checkInputChange();
     ASSERT_EQUALS(outPacket.messageType, 0); //no message sent
-    
+
     TRISB = 0;
     portConfig.oldValues[1] = 0b00001110;
-    PORTB =                   0b11110101;
+    PORTB = 0b11110101;
     portConfig.eventMask[1] = 0b00001111;
     clearOutPacket();
     checkInputChange();
@@ -388,7 +384,7 @@ void testEnablePwm() {
 
     ASSERT_EQUALS(CCP1CONbits.DC1B0, (14 & 0b01) != 0);
     ASSERT_EQUALS(CCP1CONbits.DC1B1, (14 & 0b10) != 0);
-    ASSERT_EQUALS(CCPR1L, 14>>2);
+    ASSERT_EQUALS(CCPR1L, 14 >> 2);
 
 
     //set pwm value to 5

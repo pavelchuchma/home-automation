@@ -24,7 +24,11 @@
 char nodeId = NODE_ID;
 
 AppFlags appFlags;
-volatile PortConfig portConfig = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
+volatile PortConfig portConfig = {
+    {0, 0, 0, 0},
+    {0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+};
 
 volatile char heartBeatCounter;
 volatile char heartBeatPeriod;
@@ -139,17 +143,17 @@ void checkInputChange() {
         char currentBitMask = 128;
         for (char b = 7; b != 255; b--) {
             // was current bit changed?
-            char *currentEventCounter = ((char *)portConfig.eventCounters) + (port << 3) + b;
-            if (changed & currentBitMask) {
-                (*currentEventCounter)++;
-                if (*currentEventCounter == PIN_CHANGE_LOOP_COUNT) {
+            char *currentEventCounter = ((char *) portConfig.eventCounters) + (port << 3) + b;
+            if (*currentEventCounter) {
+                // too early, ignore chane, decrement only
+                (*currentEventCounter)--;
+            } else {
+                if (changed & currentBitMask) {
                     // pin is changed for long time
                     maskToSend |= currentBitMask;
-                    *currentEventCounter = 0;
+                    // set delay to ignore next immediate changes
+                    *currentEventCounter = PIN_CHANGE_LOOP_COUNT;
                 }
-            } else {
-                // no change, clen counter
-                *currentEventCounter = 0;
             }
             // move to next bit
             currentBitMask = currentBitMask >> 1;
