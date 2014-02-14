@@ -25,7 +25,8 @@
 #define ASSERT_EQUALS(a,b) if ((a) != (b)) while(1)
 
 void testRunAll() {
-    testProcessSetManualPwmValueRequest();
+    testButonEvents();
+    //testProcessSetManualPwmValueRequest();
 //    testDisplay();
 //    testEnablePwm();
 //    testSetPortRequest();
@@ -36,6 +37,64 @@ void testRunAll() {
 //    testReceiveBuffer();
 //    testUart01();
 }
+
+
+
+void testButonEvents() {
+    portConfig.eventMask[1] = 0b00101000;
+    TRISB = 0;
+    PORTB = 0;
+    // clear packet
+    outPacket.messageType = outPacket.data[0] = outPacket.data[1] = 0xFF;
+    checkInputChange();
+
+    PORTB = 0b00101111;
+    for (char i=0; i<8; i++) {
+        if (i == 5) {
+            PORTB = 0b00100111;
+            checkInputChange();
+            PORTB = 0b00101111;
+        }
+        checkInputChange();
+        ASSERT_EQUALS(outPacket.data[0], 0xFF);
+    }
+    checkInputChange();
+    ASSERT_EQUALS(outPacket.messageType, MSG_OnPortBPinChange);
+    ASSERT_EQUALS(outPacket.data[0], 0b00100000);
+    ASSERT_EQUALS(outPacket.data[1], 0b00100000);
+
+    // clear packet
+    outPacket.messageType = outPacket.data[0] = outPacket.data[1] = 0xFF;
+
+    for (char i=0; i<5; i++) {
+        checkInputChange();
+        ASSERT_EQUALS(outPacket.data[0], 0xFF);
+    }
+    checkInputChange();
+    ASSERT_EQUALS(outPacket.messageType, MSG_OnPortBPinChange);
+    ASSERT_EQUALS(outPacket.data[0], 0b00001000);
+    ASSERT_EQUALS(outPacket.data[1], 0b00101000);
+
+    // clear packet
+    outPacket.messageType = outPacket.data[0] = outPacket.data[1] = 0xFF;
+
+    for (char i=0; i<50; i++) {
+        checkInputChange();
+        ASSERT_EQUALS(outPacket.data[0], 0xFF);
+    }
+
+    PORTB = 0b00100111;
+    for (char i=0; i<9; i++) {
+        checkInputChange();
+        ASSERT_EQUALS(outPacket.data[0], 0xFF);
+    }
+    checkInputChange();
+    ASSERT_EQUALS(outPacket.messageType, MSG_OnPortBPinChange);
+    ASSERT_EQUALS(outPacket.data[0], 0b00001000);
+    ASSERT_EQUALS(outPacket.data[1], 0b00100000);
+}
+
+
 
 void comparePacketBuffer(PacketBuffer *pb, char data[]) {
     char a = data[0];

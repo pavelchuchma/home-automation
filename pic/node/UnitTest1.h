@@ -19,6 +19,7 @@ void testCheckInputChange();
 void testEnablePwm();
 void testDisplay();
 void testProcessSetManualPwmValueRequest();
+void testButonEvents();
 
 #endif	/* UNITTEST1_H */
 

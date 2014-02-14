@@ -24,7 +24,7 @@
 char nodeId = NODE_ID;
 
 AppFlags appFlags;
-volatile PortConfig portConfig = {{0, 0, 0, 0}, {0, 0, 0, 0}};
+volatile PortConfig portConfig = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
 
 volatile char heartBeatCounter;
 volatile char heartBeatPeriod;
@@ -125,7 +125,6 @@ void processSetPort() {
 }
 
 void checkInputChange() {
-
     if (!(portConfig.eventMask[0] | portConfig.eventMask[1] | portConfig.eventMask[2] | portConfig.eventMask[3])) return;
 
     outPacket.nodeId = nodeId;
@@ -133,13 +132,35 @@ void checkInputChange() {
 
     volatile unsigned char *ports = &PORTA;
 
-    for (char i = 3; i != 255; i--) {
-        char change = (ports[i] ^ portConfig.oldValues[i]) & portConfig.eventMask[i];
-        if (change) {
-            outPacket.data[0] = change;
-            portConfig.oldValues[i] = (ports[i] & portConfig.eventMask[i]);
-            outPacket.data[1] = portConfig.oldValues[i];
-            outPacket.messageType = MSG_OnPortAPinChange + i;
+    for (char port = 3; port != 255; port--) {
+        char portValue = ports[port];
+        char changed = (portValue ^ portConfig.oldValues[port]) & portConfig.eventMask[port];
+        char maskToSend = 0;
+        char currentBitMask = 128;
+        for (char b = 7; b != 255; b--) {
+            // was current bit changed?
+            char *currentEventCounter = ((char *)portConfig.eventCounters) + (port << 3) + b;
+            if (changed & currentBitMask) {
+                (*currentEventCounter)++;
+                if (*currentEventCounter == PIN_CHANGE_LOOP_COUNT) {
+                    // pin is changed for long time
+                    maskToSend |= currentBitMask;
+                    *currentEventCounter = 0;
+                }
+            } else {
+                // no change, clen counter
+                *currentEventCounter = 0;
+            }
+            // move to next bit
+            currentBitMask = currentBitMask >> 1;
+        }
+        if (maskToSend) {
+            // set bitmask of chaned bits
+            outPacket.data[0] = maskToSend;
+            portConfig.oldValues[port] = portConfig.oldValues[port] & (maskToSend ^ 0xFF) | (portValue & maskToSend);
+            // set new values of port (+ clear bits outside event mask)
+            outPacket.data[1] = portConfig.oldValues[port] & portConfig.eventMask[port];
+            outPacket.messageType = MSG_OnPortAPinChange + port;
             if (nodeId == NODE_ROUTER) {
                 uart_sendPacket(&outPacket);
             } else {
