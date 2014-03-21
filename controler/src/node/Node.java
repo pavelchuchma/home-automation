@@ -178,10 +178,10 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         packetUartIO.send(req);
     }
 
-    synchronized public void setManualPwmValue(char port, int pin, int value) throws IOException, IllegalArgumentException {
+    synchronized public Packet setManualPwmValue(Pin pin, int value) throws IOException, IllegalArgumentException {
         log.debug("setPwmValue");
-        Packet req = Packet.createMsgMSGSetManualPwmValue(nodeId, port, pin, value);
-        packetUartIO.send(req);
+        Packet req = Packet.createMsgMSGSetManualPwmValue(nodeId, pin.getPort(), pin.getPinIndex(), value);
+        return packetUartIO.send(req, MessageType.MSG_SetManualPwmValueResponse, 100);
     }
 
     synchronized public void setInitializationFinished() throws IOException {
@@ -196,11 +196,11 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         packetUartIO.send(req);
     }
 
-    synchronized public boolean setFrequency(int cpuFrequency) throws IOException, IllegalArgumentException {
+    synchronized public boolean setFrequency(CpuFrequency cpuFrequency) throws IOException, IllegalArgumentException {
         log.debug("setFrequency");
-        if (cpuFrequency != 1 && cpuFrequency != 2 && cpuFrequency != 8 && cpuFrequency != 16)
-            throw new IllegalArgumentException("Unsupported frequency value");
-        Packet req = Packet.createMsgSetFrequency(nodeId, cpuFrequency, cpuFrequency - 1);
+        if (cpuFrequency == CpuFrequency.unknown)
+            throw new IllegalArgumentException("Unsupported frequency value: " + cpuFrequency);
+        Packet req = Packet.createMsgSetFrequency(nodeId, cpuFrequency.getValue());
         Packet response = packetUartIO.send(req, MessageType.MSG_SetFrequencyResponse, 300);
         if (response == null) return false;
 
@@ -273,19 +273,26 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         int commonOutputMask = 0;
         int commonEventMask = 0;
         int commonInitialOutputValues = 0;
+        CpuFrequency reqFrequency = CpuFrequency.unknown;
+
+        // convert all 4 ports into 32-bit values
         for (ConnectedDevice device : devices) {
             commonOutputMask |= device.getOutputMasks();
             commonEventMask |= device.getEventMask();
             commonInitialOutputValues |= device.getInitialOutputValues();
+
+            if (reqFrequency == CpuFrequency.unknown) {
+                reqFrequency = device.getRequiredCpuFrequency();
+            }
         }
 
-        for (int i = 0; i < 4; i++) {
-            int valueMask = (commonOutputMask >> i * 8) & 0xFF;
-            int trisMask = (valueMask ^ 0xFF) & 0xFF;
-            int eventMask = (commonEventMask >> i * 8) & 0xFF;
-            int value = (commonInitialOutputValues >> i * 8) & 0xFF;
+        try {
+            for (int i = 0; i < 4; i++) {
+                int valueMask = (commonOutputMask >> i * 8) & 0xFF;
+                int trisMask = (valueMask ^ 0xFF) & 0xFF;
+                int eventMask = (commonEventMask >> i * 8) & 0xFF;
+                int value = (commonInitialOutputValues >> i * 8) & 0xFF;
 
-            try {
                 if (valueMask != 0 || eventMask != 0) {
                     if (i == 1) {
                         // don't modify tris for Can port
@@ -295,9 +302,13 @@ public class Node implements PacketUartIO.PacketReceivedListener {
                     }
                     setPortValue((char) ('A' + i), valueMask, value, eventMask, trisMask);
                 }
-            } catch (IOException e) {
-                log.error("Node initialization failed!", e);
             }
+
+            if (reqFrequency != CpuFrequency.unknown) {
+                setFrequency(reqFrequency);
+            }
+        } catch (IOException e) {
+            log.error("Node initialization failed!", e);
         }
     }
 }

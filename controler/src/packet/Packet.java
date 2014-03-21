@@ -77,12 +77,12 @@ public class Packet {
         int portNum = port - 'A';
         if (port < 'A' || port > 'C') throw new IllegalArgumentException("Invalid port value");
         if (pin < 0 || pin > 7) throw new IllegalArgumentException("Invalid pin value");
-        if (value < 0 || value > 15) throw new IllegalArgumentException("Invalid pwm value");
+        if (value < 0 || value > 16) throw new IllegalArgumentException("Invalid pwm value");
         return new Packet(nodeId, MessageType.MSG_SetManualPwmValueRequest, new int[]{portNum + (pin << 4), value});
     }
 
-    public static Packet createMsgSetFrequency(int nodeId, int cpuFrequency, int canBaudRatePrescaler) {
-        return new Packet(nodeId, MessageType.MSG_SetFrequencyRequest, new int[]{cpuFrequency & 0xFF, canBaudRatePrescaler & 0xFF});
+    public static Packet createMsgSetFrequency(int nodeId, int cpuFrequency) {
+        return new Packet(nodeId, MessageType.MSG_SetFrequencyRequest, new int[]{cpuFrequency & 0xFF, (cpuFrequency-1) & 0xFF});
     }
 
     @Override

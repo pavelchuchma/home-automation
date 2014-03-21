@@ -1,18 +1,19 @@
 package controller;
 
+import controller.Action.Action;
 import controller.actor.Actor;
 import node.NodePin;
 
 public class ActionBinding {
     NodePin trigger;
 
-    Actor[] buttonDownActors;
-    Actor[] buttonUpActors;
+    Action[] buttonDownActions;
+    Action[] buttonUpActions;
 
-    public ActionBinding(NodePin trigger, Actor[] buttonDownActors, Actor[] buttonUpActors) {
+    public ActionBinding(NodePin trigger, Action[] buttonDownActions, Action[] buttonUpActions) {
         this.trigger = trigger;
-        this.buttonDownActors = buttonDownActors;
-        this.buttonUpActors = buttonUpActors;
+        this.buttonDownActions = buttonDownActions;
+        this.buttonUpActions = buttonUpActions;
     }
 
     public NodePin getTrigger() {
@@ -23,11 +24,11 @@ public class ActionBinding {
         return trigger.toString();
     }
 
-    public Actor[] getButtonDownActors() {
-        return buttonDownActors;
+    public Action[] getButtonDownActions() {
+        return buttonDownActions;
     }
 
-    public Actor[] getButtonUpActors() {
-        return buttonUpActors;
+    public Action[] getButtonUpActions() {
+        return buttonUpActions;
     }
 }

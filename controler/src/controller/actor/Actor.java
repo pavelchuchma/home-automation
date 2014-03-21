@@ -3,9 +3,13 @@ package controller.actor;
 import node.NodePin;
 
 public interface Actor {
-    public String getId();
+    String getId();
 
-    public abstract NodePin[] getOutputPins();
+    //abstract NodePin[] getOutputPins();
 
-    public void perform();
+    void setValue(int val, Object actionData);
+
+    Object getLastActionData();
+
+    int getValue();
 }

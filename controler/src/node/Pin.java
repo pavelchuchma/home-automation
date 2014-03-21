@@ -47,6 +47,13 @@ public enum Pin {
         return (char) (1 << (index % 8));
     }
 
+    /**
+     * Returns index of pin in port (0-7)
+     */
+    public int getPinIndex() {
+        return index % 8;
+    }
+
     public static Pin get(int portIndex, int pinIndex) {
         if (portIndex < 0 || portIndex > 3 || pinIndex < 0 || pinIndex > 7) {
             throw new IllegalArgumentException(String.format("Invalid values for Pin %d:%d", portIndex, pinIndex));

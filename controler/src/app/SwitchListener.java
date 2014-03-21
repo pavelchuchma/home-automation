@@ -1,7 +1,7 @@
 package app;
 
+import controller.Action.Action;
 import controller.ActionBinding;
-import controller.actor.Actor;
 import node.Node;
 import node.Pin;
 import nodeImpl.AbstractNodeListener;
@@ -22,28 +22,44 @@ public class SwitchListener extends AbstractNodeListener {
         String key = createNodePinKey(sw.getTrigger().getNodeId(), sw.getTrigger().getPin());
         switchMap.put(key, sw);
         log.info(String.format("ActionBinding '%s' added", sw));
-        for (Actor a : sw.getButtonDownActors()) {
-            log.info("  - " + a.toString());
+        if(sw.getButtonDownActions() != null) {
+            log.info(" buttonDown");
+            for (Action a : sw.getButtonDownActions()) {
+                log.info("  - " + a.toString());
+            }
         }
-    }
-
-    @Override
-    public void onButtonDown(Node node, Pin pin) {
-        String swKey = createNodePinKey(node.getNodeId(), pin);
-        ActionBinding sw = switchMap.get(swKey);
-        if (sw != null) {
-            log.debug(String.format("Executing ActionBinding: %s", sw));
-            for (Actor a : sw.getButtonDownActors()) {
-                log.debug(String.format("-> action: %s", a.getId()));
-                a.perform();
+        if(sw.getButtonUpActions() != null) {
+            log.info(" buttonUp");
+            for (Action a : sw.getButtonUpActions()) {
+                log.info("  - " + a.toString());
             }
         }
     }
 
     @Override
-    public void onButtonUp(Node node, Pin pin, int downTime) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void onButtonDown(Node node, Pin pin) {
+        onButtonEvent(node, pin, true);
     }
+
+    @Override
+    public void onButtonUp(Node node, Pin pin, int downTime) {
+        onButtonEvent(node, pin, false);
+    }
+
+    private void onButtonEvent(Node node, Pin pin, boolean buttonDown) {
+        String swKey = createNodePinKey(node.getNodeId(), pin);
+        ActionBinding sw = switchMap.get(swKey);
+        if (sw != null) {
+            log.debug(String.format("Executing ActionBinding: %s", sw));
+            Action[] actions = (buttonDown) ? sw.getButtonDownActions() : sw.getButtonUpActions();
+            for (Action a : actions) {
+                log.debug(String.format("-> action: %s", a.getActor().getId()));
+                a.perform();
+            }
+        }
+    }
+
+
 
     @Override
     public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, IllegalArgumentException {

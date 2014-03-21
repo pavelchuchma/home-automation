@@ -39,6 +39,8 @@ public class NodeInfoCollector {
                 // set boot time in case of reboot message
                 if (packet.messageType == MessageType.MSG_OnReboot) {
                     nodeInfo.setBootTime(new Date());
+                    // invalidate build time
+                    nodeInfo.buildTime = null;
                 }
 
                 // Check if build time is set.
@@ -101,12 +103,15 @@ public class NodeInfoCollector {
         StringBuilder builder = new StringBuilder();
 
         builder.append("<html>" +
-                "<meta http-equiv='refresh' content='1'/>" +
+                "<meta http-equiv='refresh' content='1;url=/'/>" +
                 "<head>" +
                 "<link href='report.css' rel='stylesheet' type='text/css'/>\n" +
                 "</head>" +
-                "<body>" +
-                "<table class='nodeTable'>\n" +
+                "<body>");
+        for (int i=1; i<=5; i++) {
+            builder.append(String.format("<a href=/a%d>Action %d</a>&nbsp;&nbsp;&nbsp;&nbsp;", i, i));
+        }
+        builder.append("<table class='nodeTable'>\n" +
                 "<tr><th class=''>Node #<th class=''>Last Ping Time<th class=''>Boot Time<th class=''>Build Time<th class=''>MessageLog");
 
         for (NodeInfo info : nodeInfoArray) {
@@ -130,7 +135,8 @@ public class NodeInfoCollector {
                 builder.append("\n");
             }
         }
-        builder.append("</table></body></html>");
+        builder.append("</table>");
+        builder.append("</body></html>");
         return builder.toString();
     }
 

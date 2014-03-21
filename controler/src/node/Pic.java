@@ -3,22 +3,22 @@
 package node; 
  
 public class Pic {
-    public static final int appFlags = 0x39;
-    public static final int canReceiveLongMsgCount = 0x3D;
-    public static final int canReceiveMismatch = 0x3E;
-    public static final int displaySegments = 0x33;
-    public static final int displayValue = 0x64;
-    public static final int displayValueOld = 0x67;
-    public static final int heartBeatCounter = 0x6A;
-    public static final int heartBeatPeriod = 0x3F;
-    public static final int manualPwmData = 0x8E;
-    public static final int nodeId = 0xB2;
-    public static final int outPacket = 0x4B;
-    public static final int portConfig = 0x9F;
-    public static final int receivedPacket = 0x53;
-    public static final int receiveQueue = 0x6B;
-    public static final int sendPacketBuffer = 0x41;
-    public static final int timerEventPrescaler = 0x40;
+    public static final int appFlags = 0x3D;
+    public static final int canReceiveLongMsgCount = 0x41;
+    public static final int canReceiveMismatch = 0x42;
+    public static final int displaySegments = 0x60;
+    public static final int displayValue = 0x6A;
+    public static final int displayValueOld = 0x6D;
+    public static final int heartBeatCounter = 0x70;
+    public static final int heartBeatPeriod = 0x43;
+    public static final int manualPwmPortData = 0x71;
+    public static final int nodeId = 0xFA;
+    public static final int outPacket = 0x50;
+    public static final int portConfig = 0xA4;
+    public static final int receivedPacket = 0x58;
+    public static final int receiveQueue = 0xCC;
+    public static final int sendPacketBuffer = 0x46;
+    public static final int timerEventPrescaler = 0x44;
  
     public static final int RXERRCNT = 0x0E41;
     public static final int TXERRCNT = 0x0E42;
@@ -487,7 +487,7 @@ public class Pic {
             case displayValueOld: return "displayValueOld";
             case heartBeatCounter: return "heartBeatCounter";
             case heartBeatPeriod: return "heartBeatPeriod";
-            case manualPwmData: return "manualPwmData";
+            case manualPwmPortData: return "manualPwmPortData";
             case nodeId: return "nodeId";
             case outPacket: return "outPacket";
             case receivedPacket: return "receivedPacket";

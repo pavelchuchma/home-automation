@@ -1,6 +1,9 @@
 package servlet;
 
 import app.NodeInfoCollector;
+import controller.Action.Action;
+import node.Node;
+import node.Pic;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -36,6 +39,9 @@ public class Servlet extends AbstractHandler {
             }
 
         } else {
+            if (target.startsWith("/a")) {
+                processAction(target);
+            }
             response.setContentType("text/html;charset=utf-8");
             response.setStatus(HttpServletResponse.SC_OK);
             baseRequest.setHandled(true);
@@ -49,5 +55,29 @@ public class Servlet extends AbstractHandler {
 
         server.start();
         server.join();
+    }
+
+    public static Action action1;
+    public static Action action2;
+    public static Action action3;
+    public static Action action4;
+    public static Action action5;
+
+    private void processAction(String action) {
+        if (action.startsWith("/a1") && action1 != null) {
+            action1.perform();
+        }
+        if (action.startsWith("/a2") && action2 != null) {
+            action2.perform();
+        }
+        if (action.startsWith("/a3") && action3 != null) {
+            action3.perform();
+        }
+        if (action.startsWith("/a4") && action4 != null) {
+            action4.perform();
+        }
+        if (action.startsWith("/a5") && action5 != null) {
+            action5.perform();
+        }
     }
 }

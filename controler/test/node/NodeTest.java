@@ -1,10 +1,15 @@
 package node;
 
+import app.NodeInfoCollector;
+import app.SwitchListener;
+import controller.ActionBinding;
+import controller.device.InputDevice;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import packet.Packet;
 import packet.PacketUartIO;
+import packet.PacketUartIOException;
 
 import java.io.IOException;
 import java.util.Date;
@@ -524,7 +529,7 @@ public class NodeTest {
         Node node = new Node(3, packetUartIO);
         node.dumpMemory(new int[]{Pic.OSCCON, Pic.BRGCON1, Pic.T0CON});
         log.info("** SETING ***");
-        node.setFrequency(2);
+        node.setFrequency(CpuFrequency.twoMHz);
         //node.setFrequency(4);
         //node.setFrequency(8);
         //node.setFrequency(16);
@@ -567,5 +572,21 @@ public class NodeTest {
 
         Node node = new Node(3, packetUartIO);
         node.setPinValue(Pin.pinB2, 1);
+    }
+
+    @Test
+    public void testIntialization() throws PacketUartIOException {
+        String port = (System.getenv("COMPUTERNAME") != null) ? "COM1" : "/dev/ttyS80";
+        PacketUartIO packetUartIO = new PacketUartIO(port, 19200);
+        NodeInfoCollector nodeInfoCollector = new NodeInfoCollector(packetUartIO);
+
+        SwitchListener lst = nodeInfoCollector.getSwitchListener();
+
+        Node pirNodeA = nodeInfoCollector.createNode(7, "PirNodeA");
+        InputDevice pirA1Prizemi = new InputDevice("PirA1Prizemi", pirNodeA, 3);
+        lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn5AndActivate(), null, null));
+
+        pirNodeA.initialize();
+
     }
 }

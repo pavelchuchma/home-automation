@@ -1,5 +1,6 @@
 package controller.device;
 
+import node.CpuFrequency;
 import node.Node;
 import node.NodePin;
 import node.Pin;
@@ -7,6 +8,10 @@ import node.Pin;
 public class OutputDevice extends ConnectedDevice {
     public OutputDevice(String id, Node node, int connectorPosition) {
         super(id, node, connectorPosition, new String[]{"out1", "out2", "out3", "out4", "out5", "out6"});
+    }
+
+    public OutputDevice(String id, Node node, int connectorPosition, CpuFrequency requiredCpuFrequency) {
+        super(id, node, connectorPosition, new String[]{"out1", "out2", "out3", "out4", "out5", "out6"}, requiredCpuFrequency);
     }
 
     public NodePin getOut1() {

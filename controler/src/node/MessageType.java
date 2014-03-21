@@ -37,7 +37,7 @@ public class MessageType {
     public static final byte MSG_SetFrequencyRequest = 55;  // 0-cpuFreqData, 1-canBaudRatePrescaler
     public static final byte MSG_SetFrequencyResponse = 56;
     public static final byte MSG_SetManualPwmValueRequest = 57; // 0(0:3) port, 0(4:7) pin, 1-value
-    public static final byte MSG_SetManualPwmValueResponse = 58;
+    public static final byte MSG_SetManualPwmValueResponse = 58; //0-ErrorCodes (0 - OK, 1 - bad param)
 
     public static String toString(int type) {
         switch (type) {
