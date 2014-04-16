@@ -1,0 +1,949 @@
+name: "Rele 43.41"
+author: "Finder"
+description: "Rele 10A"
+units: NM
+sel_rect: -2921000 -2921000 28321000 10541000
+ref_text: 1270000 5080000 2540000 0 177800
+value_text: 1270000 10160000 2540000 0 177800
+centroid: 0 3810000 1270000 0
+outline_polyline: 254000 -2540000 10160000
+next_corner: 27940000 10160000 0
+next_corner: 27940000 -2540000 0
+next_corner: -2540000 -2540000 0
+close_polyline: 0
+n_pins: 5
+pin: "1" 711200 0 0 0
+top_pad: 4 4064000 1524000 1524000 508000
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 4 4064000 1524000 1524000 508000
+pin: "4" 711200 3175000 7620000 0
+top_pad: 4 4064000 1524000 1524000 508000
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 4 4064000 1524000 1524000 508000
+pin: "5" 711200 6350000 0 0
+top_pad: 5 4064000 1524000 1524000 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 4064000 1524000 1524000 0
+pin: "7" 711200 25400000 0 0
+top_pad: 5 3048000 1143000 1143000 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 3048000 1143000 1143000 0
+pin: "8" 711200 25400000 7620000 0
+top_pad: 5 3048000 1143000 1143000 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 3048000 1143000 1143000 0
+
+name: "Rele TNA-2C-1205L"
+author: "Sun Hold"
+description: "Rele 5A"
+  units: NM
+  sel_rect: -2921000 -2921000 28321000 10541000
+  ref_text: 1270000 5080000 2540000 0 177800
+  value_text: 1270000 10160000 2540000 0 177800
+  centroid: 0 3810000 1270000 0
+  outline_polyline: 254000 -2540000 10160000
+    next_corner: 27940000 10160000 0
+    next_corner: 27940000 -2540000 0
+    next_corner: -2540000 -2540000 0
+    close_polyline: 0
+  n_pins: 8
+    pin: "1" 711200 0 0 0
+      top_pad: 4 4064000 1524000 1524000 508000
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 4 4064000 1524000 1524000 508000
+    pin: "2" 711200 0 7620000 0
+      top_pad: 4 4064000 1524000 1524000 508000
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 4 4064000 1524000 1524000 508000
+    pin: "3" 711200 5080000 0 0
+      top_pad: 4 4064000 1524000 1524000 508000
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 4 4064000 1524000 1524000 508000
+    pin: "4" 711200 5080000 7620000 0
+      top_pad: 4 4064000 1524000 1524000 508000
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 4 4064000 1524000 1524000 508000
+    pin: "5" 711200 10160000 0 0
+      top_pad: 5 4064000 1524000 1524000 0
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 5 4064000 1524000 1524000 0
+    pin: "6" 711200 10160000 7620000 0
+      top_pad: 5 4064000 1524000 1524000 0
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 5 4064000 1524000 1524000 0
+    pin: "7" 711200 25400000 0 0
+      top_pad: 5 3048000 1143000 1143000 0
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 5 3048000 1143000 1143000 0
+    pin: "8" 711200 25400000 7620000 0
+      top_pad: 5 3048000 1143000 1143000 0
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 5 3048000 1143000 1143000 0
+
+name: "10 PIN"
+author: "Ivex"
+source: "PRINTED CIRCUIT DESIGN METHODS PAGE 411"
+units: MIL
+sel_rect: -40 -57.5 440 157.5
+ref_text: 50 200 160 0 7
+value_text: 50 200 60 0 7
+centroid: 0 200 50 0
+n_pins: 10
+pin: "1" 28 0 0 0
+top_pad: 3 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 3 95 30 30 0
+pin: "2" 28 0 100 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "3" 28 100 0 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "4" 28 100 100 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "5" 28 200 0 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "6" 28 200 100 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "7" 28 300 0 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "8" 28 300 100 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "9" 28 400 0 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "10" 28 400 100 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+
+name: "6DIP300b-MOC3041"
+units: MIL
+sel_rect: -63.5 -85 263.5 385
+ref_text: 50 -100 150 270 7
+value_text: 25 20 140 0 7
+centroid: 0 150 150 0
+outline_polyline: 7 -50 50
+next_corner: 250 50 0
+next_corner: 250 50 0
+next_corner: 250 250 0
+next_corner: 250 250 0
+next_corner: -50 250 0
+close_polyline: 0
+outline_polyline: 7 -50 100
+next_corner: 0 100 0
+next_corner: 0 200 0
+next_corner: -50 200 0
+close_polyline: 0
+n_pins: 4
+pin: "1" 28 0 0 0
+top_pad: 3 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 3 150 30 30 0
+pin: "2" 28 100 0 0
+top_pad: 2 50 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 2 50 30 30 0
+pin: "4" 28 200 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "6" 28 0 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+
+name: "R0805-Mini"
+author: "Ivex"
+source: "SURFACE MOUNT DESIGN AND LAND PATTERN STANDARD SUBSECTION 8.1 (PAGE 3 OF 4)"
+units: NM
+sel_rect: -1358900 -1358900 3898900 1358900
+ref_text: 1270000 1712000 2000000 0 177800
+value_text: 635000 254000 -508000 0 177800
+centroid: 1 0 0 0
+outline_polyline: 177800 3556000 1016000
+next_corner: 3556000 -1016000 0
+next_corner: -1016000 -1016000 0
+next_corner: -1016000 1016000 0
+close_polyline: 0
+n_pins: 2
+pin: "1" 0 0 0 0
+top_pad: 3 2032000 1016000 1016000 0
+pin: "2" 0 2540000 0 0
+top_pad: 3 2032000 1016000 1016000 0
+
+name: "Resistor-short"
+author: "Chuma"
+units: MIL
+sel_rect: -47.5 -47.5 347.5 47.5
+ref_text: 25 50 -10 0 2.5
+value_text: 25 130 -10 0 2.5
+centroid: 0 200 0 0
+outline_polyline: 7 40 30
+next_corner: 260 30 0
+next_corner: 260 -30 0
+next_corner: 40 -30 0
+close_polyline: 0
+n_pins: 2
+pin: "1" 28 0 0 0
+top_pad: 1 75 37 37 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 75 37 37 0
+pin: "2" 28 300 0 0
+top_pad: 1 75 37 37 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 75 37 37 0
+
+name: "Connector2"
+units: MIL
+sel_rect: -113.5 -163.5 313.5 163.5
+ref_text: 50 100 140 0 7
+value_text: 50 100 40 0 7
+centroid: 0 100 0 0
+outline_polyline: 7 -100 -150
+next_corner: 300 -150 0
+next_corner: 300 150 0
+next_corner: -100 150 0
+close_polyline: 0
+n_pins: 2
+pin: "1" 45 0 0 0
+top_pad: 2 150 37 37 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 2 150 37 37 0
+pin: "2" 45 200 0 0
+top_pad: 1 150 37 37 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 150 37 37 0
+
+name: "Connector"
+units: MIL
+sel_rect: -113.5 -163.5 513.5 163.5
+ref_text: 50 100 140 0 7
+value_text: 50 100 40 0 7
+centroid: 0 100 0 0
+outline_polyline: 7 -100 -150
+next_corner: 500 -150 0
+next_corner: 500 150 0
+next_corner: -100 150 0
+close_polyline: 0
+n_pins: 3
+pin: "1" 45 0 0 0
+top_pad: 1 150 37 37 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 150 37 37 0
+pin: "2" 45 200 0 0
+top_pad: 1 150 37 37 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 150 37 37 0
+pin: "3" 45 400 0 0
+top_pad: 1 150 37 37 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 150 37 37 0
+
+name: "LED"
+units: MIL
+sel_rect: -45 -95 145 95
+ref_text: 50 35 105 0 7
+value_text: 50 35 5 0 7
+centroid: 1 50 0 0
+outline_polyline: 10 -30 0
+next_corner: 50 80 1
+next_corner: 130 0 1
+outline_polyline: 10 -30 0
+next_corner: 50 -80 2
+next_corner: 130 0 2
+n_pins: 2
+pin: "1" 26 100 0 0
+top_pad: 1 50 25 25 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 50 25 25 0
+pin: "2" 26 0 0 0
+top_pad: 1 50 25 25 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 50 25 25 0
+
+name: "6DIP300b"
+author: "Ivex"
+units: MIL
+sel_rect: -63.5 -85 263.5 385
+ref_text: 50 -100 150 270 7
+value_text: 25 20 140 0 7
+centroid: 0 150 150 0
+outline_polyline: 7 -50 50
+next_corner: 250 50 0
+next_corner: 250 50 0
+next_corner: 250 250 0
+next_corner: 250 250 0
+next_corner: -50 250 0
+close_polyline: 0
+outline_polyline: 7 -50 100
+next_corner: 0 100 0
+next_corner: 0 200 0
+next_corner: -50 200 0
+close_polyline: 0
+n_pins: 6
+pin: "1" 28 0 0 0
+top_pad: 3 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 3 150 30 30 0
+pin: "2" 28 100 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "3" 28 200 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "4" 28 200 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "5" 28 100 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "6" 28 0 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+
+name: "R0805-Bold"
+author: "Ivex"
+source: "SURFACE MOUNT DESIGN AND LAND PATTERN STANDARD SUBSECTION 8.1 (PAGE 3 OF 4)"
+units: MIL
+sel_rect: -68.5 -53.5 168.5 53.5
+ref_text: 25 50 10 0 7
+value_text: 25 -5 -30 0 7
+centroid: 1 -45 0 0
+outline_polyline: 7 145 40
+next_corner: 155 40 0
+next_corner: 155 -40 0
+next_corner: -55 -40 0
+next_corner: -55 40 0
+close_polyline: 0
+n_pins: 2
+pin: "1" 0 -5 0 0
+top_pad: 3 80 40 40 0
+pin: "2" 0 105 0 0
+top_pad: 3 80 40 40 0
+
+name: "CK06"
+author: "Ivex"
+source: "PRINTED CIRCUIT DESIGN METHODS PAGE 411"
+units: MIL
+sel_rect: -63.5 -63.5 263.5 63.5
+ref_text: 50 100 80 0 7
+value_text: 50 100 -20 0 7
+centroid: 0 100 0 0
+outline_polyline: 7 -50 50
+next_corner: 250 50 0
+next_corner: 250 -50 0
+next_corner: -50 -50 0
+close_polyline: 0
+n_pins: 2
+pin: "1" 28 0 0 0
+top_pad: 1 80 37 37 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 80 37 37 0
+pin: "2" 28 200 0 0
+top_pad: 1 80 37 37 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 80 37 37 0
+
+name: "8DIP300"
+author: "Ivex"
+source: "DIGIKEY CATALOG NO. 941, PAGE 64"
+units: MIL
+sel_rect: -63.5 -85 363.5 385
+ref_text: 50 -100 150 270 7
+value_text: 50 0 150 270 7
+centroid: 0 150 150 0
+outline_polyline: 7 -50 50
+next_corner: 350 50 0
+next_corner: 350 250 0
+next_corner: -50 250 0
+close_polyline: 0
+outline_polyline: 7 -50 100
+next_corner: 0 100 0
+next_corner: 0 200 0
+next_corner: -50 200 0
+close_polyline: 0
+n_pins: 8
+pin: "1" 28 0 0 0
+top_pad: 3 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 3 150 30 30 0
+pin: "2" 28 100 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "3" 28 200 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "4" 28 300 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "5" 28 300 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "6" 28 200 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "7" 28 100 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "8" 28 0 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+
+name: "4X2HDR-100"
+author: "Ivex"
+source: "PRINTED CIRCUIT DESIGN METHODS PAGE 411"
+description: "holes 60 mils"
+units: MIL
+sel_rect: -40 -57.5 340 157.5
+ref_text: 50 150 160 0 7
+value_text: 50 150 60 0 7
+centroid: 0 150 50 0
+n_pins: 8
+pin: "1" 28 0 0 0
+top_pad: 3 90 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 3 90 30 30 0
+pin: "2" 28 0 100 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "3" 28 100 0 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "4" 28 100 100 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "5" 28 200 0 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "6" 28 200 100 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "7" 28 300 0 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "8" 28 300 100 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+
+name: "4X2HDR-100-big holes"
+author: "Ivex"
+source: "PRINTED CIRCUIT DESIGN METHODS PAGE 411"
+description: "holes 60 mils"
+units: MIL
+sel_rect: -40 -50 340 150
+ref_text: 50 150 160 0 7
+value_text: 50 150 60 0 7
+centroid: 0 150 50 0
+n_pins: 8
+pin: "1" 28 0 0 0
+top_pad: 3 80 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 3 80 30 30 0
+pin: "2" 28 0 100 0
+top_pad: 5 80 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 80 30 30 0
+pin: "3" 28 100 0 0
+top_pad: 5 80 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 80 30 30 0
+pin: "4" 28 100 100 0
+top_pad: 5 80 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 80 30 30 0
+pin: "5" 28 200 0 0
+top_pad: 5 80 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 80 30 30 0
+pin: "6" 28 200 100 0
+top_pad: 5 80 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 80 30 30 0
+pin: "7" 28 300 0 0
+top_pad: 5 80 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 80 30 30 0
+pin: "8" 28 300 100 0
+top_pad: 5 80 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 80 30 30 0
+
+name: "28DIP300-PIC"
+author: "Ivex"
+source: "DIGIKEY CATALOG NO. 941, PAGE 64"
+units: MIL
+sel_rect: -63.5 -85 1363.5 385
+ref_text: 50 -125 150 270 7
+value_text: 50 -25 150 270 7
+centroid: 0 650 150 0
+outline_polyline: 7 -50 50
+next_corner: 1350 50 0
+next_corner: 1350 250 0
+next_corner: -50 250 0
+close_polyline: 0
+outline_polyline: 7 -50 100
+next_corner: 0 100 0
+next_corner: 0 200 0
+next_corner: -50 200 0
+close_polyline: 0
+n_pins: 28
+pin: "1" 28 0 0 0
+top_pad: 3 100 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 3 100 30 30 0
+pin: "2" 28 100 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "3" 28 200 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "4" 28 300 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "5" 28 400 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "6" 28 500 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "7" 28 600 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "8" 28 700 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "9" 28 800 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "10" 28 900 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "11" 28 1000 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "12" 28 1100 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "13" 28 1200 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "14" 28 1300 0 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "15" 28 1300 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "16" 28 1200 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "17" 28 1100 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "18" 28 1000 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "19" 28 900 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "20" 28 800 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "21" 28 700 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "22" 28 600 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "23" 28 500 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "24" 28 400 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "25" 28 300 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "26" 28 200 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "27" 28 100 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+pin: "28" 28 0 300 0
+top_pad: 5 150 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 150 30 30 0
+
+name: "28DIP300"
+author: "Ivex"
+source: "DIGIKEY CATALOG NO. 941, PAGE 64"
+units: MIL
+sel_rect: -63.5 -37.5 1363.5 340
+ref_text: 50 -125 150 270 7
+value_text: 50 -25 150 270 7
+centroid: 0 650 150 0
+outline_polyline: 7 -50 50
+next_corner: 1350 50 0
+next_corner: 1350 250 0
+next_corner: -50 250 0
+close_polyline: 0
+outline_polyline: 7 -50 100
+next_corner: 0 100 0
+next_corner: 0 200 0
+next_corner: -50 200 0
+close_polyline: 0
+n_pins: 28
+pin: "1" 28 0 0 0
+top_pad: 2 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 2 55 27 27 0
+pin: "2" 28 100 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "3" 28 200 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "4" 28 300 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "5" 28 400 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "6" 28 500 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "7" 28 600 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "8" 28 700 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "9" 28 800 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "10" 28 900 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "11" 28 1000 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "12" 28 1100 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "13" 28 1200 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "14" 28 1300 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "15" 28 1300 300 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "16" 28 1200 300 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "17" 28 1100 300 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "18" 28 1000 300 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "19" 28 900 300 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "20" 28 800 300 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "21" 28 700 300 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "22" 28 600 300 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "23" 28 500 300 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "24" 28 400 300 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "25" 28 300 300 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "26" 28 200 300 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "27" 28 100 300 0
+top_pad: 1 55 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 55 27 27 0
+pin: "28" 28 0 300 0
+top_pad: 1 60 27 27 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 60 27 27 0
+
+name: "FUSE"
+units: MIL
+sel_rect: -65 -85 265 85
+ref_text: 50 55.11811 102.362205 0 7
+value_text: 50 55.11811 2.362205 0 7
+centroid: 0 100 0 0
+outline_polyline: 10 -50 70
+next_corner: -50 -70 0
+next_corner: 250 -70 0
+next_corner: 250 70 0
+close_polyline: 0
+n_pins: 2
+pin: "1" 0 10 0 0
+top_pad: 3 125 50 50 0
+pin: "2" 0 190 0 0
+top_pad: 3 125 50 50 0
+
+name: "6 PIN"
+units: MIL
+sel_rect: -40 -57.5 240 157.5
+ref_text: 50 0 200 0 7
+value_text: 50 0 100 0 7
+centroid: 0 100 50 0
+n_pins: 6
+pin: "1" 28 0 0 0
+top_pad: 3 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 3 95 30 30 0
+pin: "2" 28 0 100 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "3" 28 100 0 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "4" 28 100 100 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "5" 28 200 0 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+pin: "6" 28 200 100 0
+top_pad: 5 95 30 30 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 5 95 30 30 0
+
+name: "Dioda 300"
+author: "Chuma"
+units: MIL
+sel_rect: -47.5 -53.5 347.5 53.5
+ref_text: 40 80 -20 0 5
+outline_polyline: 7 60 40
+next_corner: 240 40 0
+next_corner: 240 -40 0
+next_corner: 60 -40 0
+close_polyline: 0
+outline_polyline: 7 220 40
+next_corner: 220 -40 0
+n_pins: 2
+pin: "1" 28 0 0 0
+top_pad: 1 75 37 37 0
+inner_pad: 1 75 37 37 0
+bottom_pad: 1 75 37 37 0
+pin: "2" 28 300 0 0
+top_pad: 1 75 37 37 0
+inner_pad: 1 75 37 37 0
+bottom_pad: 1 75 37 37 0
+
+name: "SMD Resistor"
+author: "Chuma"
+units: MIL
+sel_rect: -35 -45 135 45
+ref_text: 25 20 -10 0 2.5
+outline_polyline: 10 30 30
+next_corner: 70 30 0
+next_corner: 70 -30 0
+next_corner: 30 -30 0
+close_polyline: 0
+n_pins: 2
+pin: "1" 15 0 0 0
+top_pad: 2 50 37 37 0
+inner_pad: 0 50 37 37 0
+bottom_pad: 0 50 37 37 0
+pin: "2" 15 100 0 0
+top_pad: 2 50 37 37 0
+inner_pad: 2 50 37 37 0
+bottom_pad: 2 50 37 37 0
+
+name: "Resistor"
+author: "Chuma"
+units: MIL
+sel_rect: -47.5 -47.5 447.5 47.5
+ref_text: 25 100 -10 0 2.5
+value_text: 25 170 -10 0 2.5
+centroid: 0 200 0 0
+outline_polyline: 7 90 30
+next_corner: 300 30 0
+next_corner: 300 -30 0
+next_corner: 90 -30 0
+close_polyline: 0
+n_pins: 2
+pin: "1" 28 0 0 0
+top_pad: 1 75 37 37 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 75 37 37 0
+pin: "2" 28 400 0 0
+top_pad: 1 75 37 37 0
+inner_pad: 0 0 0 0 0 0
+bottom_pad: 1 75 37 37 0
+
+name: "6 Segment Display"
+author: "Ivex"
+source: "BX-M322RD"
+units: MIL
+sel_rect: -563.5 -63.5 1163.5 463.5
+ref_text: 50 -400 200 270 7
+outline_polyline: 7 -550 -50
+next_corner: 1150 -50 0
+next_corner: 1150 450 0
+next_corner: -550 450 0
+close_polyline: 0
+n_pins: 14
+pin: "1" 28 0 0 0
+top_pad: 2 55 27 27 0
+inner_pad: 1 55 27 27 0
+bottom_pad: 2 55 27 27 0
+pin: "2" 28 100 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 1 55 27 27 0
+bottom_pad: 1 55 27 27 0
+pin: "3" 28 200 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 1 55 27 27 0
+bottom_pad: 1 55 27 27 0
+pin: "4" 28 300 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 1 55 27 27 0
+bottom_pad: 1 55 27 27 0
+pin: "5" 28 400 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 1 55 27 27 0
+bottom_pad: 1 55 27 27 0
+pin: "6" 28 500 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 1 55 27 27 0
+bottom_pad: 1 55 27 27 0
+pin: "7" 28 600 0 0
+top_pad: 1 55 27 27 0
+inner_pad: 1 55 27 27 0
+bottom_pad: 1 55 27 27 0
+pin: "8" 28 600 400 0
+top_pad: 1 55 27 27 0
+inner_pad: 1 55 27 27 0
+bottom_pad: 1 55 27 27 0
+pin: "9" 28 500 400 0
+top_pad: 1 55 27 27 0
+inner_pad: 1 55 27 27 0
+bottom_pad: 1 55 27 27 0
+pin: "10" 28 400 400 0
+top_pad: 1 55 27 27 0
+inner_pad: 1 55 27 27 0
+bottom_pad: 1 55 27 27 0
+pin: "11" 28 300 400 0
+top_pad: 1 55 27 27 0
+inner_pad: 1 55 27 27 0
+bottom_pad: 1 55 27 27 0
+pin: "12" 28 200 400 0
+top_pad: 1 55 27 27 0
+inner_pad: 1 55 27 27 0
+bottom_pad: 1 55 27 27 0
+pin: "13" 28 100 400 0
+top_pad: 1 55 27 27 0
+inner_pad: 1 55 27 27 0
+bottom_pad: 1 55 27 27 0
+pin: "14" 28 0 400 0
+top_pad: 1 55 27 27 0
+inner_pad: 1 55 27 27 0
+bottom_pad: 1 55 27 27 0
+
