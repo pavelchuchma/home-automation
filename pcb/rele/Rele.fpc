@@ -1,0 +1,580 @@
+[options]
+
+version: 1.359
+file_version: 1.344
+project_name: "Rele"
+full_library_folder: "c:\programs\freepcb\lib"
+CAM_folder: ""
+ses_file_path: ""
+netlist_file_path: ""
+SMT_connect_copper: "0"
+default_glue_width: "635000"
+dsn_flags: "0"
+dsn_bounds_poly: "0"
+dsn_signals_poly: "0"
+autosave_interval: 0
+auto_ratline_disable: "0"
+auto_ratline_disable_min_pins: "100"
+netlist_import_flags: 902
+units: MIL
+
+visible_grid_spacing: 5080000.000000
+  visible_grid_item: 100MIL
+  visible_grid_item: 125MIL
+  visible_grid_item: 200MIL
+  visible_grid_item: 250MIL
+  visible_grid_item: 400MIL
+  visible_grid_item: 500MIL
+  visible_grid_item: 1000MIL
+  visible_grid_item: 1MM
+  visible_grid_item: 2MM
+  visible_grid_item: 2.5MM
+  visible_grid_item: 4MM
+  visible_grid_item: 5MM
+  visible_grid_item: 10MM
+  visible_grid_item: 20MM
+  visible_grid_item: 25MM
+  visible_grid_item: 40MM
+  visible_grid_item: 50MM
+  visible_grid_item: 100MM
+
+placement_grid_spacing: 2540000.000000
+  placement_grid_item: 10MIL
+  placement_grid_item: 20MIL
+  placement_grid_item: 25MIL
+  placement_grid_item: 40MIL
+  placement_grid_item: 50MIL
+  placement_grid_item: 100MIL
+  placement_grid_item: 200MIL
+  placement_grid_item: 250MIL
+  placement_grid_item: 400MIL
+  placement_grid_item: 500MIL
+  placement_grid_item: 1000MIL
+  placement_grid_item: 0.1MM
+  placement_grid_item: 0.2MM
+  placement_grid_item: 0.25MM
+  placement_grid_item: 0.4MM
+  placement_grid_item: 0.5MM
+  placement_grid_item: 1MM
+  placement_grid_item: 2MM
+  placement_grid_item: 2.5MM
+  placement_grid_item: 4MM
+  placement_grid_item: 5MM
+  placement_grid_item: 10MM
+
+routing_grid_spacing: 1270000.000000
+  routing_grid_item: 1MIL
+  routing_grid_item: 2MIL
+  routing_grid_item: 2.5MIL
+  routing_grid_item: 3.33330709MIL
+  routing_grid_item: 4MIL
+  routing_grid_item: 5MIL
+  routing_grid_item: 6.66665354MIL
+  routing_grid_item: 10MIL
+  routing_grid_item: 12.5MIL
+  routing_grid_item: 16.66665354MIL
+  routing_grid_item: 20MIL
+  routing_grid_item: 25MIL
+  routing_grid_item: 40MIL
+  routing_grid_item: 50MIL
+  routing_grid_item: 0.01MM
+  routing_grid_item: 0.02MM
+  routing_grid_item: 0.04MM
+  routing_grid_item: 0.05MM
+  routing_grid_item: 0.1MM
+  routing_grid_item: 0.2MM
+  routing_grid_item: 0.25MM
+  routing_grid_item: 0.4MM
+  routing_grid_item: 0.5MM
+  routing_grid_item: 1MM
+  routing_grid_item: 2MM
+  routing_grid_item: 2.5MM
+  routing_grid_item: 4MM
+  routing_grid_item: 5MM
+  routing_grid_item: 10MM
+
+snap_angle: 45
+
+fp_visible_grid_spacing: 5080000.000000
+  fp_visible_grid_item: 100MIL
+  fp_visible_grid_item: 125MIL
+  fp_visible_grid_item: 200MIL
+  fp_visible_grid_item: 250MIL
+  fp_visible_grid_item: 400MIL
+  fp_visible_grid_item: 500MIL
+  fp_visible_grid_item: 1000MIL
+  fp_visible_grid_item: 1MM
+  fp_visible_grid_item: 2MM
+  fp_visible_grid_item: 2.5MM
+  fp_visible_grid_item: 4MM
+  fp_visible_grid_item: 5MM
+  fp_visible_grid_item: 10MM
+  fp_visible_grid_item: 20MM
+  fp_visible_grid_item: 25MM
+  fp_visible_grid_item: 40MM
+  fp_visible_grid_item: 50MM
+  fp_visible_grid_item: 100MM
+
+fp_placement_grid_spacing: 635000.000000
+  fp_placement_grid_item: 10MIL
+  fp_placement_grid_item: 20MIL
+  fp_placement_grid_item: 25MIL
+  fp_placement_grid_item: 40MIL
+  fp_placement_grid_item: 50MIL
+  fp_placement_grid_item: 100MIL
+  fp_placement_grid_item: 200MIL
+  fp_placement_grid_item: 250MIL
+  fp_placement_grid_item: 400MIL
+  fp_placement_grid_item: 500MIL
+  fp_placement_grid_item: 1000MIL
+  fp_placement_grid_item: 0.1MM
+  fp_placement_grid_item: 0.2MM
+  fp_placement_grid_item: 0.25MM
+  fp_placement_grid_item: 0.4MM
+  fp_placement_grid_item: 0.5MM
+  fp_placement_grid_item: 1MM
+  fp_placement_grid_item: 2MM
+  fp_placement_grid_item: 2.5MM
+  fp_placement_grid_item: 4MM
+  fp_placement_grid_item: 5MM
+  fp_placement_grid_item: 10MM
+
+fp_snap_angle: 45
+
+fill_clearance: 254000
+mask_clearance: 203200
+thermal_width: 254000
+min_silkscreen_width: 127000
+board_outline_width: 127000
+hole_clearance: 381000
+pilot_diameter: 254000
+annular_ring_for_pins: 177800
+annular_ring_for_vias: 127000
+shrink_paste_mask: 0
+cam_flags: 4097
+cam_layers: 15732735
+cam_drill_file: 1
+cam_units: 2
+cam_n_x: 1
+cam_n_y: 1
+cam_space_x: 0
+cam_space_y: 0
+
+report_options: 0
+drc_check_unrouted: 0
+drc_trace_width: 254000
+drc_pad_pad: 254000
+drc_pad_trace: 254000
+drc_trace_trace: 254000
+drc_hole_copper: 381000
+drc_annular_ring_pins: 177800
+drc_annular_ring_vias: 127000
+drc_board_edge_copper: 635000
+drc_board_edge_hole: 635000
+drc_hole_hole: 635000
+drc_copper_copper: 254000
+
+default_trace_width: 254000
+default_via_pad_width: 711200
+default_via_hole_width: 355600
+n_width_menu: 7
+  width_menu_item: 1 152400 711200 355600
+  width_menu_item: 2 203200 711200 355600
+  width_menu_item: 3 254000 711200 355600
+  width_menu_item: 4 304800 711200 355600
+  width_menu_item: 5 381000 711200 355600
+  width_menu_item: 6 508000 711200 355600
+  width_menu_item: 7 635000 711200 355600
+
+n_copper_layers: 2
+  layer_info: "selection" 0 255 255 255 1
+  layer_info: "background" 1 0 0 0 1
+  layer_info: "visible grid" 2 255 255 255 1
+  layer_info: "highlight" 3 255 255 255 1
+  layer_info: "DRC error" 4 255 128 64 1
+  layer_info: "board outline" 5 0 0 255 1
+  layer_info: "rat line" 6 255 0 255 1
+  layer_info: "top silk" 7 255 255 0 1
+  layer_info: "bottom silk" 8 255 192 192 1
+  layer_info: "top sm cutout" 9 160 160 160 1
+  layer_info: "bot sm cutout" 10 95 95 95 1
+  layer_info: "thru pad" 11 0 0 255 1
+  layer_info: "top copper" 12 0 255 0 1
+  layer_info: "bottom copper" 13 255 0 0 1
+
+[footprints]
+
+name: "Rele 43.41"
+author: "Finder"
+description: "Rele 10A"
+  units: NM
+  sel_rect: -2921000 -2921000 28321000 10541000
+  ref_text: 1270000 5080000 2540000 0 177800
+  value_text: 1270000 10160000 2540000 0 177800
+  centroid: 0 3810000 1270000 0
+  outline_polyline: 254000 -2540000 10160000
+    next_corner: 27940000 10160000 0
+    next_corner: 27940000 -2540000 0
+    next_corner: -2540000 -2540000 0
+    close_polyline: 0
+  n_pins: 5
+    pin: "1" 711200 0 0 0
+      top_pad: 4 4064000 1524000 1524000 508000
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 4 4064000 1524000 1524000 508000
+    pin: "4" 711200 3175000 7620000 0
+      top_pad: 4 4064000 1524000 1524000 508000
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 4 4064000 1524000 1524000 508000
+    pin: "5" 711200 6350000 0 0
+      top_pad: 5 4064000 1524000 1524000 0
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 5 4064000 1524000 1524000 0
+    pin: "7" 711200 25400000 0 0
+      top_pad: 5 3048000 1143000 1143000 0
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 5 3048000 1143000 1143000 0
+    pin: "8" 711200 25400000 7620000 0
+      top_pad: 5 3048000 1143000 1143000 0
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 5 3048000 1143000 1143000 0
+
+name: "Connector"
+  units: MIL
+  sel_rect: -113.5 -163.5 513.5 163.5
+  ref_text: 50 100 140 0 7
+  value_text: 50 100 40 0 7
+  centroid: 0 100 0 0
+  outline_polyline: 7 -100 -150
+    next_corner: 500 -150 0
+    next_corner: 500 150 0
+    next_corner: -100 150 0
+    close_polyline: 0
+  n_pins: 3
+    pin: "1" 45 0 0 0
+      top_pad: 1 150 37 37 0
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 1 150 37 37 0
+    pin: "2" 45 200 0 0
+      top_pad: 1 150 37 37 0
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 1 150 37 37 0
+    pin: "3" 45 400 0 0
+      top_pad: 1 150 37 37 0
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 1 150 37 37 0
+
+name: "Rele TNA-2C-1205L"
+author: "Sun Hold"
+description: "Rele 5A"
+  units: NM
+  sel_rect: -2921000 -2921000 28321000 10541000
+  ref_text: 1270000 5080000 2540000 0 177800
+  value_text: 1270000 10160000 2540000 0 177800
+  centroid: 0 3810000 1270000 0
+  outline_polyline: 254000 -2540000 10160000
+    next_corner: 27940000 10160000 0
+    next_corner: 27940000 -2540000 0
+    next_corner: -2540000 -2540000 0
+    close_polyline: 0
+  n_pins: 8
+    pin: "1" 711200 0 0 0
+      top_pad: 4 4064000 1524000 1524000 508000
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 4 4064000 1524000 1524000 508000
+    pin: "2" 711200 0 7620000 0
+      top_pad: 4 4064000 1524000 1524000 508000
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 4 4064000 1524000 1524000 508000
+    pin: "3" 711200 5080000 0 0
+      top_pad: 4 4064000 1524000 1524000 508000
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 4 4064000 1524000 1524000 508000
+    pin: "4" 711200 5080000 7620000 0
+      top_pad: 4 4064000 1524000 1524000 508000
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 4 4064000 1524000 1524000 508000
+    pin: "5" 711200 10160000 0 0
+      top_pad: 5 4064000 1524000 1524000 0
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 5 4064000 1524000 1524000 0
+    pin: "6" 711200 10160000 7620000 0
+      top_pad: 5 4064000 1524000 1524000 0
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 5 4064000 1524000 1524000 0
+    pin: "7" 711200 25400000 0 0
+      top_pad: 5 3048000 1143000 1143000 0
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 5 3048000 1143000 1143000 0
+    pin: "8" 711200 25400000 7620000 0
+      top_pad: 5 3048000 1143000 1143000 0
+      inner_pad: 0 0 0 0 0 0
+      bottom_pad: 5 3048000 1143000 1143000 0
+
+[board]
+
+[solder_mask_cutouts]
+
+
+[parts]
+
+part: rele2
+  ref_text: 1270000 177800 0 3810000 4064000 1
+  package: ""
+  shape: "Rele TNA-2C-1205L"
+  pos: -119380000 66040000 0 90 0
+
+part: rele1
+  ref_text: 1270000 177800 0 5080000 2540000 1
+  package: ""
+  shape: "Rele 43.41"
+  pos: -132080000 66040000 0 90 0
+
+part: rele3
+  ref_text: 1270000 177800 0 5080000 2540000 1
+  package: ""
+  shape: "Rele TNA-2C-1205L"
+  pos: -106680000 66040000 0 90 0
+
+part: rele4
+  ref_text: 1270000 177800 0 5080000 2540000 1
+  package: ""
+  shape: "Rele TNA-2C-1205L"
+  pos: -93980000 66040000 0 90 0
+
+part: rele5
+  ref_text: 1270000 177800 0 5080000 2540000 1
+  package: ""
+  shape: "Rele TNA-2C-1205L"
+  pos: -81280000 66040000 0 90 0
+
+part: rele6
+  ref_text: 1270000 177800 0 5080000 2540000 1
+  package: ""
+  shape: "Rele TNA-2C-1205L"
+  pos: -68580000 66040000 0 90 0
+
+part: rele7
+  ref_text: 1270000 177800 0 5080000 2540000 1
+  package: ""
+  shape: "Rele TNA-2C-1205L"
+  pos: -55880000 66040000 0 90 0
+
+part: ut1
+  ref_text: 1270000 177800 0 2540000 3556000 1
+  package: ""
+  shape: "Connector"
+  pos: -109220000 76200000 0 0 0
+
+part: out2
+  ref_text: 1270000 177800 0 2540000 3556000 1
+  package: ""
+  shape: "Connector"
+  pos: -71120000 76200000 0 0 0
+
+part: input
+  ref_text: 1270000 177800 0 2540000 3556000 1
+  package: ""
+  shape: "Connector"
+  pos: -142240000 40640000 0 270 0
+
+[nets]
+
+net: "N00001" 3 2 0 0 0 0 1
+  pin: 1 out2.1
+  pin: 2 rele5.1
+  pin: 3 rele5.2
+  connect: 1 2 1 1 0
+    vtx: 1 -73660000 66040000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -81280000 66040000 11 0 0 0 0
+  connect: 2 2 0 1 0
+    vtx: 1 -73660000 66040000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -71120000 76200000 11 0 0 0 0
+
+net: "N00002" 3 2 0 0 0 0 1
+  pin: 1 out2.2
+  pin: 2 rele6.1
+  pin: 3 rele6.2
+  connect: 1 2 1 1 0
+    vtx: 1 -60960000 66040000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -68580000 66040000 11 0 0 0 0
+  connect: 2 1 0 1 0
+    vtx: 1 -68580000 66040000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -66040000 76200000 11 0 0 0 0
+
+net: "N00003" 3 2 0 0 0 0 1
+  pin: 1 out2.3
+  pin: 2 rele7.1
+  pin: 3 rele7.2
+  connect: 1 2 1 1 0
+    vtx: 1 -48260000 66040000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -55880000 66040000 11 0 0 0 0
+  connect: 2 1 0 1 0
+    vtx: 1 -55880000 66040000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -60960000 76200000 11 0 0 0 0
+
+net: "+12V" 8 7 0 0 0 0 1
+  pin: 1 input.2
+  pin: 2 rele7.8
+  pin: 3 rele6.8
+  pin: 4 rele5.8
+  pin: 5 rele4.8
+  pin: 6 rele3.8
+  pin: 7 rele2.8
+  pin: 8 rele1.8
+  connect: 1 7 6 1 0
+    vtx: 1 -124460000 40640000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -111760000 40640000 11 0 0 0 0
+  connect: 2 4 3 1 0
+    vtx: 1 -86360000 40640000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -73660000 40640000 11 0 0 0 0
+  connect: 3 2 1 1 0
+    vtx: 1 -60960000 40640000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -48260000 40640000 11 0 0 0 0
+  connect: 4 6 5 1 0
+    vtx: 1 -111760000 40640000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -99060000 40640000 11 0 0 0 0
+  connect: 5 5 4 1 0
+    vtx: 1 -99060000 40640000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -86360000 40640000 11 0 0 0 0
+  connect: 6 3 2 1 0
+    vtx: 1 -73660000 40640000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -60960000 40640000 11 0 0 0 0
+  connect: 7 7 0 1 0
+    vtx: 1 -124460000 40640000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -142240000 45720000 11 0 0 0 0
+
+net: "out3" 3 2 0 0 0 0 1
+  pin: 1 ut1.2
+  pin: 2 rele3.1
+  pin: 3 rele3.2
+  connect: 1 2 1 1 0
+    vtx: 1 -99060000 66040000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -106680000 66040000 11 0 0 0 0
+  connect: 2 1 0 1 0
+    vtx: 1 -106680000 66040000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -104140000 76200000 11 0 0 0 0
+
+net: "out4" 3 2 0 0 0 0 1
+  pin: 1 ut1.3
+  pin: 2 rele4.1
+  pin: 3 rele4.2
+  connect: 1 2 1 1 0
+    vtx: 1 -86360000 66040000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -93980000 66040000 11 0 0 0 0
+  connect: 2 1 0 1 0
+    vtx: 1 -93980000 66040000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -99060000 76200000 11 0 0 0 0
+
+net: "out1-2" 4 3 0 0 0 0 1
+  pin: 1 rele1.1
+  pin: 2 rele2.1
+  pin: 3 rele2.2
+  pin: 4 ut1.1
+  connect: 1 2 1 1 0
+    vtx: 1 -111760000 66040000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -119380000 66040000 11 0 0 0 0
+  connect: 2 3 2 1 0
+    vtx: 1 -109220000 76200000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -111760000 66040000 11 0 0 0 0
+  connect: 3 1 0 1 0
+    vtx: 1 -119380000 66040000 11 0 0 0 0
+    seg: 1 6 0 0 0
+    vtx: 2 -132080000 66040000 11 0 0 0 0
+
+net: "PowerIn" 14 13 0 3048000 711200 355600 1
+  pin: 1 rele1.4
+  pin: 2 rele2.3
+  pin: 3 rele2.4
+  pin: 4 rele3.4
+  pin: 5 rele3.3
+  pin: 6 rele4.3
+  pin: 7 rele4.4
+  pin: 8 rele5.3
+  pin: 9 rele5.4
+  pin: 10 rele6.3
+  pin: 11 rele6.4
+  pin: 12 rele7.3
+  pin: 13 rele7.4
+  pin: 14 input.3
+  connect: 1 5 3 1 0
+    vtx: 1 -93980000 60960000 11 0 0 0 0
+    seg: 1 12 3048000 0 0
+    vtx: 2 -99060000 60960000 11 0 0 0 0
+  connect: 2 4 2 1 0
+    vtx: 1 -106680000 60960000 11 0 0 0 0
+    seg: 1 12 3048000 0 0
+    vtx: 2 -111760000 60960000 11 0 0 0 0
+  connect: 3 1 0 2 0
+    vtx: 1 -119380000 60960000 11 0 0 0 0
+    seg: 1 12 3048000 0 0
+    vtx: 2 -123190000 60960000 0 0 0 0 0
+    seg: 2 12 3048000 0 0
+    vtx: 3 -124460000 62865000 11 0 0 0 0
+  connect: 4 12 11 1 0
+    vtx: 1 -48260000 60960000 11 0 0 0 0
+    seg: 1 12 3048000 0 0
+    vtx: 2 -55880000 60960000 11 0 0 0 0
+  connect: 5 8 7 1 0
+    vtx: 1 -73660000 60960000 11 0 0 0 0
+    seg: 1 12 3048000 0 0
+    vtx: 2 -81280000 60960000 11 0 0 0 0
+  connect: 6 10 9 1 0
+    vtx: 1 -60960000 60960000 11 0 0 0 0
+    seg: 1 12 3048000 0 0
+    vtx: 2 -68580000 60960000 11 0 0 0 0
+  connect: 7 4 3 1 0
+    vtx: 1 -106680000 60960000 11 0 0 0 0
+    seg: 1 12 3048000 0 0
+    vtx: 2 -99060000 60960000 11 0 0 0 0
+  connect: 8 2 1 1 0
+    vtx: 1 -111760000 60960000 11 0 0 0 0
+    seg: 1 12 3048000 0 0
+    vtx: 2 -119380000 60960000 11 0 0 0 0
+  connect: 9 6 5 1 0
+    vtx: 1 -86360000 60960000 11 0 0 0 0
+    seg: 1 12 3048000 0 0
+    vtx: 2 -93980000 60960000 11 0 0 0 0
+  connect: 10 11 10 1 0
+    vtx: 1 -55880000 60960000 11 0 0 0 0
+    seg: 1 12 3048000 0 0
+    vtx: 2 -60960000 60960000 11 0 0 0 0
+  connect: 11 9 8 1 0
+    vtx: 1 -68580000 60960000 11 0 0 0 0
+    seg: 1 12 3048000 0 0
+    vtx: 2 -73660000 60960000 11 0 0 0 0
+  connect: 12 7 6 1 0
+    vtx: 1 -81280000 60960000 11 0 0 0 0
+    seg: 1 12 3048000 0 0
+    vtx: 2 -86360000 60960000 11 0 0 0 0
+  connect: 13 13 0 3 0
+    vtx: 1 -142240000 50800000 11 0 0 0 0
+    seg: 1 12 3048000 0 0
+    vtx: 2 -133350000 50800000 0 0 0 0 0
+    seg: 2 12 3048000 0 0
+    vtx: 3 -124460000 59690000 0 0 0 0 0
+    seg: 3 12 3048000 0 0
+    vtx: 4 -124460000 62865000 11 0 0 0 0
+
+[texts]
+
+[end]
