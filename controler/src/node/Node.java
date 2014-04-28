@@ -15,7 +15,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     static Logger log = Logger.getLogger(Node.class.getName());
 
     public interface Listener {
-        void onButtonDown(Node node, Pin pin);
+        void onButtonDown(Node node, Pin pin, int upTime);
 
         void onButtonUp(Node node, Pin pin, int downTime);
 
@@ -138,7 +138,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         log.debug("setPortValue");
         Packet response = packetUartIO.send(
                 Packet.createMsgSetPort(nodeId, port, valueMask, value, eventMask, trisValue),
-                MessageType.MSG_SetPortResponse, 300);
+                MessageType.MSG_SetPortResponse, 100);
         log.debug("setPortValue: done.");
         return response;
     }
@@ -233,21 +233,23 @@ public class Node implements PacketUartIO.PacketReceivedListener {
                 if ((pinMask & eventMask) != 0) {
                     //event on pin[i]
                     Pin pin = Pin.get(port, i);
+
+                    // compute downTime (-1 for first case)
+                    long downTime = (downTimes[pin.ordinal()] > 0) ? new Date().getTime() - downTimes[pin.ordinal()] : -1;
                     if ((pinMask & eventValue) != 0) {
                         //button UP
-                        long downTime = new Date().getTime() - downTimes[pin.ordinal()];
                         log.info("button '" + pin + "' UP (" + downTime + "ms)");
                         for (Listener listener : listeners) {
                             listener.onButtonUp(this, pin, (int) downTime);
                         }
                     } else {
                         //button DOWN
-                        log.info("button '" + pin + "' DOWN");
-                        downTimes[pin.ordinal()] = new Date().getTime();
+                        log.info("button '" + pin + "' DOWN (" + downTime + "ms)");
                         for (Listener listener : listeners) {
-                            listener.onButtonDown(this, pin);
+                            listener.onButtonDown(this, pin, (int) downTime);
                         }
                     }
+                    downTimes[pin.ordinal()] = new Date().getTime();
                 }
             }
             // on reboot

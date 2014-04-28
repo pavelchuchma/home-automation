@@ -1,8 +1,11 @@
 package controller.Action;
 
 import controller.actor.OnOffActor;
+import org.apache.log4j.Logger;
 
 public class AbstractSensorAction extends AbstractAction {
+
+    static Logger log = Logger.getLogger(AbstractSensorAction.class.getName());
 
     public static final int BLINK_DELAY = 600;
     public static final int MAX_BLINK_DURATION = 10000;
@@ -41,14 +44,15 @@ public class AbstractSensorAction extends AbstractAction {
                     return;
                 }
 
+                long endTime = System.currentTimeMillis() + timeout;
+
                 // is switched off or switched on by my action type -> switch on, set my data
                 act.switchOn(aData);
 
-
-                long endTime = System.currentTimeMillis() + timeout;
-
                 if (timeout > MAX_BLINK_DURATION) {
+                    log.debug(String.format("Going to wait for %d ms", timeout - MAX_BLINK_DURATION));
                     act.wait(timeout - MAX_BLINK_DURATION);
+                    log.debug("Woken up");
                 }
                 if (act.getLastActionData() != aData) {
                     return;

@@ -6,12 +6,15 @@ import node.NodePin;
 import node.Pin;
 
 public class OutputDevice extends ConnectedDevice {
+
+    private static final String[] PIN_NAMES = new String[]{"out1", "out2", "out3", "out4", "out5", "out6"};
+
     public OutputDevice(String id, Node node, int connectorPosition) {
-        super(id, node, connectorPosition, new String[]{"out1", "out2", "out3", "out4", "out5", "out6"});
+        super(id, node, connectorPosition, PIN_NAMES);
     }
 
     public OutputDevice(String id, Node node, int connectorPosition, CpuFrequency requiredCpuFrequency) {
-        super(id, node, connectorPosition, new String[]{"out1", "out2", "out3", "out4", "out5", "out6"}, requiredCpuFrequency);
+        super(id, node, connectorPosition, PIN_NAMES, requiredCpuFrequency);
     }
 
     public NodePin getOut1() {

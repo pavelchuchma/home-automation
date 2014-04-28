@@ -16,19 +16,19 @@ public class InputDevice extends ConnectedDevice {
         super(id, node, connectorPosition, new String[]{"in1", "in2", "in3", "in4", "in5", "in6"}, requiredCpuFrequency);
     }
 
-    public NodePin getIn1() {
-        return pins[0];
+    public NodePin getIn1AndActivate() {
+        return getPinAndUpdateEventMask(0);
     }
 
-    public NodePin getIn2() {
+    public NodePin getIn2AndActivate() {
         return getPinAndUpdateEventMask(1);
     }
 
-    public NodePin getIn3() {
+    public NodePin getIn3AndActivate() {
         return getPinAndUpdateEventMask(2);
     }
 
-    public NodePin getIn4() {
+    public NodePin getIn4AndActivate() {
         return getPinAndUpdateEventMask(3);
     }
 
@@ -36,7 +36,7 @@ public class InputDevice extends ConnectedDevice {
         return getPinAndUpdateEventMask(4);
     }
 
-    public NodePin getIn6() {
+    public NodePin getIn6AndActivate() {
         return getPinAndUpdateEventMask(5);
     }
 

@@ -6,6 +6,7 @@ import controller.actor.OnOffActor;
 import controller.actor.PwmActor;
 import controller.device.InputDevice;
 import controller.device.OutputDevice;
+import controller.device.RelayBoardDevice;
 import controller.device.WallSwitch;
 import node.CpuFrequency;
 import node.Node;
@@ -48,28 +49,31 @@ public class Main {
     private static void configure(NodeInfoCollector nodeInfoCollector) {
 
         Node brige = nodeInfoCollector.createNode(1, "Bridge");
-        Node triak1 = nodeInfoCollector.createNode(3, "Triak1");
+        Node actor3 = nodeInfoCollector.createNode(3, "Actor3");
         Node obyvakSpinacABC = nodeInfoCollector.createNode(11, "ObyvakSpinacABC");
         Node chodbaDole = nodeInfoCollector.createNode(8, "ChodbaDole");
         Node koupelnaHore = nodeInfoCollector.createNode(10, "KoupelnaHore");
 
         WallSwitch obyvakA3sw = new WallSwitch("obyvakA3sw", obyvakSpinacABC, 3);
-        OutputDevice triak1OutputPort2 = new OutputDevice("triak1OutputPort2", triak1, 2);
+        OutputDevice triak1Actor3Port3 = new OutputDevice("triak1Actor3Port3", actor3, 3);
+        RelayBoardDevice rele1Actor3Port2 = new RelayBoardDevice("rele1Actor3Port2", actor3, 2);
 
         WallSwitch koupelnaHoreSwA = new WallSwitch("koupelnaHoreSwA", koupelnaHore, 1);
         WallSwitch chodbaDoldeSwA = new WallSwitch("chodbaDoldeSwA", chodbaDole, 1);
 
-        OnOffActor svKoupelna = new OnOffActor("svKoupelna", triak1OutputPort2.getOut1(), 1, 0, obyvakA3sw.getGreenLedIndicator(false), koupelnaHoreSwA.getGreenLedIndicator(false), koupelnaHoreSwA.getRedLedIndicator(true));
-        OnOffActor svJidelna = new OnOffActor("svJidelna", triak1OutputPort2.getOut2(), 1, 0, obyvakA3sw.getRedLedIndicator(true));
-        OnOffActor svSpajza = new OnOffActor("svSpajza", triak1OutputPort2.getOut3(), 1, 0);
-        OnOffActor svPradelna = new OnOffActor("svPradelna", triak1OutputPort2.getOut4(), 1, 0, chodbaDoldeSwA.getGreenLedIndicator(false), chodbaDoldeSwA.getRedLedIndicator(true));
+        OnOffActor svKoupelna = new OnOffActor("svKoupelna", triak1Actor3Port3.getOut1(), 1, 0, obyvakA3sw.getGreenLedIndicator(false), koupelnaHoreSwA.getGreenLedIndicator(false), koupelnaHoreSwA.getRedLedIndicator(true));
+        OnOffActor svJidelna = new OnOffActor("svJidelna", triak1Actor3Port3.getOut2(), 1, 0, obyvakA3sw.getRedLedIndicator(true));
+        OnOffActor svSpajza = new OnOffActor("svSpajza", triak1Actor3Port3.getOut3(), 1, 0);
+        OnOffActor svPradelna = new OnOffActor("svPradelna", triak1Actor3Port3.getOut4(), 1, 0, chodbaDoldeSwA.getGreenLedIndicator(false), chodbaDoldeSwA.getRedLedIndicator(true));
+        OnOffActor zaricKoupelnaHore1 = new OnOffActor("zaricKoupelnaHore1", rele1Actor3Port2.getRele1(), 0, 1);
+        OnOffActor zaricKoupelnaHore2 = new OnOffActor("zaricKoupelnaHore2", rele1Actor3Port2.getRele2(), 0, 1);
 
         SwitchListener lst = nodeInfoCollector.getSwitchListener();
 
         Action invertJidelna = new InvertAction(svJidelna);
         lst.addActionBinding(new ActionBinding(obyvakA3sw.getButton1(), new Action[]{new InvertAction(svKoupelna)}, null));
         lst.addActionBinding(new ActionBinding(obyvakA3sw.getButton2(), new Action[]{invertJidelna}, null));
-        lst.addActionBinding(new ActionBinding(obyvakA3sw.getButton3(), new Action[]{new InvertAction(svSpajza)}, null));
+        //lst.addActionBinding(new ActionBinding(obyvakA3sw.getButton3(), new Action[]{new InvertAction(svSpajza)}, null));
         lst.addActionBinding(new ActionBinding(obyvakA3sw.getButton4(), new Action[]{new InvertAction(svPradelna)}, null));
 
         Action onActionKoupelna = new SwitchOnAction(svKoupelna);
@@ -81,36 +85,42 @@ public class Main {
 
         Action onActionPradelna = new SwitchOnAction(svPradelna);
         Action offActionPradelna = new SwitchOffAction(svPradelna);
-        Action sensorPradelna = new SwitchOnSensorAction(svPradelna, 10);
         lst.addActionBinding(new ActionBinding(chodbaDoldeSwA.getButton1(), new Action[]{offActionPradelna}, null));
         lst.addActionBinding(new ActionBinding(chodbaDoldeSwA.getButton2(), new Action[]{onActionPradelna}, null));
         lst.addActionBinding(new ActionBinding(chodbaDoldeSwA.getButton3(), new Action[]{onActionPradelna}, null));
-        lst.addActionBinding(new ActionBinding(chodbaDoldeSwA.getButton4(), new Action[]{sensorPradelna}, null));
-
-
+        lst.addActionBinding(new ActionBinding(chodbaDoldeSwA.getButton4(), new Action[]{offActionPradelna}, null));
 
         Node pirNodeA = nodeInfoCollector.createNode(7, "PirNodeA");
-        InputDevice pirA1Prizemi = new InputDevice("PirA1Prizemi", pirNodeA, 3);
-        lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn5AndActivate(), new Action[]{new SwitchOffSensorAction(svSpajza, 10)}, new Action[]{new SwitchOnSensorAction(svSpajza, 600)}));
+        InputDevice pirA3Prizemi = new InputDevice("pirA3Prizemi", pirNodeA, 3);
+        lst.addActionBinding(new ActionBinding(pirA3Prizemi.getIn5AndActivate(), new Action[]{new SwitchOffSensorAction(svSpajza, 10)}, new Action[]{new SwitchOnSensorAction(svSpajza, 600)}));
+
+        InputDevice pirA1Prizemi = new InputDevice("pirA1Prizemi", pirNodeA, 1);
+        lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn1AndActivate(), new Action[]{new SwitchOffSensorAction(svPradelna, 10)}, new Action[]{new SwitchOnSensorAction(svPradelna, 600)}));
+        lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn2AndActivate(), new Action[]{new SwitchOffSensorAction(svPradelna, 10)}, new Action[]{new SwitchOnSensorAction(svPradelna, 600)}));
 
 
         //WallSwitch chodbaDoleSwA = new WallSwitch("chodbaDoleSwA", chodbaDole, 1);
         //WallSwitch chodbaDoleSwB = new WallSwitch("chodbaDoleSwB", chodbaDole, 3);
 
 
-//        triak1.initialize();
+//        actor3.initialize();
 //        obyvakSpinacABC.initialize();
 
         Servlet.action1 = onActionKoupelna;
         Servlet.action2 = offActionKoupelna;
         Servlet.action3 = invertJidelna;
 
+        Servlet.action4 = new InvertAction(zaricKoupelnaHore1);
+        Servlet.action5 = new InvertAction(zaricKoupelnaHore2);
+
         Node testNode = nodeInfoCollector.createNode(9, "Test");
         OutputDevice testOutputDevice3 = new OutputDevice("testOutputActor3", testNode, 3, CpuFrequency.sixteenMHz);
 
+        /*
         PwmActor testPwmActor = new PwmActor("testPWM", testOutputDevice3.getOut5(), 0, 1);
         Servlet.action4 = new IncreasePwmAction(testPwmActor);
         Servlet.action5 = new DecreasePwmAction(testPwmActor);
+        */
 
 
 //        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);

@@ -240,7 +240,7 @@ public class NodeTest {
 
         node1.addListener(new Node.Listener() {
             @Override
-            public void onButtonDown(Node node, Pin pin) {
+            public void onButtonDown(Node node, Pin pin, int upTime) {
             }
 
             @Override
@@ -259,7 +259,7 @@ public class NodeTest {
             int step = 8;
 
             @Override
-            public void onButtonDown(Node node, Pin pin) {
+            public void onButtonDown(Node node, Pin pin, int upTime) {
                 try {
                     switch (pin) {
                         case pinA0:
@@ -401,7 +401,7 @@ public class NodeTest {
 
         node1.addListener(new Node.Listener() {
             @Override
-            public void onButtonDown(Node node, Pin pin) {
+            public void onButtonDown(Node node, Pin pin, int upTime) {
             }
 
             @Override
@@ -420,7 +420,7 @@ public class NodeTest {
             int step = 8;
 
             @Override
-            public void onButtonDown(Node node, Pin pin) {
+            public void onButtonDown(Node node, Pin pin, int upTime) {
                 try {
                     switch (pin) {
                         case pinA0:

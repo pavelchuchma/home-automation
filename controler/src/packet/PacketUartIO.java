@@ -6,7 +6,10 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,7 +60,7 @@ public class PacketUartIO implements SerialPortEventListener {
     }
 
     protected List<PacketReceivedListener> receivedListeners = new ArrayList<PacketReceivedListener>();
-    protected Map<String, PacketReceivedListener> specificReceivedListeners = new ConcurrentHashMap<String, PacketReceivedListener>();
+    protected ConcurrentHashMap<String, PacketReceivedListener> specificReceivedListeners = new ConcurrentHashMap<String, PacketReceivedListener>();
     protected List<PacketSentListener> sentListeners = new ArrayList<PacketSentListener>();
 
     SerialPort serialPort;
@@ -151,7 +154,11 @@ public class PacketUartIO implements SerialPortEventListener {
     }
 
     void processPacket(final Packet packet) {
-        msgLog.debug(" > " + packet);
+        if (packet.messageType == MessageType.MSG_OnHeartBeat) {
+            msgLog.trace(" > " + packet);
+        } else {
+            msgLog.debug(" > " + packet);
+        }
 
         // process each packet in new thread
         // todo: replace threads by producer/consumer pattern
@@ -163,33 +170,46 @@ public class PacketUartIO implements SerialPortEventListener {
         });
     }
 
-    private void processPacketImpl(Packet packet) {
-        PacketReceivedListener specificListener = specificReceivedListeners.get(createSpecificListenerKey(packet.nodeId, packet.messageType));
-
-        // callbacks for nodeId + messageType
-        if (specificListener != null) {
-            log.debug("Calling processPacket.specificListener (" + specificListener + ") for: " + packet);
-            specificListener.packetReceived(packet);
+    private void processPacketByListener(Packet packet, PacketReceivedListener listener, String listenerType) {
+        if (listener != null) {
+            if (log.isDebugEnabled()) {
+                String msg = String.format("Calling processPacket.%s (%s) for: %s", listenerType, listener, packet);
+                if (packet.messageType == MessageType.MSG_OnHeartBeat) {
+                    log.trace(msg);
+                } else {
+                    log.debug(msg);
+                }
+            }
+            listener.packetReceived(packet);
         }
+    }
+
+
+    private void processPacketImpl(Packet packet) {
+        // callbacks for nodeId + messageType
+        PacketReceivedListener specificListener = specificReceivedListeners.get(createSpecificListenerKey(packet.nodeId, packet.messageType));
+        processPacketByListener(packet, specificListener, "listenerNodeAndType");
 
         // callbacks for nodeId + all message types
         specificListener = specificReceivedListeners.get(createSpecificListenerKey(packet.nodeId, -1));
-        if (specificListener != null) {
-            log.debug("Calling processPacket.specificListener (" + specificListener + ") for: " + packet);
-            specificListener.packetReceived(packet);
+        processPacketByListener(packet, specificListener, "listenerNode");
+
+        // callbacks for all messages
+        for (PacketReceivedListener listener : receivedListeners) {
+            processPacketByListener(packet, listener, "listenerAll");
         }
 
-        synchronized (receivedListeners) {
-            // callbacks for all messages
-            for (PacketReceivedListener e : receivedListeners) {
-                e.packetReceived(packet);
-            }
-        }
+        //log.debug(String.format(" done: processPacketImpl for %s", packet));
     }
 
     public void addReceivedPacketListener(PacketReceivedListener listener) {
         log.debug("addReceivedPacketListener: " + listener);
-        receivedListeners.add(listener);
+        // create a new copy to be thread safe
+        List<PacketReceivedListener> tmp = new ArrayList<PacketReceivedListener>();
+        tmp.addAll(receivedListeners);
+        tmp.add(listener);
+
+        receivedListeners = tmp;
         listener.notifyRegistered(this);
     }
 
@@ -224,7 +244,7 @@ public class PacketUartIO implements SerialPortEventListener {
         send(packet);
         Packet response = responseWrapper.waitForResponse(timeout);
         log.debug("resp (in " + (new Date().getTime() - begin) + " of " + timeout + "ms) " + response);
-        if (response == null) log.warn("No response for " + packet + ", " + MessageType.toString(responseType) + ")");
+        if (response == null) log.error("No response for " + packet + ", " + MessageType.toString(responseType) + ")");
         return response;
     }
 

@@ -10,21 +10,6 @@ public class ReceivedPacketHandler implements PacketUartIO.PacketReceivedListene
     @Override
     public void packetReceived(Packet packet) {
         log.debug("packetReceived: " + packet);
-
-        if (packet.messageType == MessageType.MSG_OnPortBPinChange) {
-
-        } else if(packet.messageType == MessageType.MSG_OnHeartBeat) {
-            if (packet.nodeId == 2 && packet.data[0] == 5) {
-/*
-                try {
-                    packetUartIO.send(packet.Packet.createMsgSetCounter(2, 100));
-                } catch (IOException e) {
-                    log.error("Error sending " + packet, e);
-                }
-*/
-            }
-
-        }
     }
 
     @Override

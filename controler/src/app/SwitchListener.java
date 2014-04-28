@@ -37,7 +37,7 @@ public class SwitchListener extends AbstractNodeListener {
     }
 
     @Override
-    public void onButtonDown(Node node, Pin pin) {
+    public void onButtonDown(Node node, Pin pin, int upTime) {
         onButtonEvent(node, pin, true);
     }
 
