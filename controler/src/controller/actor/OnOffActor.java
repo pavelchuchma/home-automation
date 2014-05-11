@@ -82,10 +82,12 @@ public class OnOffActor extends AbstractActor {
     }
 
     public void switchOn(Object actionData) {
+        log.debug("switchOn: " + toString());
         setValue(onValue, actionData);
     }
 
     public void switchOff(Object actionData) {
+        log.debug("switchOff: " + toString());
         setValue((onValue ^ 1) & 1, actionData);
     }
 

@@ -5,7 +5,6 @@ import node.Node;
 import org.apache.log4j.Logger;
 import packet.Packet;
 import packet.PacketUartIO;
-import packet.ReceivedPacketHandler;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -32,7 +31,7 @@ public class NodeInfoCollector {
     }
 
     public void start() {
-        packetUartIO.addReceivedPacketListener(new ReceivedPacketHandler() {
+        packetUartIO.addReceivedPacketListener(new PacketUartIO.PacketReceivedListener() {
             @Override
             public void packetReceived(Packet packet) {
                 NodeInfo nodeInfo = getOrCreateNodeInfo(packet);
@@ -59,6 +58,10 @@ public class NodeInfoCollector {
                 }
                 nodeInfo.setLastPingTime(new Date());
                 nodeInfo.addReceivedSentMessage(packet);
+            }
+
+            @Override
+            public void notifyRegistered(PacketUartIO packetUartIO) {
             }
         });
 

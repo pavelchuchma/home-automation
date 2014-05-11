@@ -54,6 +54,7 @@ public class WallSwitch extends ConnectedDevice {
 
     @Override
     public int getInitialOutputValues() {
+        //todo: initialize in accord with assigned indicators
         return createMask(new Pin[]{getGreenLed().getPin()});
     }
 }

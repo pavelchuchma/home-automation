@@ -37,7 +37,8 @@ public class Servlet extends AbstractHandler {
             while ((read = a.read(buff)) > 0) {
                 response.getOutputStream().write(buff,0,read);
             }
-
+        } else if (target.startsWith("/restart")) {
+            System.exit(100);
         } else {
             if (target.startsWith("/a")) {
                 processAction(target);

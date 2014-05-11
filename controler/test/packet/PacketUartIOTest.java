@@ -13,7 +13,17 @@ public class PacketUartIOTest {
     public void testCreation() throws Exception {
         PacketUartIO packetUartIO = new PacketUartIO("COM4", 19200);
         try {
-            packetUartIO.addReceivedPacketListener(new ReceivedPacketHandler());
+            packetUartIO.addReceivedPacketListener(new PacketUartIO.PacketReceivedListener() {
+                @Override
+                public void packetReceived(Packet packet) {
+                    log.debug("packetReceived: " + packet);
+                }
+
+                @Override
+                public void notifyRegistered(PacketUartIO packetUartIO) {
+                    log.debug("notifyRegistered: " + packetUartIO);
+                }
+            });
             System.out.println("Listening ...");
 
             packetUartIO.processPacket(onTimer1);

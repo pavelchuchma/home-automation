@@ -13,6 +13,7 @@ import java.util.List;
 
 public class Node implements PacketUartIO.PacketReceivedListener {
     static Logger log = Logger.getLogger(Node.class.getName());
+    private static Object initializationLock = new Object();
 
     public interface Listener {
         void onButtonDown(Node node, Pin pin, int upTime);
@@ -212,9 +213,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     public void packetReceived(final Packet packet) {
         try {
             packetReceivedImpl(packet);
-        } catch (IOException e) {
-            log.error("Error in packetReceived()", e);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             log.error("Error in packetReceived()", e);
         }
     }
@@ -272,6 +271,8 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     }
 
     public void initialize() {
+        log.info(String.format("Initialization of node: %s started", toString()));
+
         int commonOutputMask = 0;
         int commonEventMask = 0;
         int commonInitialOutputValues = 0;
@@ -288,29 +289,50 @@ public class Node implements PacketUartIO.PacketReceivedListener {
             }
         }
 
-        try {
-            for (int i = 0; i < 4; i++) {
-                int valueMask = (commonOutputMask >> i * 8) & 0xFF;
-                int trisMask = (valueMask ^ 0xFF) & 0xFF;
-                int eventMask = (commonEventMask >> i * 8) & 0xFF;
-                int value = (commonInitialOutputValues >> i * 8) & 0xFF;
+        for (int attempt = 0; attempt < 20; attempt++) {
+            if (doInitialization(commonOutputMask, commonEventMask, commonInitialOutputValues, reqFrequency)) {
+                log.info(String.format("Initialization of node: %s succeeded", toString()));
+                return;
+            }
+        }
+        //todo: reboot device and try it again in case of failure!
+    }
 
-                if (valueMask != 0 || eventMask != 0) {
-                    if (i == 1) {
-                        // don't modify tris for Can port
-                        //TRISB3 = 1; //CAN RX
-                        //TRISB2 = 0; //CAN TX
-                        trisMask = trisMask & 0xF3 | 0x08; //11110011 | 00001000;
+    private boolean doInitialization(int commonOutputMask, int commonEventMask, int commonInitialOutputValues, CpuFrequency reqFrequency) {
+        synchronized (initializationLock) {
+            try {
+                for (int port = 0; port < 4; port++) {
+                    int valueMask = (commonOutputMask >> port * 8) & 0xFF;
+                    int trisMask = (valueMask ^ 0xFF) & 0xFF;
+                    int eventMask = (commonEventMask >> port * 8) & 0xFF;
+                    int value = (commonInitialOutputValues >> port * 8) & 0xFF;
+
+                    if (valueMask != 0 || eventMask != 0) {
+                        if (port == 1) {
+                            // don't modify tris for Can port
+                            //TRISB3 = 1; //CAN RX
+                            //TRISB2 = 0; //CAN TX
+                            trisMask = trisMask & 0xF3 | 0x08; //11110011 | 00001000;
+                        }
+                        if (setPortValue((char) ('A' + port), valueMask, value, eventMask, trisMask) == null) {
+                            //todo: validate response value. Existence of response need not be enough
+                            log.error(String.format("Setting of port %c of node %s failed", (char) ('A' + port), toString()));
+                            return false;
+                        }
                     }
-                    setPortValue((char) ('A' + i), valueMask, value, eventMask, trisMask);
                 }
-            }
 
-            if (reqFrequency != CpuFrequency.unknown) {
-                setFrequency(reqFrequency);
+                if (reqFrequency != CpuFrequency.unknown) {
+                    if (!setFrequency(reqFrequency)) {
+                        log.error(String.format("Setting frequency of node %s failed", toString()));
+                        return false;
+                    }
+                }
+                return true;
+            } catch (IOException e) {
+                log.error("Node initialization failed!", e);
+                return false;
             }
-        } catch (IOException e) {
-            log.error("Node initialization failed!", e);
         }
     }
 }

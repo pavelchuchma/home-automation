@@ -22,13 +22,13 @@ public class SwitchListener extends AbstractNodeListener {
         String key = createNodePinKey(sw.getTrigger().getNodeId(), sw.getTrigger().getPin());
         switchMap.put(key, sw);
         log.info(String.format("ActionBinding '%s' added", sw));
-        if(sw.getButtonDownActions() != null) {
+        if (sw.getButtonDownActions() != null) {
             log.info(" buttonDown");
             for (Action a : sw.getButtonDownActions()) {
                 log.info("  - " + a.toString());
             }
         }
-        if(sw.getButtonUpActions() != null) {
+        if (sw.getButtonUpActions() != null) {
             log.info(" buttonUp");
             for (Action a : sw.getButtonUpActions()) {
                 log.info("  - " + a.toString());
@@ -52,13 +52,14 @@ public class SwitchListener extends AbstractNodeListener {
         if (sw != null) {
             log.debug(String.format("Executing ActionBinding: %s", sw));
             Action[] actions = (buttonDown) ? sw.getButtonDownActions() : sw.getButtonUpActions();
-            for (Action a : actions) {
-                log.debug(String.format("-> action: %s", a.getActor().getId()));
-                a.perform();
+            if (actions != null) {
+                for (Action a : actions) {
+                    log.debug(String.format("-> action: %s", a.getActor().getId()));
+                    a.perform();
+                }
             }
         }
     }
-
 
 
     @Override

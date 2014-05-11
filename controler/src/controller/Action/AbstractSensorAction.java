@@ -33,20 +33,21 @@ public class AbstractSensorAction extends AbstractAction {
     public void perform() {
         OnOffActor act = (OnOffActor) getActor();
         try {
+            log.debug("Performing actor: " + act.toString());
             ActionData aData = new ActionData();
             synchronized (act) {
                 if (act.isOn() && !isSensorActionData(act)) {
-                    // switched on, but by different action type -> do not touch anything
+                    log.debug("switched on, but by different action type -> do not touch anything");
                     return;
                 }
                 if (switchOffOnly && !act.isOn()) {
-                    // already switched off, nothing to do for switchOffOnly
+                    log.error("already switched off, nothing to do for switchOffOnly");
                     return;
                 }
 
                 long endTime = System.currentTimeMillis() + timeout;
 
-                // is switched off or switched on by my action type -> switch on, set my data
+                log.debug("is switched off or switched on by my action type -> switch on, set my data");
                 act.switchOn(aData);
 
                 if (timeout > MAX_BLINK_DURATION) {
@@ -55,6 +56,7 @@ public class AbstractSensorAction extends AbstractAction {
                     log.debug("Woken up");
                 }
                 if (act.getLastActionData() != aData) {
+                    log.debug("action data modified by other thread, leaving action");
                     return;
                 }
 
@@ -72,10 +74,11 @@ public class AbstractSensorAction extends AbstractAction {
                     }
                 }
 
-                // nobody modified actor meanwhile -> can switch off
+                log.debug("nobody modified actor meanwhile -> can switch off");
                 act.switchOff(null);
             }
         } catch (InterruptedException e) {
+            log.error("perform() method interrupted");
             return;
         }
     }

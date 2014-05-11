@@ -47,6 +47,11 @@
         <appender-ref ref="applicationLog"/>
     </category>
 
+    <category name="controller" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="applicationLog"/>
+    </category>
+
     <category name="app" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="applicationLog"/>

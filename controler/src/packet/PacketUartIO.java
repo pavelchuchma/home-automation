@@ -66,7 +66,7 @@ public class PacketUartIO implements SerialPortEventListener {
     SerialPort serialPort;
     InputStream inputStream;
     PacketSerializer packetSerializer = new PacketSerializer();
-    ExecutorService threadPool = Executors.newCachedThreadPool();
+    ExecutorService threadPool = Executors.newFixedThreadPool(20);
 
     public PacketUartIO(String portName, int baudRate) throws PacketUartIOException {
         log.debug("Creating '" + portName + "' @" + baudRate + " bauds...");
@@ -185,7 +185,7 @@ public class PacketUartIO implements SerialPortEventListener {
     }
 
 
-    private void processPacketImpl(Packet packet) {
+    private void    processPacketImpl(Packet packet) {
         // callbacks for nodeId + messageType
         PacketReceivedListener specificListener = specificReceivedListeners.get(createSpecificListenerKey(packet.nodeId, packet.messageType));
         processPacketByListener(packet, specificListener, "listenerNodeAndType");
