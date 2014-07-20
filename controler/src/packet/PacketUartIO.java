@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class PacketUartIO implements SerialPortEventListener {
+public class PacketUartIO implements SerialPortEventListener, IPacketUartIO {
     private class ResponseWrapper implements PacketReceivedListener {
         private Packet packet;
 
@@ -47,17 +47,6 @@ public class PacketUartIO implements SerialPortEventListener {
 
     static Logger log = Logger.getLogger(PacketUartIO.class.getName());
     static Logger msgLog = Logger.getLogger(PacketUartIO.class.getName() + ".msg");
-
-    // Listener interface
-    public interface PacketReceivedListener {
-        void packetReceived(Packet packet);
-
-        void notifyRegistered(PacketUartIO packetUartIO);
-    }
-
-    public interface PacketSentListener {
-        void packetSent(Packet packet);
-    }
 
     protected List<PacketReceivedListener> receivedListeners = new ArrayList<PacketReceivedListener>();
     protected ConcurrentHashMap<String, PacketReceivedListener> specificReceivedListeners = new ConcurrentHashMap<String, PacketReceivedListener>();
@@ -185,7 +174,7 @@ public class PacketUartIO implements SerialPortEventListener {
     }
 
 
-    private void    processPacketImpl(Packet packet) {
+    private void processPacketImpl(Packet packet) {
         // callbacks for nodeId + messageType
         PacketReceivedListener specificListener = specificReceivedListeners.get(createSpecificListenerKey(packet.nodeId, packet.messageType));
         processPacketByListener(packet, specificListener, "listenerNodeAndType");
@@ -202,6 +191,7 @@ public class PacketUartIO implements SerialPortEventListener {
         //log.debug(String.format(" done: processPacketImpl for %s", packet));
     }
 
+    @Override
     public void addReceivedPacketListener(PacketReceivedListener listener) {
         log.debug("addReceivedPacketListener: " + listener);
         // create a new copy to be thread safe
@@ -213,6 +203,7 @@ public class PacketUartIO implements SerialPortEventListener {
         listener.notifyRegistered(this);
     }
 
+    @Override
     public void addSpecificReceivedPacketListener(PacketReceivedListener listener, int nodeId, int messageType) {
         String key = createSpecificListenerKey(nodeId, messageType);
         log.debug("addSpecificReceivedPacketListener: " + listener + " for " + key);
@@ -220,6 +211,7 @@ public class PacketUartIO implements SerialPortEventListener {
         listener.notifyRegistered(this);
     }
 
+    @Override
     public void addSentPacketListener(PacketSentListener listener) {
         log.debug("addSentPacketListener: " + listener);
         sentListeners.add(listener);
@@ -229,6 +221,7 @@ public class PacketUartIO implements SerialPortEventListener {
         return nodeId + "@" + ((messageType < 0) ? "*" : MessageType.toString(messageType));
     }
 
+    @Override
     public void send(Packet packet) throws IOException {
         msgLog.debug(" < " + packet);
         packetSerializer.writePacket(packet, serialPort.getOutputStream());
@@ -237,6 +230,7 @@ public class PacketUartIO implements SerialPortEventListener {
         }
     }
 
+    @Override
     public Packet send(Packet packet, int responseType, int timeout) throws IOException {
         log.debug("send(" + packet + ", " + MessageType.toString(responseType) + ")");
         ResponseWrapper responseWrapper = new ResponseWrapper(packet.nodeId, responseType);
@@ -249,6 +243,7 @@ public class PacketUartIO implements SerialPortEventListener {
     }
 
 
+    @Override
     public void close() {
         if (serialPort != null) {
             serialPort.close();

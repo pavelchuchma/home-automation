@@ -13,6 +13,7 @@ public class OnOffActor extends AbstractActor {
     Indicator[] indicators;
     private int retryCount = 5;
 
+    OnOffActor conflictingActor;
 
     public OnOffActor(String id, NodePin output, int initValue, int onValue, Indicator... indicators) {
         super(id, output, initValue);
@@ -20,6 +21,10 @@ public class OnOffActor extends AbstractActor {
 
         this.value = initValue;
         this.indicators = indicators;
+    }
+
+    public void setConflictingActor(OnOffActor conflictingActor) {
+        this.conflictingActor = conflictingActor;
     }
 
     public String toString() {
@@ -71,19 +76,30 @@ public class OnOffActor extends AbstractActor {
     }
 
     @Override
-    public synchronized void setValue(int val, Object actionData) {
+    public synchronized boolean setValue(int val, Object actionData) {
         this.actionData = actionData;
         notifyAll();
 
-        value = val;
-        if (setPinValue(output, value, retryCount)) {
-            setIndicators(false, actionData);
+        // turn off conflicting actor
+        if (conflictingActor != null && val == onValue && conflictingActor.isOn()) {
+            conflictingActor.switchOff(actionData);
+            if (conflictingActor.isOn()) {
+                log.error(String.format("Actor %s: Cannot switch off conflicting actor %s", getId(), conflictingActor.getId()));
+                return false;
+            }
         }
+
+        if (setPinValue(output, val, retryCount)) {
+            value = val;
+            setIndicators(false, actionData);
+            return true;
+        }
+        return false;
     }
 
-    public void switchOn(Object actionData) {
+    public boolean switchOn(Object actionData) {
         log.debug("switchOn: " + toString());
-        setValue(onValue, actionData);
+        return setValue(onValue, actionData);
     }
 
     public void switchOff(Object actionData) {

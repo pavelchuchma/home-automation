@@ -7,7 +7,7 @@ public interface Actor {
 
     //abstract NodePin[] getOutputPins();
 
-    void setValue(int val, Object actionData);
+    boolean setValue(int val, Object actionData);
 
     Object getLastActionData();
 

@@ -3,6 +3,7 @@ package app;
 import node.MessageType;
 import node.Node;
 import org.apache.log4j.Logger;
+import packet.IPacketUartIO;
 import packet.Packet;
 import packet.PacketUartIO;
 
@@ -14,7 +15,7 @@ public class NodeInfoCollector {
     static Logger log = Logger.getLogger(NodeInfoCollector.class.getName());
     static NodeInfoCollector instance;
 
-    PacketUartIO packetUartIO;
+    IPacketUartIO packetUartIO;
     NodeInfo[] nodeInfoArray = new NodeInfo[50];
 
     SwitchListener switchListener = new SwitchListener();
@@ -73,7 +74,7 @@ public class NodeInfoCollector {
         });
     }
 
-    public NodeInfoCollector(final PacketUartIO packetUartIO) {
+    public NodeInfoCollector(final IPacketUartIO packetUartIO) {
         if (instance != null) {
             throw new IllegalStateException("Already created!!!");
         }
@@ -111,9 +112,14 @@ public class NodeInfoCollector {
                 "<link href='report.css' rel='stylesheet' type='text/css'/>\n" +
                 "</head>" +
                 "<body>");
-        for (int i=1; i<=5; i++) {
-            builder.append(String.format("<a href=/a%d>Action %d</a>&nbsp;&nbsp;&nbsp;&nbsp;", i, i));
+
+        String[] actionNames = new String[] {"KoupelnaOn", "KoupelnaOff", "Jidelna"};
+        for (int i=0; i<actionNames.length; i++) {
+            builder.append(String.format("<a href='/a%d'>%s</a>&nbsp;&nbsp;&nbsp;&nbsp;", i+1, actionNames[i]));
         }
+
+        builder.append("<a href='/zaluzie'>Zaluzie...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
+
         builder.append("<table class='nodeTable'>\n" +
                 "<tr><th class=''>Node #<th class=''>Last Ping Time<th class=''>Boot Time<th class=''>Build Time<th class=''>MessageLog");
 

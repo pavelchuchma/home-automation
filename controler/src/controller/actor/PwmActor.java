@@ -71,14 +71,16 @@ public class PwmActor extends AbstractActor {
     }
 
     @Override
-    public synchronized void setValue(int val, Object actionData) {
+    public synchronized boolean setValue(int val, Object actionData) {
         this.actionData = actionData;
         notifyAll();
 
-        value = val;
-        if (setPwmValue(output, value, retryCount)) {
+        if (setPwmValue(output, val, retryCount)) {
+            value = val;
             setIndicators(false, actionData);
+            return true;
         }
+        return false;
     }
 
     public boolean isOn() {

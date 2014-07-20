@@ -24,3 +24,30 @@ div.sentMessage
 {
     color: blue;
 }
+
+table.buttonTable
+{
+    border:1px solid black;
+}
+
+.zaluzieUp
+{
+    border:1px solid black;
+}
+
+.zaluzieUpRunning
+{
+    border:1px solid black;
+    background-color: red;
+}
+
+.zaluzieDown
+{
+    border:1px solid black;
+}
+
+.zaluzieDownRunning
+{
+    border:1px solid black;
+    background-color: red;
+}

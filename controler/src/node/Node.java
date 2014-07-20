@@ -2,6 +2,7 @@ package node;
 
 import controller.device.ConnectedDevice;
 import org.apache.log4j.Logger;
+import packet.IPacketUartIO;
 import packet.Packet;
 import packet.PacketUartIO;
 
@@ -26,7 +27,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
     int nodeId;
     String name;
-    PacketUartIO packetUartIO;
+    IPacketUartIO packetUartIO;
     List<ConnectedDevice> devices = new ArrayList<ConnectedDevice>();
 
     protected List<Listener> listeners = new ArrayList<Listener>();
@@ -42,11 +43,11 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     }
 
 
-    public Node(int nodeId, PacketUartIO packetUartIO) {
+    public Node(int nodeId, IPacketUartIO packetUartIO) {
         this(nodeId, "unknown" + nodeId, packetUartIO);
     }
 
-    public Node(int nodeId, String name, PacketUartIO packetUartIO) {
+    public Node(int nodeId, String name, IPacketUartIO packetUartIO) {
         this.nodeId = nodeId;
         this.name = name;
         this.packetUartIO = packetUartIO;

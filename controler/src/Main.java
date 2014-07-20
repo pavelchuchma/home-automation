@@ -3,7 +3,6 @@ import app.SwitchListener;
 import controller.Action.*;
 import controller.ActionBinding;
 import controller.actor.OnOffActor;
-import controller.actor.PwmActor;
 import controller.device.InputDevice;
 import controller.device.OutputDevice;
 import controller.device.RelayBoardDevice;
@@ -11,8 +10,10 @@ import controller.device.WallSwitch;
 import node.CpuFrequency;
 import node.Node;
 import org.apache.log4j.Logger;
+import packet.IPacketUartIO;
 import packet.PacketUartIO;
 import packet.PacketUartIOException;
+import packet.PacketUartIOMock;
 import servlet.Servlet;
 
 public class Main {
@@ -21,7 +22,17 @@ public class Main {
     public static void main(String[] args) {
         try {
             String port = (System.getenv("COMPUTERNAME") != null) ? "COM1" : "/dev/ttyS80";
-            PacketUartIO packetUartIO = new PacketUartIO(port, 19200);
+            IPacketUartIO packetUartIO;
+            try {
+                packetUartIO = new PacketUartIO(port, 19200);
+            } catch (PacketUartIOException e) {
+                if (System.getenv("COMPUTERNAME") != null) {
+                    packetUartIO = new PacketUartIOMock();
+                } else {
+                    throw e;
+                }
+            }
+
             NodeInfoCollector nodeInfoCollector = new NodeInfoCollector(packetUartIO);
 
             configure(nodeInfoCollector);
@@ -50,6 +61,7 @@ public class Main {
 
         Node bridge = nodeInfoCollector.createNode(1, "Bridge");
         Node actor3 = nodeInfoCollector.createNode(3, "Actor3");
+        Node zaluzieA = nodeInfoCollector.createNode(17, "ZaluzieA");
         Node obyvakSpinacABC = nodeInfoCollector.createNode(11, "ObyvakSpinacABC");
         Node chodbaDole = nodeInfoCollector.createNode(8, "ChodbaDole");
         Node koupelnaHore = nodeInfoCollector.createNode(9, "KoupelnaHore");
@@ -112,12 +124,33 @@ public class Main {
 //        actor3.initialize();
 //        obyvakSpinacABC.initialize();
 
+
+        RelayBoardDevice rele1ZaluzieAPort1 = new RelayBoardDevice("rele1ZaluzieAPort1", zaluzieA, 1);
+        OnOffActor[] zaluzieActors = new OnOffActor[]{
+                new OnOffActor("zaluzie01Up", rele1ZaluzieAPort1.getRele1(), 0, 1),
+                new OnOffActor("zaluzie01Down", rele1ZaluzieAPort1.getRele2(), 0, 1),
+                new OnOffActor("zaluzie02Up", rele1ZaluzieAPort1.getRele3(), 0, 1),
+                new OnOffActor("zaluzie02Down", rele1ZaluzieAPort1.getRele4(), 0, 1),
+                new OnOffActor("zaluzie03Up", rele1ZaluzieAPort1.getRele5(), 0, 1),
+                new OnOffActor("zaluzie03Down", rele1ZaluzieAPort1.getRele6(), 0, 1),
+        };
+
+        Action[] zaluzieInvertActions = new Action[zaluzieActors.length];
+        for (int i = 0; i < zaluzieActors.length; i++) {
+            zaluzieInvertActions[i] = new InvertAction(zaluzieActors[i]);
+            if (i % 2 == 1) {
+                zaluzieActors[i].setConflictingActor(zaluzieActors[i - 1]);
+                zaluzieActors[i - 1].setConflictingActor(zaluzieActors[i]);
+            }
+        }
+
         Servlet.action1 = onActionKoupelna;
         Servlet.action2 = offActionKoupelna;
         Servlet.action3 = invertJidelna;
 
-        Servlet.action4 = new InvertAction(zaricKoupelnaHore2Trubice);
-        Servlet.action5 = new InvertAction(zaricKoupelnaHore1Trubice);
+        Servlet.action4 = null;
+        Servlet.action5 = null;
+        Servlet.zaluezieActions = zaluzieInvertActions;
 
         Node test10Node = nodeInfoCollector.createNode(10, "Test10");
         Node test12Node = nodeInfoCollector.createNode(12, "Test12");
@@ -132,7 +165,6 @@ public class Main {
 
 //        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);
 //        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));
-
 
 
     }
