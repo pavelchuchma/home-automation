@@ -40,7 +40,7 @@ enum NodeId {
     NODE_ALL = 255,
 };
 
-#define NODE_ID NODE_9
+#define NODE_ID NODE_13
 #define RUN_TESTS 0
 #define PWM_RESOLUTION 16
 #define PIN_CHANGE_LOOP_COUNT 37

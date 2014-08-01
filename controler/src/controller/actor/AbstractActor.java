@@ -22,6 +22,13 @@ public abstract class AbstractActor implements Actor {
         this.initValue = initValue;
     }
 
+    /**
+     * Sets pin to value and waits for response
+     * @param nodePin
+     * @param value  0 or 1
+     * @param retryCount count of retries if no valid response is received
+     * @return true if pin was set
+     */
     static boolean setPinValue(NodePin nodePin, int value, int retryCount) {
         NodeInfoCollector nodeInfoCollector = NodeInfoCollector.getInstance();
         Node node = nodeInfoCollector.getNode(nodePin.getNodeId());
@@ -42,6 +49,9 @@ public abstract class AbstractActor implements Actor {
 
                 int setVal = ((response.data[1] & nodePin.getPin().getBitMask()) != 0) ? 1 : 0;
                 log.info(String.format("%s set to: %d", nodePin, setVal));
+                if (setVal != value) {
+                    throw new IOException(String.format("%s was set to %d but response value is %d", nodePin, value, setVal));
+                }
                 return true;
 
             } catch (IOException e) {

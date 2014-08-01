@@ -67,6 +67,8 @@ enum Commands {
     MSG_SetFrequencyResponse = 56,
     MSG_SetManualPwmValueRequest = 57, // 0(0:3) port, 0(4:7) pin, 1-value
     MSG_SetManualPwmValueResponse = 58, //0-ErrorCodes (0 - OK, 1 - bad param)
+    MSG_ResetRequest = 59,
+    MSG_ResetResponse = 60, // no param
 
 //End Commands
 };

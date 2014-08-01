@@ -16,6 +16,8 @@ import packet.PacketUartIOException;
 import packet.PacketUartIOMock;
 import servlet.Servlet;
 
+import java.io.IOException;
+
 public class Main {
     static Logger log = Logger.getLogger(Main.class.getName());
 
@@ -61,7 +63,7 @@ public class Main {
 
         Node bridge = nodeInfoCollector.createNode(1, "Bridge");
         Node actor3 = nodeInfoCollector.createNode(3, "Actor3");
-        Node zaluzieA = nodeInfoCollector.createNode(17, "ZaluzieA");
+        Node zaluzieA = nodeInfoCollector.createNode(13, "ZaluzieA");
         Node obyvakSpinacABC = nodeInfoCollector.createNode(11, "ObyvakSpinacABC");
         Node chodbaDole = nodeInfoCollector.createNode(8, "ChodbaDole");
         Node koupelnaHore = nodeInfoCollector.createNode(9, "KoupelnaHore");
@@ -126,6 +128,8 @@ public class Main {
 
 
         RelayBoardDevice rele1ZaluzieAPort1 = new RelayBoardDevice("rele1ZaluzieAPort1", zaluzieA, 1);
+        RelayBoardDevice rele1ZaluzieAPort2 = new RelayBoardDevice("rele1ZaluzieAPort1", zaluzieA, 2);
+        RelayBoardDevice rele1ZaluzieAPort3 = new RelayBoardDevice("rele1ZaluzieAPort1", zaluzieA, 3);
         OnOffActor[] zaluzieActors = new OnOffActor[]{
                 new OnOffActor("zaluzie01Up", rele1ZaluzieAPort1.getRele1(), 0, 1),
                 new OnOffActor("zaluzie01Down", rele1ZaluzieAPort1.getRele2(), 0, 1),
@@ -133,6 +137,20 @@ public class Main {
                 new OnOffActor("zaluzie02Down", rele1ZaluzieAPort1.getRele4(), 0, 1),
                 new OnOffActor("zaluzie03Up", rele1ZaluzieAPort1.getRele5(), 0, 1),
                 new OnOffActor("zaluzie03Down", rele1ZaluzieAPort1.getRele6(), 0, 1),
+
+                new OnOffActor("zaluzie04Up", rele1ZaluzieAPort2.getRele1(), 0, 1),
+                new OnOffActor("zaluzie04Down", rele1ZaluzieAPort2.getRele2(), 0, 1),
+                new OnOffActor("zaluzie05Up", rele1ZaluzieAPort2.getRele3(), 0, 1),
+                new OnOffActor("zaluzie05Down", rele1ZaluzieAPort2.getRele4(), 0, 1),
+                new OnOffActor("zaluzie06Up", rele1ZaluzieAPort2.getRele5(), 0, 1),
+                new OnOffActor("zaluzie06Down", rele1ZaluzieAPort2.getRele6(), 0, 1),
+
+                new OnOffActor("zaluzie07Up", rele1ZaluzieAPort3.getRele1(), 0, 1),
+                new OnOffActor("zaluzie07Down", rele1ZaluzieAPort3.getRele2(), 0, 1),
+                new OnOffActor("zaluzie08Up", rele1ZaluzieAPort3.getRele3(), 0, 1),
+                new OnOffActor("zaluzie08Down", rele1ZaluzieAPort3.getRele4(), 0, 1),
+                new OnOffActor("zaluzie09Up", rele1ZaluzieAPort3.getRele5(), 0, 1),
+                new OnOffActor("zaluzie09Down", rele1ZaluzieAPort3.getRele6(), 0, 1),
         };
 
         Action[] zaluzieInvertActions = new Action[zaluzieActors.length];

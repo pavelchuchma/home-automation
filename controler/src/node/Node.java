@@ -89,7 +89,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return 0;
     }
 
-    synchronized int readMemory(int address) throws IOException {
+    synchronized public int readMemory(int address) throws IOException {
         log.debug("readMemory: " + Pic.toString(address));
         Packet req = Packet.createMsgReadRamRequest(nodeId, address);
         Packet response = packetUartIO.send(req, MessageType.MSG_ReadRamResponse, 300);
@@ -335,5 +335,14 @@ public class Node implements PacketUartIO.PacketReceivedListener {
                 return false;
             }
         }
+    }
+
+    public Packet reset() throws IOException, IllegalArgumentException {
+        log.debug("RESET");
+        Packet response = packetUartIO.send(
+                Packet.createMsgReset(getNodeId()),
+                MessageType.MSG_ResetResponse, 100);
+        log.debug("RESET done: done.");
+        return response;
     }
 }

@@ -43,6 +43,15 @@ public enum Pin {
     public char getPort() {
         return (char) ('A' + (index / 8));
     }
+
+    /**
+     *
+     * @return 0-3 (A-D)
+     */
+    public int getPortIndex () {
+        return (index / 8);
+    }
+
     public char getBitMask() {
         return (char) (1 << (index % 8));
     }

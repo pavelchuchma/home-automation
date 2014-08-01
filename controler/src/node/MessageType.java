@@ -38,6 +38,8 @@ public class MessageType {
     public static final byte MSG_SetFrequencyResponse = 56;
     public static final byte MSG_SetManualPwmValueRequest = 57; // 0(0:3) port, 0(4:7) pin, 1-value
     public static final byte MSG_SetManualPwmValueResponse = 58; //0-ErrorCodes (0 - OK, 1 - bad param)
+    public static final byte MSG_ResetRequest = 59;
+    public static final byte MSG_ResetResponse = 60; // no param
 
     public static String toString(int type) {
         switch (type) {
@@ -76,6 +78,8 @@ public class MessageType {
             case MSG_SetFrequencyResponse: return "MSG_SetFrequencyResponse";
             case MSG_SetManualPwmValueRequest: return "MSG_SetManualPwmValueRequest";
             case MSG_SetManualPwmValueResponse: return "MSG_SetManualPwmValueResponse";
+            case MSG_ResetRequest: return "MSG_ResetRequest";
+            case MSG_ResetResponse: return "MSG_ResetResponse";
         }
         return "Unknown(" + type + ")";
      }

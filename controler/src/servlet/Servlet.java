@@ -1,7 +1,12 @@
 package servlet;
 
+import app.NodeInfo;
 import app.NodeInfoCollector;
 import controller.Action.Action;
+import controller.device.ConnectedDevice;
+import node.Node;
+import node.Pic;
+import node.Pin;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -11,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 
 public class Servlet extends AbstractHandler {
@@ -47,6 +54,22 @@ public class Servlet extends AbstractHandler {
             response.setStatus(HttpServletResponse.SC_OK);
             baseRequest.setHandled(true);
             response.getWriter().println(getZaluziePage());
+
+        } else if (target.startsWith("/system")) {
+            int debugNodeId = -1;
+            if (target.startsWith("/system/r")) {
+                int actionIndex = Integer.parseInt(target.substring("/system/r".length()));
+                Node n = NodeInfoCollector.getInstance().getNode(actionIndex);
+                n.reset();
+            } else if (target.startsWith("/system/i")) {
+                debugNodeId = Integer.parseInt(target.substring("/system/i".length()));
+            }
+
+
+            response.setContentType("text/html;charset=utf-8");
+            response.setStatus(HttpServletResponse.SC_OK);
+            baseRequest.setHandled(true);
+            response.getWriter().println(getSystemPage(debugNodeId));
 
         } else {
             if (target.startsWith("/a")) {
@@ -102,10 +125,121 @@ public class Servlet extends AbstractHandler {
                 "<body><a href='/zaluzie'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
 
         builder.append(getZaluzieTable(0, 6));
+        builder.append(getZaluzieTable(6, 6));
+        builder.append(getZaluzieTable(12, 6));
 
         builder.append("</body></html>");
         return builder.toString();
     }
+
+    private String getSystemPage(int debugNodeId) {
+        StringBuilder builder = new StringBuilder();
+        Date resetSupportAdded = new GregorianCalendar(2014, 7, 1).getTime();
+
+        builder.append("<html>" +
+                "<head>" +
+                "<link href='/report.css' rel='stylesheet' type='text/css'/>\n" +
+                "</head>" +
+                "<body><a href='/system'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
+
+        builder.append("<br/><br/><table class='systemTable'><tr>");
+
+        for (NodeInfo nodeInfo : nodeInfoCollector) {
+            int nodeId = nodeInfo.getNode().getNodeId();
+
+            Date buildTime = nodeInfo.getBuildTime();
+            String resetLink = (buildTime == null || buildTime.after(resetSupportAdded)) ? String.format("<a href='/system/r%d'>reset</a>", nodeId) : "";
+            builder.append(String.format("<tr><td>%d-%s<td><a href='/system/i%d'>info</a><td>%s", nodeId, nodeInfo.getNode().getName(), nodeId, resetLink));
+        }
+        builder.append("</table>");
+
+        if (debugNodeId >= 0) {
+            builder.append(printNodeDebugInfo(debugNodeId));
+        }
+
+        builder.append("</body></html>");
+        return builder.toString();
+    }
+
+    private int applyBitMaskTo01(int values, int mask) {
+        return ((values & mask) != 0) ? 1 : 0;
+    }
+
+    private String printNodeDebugInfo(int debugNodeId) {
+        StringBuilder builder = new StringBuilder();
+
+        Node node = nodeInfoCollector.getNode(debugNodeId);
+        builder.append(String.format("<br/><br/><div class='nodeInfoTitle'>%d-%s Detail</div>", node.getNodeId(), node.getName()));
+
+        int[] portValues = new int[3];
+        int[] trisValues = new int[3];
+
+        try {
+            portValues[0] = node.readMemory(Pic.PORTA);
+            trisValues[0] = node.readMemory(Pic.TRISA);
+            portValues[1] = node.readMemory(Pic.PORTB);
+            trisValues[1] = node.readMemory(Pic.TRISB);
+            portValues[2] = node.readMemory(Pic.PORTC);
+            trisValues[2] = node.readMemory(Pic.TRISC);
+        } catch (IOException e) {
+            builder.append(e);
+            return builder.toString();
+        }
+
+//        portValues[0] = 0xFF;
+//        trisValues[0] = 0xFF;
+//        portValues[1] = 0x33;
+//        trisValues[1] = 0x33;
+//        portValues[2] = 0x11;
+//        trisValues[2] = 0x11;
+
+
+        builder.append("<table><tr>");
+        for (int connId = 1; connId <= 3; connId++) {
+            builder.append("<td class='nodeInfoConnectors'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+            appendConnectorInfo(builder, portValues, trisValues, connId);
+        }
+        builder.append("</table>");
+
+        appenPicPortInfo(builder, portValues, trisValues);
+
+
+        return builder.toString();
+    }
+
+    private void appenPicPortInfo(StringBuilder builder, int[] portValues, int[] trisValues) {
+        builder.append("<br/><table class='nodeInfoTable'><tr>");
+        builder.append("<tr><th>Name<th>Tris<th>Value");
+        char[] portNames = new char[]{'A', 'B', 'C'};
+        for (int port = 0; port < 3; port++)
+            for (int bit = 0; bit < 8; bit++) {
+                builder.append(String.format("<tr><td>%c%d<td>%d<td>%d", portNames[port], bit, applyBitMaskTo01(trisValues[port], 1 << bit), applyBitMaskTo01(portValues[port], 1 << bit)));
+            }
+        builder.append("</table>");
+    }
+
+    private void appendConnectorInfo(StringBuilder builder, int[] portValues, int[] trisValues, int connId) {
+        builder.append(String.format("<div class='nodeInfoConnectorTitle'>Conn #%d (T-V)</div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", connId));
+        builder.append("<br/><table class='nodeInfoConnectorTable'><tr>");
+
+        for (int row = 1; row <= 2; row++) {
+            builder.append("<tr><td class='nodeInfoConnectorTable'>&nbsp;&nbsp;&nbsp;&nbsp;");
+            for (int i = row; i < 7; i += 2) {
+                appendConnPinDetail(builder, trisValues, portValues, connId, i);
+            }
+        }
+
+        builder.append("</table>");
+    }
+
+    private void appendConnPinDetail(StringBuilder builder, int trisValues[], int portValues[], int connId, int pinId) {
+        Pin pin = ConnectedDevice.getPin(connId, pinId);
+        builder.append(String.format("<td class='nodeInfoConnectorTable'>%s %d-%d",
+                pin.toString().substring(3),
+                applyBitMaskTo01(trisValues[pin.getPortIndex()], pin.getBitMask()),
+                applyBitMaskTo01(portValues[pin.getPortIndex()], pin.getBitMask())));
+    }
+
 
     private String getZaluzieTable(int startIndex, int count) {
         StringBuilder builder = new StringBuilder();

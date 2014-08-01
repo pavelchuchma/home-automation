@@ -327,6 +327,12 @@ void processSetFrequencyRequest() {
     setupCanBus(receivedPacket.data[1]);
 }
 
+void processResetRequest() {
+    outPacket.nodeId = nodeId;
+    outPacket.messageType = MSG_ResetResponse;
+    outPacket.length = 2;
+}
+
 void processSetManualPwmValueRequest() {
 
     outPacket.nodeId = nodeId;

@@ -13,10 +13,6 @@ public class RelayBoardDevice extends ConnectedDevice {
         super(id, node, connectorPosition, PIN_NAMES);
     }
 
-    public RelayBoardDevice(String id, Node node, int connectorPosition, CpuFrequency requiredCpuFrequency) {
-        super(id, node, connectorPosition, PIN_NAMES, requiredCpuFrequency);
-    }
-
     public NodePin getRele1() {
         return pins[2];
     }

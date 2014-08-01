@@ -208,6 +208,15 @@ void main(void) {
 
                         // send response to proper destination
                         sendResponse();
+                    } else if (receivedPacket.messageType == MSG_ResetRequest) {
+                        // set change CPU frequency
+                        processSetManualPwmValueRequest();
+
+                        // send response to proper destination
+                        sendResponse();
+
+                        // do reset
+                        asm ("RESET");
                     }
                 } else if (nodeId == NODE_ROUTER) {
                     //message is not for me, but I'm a router

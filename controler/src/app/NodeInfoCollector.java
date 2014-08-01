@@ -10,8 +10,9 @@ import packet.PacketUartIO;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 
-public class NodeInfoCollector {
+public class NodeInfoCollector implements Iterable<NodeInfo> {
     static Logger log = Logger.getLogger(NodeInfoCollector.class.getName());
     static NodeInfoCollector instance;
 
@@ -113,12 +114,13 @@ public class NodeInfoCollector {
                 "</head>" +
                 "<body>");
 
-        String[] actionNames = new String[] {"KoupelnaOn", "KoupelnaOff", "Jidelna"};
-        for (int i=0; i<actionNames.length; i++) {
-            builder.append(String.format("<a href='/a%d'>%s</a>&nbsp;&nbsp;&nbsp;&nbsp;", i+1, actionNames[i]));
+        String[] actionNames = new String[]{"KoupelnaOn", "KoupelnaOff", "Jidelna"};
+        for (int i = 0; i < actionNames.length; i++) {
+            builder.append(String.format("<a href='/a%d'>%s</a>&nbsp;&nbsp;&nbsp;&nbsp;", i + 1, actionNames[i]));
         }
 
         builder.append("<a href='/zaluzie'>Zaluzie...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
+        builder.append("<a href='/system'>System...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
 
         builder.append("<table class='nodeTable'>\n" +
                 "<tr><th class=''>Node #<th class=''>Last Ping Time<th class=''>Boot Time<th class=''>Build Time<th class=''>MessageLog");
@@ -157,5 +159,39 @@ public class NodeInfoCollector {
         Node node = new Node(i, name, packetUartIO);
         addNode(node);
         return node;
+    }
+
+    @Override
+    public Iterator<NodeInfo> iterator() {
+        return new NodeInfoIterator();  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    class NodeInfoIterator implements Iterator<NodeInfo> {
+        int position = 0;
+
+        @Override
+        public boolean hasNext() {
+            for (int i = position; i < nodeInfoArray.length; i++) {
+                if (nodeInfoArray[i] != null) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public NodeInfo next() {
+            for (; position < nodeInfoArray.length; position++) {
+                if (nodeInfoArray[position] != null) {
+                    return nodeInfoArray[position++];
+                }
+            }
+            throw new IllegalStateException("Calling next when hasNext returned false");
+        }
+
+        @Override
+        public void remove() {
+            throw new IllegalStateException("Remove not implemented");
+        }
     }
 }
