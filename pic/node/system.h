@@ -37,10 +37,11 @@ enum NodeId {
     NODE_17 = 17,
     NODE_18 = 18,
     NODE_19 = 19,
+    NODE_20 = 20,
     NODE_ALL = 255,
 };
 
-#define NODE_ID NODE_13
+#define NODE_ID NODE_20
 #define RUN_TESTS 0
 #define PWM_RESOLUTION 16
 #define PIN_CHANGE_LOOP_COUNT 37

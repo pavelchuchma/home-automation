@@ -328,9 +328,33 @@ void processSetFrequencyRequest() {
 }
 
 void processResetRequest() {
+    // do reset
+    asm ("RESET");
+}
+
+void processReadProgramRequest() {
     outPacket.nodeId = nodeId;
-    outPacket.messageType = MSG_ResetResponse;
-    outPacket.length = 2;
+    outPacket.messageType = MSG_ReadProgramResponse;
+
+    if (receivedPacket.length != 5) {
+        // incorrect request length -> do nothing
+        outPacket.length = 2;
+        return;
+    }
+    TBLPTRL = (*(MsgReadProgramRequest*) & receivedPacket).tblptrL;
+    TBLPTRH = (*(MsgReadProgramRequest*) & receivedPacket).tblptrH;
+    TBLPTRU = (*(MsgReadProgramRequest*) & receivedPacket).tblptrU;
+
+    asm ("TBLRD*+");
+    outPacket.data[0] = TABLAT;
+    asm ("TBLRD*+");
+    outPacket.data[1] = TABLAT;
+    asm ("TBLRD*+");
+    outPacket.data[2] = TABLAT;
+    asm ("TBLRD*+");
+    outPacket.data[3] = TABLAT;
+
+    outPacket.length = 6;
 }
 
 void processSetManualPwmValueRequest() {

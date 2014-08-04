@@ -131,26 +131,27 @@ public class Main {
         RelayBoardDevice rele1ZaluzieAPort2 = new RelayBoardDevice("rele1ZaluzieAPort1", zaluzieA, 2);
         RelayBoardDevice rele1ZaluzieAPort3 = new RelayBoardDevice("rele1ZaluzieAPort1", zaluzieA, 3);
         OnOffActor[] zaluzieActors = new OnOffActor[]{
-                new OnOffActor("zaluzie01Up", rele1ZaluzieAPort1.getRele1(), 0, 1),
-                new OnOffActor("zaluzie01Down", rele1ZaluzieAPort1.getRele2(), 0, 1),
-                new OnOffActor("zaluzie02Up", rele1ZaluzieAPort1.getRele3(), 0, 1),
-                new OnOffActor("zaluzie02Down", rele1ZaluzieAPort1.getRele4(), 0, 1),
-                new OnOffActor("zaluzie03Up", rele1ZaluzieAPort1.getRele5(), 0, 1),
-                new OnOffActor("zaluzie03Down", rele1ZaluzieAPort1.getRele6(), 0, 1),
+                new OnOffActor("Paťa 1 Up", rele1ZaluzieAPort1.getRele1(), 0, 1),
+                new OnOffActor("Paťa 1 Down", rele1ZaluzieAPort1.getRele2(), 0, 1),
+                new OnOffActor("Paťa 2 Up", rele1ZaluzieAPort1.getRele3(), 0, 1),
+                new OnOffActor("Paťa 2 Down", rele1ZaluzieAPort1.getRele4(), 0, 1),
+                new OnOffActor("Marek Up", rele1ZaluzieAPort2.getRele1(), 0, 1),
+                new OnOffActor("Marek Down", rele1ZaluzieAPort2.getRele2(), 0, 1),
 
-                new OnOffActor("zaluzie04Up", rele1ZaluzieAPort2.getRele1(), 0, 1),
-                new OnOffActor("zaluzie04Down", rele1ZaluzieAPort2.getRele2(), 0, 1),
-                new OnOffActor("zaluzie05Up", rele1ZaluzieAPort2.getRele3(), 0, 1),
-                new OnOffActor("zaluzie05Down", rele1ZaluzieAPort2.getRele4(), 0, 1),
-                new OnOffActor("zaluzie06Up", rele1ZaluzieAPort2.getRele5(), 0, 1),
-                new OnOffActor("zaluzie06Down", rele1ZaluzieAPort2.getRele6(), 0, 1),
+                new OnOffActor("Ložnice 1 Up", rele1ZaluzieAPort1.getRele5(), 0, 1),
+                new OnOffActor("Ložnice 1 Down", rele1ZaluzieAPort1.getRele6(), 0, 1),
+                new OnOffActor("Ložnice 2 Up", rele1ZaluzieAPort2.getRele5(), 0, 1),
+                new OnOffActor("Ložnice 2 Down", rele1ZaluzieAPort2.getRele6(), 0, 1),
+                new OnOffActor("Kuchyně Up", rele1ZaluzieAPort3.getRele1(), 0, 1),
+                new OnOffActor("Kuchyně Down", rele1ZaluzieAPort3.getRele2(), 0, 1),
 
-                new OnOffActor("zaluzie07Up", rele1ZaluzieAPort3.getRele1(), 0, 1),
-                new OnOffActor("zaluzie07Down", rele1ZaluzieAPort3.getRele2(), 0, 1),
-                new OnOffActor("zaluzie08Up", rele1ZaluzieAPort3.getRele3(), 0, 1),
-                new OnOffActor("zaluzie08Down", rele1ZaluzieAPort3.getRele4(), 0, 1),
-                new OnOffActor("zaluzie09Up", rele1ZaluzieAPort3.getRele5(), 0, 1),
-                new OnOffActor("zaluzie09Down", rele1ZaluzieAPort3.getRele6(), 0, 1),
+                new OnOffActor("Obývák 1 Up", rele1ZaluzieAPort3.getRele5(), 0, 1),
+                new OnOffActor("Obývák 1 Down", rele1ZaluzieAPort3.getRele6(), 0, 1),
+                new OnOffActor("Obývák 2 Up", rele1ZaluzieAPort3.getRele3(), 0, 1),
+                new OnOffActor("Obývák 2 Down", rele1ZaluzieAPort3.getRele4(), 0, 1),
+                new OnOffActor("Obývák 3 Up", rele1ZaluzieAPort2.getRele3(), 0, 1),
+                new OnOffActor("Obývák 3 Down", rele1ZaluzieAPort2.getRele4(), 0, 1),
+
         };
 
         Action[] zaluzieInvertActions = new Action[zaluzieActors.length];

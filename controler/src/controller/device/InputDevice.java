@@ -12,10 +12,9 @@ public class InputDevice extends ConnectedDevice {
         super(id, node, connectorPosition, new String[]{"in1", "in2", "in3", "in4", "in5", "in6"});
     }
 
-    public InputDevice(String id, Node node, int connectorPosition, CpuFrequency requiredCpuFrequency) {
-        super(id, node, connectorPosition, new String[]{"in1", "in2", "in3", "in4", "in5", "in6"}, requiredCpuFrequency);
-    }
-
+    /**
+     * Gets input pin and adds returned pin to event mask
+     */
     public NodePin getIn1AndActivate() {
         return getPinAndUpdateEventMask(0);
     }

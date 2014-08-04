@@ -210,13 +210,15 @@ void main(void) {
                         sendResponse();
                     } else if (receivedPacket.messageType == MSG_ResetRequest) {
                         // set change CPU frequency
-                        processSetManualPwmValueRequest();
+                        processResetRequest();
+                        // do not need to wait for anything, reset will be faster and wait for message sending
+                        // can be risk of deadlock in some casess (or complicated code)
+                    } else if (receivedPacket.messageType == MSG_ReadProgramRequest) {
+                        // set change CPU frequency
+                        processReadProgramRequest();
 
                         // send response to proper destination
                         sendResponse();
-
-                        // do reset
-                        asm ("RESET");
                     }
                 } else if (nodeId == NODE_ROUTER) {
                     //message is not for me, but I'm a router

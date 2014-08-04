@@ -24,7 +24,7 @@ public class MessageType {
     public static final byte MSG_ReadRamRequest = 41; //MsgReadRamRequest
     public static final byte MSG_ReadRamResponse = 42; //1 byte
     public static final byte MSG_WriteRamRequest = 43; //MsgWriteRamRequest, response is MSG_ReadRamResponse
-    public static final byte MSG_WriteRamResponse = 44; //2 bytes (original and new value
+    public static final byte MSG_WriteRamResponse = 44; //2 bytes (original and new value)
     public static final byte MSG_OnDebug = 45; //
     public static final byte MSG_GetBuildTimeRequest = 47; // no data
     public static final byte MSG_GetBuildTimeResponse = 48; // 5 bytes: ymdhm
@@ -33,13 +33,15 @@ public class MessageType {
     public static final byte MSG_SetPwmValueRequest = 51; //1 byte CcpModuleEnum, 1 byte value
     public static final byte MSG_SetPwmValueResponse = 52; //1 byte CcpModuleEnum, 1 byte set value
     public static final byte MSG_OnReboot = 53; // 1 byte pingCounter, 1 byte RCON value - PIC asks for initialization
-    public static final byte MSG_InitializationFinished = 54; // sends PC to finish initialization
+    public static final byte MSG_InitializationFinished = 54; // sends PC to finish initialization of PIC
     public static final byte MSG_SetFrequencyRequest = 55;  // 0-cpuFreqData, 1-canBaudRatePrescaler
     public static final byte MSG_SetFrequencyResponse = 56;
     public static final byte MSG_SetManualPwmValueRequest = 57; // 0(0:3) port, 0(4:7) pin, 1-value
     public static final byte MSG_SetManualPwmValueResponse = 58; //0-ErrorCodes (0 - OK, 1 - bad param)
     public static final byte MSG_ResetRequest = 59;
-    public static final byte MSG_ResetResponse = 60; // no param
+    public static final byte MSG_ResetResponse = 60; // no data
+    public static final byte MSG_ReadProgramRequest = 61; // 3 bytes (TBLPTRL, TBLPTRH, TBLPTRU)
+    public static final byte MSG_ReadProgramResponse = 62; // 4 bytes
 
     public static String toString(int type) {
         switch (type) {
@@ -80,6 +82,8 @@ public class MessageType {
             case MSG_SetManualPwmValueResponse: return "MSG_SetManualPwmValueResponse";
             case MSG_ResetRequest: return "MSG_ResetRequest";
             case MSG_ResetResponse: return "MSG_ResetResponse";
+            case MSG_ReadProgramRequest: return "MSG_ReadProgramRequest";
+            case MSG_ReadProgramResponse: return "MSG_ReadProgramResponse";
         }
         return "Unknown(" + type + ")";
      }

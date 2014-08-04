@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import packet.IPacketUartIO;
 import packet.Packet;
 import packet.PacketUartIO;
+import servlet.Servlet;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -119,8 +120,8 @@ public class NodeInfoCollector implements Iterable<NodeInfo> {
             builder.append(String.format("<a href='/a%d'>%s</a>&nbsp;&nbsp;&nbsp;&nbsp;", i + 1, actionNames[i]));
         }
 
-        builder.append("<a href='/zaluzie'>Zaluzie...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
-        builder.append("<a href='/system'>System...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
+        builder.append("<a href='" + Servlet.TARGET_LOUVERS + "'>Zaluzie...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
+        builder.append("<a href='" + Servlet.TARGET_SYSTEM + "'>System...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
 
         builder.append("<table class='nodeTable'>\n" +
                 "<tr><th class=''>Node #<th class=''>Last Ping Time<th class=''>Boot Time<th class=''>Build Time<th class=''>MessageLog");
@@ -153,6 +154,10 @@ public class NodeInfoCollector implements Iterable<NodeInfo> {
 
     public synchronized Node getNode(int i) {
         return (nodeInfoArray[i] != null) ? nodeInfoArray[i].node : null;
+    }
+
+    public synchronized NodeInfo getNodeInfo(int i) {
+        return nodeInfoArray[i];
     }
 
     public Node createNode(int i, String name) {

@@ -8,15 +8,25 @@ import node.Pin;
 public abstract class ConnectedDevice {
     NodePin[] pins = new NodePin[6];
     CpuFrequency requiredCpuFrequency;
+    int connectorPosition;
+    private final String id;
     final static Pin[][] layout = {
             {Pin.pinA5, Pin.pinA3, Pin.pinA2, Pin.pinA0, Pin.pinB4, Pin.pinB5},
             {Pin.pinC3, Pin.pinC1, Pin.pinC0, Pin.pinA6, Pin.pinC2, Pin.pinA7},
             {Pin.pinB0, Pin.pinB1, Pin.pinC5, Pin.pinC4, Pin.pinC6, Pin.pinC7}
     };
 
+    @Override
+    public String toString() {
+        return String.format("%s(%s)", getClass().getSimpleName(), id);
+    }
 
     public ConnectedDevice(String id, Node node, int connectorPosition, String[] names) {
         this(id, node, connectorPosition, names, CpuFrequency.unknown);
+    }
+
+    public int getConnectorPosition() {
+        return connectorPosition;
     }
 
     public ConnectedDevice(String id, Node node, int connectorPosition, String[] names, CpuFrequency requiredCpuFrequency) {
@@ -28,6 +38,8 @@ public abstract class ConnectedDevice {
             pins[i] = new NodePin(String.format("%s:%d.%s", id, connectorPosition, names[i]), node.getNodeId(), getPin(connectorPosition, i + 1));
         }
 
+        this.connectorPosition = connectorPosition;
+        this.id = id;
         this.requiredCpuFrequency = requiredCpuFrequency;
 
         node.addDevice(this);
@@ -48,9 +60,6 @@ public abstract class ConnectedDevice {
         }
 
         return layout[connectorPosition - 1][connectorPin - 1];
-    }
-
-    private static void checkConnectorPossition(int connectorPosition) {
     }
 
     protected int createMask(Pin[] pins) {

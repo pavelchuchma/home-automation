@@ -1,14 +1,13 @@
 package app;
 
+import controller.device.ConnectedDevice;
 import node.Node;
 import packet.Packet;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 public class NodeInfo {
+    private static final Date resetSupportedSince = new GregorianCalendar(2014, 7, 1).getTime();
 
     Node node;
     Date buildTime;
@@ -68,5 +67,19 @@ public class NodeInfo {
             }
             return messageLog.toArray(new LogMessage[messageLog.size()]);
         }
+    }
+
+    public boolean isResetSupported() {
+        return buildTime != null && buildTime.after(resetSupportedSince);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

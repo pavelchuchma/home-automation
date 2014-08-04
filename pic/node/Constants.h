@@ -53,7 +53,7 @@ enum Commands {
     MSG_ReadRamRequest = 41, //MsgReadRamRequest
     MSG_ReadRamResponse = 42, //1 byte
     MSG_WriteRamRequest = 43, //MsgWriteRamRequest, response is MSG_ReadRamResponse
-    MSG_WriteRamResponse = 44, //2 bytes (original and new value
+    MSG_WriteRamResponse = 44, //2 bytes (original and new value)
     MSG_OnDebug = 45, //
     MSG_GetBuildTimeRequest = 47, // no data
     MSG_GetBuildTimeResponse = 48, // 5 bytes: ymdhm
@@ -62,13 +62,15 @@ enum Commands {
     MSG_SetPwmValueRequest = 51, //1 byte CcpModuleEnum, 1 byte value
     MSG_SetPwmValueResponse = 52, //1 byte CcpModuleEnum, 1 byte set value
     MSG_OnReboot = 53, // 1 byte pingCounter, 1 byte RCON value - PIC asks for initialization
-    MSG_InitializationFinished = 54, // sends PC to finish initialization
+    MSG_InitializationFinished = 54, // sends PC to finish initialization of PIC
     MSG_SetFrequencyRequest = 55,  // 0-cpuFreqData, 1-canBaudRatePrescaler
     MSG_SetFrequencyResponse = 56,
     MSG_SetManualPwmValueRequest = 57, // 0(0:3) port, 0(4:7) pin, 1-value
     MSG_SetManualPwmValueResponse = 58, //0-ErrorCodes (0 - OK, 1 - bad param)
     MSG_ResetRequest = 59,
-    MSG_ResetResponse = 60, // no param
+    MSG_ResetResponse = 60, // no data
+    MSG_ReadProgramRequest = 61, // 3 bytes (TBLPTRL, TBLPTRH, TBLPTRU)
+    MSG_ReadProgramResponse = 62, // 4 bytes
 
 //End Commands
 };
@@ -96,6 +98,13 @@ typedef struct {
     unsigned char addressL;
     unsigned char addressH;
 } MsgReadRamRequest;
+
+typedef struct {
+    MessageHeader header;
+    unsigned char tblptrL;
+    unsigned char tblptrH;
+    unsigned char tblptrU;
+} MsgReadProgramRequest;
 
 typedef struct {
     MessageHeader header;

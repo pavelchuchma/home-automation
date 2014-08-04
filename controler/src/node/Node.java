@@ -7,9 +7,7 @@ import packet.Packet;
 import packet.PacketUartIO;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 public class Node implements PacketUartIO.PacketReceivedListener {
@@ -28,7 +26,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     int nodeId;
     String name;
     IPacketUartIO packetUartIO;
-    List<ConnectedDevice> devices = new ArrayList<ConnectedDevice>();
+    List<ConnectedDevice> devices = new ArrayList<ConnectedDevice>(3);
 
     protected List<Listener> listeners = new ArrayList<Listener>();
     protected long[] downTimes = new long[32];
@@ -39,8 +37,15 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     }
 
     public void addDevice(ConnectedDevice device) {
+        for (ConnectedDevice d : devices) {
+            if (d.getConnectorPosition() == device.getConnectorPosition()) {
+                throw  new IllegalArgumentException(String.format("Cannot add device %s on connector position %d because" +
+                        " it is already used by %s", device, device.getConnectorPosition(), d.toString()));
+            }
+        }
         devices.add(device);
     }
+
 
 
     public Node(int nodeId, IPacketUartIO packetUartIO) {
@@ -114,7 +119,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         Packet response = packetUartIO.send(Packet.createMsgGetBuildTime(nodeId), MessageType.MSG_GetBuildTimeResponse, 300);
         log.debug("getBuildTime -> " + response);
         return (response != null) ?
-                new Date(response.data[0] + 100, response.data[1] - 1, response.data[2], response.data[3], response.data[4])
+                new GregorianCalendar(response.data[0] + 2000, response.data[1] - 1, response.data[2], response.data[3], response.data[4]).getTime()
                 : null;
     }
 
@@ -271,6 +276,16 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
     }
 
+    public List<ConnectedDevice> getDevices() {
+        List<ConnectedDevice> out = new ArrayList<ConnectedDevice>();
+        out.addAll(devices);
+        return out;
+    }
+
+    public void removeDevices() {
+        devices.clear();
+    }
+
     public void initialize() {
         log.info(String.format("Initialization of node: %s started", toString()));
 
@@ -296,6 +311,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
                 return;
             }
         }
+        log.error(String.format("Initialization of node: %s FAILED", toString()));
         //todo: reboot device and try it again in case of failure!
     }
 
@@ -337,12 +353,22 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         }
     }
 
-    public Packet reset() throws IOException, IllegalArgumentException {
+    public Packet reset() throws IOException {
         log.debug("RESET");
         Packet response = packetUartIO.send(
                 Packet.createMsgReset(getNodeId()),
                 MessageType.MSG_ResetResponse, 100);
-        log.debug("RESET done: done.");
+        log.debug("RESET done.");
         return response;
+    }
+
+    public int[] readProgramMemory(int address) throws IOException {
+        Packet response = packetUartIO.send(
+                Packet.createMsgReadProgramMemory(getNodeId(), address),
+                MessageType.MSG_ReadProgramResponse, 100);
+        if (response != null) {
+            return Arrays.copyOf(response.data, response.data.length);
+        }
+        return null;
     }
 }

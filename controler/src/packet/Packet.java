@@ -89,6 +89,10 @@ public class Packet {
         return new Packet(nodeId, MessageType.MSG_ResetRequest, null);
     }
 
+    public static Packet createMsgReadProgramMemory(int nodeId, int address) {
+        return new Packet(nodeId, MessageType.MSG_ReadProgramRequest, new int[]{address & 0xFF, (address >> 8) & 0xFF, (address >> 16) & 0xFF});
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

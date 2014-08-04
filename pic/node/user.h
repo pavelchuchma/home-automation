@@ -21,3 +21,5 @@ void processSetPwmValue();
 void processSetFrequencyRequest();
 void processSetManualPwmValueRequest();
 void doManualPwm();
+void processResetRequest();
+void processReadProgramRequest();
