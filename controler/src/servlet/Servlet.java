@@ -155,9 +155,11 @@ public class Servlet extends AbstractHandler {
                 "</head>" +
                 "<body><a href='" + TARGET_LOUVERS + "'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
 
-        builder.append(getZaluzieTable(0, 6));
-        builder.append(getZaluzieTable(6, 6));
-        builder.append(getZaluzieTable(12, 6));
+        builder.append(getLouversTable(0, 8));
+        builder.append(getLouversTable(8, 8));
+        builder.append(getLouversTable(16, 8));
+        builder.append(getLouversTable(24, 8));
+        builder.append(getLouversTable(32, 8));
 
         builder.append("</body></html>");
         return builder.toString();
@@ -287,7 +289,7 @@ public class Servlet extends AbstractHandler {
     }
 
 
-    private String getZaluzieTable(int startIndex, int count) {
+    private String getLouversTable(int startIndex, int count) {
         StringBuilder builder = new StringBuilder();
         builder.append("<br/><br/><table class='buttonTable'>");
         for (int row = 0; row < 2; row++) {
