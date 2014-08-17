@@ -140,8 +140,8 @@ public class Main {
                 new OnOffActor("Paťa 2 Down", rele3ZaluzieAPort1.getRele4(), 0, 1),
                 new OnOffActor("Marek Up", rele4ZaluzieAPort2.getRele1(), 0, 1),
                 new OnOffActor("Marek Down", rele4ZaluzieAPort2.getRele2(), 0, 1),
-                new OnOffActor("Kuchyně Up", rele2ZaluzieAPort3.getRele1(), 0, 1),
-                new OnOffActor("Kuchyně Down", rele2ZaluzieAPort3.getRele2(), 0, 1),
+                new OnOffActor("Koupelna Up", rele6ZaluzieBPort1.getRele1(), 0, 1),
+                new OnOffActor("Koupelna Down", rele6ZaluzieBPort1.getRele2(), 0, 1),
 
                 new OnOffActor("Ložnice 1 Up", rele4ZaluzieAPort2.getRele5(), 0, 1),
                 new OnOffActor("Ložnice 1 Down", rele4ZaluzieAPort2.getRele6(), 0, 1),
@@ -149,35 +149,35 @@ public class Main {
                 new OnOffActor("Ložnice 2 Down", rele3ZaluzieAPort1.getRele6(), 0, 1),
                 new OnOffActor("Šatna Up", rele8Actor3Port1.getRele3(), 0, 1),
                 new OnOffActor("Šatna Down", rele8Actor3Port1.getRele4(), 0, 1),
-                new OnOffActor("Koupelna dole Up", rele8Actor3Port1.getRele5(), 0, 1),
-                new OnOffActor("Koupelna dole Down", rele8Actor3Port1.getRele6(), 0, 1),
-
-                new OnOffActor("Obývák 1 Up", rele2ZaluzieAPort3.getRele5(), 0, 1),
-                new OnOffActor("Obývák 1 Down", rele2ZaluzieAPort3.getRele6(), 0, 1),
-                new OnOffActor("Obývák 2 Up", rele2ZaluzieAPort3.getRele3(), 0, 1),
-                new OnOffActor("Obývák 2 Down", rele2ZaluzieAPort3.getRele4(), 0, 1),
-                new OnOffActor("Obývák 3 Up", rele4ZaluzieAPort2.getRele3(), 0, 1),
-                new OnOffActor("Obývák 3 Down", rele4ZaluzieAPort2.getRele4(), 0, 1),
-                new OnOffActor("Obývák 4 Up", rele7ZaluzieBPort3.getRele3(), 0, 1),
-                new OnOffActor("Obývák 4 Down", rele7ZaluzieBPort3.getRele4(), 0, 1),
-
-                new OnOffActor("Obývák 5 Up", rele7ZaluzieBPort3.getRele5(), 0, 1),
-                new OnOffActor("Obývák 5 Down", rele7ZaluzieBPort3.getRele6(), 0, 1),
                 new OnOffActor("Pracovna Up", rele7ZaluzieBPort3.getRele1(), 0, 1),
                 new OnOffActor("Pracovna Down", rele7ZaluzieBPort3.getRele2(), 0, 1),
+
+                new OnOffActor("Kuchyně Up", rele2ZaluzieAPort3.getRele5(), 0, 1),
+                new OnOffActor("Kuchyně Down", rele2ZaluzieAPort3.getRele6(), 0, 1),
+                new OnOffActor("Obývák 1 Up", rele2ZaluzieAPort3.getRele1(), 0, 1),
+                new OnOffActor("Obývák 1 Down", rele2ZaluzieAPort3.getRele2(), 0, 1),
+                new OnOffActor("Obývák 2 Up", rele8Actor3Port1.getRele5(), 0, 1),
+                new OnOffActor("Obývák 2 Down", rele8Actor3Port1.getRele6(), 0, 1),
+                new OnOffActor("Obývák 3 Up", rele2ZaluzieAPort3.getRele3(), 0, 1),
+                new OnOffActor("Obývák 3 Down", rele2ZaluzieAPort3.getRele4(), 0, 1),
+
+                new OnOffActor("Obývák 4 Up", rele4ZaluzieAPort2.getRele3(), 0, 1),
+                new OnOffActor("Obývák 4 Down", rele4ZaluzieAPort2.getRele4(), 0, 1),
+                new OnOffActor("Obývák 5 Up", rele7ZaluzieBPort3.getRele3(), 0, 1),
+                new OnOffActor("Obývák 5 Down", rele7ZaluzieBPort3.getRele4(), 0, 1),
+                new OnOffActor("Obývák 6 Up", rele7ZaluzieBPort3.getRele5(), 0, 1),
+                new OnOffActor("Obývák 6 Down", rele7ZaluzieBPort3.getRele6(), 0, 1),
                 new OnOffActor("Chodba 1 Up", rele6ZaluzieBPort1.getRele3(), 0, 1),
                 new OnOffActor("Chodba 1 Down", rele6ZaluzieBPort1.getRele4(), 0, 1),
+
                 new OnOffActor("Chodba 2 Up", rele6ZaluzieBPort1.getRele5(), 0, 1),
                 new OnOffActor("Chodba 2 Down", rele6ZaluzieBPort1.getRele6(), 0, 1),
-
                 new OnOffActor("Vrátnice 1 Up", rele5ZaluzieBPort2.getRele1(), 0, 1),
                 new OnOffActor("Vrátnice 1 Down", rele5ZaluzieBPort2.getRele2(), 0, 1),
                 new OnOffActor("Vrátnice 2 Up", rele5ZaluzieBPort2.getRele3(), 0, 1),
                 new OnOffActor("Vrátnice 2 Down", rele5ZaluzieBPort2.getRele4(), 0, 1),
                 new OnOffActor("Vrátnice 3 Up", rele5ZaluzieBPort2.getRele5(), 0, 1),
                 new OnOffActor("Vrátnice 3 Down", rele5ZaluzieBPort2.getRele6(), 0, 1),
-                new OnOffActor("Koupelna Up", rele6ZaluzieBPort1.getRele1(), 0, 1),
-                new OnOffActor("Koupelna Down", rele6ZaluzieBPort1.getRele2(), 0, 1),
 
 
         };

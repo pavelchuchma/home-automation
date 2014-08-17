@@ -80,10 +80,9 @@ public class OnOffActor extends AbstractActor {
         this.actionData = actionData;
         notifyAll();
 
-        // turn off conflicting actor
-        if (conflictingActor != null && val == onValue && conflictingActor.isOn()) {
-            conflictingActor.switchOff(actionData);
-            if (conflictingActor.isOn()) {
+        // turn off conflicting actor if turning on
+        if (conflictingActor != null && val == onValue) {
+            if (!conflictingActor.switchOff(actionData)) {
                 log.error(String.format("Actor %s: Cannot switch off conflicting actor %s", getId(), conflictingActor.getId()));
                 return false;
             }
@@ -102,9 +101,9 @@ public class OnOffActor extends AbstractActor {
         return setValue(onValue, actionData);
     }
 
-    public void switchOff(Object actionData) {
+    public boolean switchOff(Object actionData) {
         log.debug("switchOff: " + toString());
-        setValue((onValue ^ 1) & 1, actionData);
+        return setValue((onValue ^ 1) & 1, actionData);
     }
 
     public boolean isOn() {

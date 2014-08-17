@@ -47,6 +47,7 @@ public abstract class AbstractActor implements Actor {
                     throw new IOException(String.format("Unexpected response length %s", response.toString()));
                 }
 
+                // verify value in response
                 int setVal = ((response.data[1] & nodePin.getPin().getBitMask()) != 0) ? 1 : 0;
                 log.info(String.format("%s set to: %d", nodePin, setVal));
                 if (setVal != value) {
