@@ -16,8 +16,6 @@ import packet.PacketUartIOException;
 import packet.PacketUartIOMock;
 import servlet.Servlet;
 
-import java.io.IOException;
-
 public class Main {
     static Logger log = Logger.getLogger(Main.class.getName());
 
@@ -121,7 +119,6 @@ public class Main {
         lst.addActionBinding(new ActionBinding(koupelnaHoreSwB.getButton4(), new Action[]{new SwitchOffAction(zaricKoupelnaHore1Trubice)}, null));
 
 
-
         // zaluzie
         RelayBoardDevice rele3ZaluzieAPort1 = new RelayBoardDevice("rele3ZaluzieAPort1", zaluzieA, 1);
         RelayBoardDevice rele4ZaluzieAPort2 = new RelayBoardDevice("rele3ZaluzieAPort1", zaluzieA, 2);
@@ -184,7 +181,7 @@ public class Main {
 
         Action[] zaluzieInvertActions = new Action[zaluzieActors.length];
         for (int i = 0; i < zaluzieActors.length; i++) {
-            zaluzieInvertActions[i] = new InvertAction(zaluzieActors[i]);
+            zaluzieInvertActions[i] = new InvertActionWithTimer(zaluzieActors[i], 70);
             if (i % 2 == 1) {
                 zaluzieActors[i].setConflictingActor(zaluzieActors[i - 1]);
                 zaluzieActors[i - 1].setConflictingActor(zaluzieActors[i]);

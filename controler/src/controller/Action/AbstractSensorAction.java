@@ -31,6 +31,16 @@ public class AbstractSensorAction extends AbstractAction {
 
     @Override
     public void perform() {
+        // run body in extra thread because it can be blocking
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                performImpl();
+            }
+        }).start();
+    }
+
+    private void performImpl() {
         OnOffActor act = (OnOffActor) getActor();
         try {
             log.debug("Performing actor: " + act.toString());
