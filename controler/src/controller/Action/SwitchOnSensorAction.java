@@ -1,9 +1,9 @@
 package controller.Action;
 
-import controller.actor.OnOffActor;
+import controller.actor.IOnOffActor;
 
 public class SwitchOnSensorAction extends AbstractSensorAction {
-    public SwitchOnSensorAction(OnOffActor actor, int timeout) {
+    public SwitchOnSensorAction(IOnOffActor actor, int timeout) {
         super(actor, timeout, false);
     }
 }

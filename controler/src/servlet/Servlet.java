@@ -28,8 +28,10 @@ public class Servlet extends AbstractHandler {
     public static final String TARGET_SYSTEM_TEST_ALL_OFF = "/system/testAllOff";
     public static final String TARGET_SYSTEM_TEST_END = "/system/testEnd";
     public static final String TARGET_SYSTEM = "/system";
-    public static final String TARGET_LOUVERS_ACTION = "/zaluzie/a";
+    public static final String TARGET_LIGHTS = "/lights";
+    public static final String TARGET_LIGHTS_ACTION = "/lights/a";
     public static final String TARGET_LOUVERS = "/zaluzie";
+    public static final String TARGET_LOUVERS_ACTION = "/zaluzie/a";
     private NodeInfoCollector nodeInfoCollector;
     static Logger log = Logger.getLogger(Servlet.class.getName());
     private HashMap<NodeInfo, NodeTestRunner> testRunners = new HashMap<NodeInfo, NodeTestRunner>();
@@ -68,13 +70,24 @@ public class Servlet extends AbstractHandler {
         } else if (target.startsWith(TARGET_LOUVERS)) {
             int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LOUVERS_ACTION);
             if (actionIndex != -1) {
-                zaluezieActions[actionIndex].perform();
+                louversActions[actionIndex].perform();
             }
 
             response.setContentType("text/html;charset=utf-8");
             response.setStatus(HttpServletResponse.SC_OK);
             baseRequest.setHandled(true);
-            response.getWriter().println(getZaluziePage());
+            response.getWriter().println(getLouversPage());
+
+        } else if (target.startsWith(TARGET_LIGHTS)) {
+            int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LIGHTS_ACTION);
+            if (actionIndex != -1) {
+                lightsActions[actionIndex].perform();
+            }
+
+            response.setContentType("text/html;charset=utf-8");
+            response.setStatus(HttpServletResponse.SC_OK);
+            baseRequest.setHandled(true);
+            response.getWriter().println(getLightsPage());
 
         } else if (target.startsWith(TARGET_SYSTEM)) {
             int debugNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_INFO);
@@ -126,7 +139,8 @@ public class Servlet extends AbstractHandler {
     public static Action action3;
     public static Action action4;
     public static Action action5;
-    public static Action[] zaluezieActions;
+    public static Action[] louversActions;
+    public static Action[] lightsActions;
 
     private void processAction(String action) {
         if (action.startsWith("/a1") && action1 != null) {
@@ -146,7 +160,7 @@ public class Servlet extends AbstractHandler {
         }
     }
 
-    private String getZaluziePage() {
+    private String getLouversPage() {
         StringBuilder builder = new StringBuilder();
 
         builder.append("<html>" +
@@ -160,6 +174,33 @@ public class Servlet extends AbstractHandler {
         builder.append(getLouversTable(16, 8));
         builder.append(getLouversTable(24, 8));
         builder.append(getLouversTable(32, 8));
+
+        builder.append("</body></html>");
+        return builder.toString();
+    }
+
+    private String getLightsPage() {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("<html>" +
+                "<head>" +
+                "<link href='/report.css' rel='stylesheet' type='text/css'/>\n" +
+                "</head>" +
+                "<body><a href='" + TARGET_LIGHTS + "'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
+
+        builder.append("<br/><br/><table class='buttonTable'>");
+        for (int i = 0; i < lightsActions.length; i += 4) {
+            builder.append("<tr>");
+            String fieldClass = "louvers";
+            int val = (int) (100 - lightsActions[i].getActor().getValue() / .16);
+            builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LIGHTS_ACTION, i, "On"));
+            builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LIGHTS_ACTION, i + 1, "+"));
+            builder.append(String.format("<td class='%s'>%s %d%%", fieldClass, lightsActions[i].getActor().getId(), val));
+            builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LIGHTS_ACTION, i + 2, "-"));
+            builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LIGHTS_ACTION, i + 3, "Off"));
+        }
+        builder.append("</table>");
+
 
         builder.append("</body></html>");
         return builder.toString();
@@ -295,8 +336,8 @@ public class Servlet extends AbstractHandler {
         for (int row = 0; row < 2; row++) {
             builder.append("<tr>");
             for (int i = startIndex + row; i < startIndex + count; i += 2) {
-                String fieldClass = (zaluezieActions[i].getActor().getValue() == 0) ? "louvers" : "louversRunning";
-                builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LOUVERS_ACTION, i, zaluezieActions[i].getActor().getId()));
+                String fieldClass = (louversActions[i].getActor().getValue() == 0) ? "louvers" : "louversRunning";
+                builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LOUVERS_ACTION, i, louversActions[i].getActor().getId()));
             }
         }
         builder.append("</table>");

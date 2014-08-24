@@ -8,7 +8,7 @@ import packet.Packet;
 
 import java.io.IOException;
 
-public class PwmActor extends AbstractActor {
+public class PwmActor extends AbstractActor implements IOnOffActor {
     static Logger log = Logger.getLogger(PwmActor.class.getName());
 
     int onValue;
@@ -39,20 +39,6 @@ public class PwmActor extends AbstractActor {
         return val.toString();
     }
 
-/*    @Override
-    public NodePin[] getOutputPins() {
-        if (indicators == null) {
-            return new NodePin[]{output};
-        } else {
-            NodePin[] res = new NodePin[1 + indicators.length];
-            res[0] = output;
-            for (int i = 0; i < indicators.length; i++) {
-                res[i + 1] = indicators[i].getPin();
-            }
-            return res;
-        }
-    }
-  */
     @Override
     public int getValue() {
         return value;
@@ -84,17 +70,36 @@ public class PwmActor extends AbstractActor {
     }
 
     public boolean isOn() {
-        return value == onValue;
+        return value != 16;
     }
 
-    public void increasePwm(int step) {
-        value = (value + step > 16) ? 16 : value + step;
-        setPwmValue(output, value, 3);
+    private boolean setValue(int val) {
+        if (setPwmValue(output, val, 3)) {
+            value = val;
+            return true;
+        }
+        return false;
     }
 
-    public void decreasePwm(int step) {
-        value = (value - step < 0) ? 0 : value - step;
-        setPwmValue(output, value, 3);
+    public boolean increasePwm(int step) {
+        int val = (value + step > 16) ? 16 : value + step;
+        return setValue(val);
+    }
+
+
+    public boolean decreasePwm(int step) {
+        int val = (value - step < 0) ? 0 : value - step;
+        return setValue(val);
+    }
+
+    @Override
+    public boolean switchOn(Object actionData) {
+        return setValue(0);
+    }
+
+    @Override
+    public boolean switchOff(Object actionData) {
+        return setValue(16);
     }
 
     private static boolean setPwmValue(NodePin nodePin, int value, int retryCount) {

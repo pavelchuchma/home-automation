@@ -3,6 +3,7 @@ import app.SwitchListener;
 import controller.Action.*;
 import controller.ActionBinding;
 import controller.actor.OnOffActor;
+import controller.actor.PwmActor;
 import controller.device.InputDevice;
 import controller.device.OutputDevice;
 import controller.device.RelayBoardDevice;
@@ -15,6 +16,8 @@ import packet.PacketUartIO;
 import packet.PacketUartIOException;
 import packet.PacketUartIOMock;
 import servlet.Servlet;
+
+import java.util.ArrayList;
 
 public class Main {
     static Logger log = Logger.getLogger(Main.class.getName());
@@ -130,7 +133,7 @@ public class Main {
 
         RelayBoardDevice rele8Actor3Port1 = new RelayBoardDevice("rele8Actor3Port1", actor3, 1);
 
-        OnOffActor[] zaluzieActors = new OnOffActor[]{
+        OnOffActor[] louversActors = new OnOffActor[]{
                 new OnOffActor("Paťa 1 Up", rele3ZaluzieAPort1.getRele1(), 0, 1),
                 new OnOffActor("Paťa 1 Down", rele3ZaluzieAPort1.getRele2(), 0, 1),
                 new OnOffActor("Paťa 2 Up", rele3ZaluzieAPort1.getRele3(), 0, 1),
@@ -179,12 +182,12 @@ public class Main {
 
         };
 
-        Action[] zaluzieInvertActions = new Action[zaluzieActors.length];
-        for (int i = 0; i < zaluzieActors.length; i++) {
-            zaluzieInvertActions[i] = new InvertActionWithTimer(zaluzieActors[i], 70);
+        Action[] louversInvertActions = new Action[louversActors.length];
+        for (int i = 0; i < louversActors.length; i++) {
+            louversInvertActions[i] = new InvertActionWithTimer(louversActors[i], 70);
             if (i % 2 == 1) {
-                zaluzieActors[i].setConflictingActor(zaluzieActors[i - 1]);
-                zaluzieActors[i - 1].setConflictingActor(zaluzieActors[i]);
+                louversActors[i].setConflictingActor(louversActors[i - 1]);
+                louversActors[i - 1].setConflictingActor(louversActors[i]);
             }
         }
 
@@ -194,18 +197,24 @@ public class Main {
 
         Servlet.action4 = null;
         Servlet.action5 = null;
-        Servlet.zaluezieActions = zaluzieInvertActions;
+        Servlet.louversActions = louversInvertActions;
 
         Node test10Node = nodeInfoCollector.createNode(10, "Test10");
         Node test12Node = nodeInfoCollector.createNode(12, "Test12");
-        OutputDevice testOutputDevice3 = new OutputDevice("testOutputActor3", test10Node, 3, CpuFrequency.sixteenMHz);
+        //OutputDevice testOutputDevice3 = new OutputDevice("testOutputActor3", test10Node, 3, CpuFrequency.sixteenMHz);
 
-        /*
-        PwmActor testPwmActor = new PwmActor("testPWM", testOutputDevice3.getOut5(), 0, 1);
-        Servlet.action4 = new IncreasePwmAction(testPwmActor);
-        Servlet.action5 = new DecreasePwmAction(testPwmActor);
-        */
 
+        // lights
+        Node testNode20 = nodeInfoCollector.createNode(20, "TestNode20");
+        OutputDevice testPwmDevice1 = new OutputDevice("testPwmDevice1", testNode20, 1, CpuFrequency.sixteenMHz);
+        PwmActor testPwmActor = new PwmActor("testPWM", testPwmDevice1.getOut1(), 0, 1);
+        ArrayList<Action> lightsActions = new ArrayList<Action>();
+        lightsActions.add(new SwitchOnAction(testPwmActor));
+        lightsActions.add(new DecreasePwmAction(testPwmActor));
+        lightsActions.add(new IncreasePwmAction(testPwmActor));
+        lightsActions.add(new SwitchOffAction(testPwmActor));
+
+        Servlet.lightsActions = lightsActions.toArray(new Action[lightsActions.size()]);
 
 //        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);
 //        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));

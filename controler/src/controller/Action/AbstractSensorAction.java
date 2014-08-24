@@ -1,5 +1,6 @@
 package controller.Action;
 
+import controller.actor.IOnOffActor;
 import controller.actor.OnOffActor;
 import org.apache.log4j.Logger;
 
@@ -18,13 +19,13 @@ public class AbstractSensorAction extends AbstractAction {
     int timeout;
     boolean switchOffOnly;
 
-    protected AbstractSensorAction(OnOffActor actor, int timeout, boolean switchOffOnly) {
+    protected AbstractSensorAction(IOnOffActor actor, int timeout, boolean switchOffOnly) {
         super(actor);
         this.timeout = timeout * 1000;
         this.switchOffOnly = switchOffOnly;
     }
 
-    private static boolean isSensorActionData(OnOffActor act) {
+    private static boolean isSensorActionData(IOnOffActor act) {
         Object actionData = act.getLastActionData();
         return actionData != null && actionData.getClass() == ActionData.class;
     }
@@ -41,7 +42,7 @@ public class AbstractSensorAction extends AbstractAction {
     }
 
     private void performImpl() {
-        OnOffActor act = (OnOffActor) getActor();
+        IOnOffActor act = (OnOffActor) getActor();
         try {
             log.debug("Performing actor: " + act.toString());
             ActionData aData = new ActionData();

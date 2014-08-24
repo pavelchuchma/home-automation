@@ -3,7 +3,7 @@ package controller.actor;
 import node.NodePin;
 import org.apache.log4j.Logger;
 
-public class OnOffActor extends AbstractActor {
+public class OnOffActor extends AbstractActor implements IOnOffActor {
     static Logger log = Logger.getLogger(OnOffActor.class.getName());
 
     int onValue;

@@ -1,14 +1,14 @@
 package controller.Action;
 
-import controller.actor.OnOffActor;
+import controller.actor.IOnOffActor;
 
 public class SwitchOnAction extends AbstractAction {
-    public SwitchOnAction(OnOffActor actor) {
+    public SwitchOnAction(IOnOffActor actor) {
         super(actor);
     }
 
     @Override
     public void perform() {
-        ((OnOffActor) getActor()).switchOn(null);
+        ((IOnOffActor) getActor()).switchOn(null);
     }
 }
