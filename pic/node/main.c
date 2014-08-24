@@ -131,7 +131,7 @@ void main(void) {
                 if (receivedPacket.nodeId == nodeId) {
                     if (receivedPacket.messageType == MSG_SetHeartBeatPeriod) {
                         // set ping period in seconds (multiply by 2 because timer is set to .5s)
-                        heartBeatPeriod = receivedPacket.data[0] * 2;
+                        heartBeatPeriod = receivedPacket.data[0] * 2 * getCpuFrequency();
                     } else if (receivedPacket.messageType == MSG_EchoRequest) {
                         // process Echo message
                         outPacket.nodeId = nodeId;

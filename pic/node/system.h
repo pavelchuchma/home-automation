@@ -74,7 +74,7 @@ extern char nodeId;
 
 extern volatile AppFlags appFlags;
 extern volatile char heartBeatCounter;
-extern volatile char heartBeatPeriod;
+extern volatile unsigned short heartBeatPeriod;
 extern volatile unsigned short long displayValue;
 extern volatile unsigned short long displayValueOld;
 extern volatile char displaySegments[6];
@@ -97,5 +97,6 @@ void checkUartErrors();
 
 void processSetPort();
 void checkInputChange();
+char getCpuFrequency();
 
 #endif

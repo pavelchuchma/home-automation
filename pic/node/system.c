@@ -31,7 +31,7 @@ volatile PortConfig portConfig = {
 };
 
 volatile char heartBeatCounter;
-volatile char heartBeatPeriod;
+volatile unsigned short heartBeatPeriod;
 volatile unsigned short long displayValue;
 volatile unsigned short long displayValueOld;
 volatile char displaySegments[6];
@@ -41,9 +41,23 @@ volatile char canReceiveMismatch;
 
 volatile ManualPwmData manualPwmPortData[3];
 
+/**
+ * Returs CPU Frequecny in MHz
+ */
+char getCpuFrequency() {
+    if ((OSCCON & 0b01110000) == 0b01110000) return 16;
+    if ((OSCCON & 0b01110000) == 0b01100000) return 8;
+    if ((OSCCON & 0b01110000) == 0b01010000) return 4;
+    if ((OSCCON & 0b01110000) == 0b01000000) return 2;
+    return 1;
+}
+
 /* Refer to the device datasheet for information about available
 oscillator configurations. */
 void configureOscillator(char freqMHz) {
+    // setup heart beat period
+    heartBeatPeriod = heartBeatPeriod / getCpuFrequency() * freqMHz;
+
     // Oscilator setup
     OSCTUNE = 0b00000000; //INTSRC PLLEN ? TUN4 TUN3 TUN2 TUN1 TUN0
     if (freqMHz == 16) {
@@ -64,8 +78,6 @@ void configureOscillator(char freqMHz) {
 #if !defined (__DEBUG)
     while (!OSCCONbits.HFIOFS);
 #endif
-
-
 
     /* Typical actions in this function are to tweak the oscillator tuning
     register, select new clock sources, and to wait until new clock sources

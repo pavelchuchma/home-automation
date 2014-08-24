@@ -26,7 +26,7 @@
 
 /* High-priority service */
 
-volatile static char timerEventPrescaler = 0;
+volatile static unsigned short timerEventPrescaler = 0;
 
 #if defined(__XC) || defined(HI_TECH_C)
 void interrupt high_isr(void)
