@@ -173,7 +173,7 @@ public class Servlet extends AbstractHandler {
         builder.append(getLouversTable(8, 8));
         builder.append(getLouversTable(16, 8));
         builder.append(getLouversTable(24, 8));
-        builder.append(getLouversTable(32, 8));
+        builder.append(getLouversTable(32, 10));
 
         builder.append("</body></html>");
         return builder.toString();

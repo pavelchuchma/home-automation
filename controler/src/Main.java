@@ -90,15 +90,11 @@ public class Main {
         Action invertJidelna = new InvertAction(svJidelna);
         lst.addActionBinding(new ActionBinding(obyvakA3sw.getButton1(), new Action[]{new InvertAction(svKoupelna)}, null));
         lst.addActionBinding(new ActionBinding(obyvakA3sw.getButton2(), new Action[]{invertJidelna}, null));
-        //lst.addActionBinding(new ActionBinding(obyvakA3sw.getButton3(), new Action[]{new InvertAction(svSpajza)}, null));
-        //lst.addActionBinding(new ActionBinding(obyvakA3sw.getButton4(), new Action[]{new InvertAction(svPradelna)}, null));
 
         Action onActionKoupelna = new SwitchOnAction(svKoupelna);
         Action offActionKoupelna = new SwitchOffAction(svKoupelna);
         lst.addActionBinding(new ActionBinding(koupelnaHoreSwA.getButton1(), new Action[]{offActionKoupelna}, null));
         lst.addActionBinding(new ActionBinding(koupelnaHoreSwA.getButton2(), new Action[]{onActionKoupelna}, null));
-        lst.addActionBinding(new ActionBinding(koupelnaHoreSwA.getButton3(), new Action[]{onActionKoupelna}, null));
-        lst.addActionBinding(new ActionBinding(koupelnaHoreSwA.getButton4(), new Action[]{offActionKoupelna}, null));
 
         Action onActionPradelna = new SwitchOnAction(svPradelna);
         Action offActionPradelna = new SwitchOffAction(svPradelna);
@@ -133,6 +129,12 @@ public class Main {
 
         RelayBoardDevice rele8Actor3Port1 = new RelayBoardDevice("rele8Actor3Port1", actor3, 1);
 
+        OnOffActor zaluzieKoupelnaUp;
+        OnOffActor zaluzieKoupelnaDown;
+        OnOffActor zaluzieKuchynUp;
+        OnOffActor zaluzieKuchynDown;
+        OnOffActor zaluzieObyvak1Up;
+        OnOffActor zaluzieObyvak1Down;
         OnOffActor[] louversActors = new OnOffActor[]{
                 new OnOffActor("Paťa 1 Up", rele3ZaluzieAPort1.getRele1(), 0, 1),
                 new OnOffActor("Paťa 1 Down", rele3ZaluzieAPort1.getRele2(), 0, 1),
@@ -140,8 +142,8 @@ public class Main {
                 new OnOffActor("Paťa 2 Down", rele3ZaluzieAPort1.getRele4(), 0, 1),
                 new OnOffActor("Marek Up", rele4ZaluzieAPort2.getRele1(), 0, 1),
                 new OnOffActor("Marek Down", rele4ZaluzieAPort2.getRele2(), 0, 1),
-                new OnOffActor("Koupelna Up", rele6ZaluzieBPort1.getRele1(), 0, 1),
-                new OnOffActor("Koupelna Down", rele6ZaluzieBPort1.getRele2(), 0, 1),
+                zaluzieKoupelnaUp = new OnOffActor("Koupelna Up", rele6ZaluzieBPort1.getRele1(), 0, 1),
+                zaluzieKoupelnaDown = new OnOffActor("Koupelna Down", rele6ZaluzieBPort1.getRele2(), 0, 1),
 
                 new OnOffActor("Ložnice 1 Up", rele4ZaluzieAPort2.getRele5(), 0, 1),
                 new OnOffActor("Ložnice 1 Down", rele4ZaluzieAPort2.getRele6(), 0, 1),
@@ -152,10 +154,10 @@ public class Main {
                 new OnOffActor("Pracovna Up", rele7ZaluzieBPort3.getRele1(), 0, 1),
                 new OnOffActor("Pracovna Down", rele7ZaluzieBPort3.getRele2(), 0, 1),
 
-                new OnOffActor("Kuchyně Up", rele2ZaluzieAPort3.getRele5(), 0, 1),
-                new OnOffActor("Kuchyně Down", rele2ZaluzieAPort3.getRele6(), 0, 1),
-                new OnOffActor("Obývák 1 Up", rele2ZaluzieAPort3.getRele1(), 0, 1),
-                new OnOffActor("Obývák 1 Down", rele2ZaluzieAPort3.getRele2(), 0, 1),
+                zaluzieKuchynUp = new OnOffActor("Kuchyně Up", rele2ZaluzieAPort3.getRele5(), 0, 1),
+                zaluzieKuchynDown = new OnOffActor("Kuchyně Down", rele2ZaluzieAPort3.getRele6(), 0, 1),
+                zaluzieObyvak1Up = new OnOffActor("Obývák 1 Up", rele2ZaluzieAPort3.getRele1(), 0, 1),
+                zaluzieObyvak1Down = new OnOffActor("Obývák 1 Down", rele2ZaluzieAPort3.getRele2(), 0, 1),
                 new OnOffActor("Obývák 2 Up", rele8Actor3Port1.getRele5(), 0, 1),
                 new OnOffActor("Obývák 2 Down", rele8Actor3Port1.getRele6(), 0, 1),
                 new OnOffActor("Obývák 3 Up", rele2ZaluzieAPort3.getRele3(), 0, 1),
@@ -179,6 +181,8 @@ public class Main {
                 new OnOffActor("Vrátnice 3 Up", rele5ZaluzieBPort2.getRele5(), 0, 1),
                 new OnOffActor("Vrátnice 3 Down", rele5ZaluzieBPort2.getRele6(), 0, 1),
 
+                new OnOffActor("Koupelna 2 Up", rele8Actor3Port1.getRele1(), 0, 1),
+                new OnOffActor("Koupelna 2 Down", rele8Actor3Port1.getRele2(), 0, 1),
 
         };
 
@@ -190,6 +194,13 @@ public class Main {
                 louversActors[i - 1].setConflictingActor(louversActors[i]);
             }
         }
+
+        lst.addActionBinding(new ActionBinding(koupelnaHoreSwA.getButton3(), new Action[]{new InvertActionWithTimer(zaluzieKoupelnaUp, 50)}, null));
+        lst.addActionBinding(new ActionBinding(koupelnaHoreSwA.getButton4(), new Action[]{new InvertActionWithTimer(zaluzieKoupelnaDown, 50)}, null));
+
+
+        lst.addActionBinding(new ActionBinding(obyvakA3sw.getButton3(), new Action[]{new InvertActionWithTimer(zaluzieKuchynUp, 70), new InvertActionWithTimer(zaluzieObyvak1Up, 70)}, null));
+        lst.addActionBinding(new ActionBinding(obyvakA3sw.getButton4(), new Action[]{new InvertActionWithTimer(zaluzieKuchynDown, 70), new InvertActionWithTimer(zaluzieObyvak1Down, 70)}, null));
 
         Servlet.action1 = onActionKoupelna;
         Servlet.action2 = offActionKoupelna;
