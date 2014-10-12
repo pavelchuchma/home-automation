@@ -29,7 +29,7 @@ public abstract class AbstractActor implements Actor {
      * @param retryCount count of retries if no valid response is received
      * @return true if pin was set
      */
-    static boolean setPinValue(NodePin nodePin, int value, int retryCount) {
+    protected boolean setPinValue(NodePin nodePin, int value, int retryCount) {
         NodeInfoCollector nodeInfoCollector = NodeInfoCollector.getInstance();
         Node node = nodeInfoCollector.getNode(nodePin.getNodeId());
         if (node == null) {

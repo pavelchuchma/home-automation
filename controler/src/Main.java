@@ -1,15 +1,26 @@
 import app.NodeInfoCollector;
 import app.SwitchListener;
-import controller.Action.*;
+import controller.Action.Action;
+import controller.Action.DecreasePwmAction;
+import controller.Action.IncreasePwmAction;
+import controller.Action.InvertAction;
+import controller.Action.InvertActionWithTimer;
+import controller.Action.SwitchOffAction;
+import controller.Action.SwitchOffSensorAction;
+import controller.Action.SwitchOnAction;
+import controller.Action.SwitchOnSensorAction;
 import controller.ActionBinding;
 import controller.actor.OnOffActor;
 import controller.actor.PwmActor;
+import controller.actor.TestingOnOffActor;
 import controller.device.InputDevice;
 import controller.device.OutputDevice;
 import controller.device.RelayBoardDevice;
+import controller.device.SwitchIndicator;
 import controller.device.WallSwitch;
 import node.CpuFrequency;
 import node.Node;
+import node.NodePin;
 import org.apache.log4j.Logger;
 import packet.IPacketUartIO;
 import packet.PacketUartIO;
@@ -64,37 +75,46 @@ public class Main {
 
         Node bridge = nodeInfoCollector.createNode(1, "Bridge");
         Node actor3 = nodeInfoCollector.createNode(3, "Actor3");
-        Node zaluzieA = nodeInfoCollector.createNode(13, "ZaluzieA");
         Node zaluzieB = nodeInfoCollector.createNode(4, "ZaluzieB");
-        Node obyvakSpinacABC = nodeInfoCollector.createNode(11, "ObyvakSpinacABC");
+        Node lozniceOkno = nodeInfoCollector.createNode(6, "LozniceOkno");
         Node chodbaDole = nodeInfoCollector.createNode(8, "ChodbaDole");
         Node koupelnaHore = nodeInfoCollector.createNode(9, "KoupelnaHore");
+        Node vratnice = nodeInfoCollector.createNode(10, "Vratnice");
+        Node obyvakSpinacABC = nodeInfoCollector.createNode(11, "ObyvakSpinacABC");
+        Node krystof = nodeInfoCollector.createNode(12, "Krystof");
+        Node zaluzieA = nodeInfoCollector.createNode(13, "ZaluzieA");
 
-        WallSwitch obyvakA3sw = new WallSwitch("obyvakA3sw", obyvakSpinacABC, 3);
+        WallSwitch obyvakA1Sw = new WallSwitch("obyvakA1Sw", obyvakSpinacABC, 1);
+        WallSwitch obyvakA2Sw = new WallSwitch("obyvakA2Sw", obyvakSpinacABC, 2);
+        WallSwitch obyvakA3Sw = new WallSwitch("obyvakA3Sw", obyvakSpinacABC, 3);
         OutputDevice triak1Actor3Port3 = new OutputDevice("triak1Actor3Port3", actor3, 3);
         RelayBoardDevice rele1Actor3Port2 = new RelayBoardDevice("rele1Actor3Port2", actor3, 2);
 
-        WallSwitch koupelnaHoreSwA = new WallSwitch("koupelnaHoreSwA", koupelnaHore, 1);
-        WallSwitch koupelnaHoreSwB = new WallSwitch("koupelnaHoreSwB", koupelnaHore, 2);
+        WallSwitch koupelnaHoreSw1 = new WallSwitch("koupelnaHoreSw1", koupelnaHore, 1);
+        WallSwitch koupelnaHoreSw2 = new WallSwitch("koupelnaHoreSw2", koupelnaHore, 2);
         WallSwitch chodbaDoldeSwA = new WallSwitch("chodbaDoldeSwA", chodbaDole, 1);
+        WallSwitch lozniceOknoSwA = new WallSwitch("lozniceOknoSwA", lozniceOkno, 1);
+        WallSwitch vratniceSw1 = new WallSwitch("vratniceSw1", vratnice, 1);
+        WallSwitch vratniceSw2 = new WallSwitch("vratniceSw2", vratnice, 2);
+        WallSwitch krystofSwA1 = new WallSwitch("krystofSwA1", krystof, 1);
 
-        OnOffActor svKoupelna = new OnOffActor("svKoupelna", triak1Actor3Port3.getOut1(), 1, 0, obyvakA3sw.getGreenLedIndicator(false), koupelnaHoreSwA.getGreenLedIndicator(false), koupelnaHoreSwA.getRedLedIndicator(true));
-        OnOffActor svJidelna = new OnOffActor("svJidelna", triak1Actor3Port3.getOut2(), 1, 0, obyvakA3sw.getRedLedIndicator(true));
+        OnOffActor svKoupelna = new OnOffActor("svKoupelna", triak1Actor3Port3.getOut1(), 1, 0, obyvakA3Sw.getGreenLedIndicator(false), koupelnaHoreSw1.getGreenLedIndicator(false), koupelnaHoreSw1.getRedLedIndicator(true));
+        OnOffActor svJidelna = new OnOffActor("svJidelna", triak1Actor3Port3.getOut2(), 1, 0, obyvakA3Sw.getRedLedIndicator(true));
         OnOffActor svSpajza = new OnOffActor("svSpajza", triak1Actor3Port3.getOut3(), 1, 0);
         OnOffActor svPradelna = new OnOffActor("svPradelna", triak1Actor3Port3.getOut4(), 1, 0, chodbaDoldeSwA.getGreenLedIndicator(false), chodbaDoldeSwA.getRedLedIndicator(true));
-        OnOffActor zaricKoupelnaHore2Trubice = new OnOffActor("zaricKoupelnaHore2Trubice", rele1Actor3Port2.getRele1(), 0, 1, koupelnaHoreSwB.getRedLedIndicator(true));
-        OnOffActor zaricKoupelnaHore1Trubice = new OnOffActor("zaricKoupelnaHore1Trubice", rele1Actor3Port2.getRele2(), 0, 1, koupelnaHoreSwB.getGreenLedIndicator(true));
+        OnOffActor zaricKoupelnaHore2Trubice = new OnOffActor("zaricKoupelnaHore2Trubice", rele1Actor3Port2.getRele1(), 0, 1, koupelnaHoreSw2.getRedLedIndicator(true));
+        OnOffActor zaricKoupelnaHore1Trubice = new OnOffActor("zaricKoupelnaHore1Trubice", rele1Actor3Port2.getRele2(), 0, 1, koupelnaHoreSw2.getGreenLedIndicator(true));
 
         SwitchListener lst = nodeInfoCollector.getSwitchListener();
 
         Action invertJidelna = new InvertAction(svJidelna);
-        lst.addActionBinding(new ActionBinding(obyvakA3sw.getButton1(), new Action[]{new InvertAction(svKoupelna)}, null));
-        lst.addActionBinding(new ActionBinding(obyvakA3sw.getButton2(), new Action[]{invertJidelna}, null));
+        lst.addActionBinding(new ActionBinding(obyvakA3Sw.getButton1(), new Action[]{new InvertAction(svKoupelna)}, null));
+        lst.addActionBinding(new ActionBinding(obyvakA3Sw.getButton2(), new Action[]{invertJidelna}, null));
 
         Action onActionKoupelna = new SwitchOnAction(svKoupelna);
         Action offActionKoupelna = new SwitchOffAction(svKoupelna);
-        lst.addActionBinding(new ActionBinding(koupelnaHoreSwA.getButton1(), new Action[]{offActionKoupelna}, null));
-        lst.addActionBinding(new ActionBinding(koupelnaHoreSwA.getButton2(), new Action[]{onActionKoupelna}, null));
+        lst.addActionBinding(new ActionBinding(koupelnaHoreSw1.getButton1(), new Action[]{offActionKoupelna}, null));
+        lst.addActionBinding(new ActionBinding(koupelnaHoreSw1.getButton2(), new Action[]{onActionKoupelna}, null));
 
         Action onActionPradelna = new SwitchOnAction(svPradelna);
         Action offActionPradelna = new SwitchOffAction(svPradelna);
@@ -112,10 +132,10 @@ public class Main {
         lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn2AndActivate(), new Action[]{new SwitchOffSensorAction(svPradelna, 10)}, new Action[]{new SwitchOnSensorAction(svPradelna, 600)}));
 
         // infrazaric v koupelne
-        lst.addActionBinding(new ActionBinding(koupelnaHoreSwB.getButton1(), new Action[]{new SwitchOffAction(zaricKoupelnaHore2Trubice)}, null));
-        lst.addActionBinding(new ActionBinding(koupelnaHoreSwB.getButton2(), new Action[]{new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900)}, null));
-        lst.addActionBinding(new ActionBinding(koupelnaHoreSwB.getButton3(), new Action[]{new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900)}, null));
-        lst.addActionBinding(new ActionBinding(koupelnaHoreSwB.getButton4(), new Action[]{new SwitchOffAction(zaricKoupelnaHore1Trubice)}, null));
+        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getButton1(), new Action[]{new SwitchOffAction(zaricKoupelnaHore2Trubice)}, null));
+        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getButton2(), new Action[]{new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900)}, null));
+        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getButton3(), new Action[]{new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900)}, null));
+        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getButton4(), new Action[]{new SwitchOffAction(zaricKoupelnaHore1Trubice)}, null));
 
 
         // zaluzie
@@ -129,26 +149,55 @@ public class Main {
 
         RelayBoardDevice rele8Actor3Port1 = new RelayBoardDevice("rele8Actor3Port1", actor3, 1);
 
+        OnOffActor zaluzieKrystofUp;
+        OnOffActor zaluzieKrystofDown;
+        OnOffActor zaluziePataUp;
+        OnOffActor zaluziePataDown;
+        OnOffActor zaluzieMarekUp;
+        OnOffActor zaluzieMarekDown;
+
         OnOffActor zaluzieKoupelnaUp;
         OnOffActor zaluzieKoupelnaDown;
+        OnOffActor zaluzieLoznice1Up;
+        OnOffActor zaluzieLoznice1Down;
+        OnOffActor zaluzieLoznice2Up;
+        OnOffActor zaluzieLoznice2Down;
+
         OnOffActor zaluzieKuchynUp;
         OnOffActor zaluzieKuchynDown;
         OnOffActor zaluzieObyvak1Up;
         OnOffActor zaluzieObyvak1Down;
+        OnOffActor zaluzieObyvak2Up;
+        OnOffActor zaluzieObyvak2Down;
+        OnOffActor zaluzieObyvak3Up;
+        OnOffActor zaluzieObyvak3Down;
+        OnOffActor zaluzieObyvak4Up;
+        OnOffActor zaluzieObyvak4Down;
+        OnOffActor zaluzieObyvak5Up;
+        OnOffActor zaluzieObyvak5Down;
+        OnOffActor zaluzieObyvak6Up;
+        OnOffActor zaluzieObyvak6Down;
+        OnOffActor zaluzieVratnice1Down;
+        OnOffActor zaluzieVratnice1Up;
+        OnOffActor zaluzieVratnice2Down;
+        OnOffActor zaluzieVratnice2Up;
+        OnOffActor zaluzieVratnice3Down;
+        OnOffActor zaluzieVratnice3Up;
+
         OnOffActor[] louversActors = new OnOffActor[]{
-                new OnOffActor("Paťa 1 Up", rele3ZaluzieAPort1.getRele1(), 0, 1),
-                new OnOffActor("Paťa 1 Down", rele3ZaluzieAPort1.getRele2(), 0, 1),
-                new OnOffActor("Paťa 2 Up", rele3ZaluzieAPort1.getRele3(), 0, 1),
-                new OnOffActor("Paťa 2 Down", rele3ZaluzieAPort1.getRele4(), 0, 1),
-                new OnOffActor("Marek Up", rele4ZaluzieAPort2.getRele1(), 0, 1),
-                new OnOffActor("Marek Down", rele4ZaluzieAPort2.getRele2(), 0, 1),
+                zaluzieKrystofUp = new OnOffActor("Kryštof Up", rele3ZaluzieAPort1.getRele1(), 0, 1),
+                zaluzieKrystofDown = new OnOffActor("Kryštof Down", rele3ZaluzieAPort1.getRele2(), 0, 1),
+                zaluziePataUp = new OnOffActor("Paťa Up", rele3ZaluzieAPort1.getRele3(), 0, 1),
+                zaluziePataDown = new OnOffActor("Paťa Down", rele3ZaluzieAPort1.getRele4(), 0, 1),
+                zaluzieMarekUp = new OnOffActor("Marek Up", rele4ZaluzieAPort2.getRele1(), 0, 1),
+                zaluzieMarekDown = new OnOffActor("Marek Down", rele4ZaluzieAPort2.getRele2(), 0, 1),
                 zaluzieKoupelnaUp = new OnOffActor("Koupelna Up", rele6ZaluzieBPort1.getRele1(), 0, 1),
                 zaluzieKoupelnaDown = new OnOffActor("Koupelna Down", rele6ZaluzieBPort1.getRele2(), 0, 1),
 
-                new OnOffActor("Ložnice 1 Up", rele4ZaluzieAPort2.getRele5(), 0, 1),
-                new OnOffActor("Ložnice 1 Down", rele4ZaluzieAPort2.getRele6(), 0, 1),
-                new OnOffActor("Ložnice 2 Up", rele3ZaluzieAPort1.getRele5(), 0, 1),
-                new OnOffActor("Ložnice 2 Down", rele3ZaluzieAPort1.getRele6(), 0, 1),
+                zaluzieLoznice1Up = new OnOffActor("Ložnice 1 Up", rele4ZaluzieAPort2.getRele5(), 0, 1, new SwitchIndicator(lozniceOknoSwA.getRedLed(), true)),
+                zaluzieLoznice1Down = new OnOffActor("Ložnice 1 Down", rele4ZaluzieAPort2.getRele6(), 0, 1, new SwitchIndicator(lozniceOknoSwA.getRedLed(), true)),
+                zaluzieLoznice2Up = new OnOffActor("Ložnice 2 Up", rele3ZaluzieAPort1.getRele5(), 0, 1, new SwitchIndicator(lozniceOknoSwA.getGreenLed(), true)),
+                zaluzieLoznice2Down = new OnOffActor("Ložnice 2 Down", rele3ZaluzieAPort1.getRele6(), 0, 1, new SwitchIndicator(lozniceOknoSwA.getGreenLed(), true)),
                 new OnOffActor("Šatna Up", rele8Actor3Port1.getRele3(), 0, 1),
                 new OnOffActor("Šatna Down", rele8Actor3Port1.getRele4(), 0, 1),
                 new OnOffActor("Pracovna Up", rele7ZaluzieBPort3.getRele1(), 0, 1),
@@ -158,28 +207,28 @@ public class Main {
                 zaluzieKuchynDown = new OnOffActor("Kuchyně Down", rele2ZaluzieAPort3.getRele6(), 0, 1),
                 zaluzieObyvak1Up = new OnOffActor("Obývák 1 Up", rele2ZaluzieAPort3.getRele1(), 0, 1),
                 zaluzieObyvak1Down = new OnOffActor("Obývák 1 Down", rele2ZaluzieAPort3.getRele2(), 0, 1),
-                new OnOffActor("Obývák 2 Up", rele8Actor3Port1.getRele5(), 0, 1),
-                new OnOffActor("Obývák 2 Down", rele8Actor3Port1.getRele6(), 0, 1),
-                new OnOffActor("Obývák 3 Up", rele2ZaluzieAPort3.getRele3(), 0, 1),
-                new OnOffActor("Obývák 3 Down", rele2ZaluzieAPort3.getRele4(), 0, 1),
+                zaluzieObyvak2Up = new OnOffActor("Obývák 2 Up", rele8Actor3Port1.getRele5(), 0, 1),
+                zaluzieObyvak2Down = new OnOffActor("Obývák 2 Down", rele8Actor3Port1.getRele6(), 0, 1),
+                zaluzieObyvak3Up = new OnOffActor("Obývák 3 Up", rele2ZaluzieAPort3.getRele3(), 0, 1),
+                zaluzieObyvak3Down = new OnOffActor("Obývák 3 Down", rele2ZaluzieAPort3.getRele4(), 0, 1),
 
-                new OnOffActor("Obývák 4 Up", rele4ZaluzieAPort2.getRele3(), 0, 1),
-                new OnOffActor("Obývák 4 Down", rele4ZaluzieAPort2.getRele4(), 0, 1),
-                new OnOffActor("Obývák 5 Up", rele7ZaluzieBPort3.getRele3(), 0, 1),
-                new OnOffActor("Obývák 5 Down", rele7ZaluzieBPort3.getRele4(), 0, 1),
-                new OnOffActor("Obývák 6 Up", rele7ZaluzieBPort3.getRele5(), 0, 1),
-                new OnOffActor("Obývák 6 Down", rele7ZaluzieBPort3.getRele6(), 0, 1),
+                zaluzieObyvak4Up = new OnOffActor("Obývák 4 Up", rele4ZaluzieAPort2.getRele3(), 0, 1),
+                zaluzieObyvak4Down = new OnOffActor("Obývák 4 Down", rele4ZaluzieAPort2.getRele4(), 0, 1),
+                zaluzieObyvak5Up = new OnOffActor("Obývák 5 Up", rele7ZaluzieBPort3.getRele3(), 0, 1),
+                zaluzieObyvak5Down = new OnOffActor("Obývák 5 Down", rele7ZaluzieBPort3.getRele4(), 0, 1),
+                zaluzieObyvak6Up = new OnOffActor("Obývák 6 Up", rele7ZaluzieBPort3.getRele5(), 0, 1),
+                zaluzieObyvak6Down = new OnOffActor("Obývák 6 Down", rele7ZaluzieBPort3.getRele6(), 0, 1),
                 new OnOffActor("Chodba 1 Up", rele6ZaluzieBPort1.getRele3(), 0, 1),
                 new OnOffActor("Chodba 1 Down", rele6ZaluzieBPort1.getRele4(), 0, 1),
 
                 new OnOffActor("Chodba 2 Up", rele6ZaluzieBPort1.getRele5(), 0, 1),
                 new OnOffActor("Chodba 2 Down", rele6ZaluzieBPort1.getRele6(), 0, 1),
-                new OnOffActor("Vrátnice 1 Up", rele5ZaluzieBPort2.getRele1(), 0, 1),
-                new OnOffActor("Vrátnice 1 Down", rele5ZaluzieBPort2.getRele2(), 0, 1),
-                new OnOffActor("Vrátnice 2 Up", rele5ZaluzieBPort2.getRele3(), 0, 1),
-                new OnOffActor("Vrátnice 2 Down", rele5ZaluzieBPort2.getRele4(), 0, 1),
-                new OnOffActor("Vrátnice 3 Up", rele5ZaluzieBPort2.getRele5(), 0, 1),
-                new OnOffActor("Vrátnice 3 Down", rele5ZaluzieBPort2.getRele6(), 0, 1),
+                zaluzieVratnice1Up = new OnOffActor("Vrátnice 1 Up", rele5ZaluzieBPort2.getRele1(), 0, 1),
+                zaluzieVratnice1Down = new OnOffActor("Vrátnice 1 Down", rele5ZaluzieBPort2.getRele2(), 0, 1),
+                zaluzieVratnice2Up = new OnOffActor("Vrátnice 2 Up", rele5ZaluzieBPort2.getRele3(), 0, 1),
+                zaluzieVratnice2Down = new OnOffActor("Vrátnice 2 Down", rele5ZaluzieBPort2.getRele4(), 0, 1),
+                zaluzieVratnice3Up = new OnOffActor("Vrátnice 3 Up", rele5ZaluzieBPort2.getRele5(), 0, 1),
+                zaluzieVratnice3Down = new OnOffActor("Vrátnice 3 Down", rele5ZaluzieBPort2.getRele6(), 0, 1),
 
                 new OnOffActor("Koupelna 2 Up", rele8Actor3Port1.getRele1(), 0, 1),
                 new OnOffActor("Koupelna 2 Down", rele8Actor3Port1.getRele2(), 0, 1),
@@ -195,12 +244,31 @@ public class Main {
             }
         }
 
-        lst.addActionBinding(new ActionBinding(koupelnaHoreSwA.getButton3(), new Action[]{new InvertActionWithTimer(zaluzieKoupelnaUp, 50)}, null));
-        lst.addActionBinding(new ActionBinding(koupelnaHoreSwA.getButton4(), new Action[]{new InvertActionWithTimer(zaluzieKoupelnaDown, 50)}, null));
+        // koupelna
+        configureLouvers(lst, true, koupelnaHoreSw1, zaluzieKoupelnaUp, zaluzieKoupelnaDown, 50);
 
+        // kuchyn + obyvak
+        configureLouvers(lst, true, obyvakA1Sw, zaluzieKuchynUp, zaluzieKuchynDown, 70);
+        configureLouvers(lst, false, obyvakA1Sw, zaluzieObyvak1Up, zaluzieObyvak1Down, 70);
+        configureLouvers(lst, true, obyvakA2Sw, zaluzieObyvak2Up, zaluzieObyvak2Down, zaluzieObyvak3Up, zaluzieObyvak3Down, 70);
+        configureLouvers(lst, false, obyvakA2Sw, zaluzieObyvak4Up, zaluzieObyvak4Down, 70);
+        configureLouvers(lst, true, obyvakA3Sw, zaluzieObyvak5Up, zaluzieObyvak5Down, zaluzieObyvak6Up, zaluzieObyvak6Down, 70);
 
-        lst.addActionBinding(new ActionBinding(obyvakA3sw.getButton3(), new Action[]{new InvertActionWithTimer(zaluzieKuchynUp, 70), new InvertActionWithTimer(zaluzieObyvak1Up, 70)}, null));
-        lst.addActionBinding(new ActionBinding(obyvakA3sw.getButton4(), new Action[]{new InvertActionWithTimer(zaluzieKuchynDown, 70), new InvertActionWithTimer(zaluzieObyvak1Down, 70)}, null));
+        // koupelna
+        configureLouvers(lst, true, koupelnaHoreSw1, zaluzieKoupelnaUp, zaluzieKoupelnaDown, 50);
+
+        // Krystof + Pata
+        configureLouvers(lst, true, krystofSwA1, zaluziePataUp, zaluziePataDown, 50);
+        configureLouvers(lst, false, krystofSwA1, zaluzieKrystofUp, zaluzieKrystofDown, 50);
+
+        // loznice
+        configureLouvers(lst, true, lozniceOknoSwA, zaluzieLoznice1Up, zaluzieLoznice1Down, 40);
+        configureLouvers(lst, false, lozniceOknoSwA, zaluzieLoznice2Up, zaluzieLoznice2Down, 40);
+
+        // vratnice
+        configureLouvers(lst, false, vratniceSw1, zaluzieVratnice3Up, zaluzieVratnice3Down, 50);
+        configureLouvers(lst, true, vratniceSw2, zaluzieVratnice2Up, zaluzieVratnice2Down, 40);
+        configureLouvers(lst, false, vratniceSw2, zaluzieVratnice1Up, zaluzieVratnice1Down, 40);
 
         Servlet.action1 = onActionKoupelna;
         Servlet.action2 = offActionKoupelna;
@@ -210,13 +278,18 @@ public class Main {
         Servlet.action5 = null;
         Servlet.louversActions = louversInvertActions;
 
-        Node test10Node = nodeInfoCollector.createNode(10, "Test10");
-        Node test12Node = nodeInfoCollector.createNode(12, "Test12");
-        //OutputDevice testOutputDevice3 = new OutputDevice("testOutputActor3", test10Node, 3, CpuFrequency.sixteenMHz);
-
+        Node testNode20 = nodeInfoCollector.createNode(20, "TestNode20");
+        //test switch
+        WallSwitch testSw = new WallSwitch("testSwA", testNode20, 2);
+        TestingOnOffActor testingRightOnOffActor = new TestingOnOffActor("RightSwitchTestingActor", null, 0, 1, testSw.getRedLedIndicator(true));
+        TestingOnOffActor testingLeftOnOffActor = new TestingOnOffActor("LeftSwitchTestingActor", null, 0, 1, testSw.getGreenLedIndicator(true));
+        lst.addActionBinding(new ActionBinding(testSw.getButton1(), new Action[]{new SwitchOffAction(testingRightOnOffActor)}, null));
+        lst.addActionBinding(new ActionBinding(testSw.getButton2(), new Action[]{new SwitchOnAction(testingRightOnOffActor)}, null));
+        lst.addActionBinding(new ActionBinding(testSw.getButton3(), new Action[]{new SwitchOnAction(testingLeftOnOffActor)}, null));
+        lst.addActionBinding(new ActionBinding(testSw.getButton4(), new Action[]{new SwitchOffAction(testingLeftOnOffActor)}, null));
 
         // lights
-        Node testNode20 = nodeInfoCollector.createNode(20, "TestNode20");
+        // PWM
         OutputDevice testPwmDevice1 = new OutputDevice("testPwmDevice1", testNode20, 1, CpuFrequency.sixteenMHz);
         PwmActor testPwmActor = new PwmActor("testPWM", testPwmDevice1.getOut1(), 0, 1);
         ArrayList<Action> lightsActions = new ArrayList<Action>();
@@ -232,4 +305,29 @@ public class Main {
 
 
     }
+
+    static void configureLouvers(SwitchListener lst, boolean left, WallSwitch wallSwitch, OnOffActor louversUp, OnOffActor louversDown, int duration) {
+        NodePin upTrigger = (left) ? wallSwitch.getButton3() : wallSwitch.getButton2();
+        NodePin downTrigger = (left) ? wallSwitch.getButton4() : wallSwitch.getButton1();
+
+        lst.addActionBinding(new ActionBinding(upTrigger, new Action[]{new InvertActionWithTimer(louversUp, duration)}, null));
+        lst.addActionBinding(new ActionBinding(downTrigger, new Action[]{new InvertActionWithTimer(louversDown, duration)}, null));
+    }
+
+    static void configureLouvers(SwitchListener lst, boolean left, WallSwitch wallSwitch, OnOffActor louvers1Up, OnOffActor louvers1Down, OnOffActor louvers2Up, OnOffActor louvers2Down, int duration) {
+        NodePin upTrigger = (left) ? wallSwitch.getButton3() : wallSwitch.getButton2();
+        NodePin downTrigger = (left) ? wallSwitch.getButton4() : wallSwitch.getButton1();
+
+        lst.addActionBinding(new ActionBinding(upTrigger,
+                new Action[]{
+                        new InvertActionWithTimer(louvers1Up, duration),
+                        new InvertActionWithTimer(louvers2Up, duration)
+                }, null));
+        lst.addActionBinding(new ActionBinding(downTrigger,
+                new Action[]{
+                        new InvertActionWithTimer(louvers1Down, duration),
+                        new InvertActionWithTimer(louvers2Down, duration)
+                }, null));
+    }
+
 }

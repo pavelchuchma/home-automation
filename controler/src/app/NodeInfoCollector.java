@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 public class NodeInfoCollector implements Iterable<NodeInfo> {
+    public static final int MAX_HEART_BEAT_PERIOD = 10;
     static Logger log = Logger.getLogger(NodeInfoCollector.class.getName());
     static NodeInfoCollector instance;
 
@@ -134,7 +135,7 @@ public class NodeInfoCollector implements Iterable<NodeInfo> {
                 long lastPing;
                 if (info.lastPingTime != null) {
                     lastPing = (new Date().getTime() - info.lastPingTime.getTime()) / 1000;
-                    if (lastPing <= 10) lastPingClass = "fineValue";
+                    if (lastPing <= Node.HEART_BEAT_PERIOD) lastPingClass = "fineValue";
                     lastPingString = lastPing + " s";
                 }
                 builder.append(String.format("<tr><td>%d-%s<td class='%s'>%s<td>%s<td>%s<td class='messageLog'>", info.node.getNodeId(), info.node.getName(), lastPingClass, lastPingString, info.bootTime, info.buildTime));

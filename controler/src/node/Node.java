@@ -11,6 +11,7 @@ import java.util.*;
 
 
 public class Node implements PacketUartIO.PacketReceivedListener {
+    public static final int HEART_BEAT_PERIOD = 60;
     static Logger log = Logger.getLogger(Node.class.getName());
     private static Object initializationLock = new Object();
 
@@ -318,6 +319,8 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     private boolean doInitialization(int commonOutputMask, int commonEventMask, int commonInitialOutputValues, CpuFrequency reqFrequency) {
         synchronized (initializationLock) {
             try {
+                setHeartBeatPeriod(HEART_BEAT_PERIOD);
+
                 for (int port = 0; port < 4; port++) {
                     int valueMask = (commonOutputMask >> port * 8) & 0xFF;
                     int trisMask = (valueMask ^ 0xFF) & 0xFF;
