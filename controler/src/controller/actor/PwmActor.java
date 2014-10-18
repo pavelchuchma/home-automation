@@ -11,17 +11,14 @@ import java.io.IOException;
 public class PwmActor extends AbstractActor implements IOnOffActor {
     static Logger log = Logger.getLogger(PwmActor.class.getName());
 
-    int onValue;
-
     int value;
 
     Indicator[] indicators;
     private int retryCount = 5;
 
 
-    public PwmActor(String id, NodePin output, int initValue, int onValue, Indicator... indicators) {
+    public PwmActor(String id, NodePin output, int initValue, Indicator... indicators) {
         super(id, output, initValue);
-        this.onValue = onValue;
 
         this.value = initValue;
         this.indicators = indicators;
@@ -94,12 +91,12 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
 
     @Override
     public boolean switchOn(Object actionData) {
-        return setValue(0);
+        return setValue(16);
     }
 
     @Override
     public boolean switchOff(Object actionData) {
-        return setValue(16);
+        return setValue(0);
     }
 
     private static boolean setPwmValue(NodePin nodePin, int value, int retryCount) {

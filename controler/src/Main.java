@@ -14,11 +14,11 @@ import controller.actor.OnOffActor;
 import controller.actor.PwmActor;
 import controller.actor.TestingOnOffActor;
 import controller.device.InputDevice;
+import controller.device.LddBoardDevice;
 import controller.device.OutputDevice;
 import controller.device.RelayBoardDevice;
 import controller.device.SwitchIndicator;
 import controller.device.WallSwitch;
-import node.CpuFrequency;
 import node.Node;
 import node.NodePin;
 import org.apache.log4j.Logger;
@@ -290,13 +290,14 @@ public class Main {
 
         // lights
         // PWM
-        OutputDevice testPwmDevice1 = new OutputDevice("testPwmDevice1", testNode20, 1, CpuFrequency.sixteenMHz);
-        PwmActor testPwmActor = new PwmActor("testPWM", testPwmDevice1.getOut1(), 0, 1);
+        LddBoardDevice testPwmDevice1 = new LddBoardDevice("testPwmDevice1", testNode20, 1);
         ArrayList<Action> lightsActions = new ArrayList<Action>();
-        lightsActions.add(new SwitchOnAction(testPwmActor));
-        lightsActions.add(new DecreasePwmAction(testPwmActor));
-        lightsActions.add(new IncreasePwmAction(testPwmActor));
-        lightsActions.add(new SwitchOffAction(testPwmActor));
+        addLddLight(lightsActions, "Ldd1", testPwmDevice1.getLdd1());
+        addLddLight(lightsActions, "Ldd2", testPwmDevice1.getLdd2());
+        addLddLight(lightsActions, "Ldd3", testPwmDevice1.getLdd3());
+        addLddLight(lightsActions, "Ldd4", testPwmDevice1.getLdd4());
+        addLddLight(lightsActions, "Ldd5", testPwmDevice1.getLdd5());
+        addLddLight(lightsActions, "Ldd6", testPwmDevice1.getLdd6());
 
         Servlet.lightsActions = lightsActions.toArray(new Action[lightsActions.size()]);
 
@@ -304,6 +305,14 @@ public class Main {
 //        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));
 
 
+    }
+
+    static void addLddLight(ArrayList<Action> lightsActions, String name, NodePin pin) {
+        PwmActor pwmA1 = new PwmActor(name,  pin, 0);
+        lightsActions.add(new SwitchOnAction(pwmA1));
+        lightsActions.add(new IncreasePwmAction(pwmA1));
+        lightsActions.add(new DecreasePwmAction(pwmA1));
+        lightsActions.add(new SwitchOffAction(pwmA1));
     }
 
     static void configureLouvers(SwitchListener lst, boolean left, WallSwitch wallSwitch, OnOffActor louversUp, OnOffActor louversDown, int duration) {
