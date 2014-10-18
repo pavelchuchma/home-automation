@@ -79,7 +79,6 @@ void InitApp(void) {
 
     setupCanBus(0);
 
-
     // init flags
     appFlags.isInitialized = 0;
     appFlags.onPingTimer = 1; // to send onReboot message immediately
@@ -88,7 +87,6 @@ void InitApp(void) {
     displayValue = 0;
     displayValueOld = 255;
 
-
     // init manualPwm
     for (char i = 0; i < 3; i++) {
         manualPwmPortData[i].mask = 0;
@@ -96,6 +94,9 @@ void InitApp(void) {
             manualPwmPortData[i].data[--j] = 0;
         }
     }
+
+    
+    checkInput = 0;
 
     /* Initialize User Ports/Peripherals/Project here */
 
@@ -410,5 +411,10 @@ void doManualPwm() {
     SET_PORT_MANUAL_PWM(PORTC, 2);
 
     position++;
-    if (position == PWM_RESOLUTION) position = 0;
+    if (position == PWM_RESOLUTION) {
+        position = 0;
+    } else {
+        //nop is here to have both branches of the same length
+        asm ("nop");
+    }
 }

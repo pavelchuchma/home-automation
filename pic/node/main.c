@@ -37,8 +37,8 @@
 void freshenDisplay() {
     char val = displaySegments[appFlags.currentSegment];
     // switch digit selector off
-    PORTA &=0b00011111;
-    PORTC &=0b11001111;
+    PORTA &= 0b00011111;
+    PORTC &= 0b11001111;
     PORTBbits.RB0 = 0;
 
     // switch segments off
@@ -46,7 +46,8 @@ void freshenDisplay() {
     PORTC |= 0b00001111;
 
     // switch segments on
-    PORTA &= val | 0b11110000;;
+    PORTA &= val | 0b11110000;
+    ;
     PORTC &= (val >> 4) | 0b11110000;
 
     // switch selected digit on
@@ -71,7 +72,7 @@ void freshenDisplay() {
             break;
     }
 
-    if (++appFlags.currentSegment == 6 ) {
+    if (++appFlags.currentSegment == 6) {
         appFlags.currentSegment = 0;
     }
 }
@@ -98,9 +99,9 @@ void main(void) {
     return;
 #else
 
-	// delay initialization to don't start all nodes at one time
+    // delay initialization to don't start all nodes at one time
     int delayCount = 2000 * (nodeId - 1);
-    for (int i=0; i<delayCount; i++) {
+    for (int i = 0; i < delayCount; i++) {
         NOP();
     }
 
@@ -113,174 +114,188 @@ void main(void) {
         char waitForFreeBuffer;
     } perfTestData = {0, 0, 0, 0};
 
+    int loopCounter = 0;
     while (1) {
-        for (int i = 0; i < 4; i++) {
-            // invalidate current packet
-            receivedPacket.length = 0;
-            // an UART packet received
-            if (receiveQueue.packetCount) {
-                // get packet from queue
-                uart_readPacket();
-            } else {
-                //try to read packet from CAN
-                can_readPacket();
-            }
-            // is there any packet to process?
-            if (receivedPacket.length) {
-                // is received packet for me?
-                if (receivedPacket.nodeId == nodeId) {
-                    if (receivedPacket.messageType == MSG_SetHeartBeatPeriod) {
-                        // set ping period in seconds (multiply by 2 because timer is set to .5s)
-                        heartBeatPeriod = receivedPacket.data[0] * 2 * getCpuFrequency();
-                    } else if (receivedPacket.messageType == MSG_EchoRequest) {
-                        // process Echo message
-                        outPacket.nodeId = nodeId;
-                        outPacket.messageType = MSG_EchoResponse;
-                        outPacket.length = receivedPacket.length;
-                        for (char j = 2; j < receivedPacket.length; j++) {
-                            outPacket.bytes[j] = receivedPacket.bytes[j];
-                        }
-
-                        // send response to proper destination
-                        sendResponse();
-                    } else if (receivedPacket.messageType == MSG_UartTransmitPerfTestRequest) {
-                        perfTestData.packetLeft = (*(MsgUartTransmitPerfTestRequest*) &receivedPacket).packetCount;
-                        perfTestData.packetSize = (*(MsgUartTransmitPerfTestRequest*) &receivedPacket).packetLength;
-                        perfTestData.nextByte = (*(MsgUartTransmitPerfTestRequest*) &receivedPacket).firstByte;
-                        perfTestData.waitForFreeBuffer = receivedPacket.data[3];
-                        perfTestData.waitForFreeBuffer = (*(MsgUartTransmitPerfTestRequest*) &receivedPacket).waitForFreeOutput;
-                    } else if (receivedPacket.messageType == MSG_SetUartBaudRate) {
-                        // set new UART baud rate
-                        SPBRGH1 = receivedPacket.data[0];
-                        SPBRG1 = receivedPacket.data[1];
-                    } else if (receivedPacket.messageType == MSG_ReadRamRequest) {
-                        // send byte from required memory possition
-                        processReadRamRequest();
-                        // send response to proper destination
-                        sendResponse();
-                    } else if (receivedPacket.messageType == MSG_WriteRamRequest) {
-                        // write byte to required memory possition
-                        processWriteRamRequest();
-
-                        // send response to proper destination
-                        sendResponse();
-                    } else if (receivedPacket.messageType == MSG_GetBuildTimeRequest) {
-                        // store build time to outPacket
-                        processGetBuildTimeRequest();
-
-                        // send response to proper destination
-                        sendResponse();
-                    } else if ((receivedPacket.messageType & 0b11111100) == MSG_SetPortA) {
-                        // set port value, event mask & tris
-                        processSetPort();
-
-                        // send response to proper destination
-                        sendResponse();
-                    } else if (receivedPacket.messageType == MSG_EnablePwmRequest) {
-                        // enable PWM module, change CPU frequency if necessery
-                        processEnablePwmRequest();
-
-                        // send response to proper destination
-                        sendResponse();
-                    } else if (receivedPacket.messageType == MSG_SetPwmValueRequest) {
-                        // set new PWM value
-                        processSetPwmValue();
-
-                        // send response to proper destination
-                        sendResponse();
-                    } else if (receivedPacket.messageType == MSG_InitializationFinished) {
-                        // set new PWM value
-                        appFlags.isInitialized = 1;
-                        // force to send heart beat immediatelly
-                        appFlags.onPingTimer = 1;
-
-                    } else if (receivedPacket.messageType == MSG_OnDebug) {
-                       
-                    } else if (receivedPacket.messageType == MSG_SetFrequencyRequest) {
-                        // set change CPU frequency
-                        processSetFrequencyRequest();
-
-                        // send response to proper destination
-                        sendResponse();
-                    } else if (receivedPacket.messageType == MSG_SetManualPwmValueRequest) {
-                        // set change CPU frequency
-                        processSetManualPwmValueRequest();
-
-                        // send response to proper destination
-                        sendResponse();
-                    } else if (receivedPacket.messageType == MSG_ResetRequest) {
-                        // set change CPU frequency
-                        processResetRequest();
-                        // do not need to wait for anything, reset will be faster and wait for message sending
-                        // can be risk of deadlock in some casess (or complicated code)
-                    } else if (receivedPacket.messageType == MSG_ReadProgramRequest) {
-                        // set change CPU frequency
-                        processReadProgramRequest();
-
-                        // send response to proper destination
-                        sendResponse();
+        // invalidate current packet
+        receivedPacket.length = 0;
+        // an UART packet received
+        if (receiveQueue.packetCount) {
+            // get packet from queue
+            uart_readPacket();
+        } else {
+            //try to read packet from CAN
+            can_readPacket();
+        }
+        // is there any packet to process?
+        if (receivedPacket.length) {
+            // is received packet for me?
+            if (receivedPacket.nodeId == nodeId) {
+                if (receivedPacket.messageType == MSG_SetHeartBeatPeriod) {
+                    // set ping period in seconds (multiply by 2 because timer is set to .5s)
+                    heartBeatPeriod = receivedPacket.data[0] * 2 * getCpuFrequency();
+                } else if (receivedPacket.messageType == MSG_EchoRequest) {
+                    // process Echo message
+                    outPacket.nodeId = nodeId;
+                    outPacket.messageType = MSG_EchoResponse;
+                    outPacket.length = receivedPacket.length;
+                    for (char j = 2; j < receivedPacket.length; j++) {
+                        outPacket.bytes[j] = receivedPacket.bytes[j];
                     }
-                } else if (nodeId == NODE_ROUTER) {
-                    //message is not for me, but I'm a router
-                    if (receivedPacket.isUart) {
-                        // forward UART message to CAN
-                        can_sendPacket(&receivedPacket);
-                    } else {
-                        // forward CAN message to UART
-                        uart_sendPacket(&receivedPacket);
-                    }
-                    // increment counter to count of forwarded messages
-                    if (++displayValue == 1000000) displayValue = 0;
+
+                    // send response to proper destination
+                    sendResponse();
+                } else if (receivedPacket.messageType == MSG_UartTransmitPerfTestRequest) {
+                    perfTestData.packetLeft = (*(MsgUartTransmitPerfTestRequest*) & receivedPacket).packetCount;
+                    perfTestData.packetSize = (*(MsgUartTransmitPerfTestRequest*) & receivedPacket).packetLength;
+                    perfTestData.nextByte = (*(MsgUartTransmitPerfTestRequest*) & receivedPacket).firstByte;
+                    perfTestData.waitForFreeBuffer = receivedPacket.data[3];
+                    perfTestData.waitForFreeBuffer = (*(MsgUartTransmitPerfTestRequest*) & receivedPacket).waitForFreeOutput;
+                } else if (receivedPacket.messageType == MSG_SetUartBaudRate) {
+                    // set new UART baud rate
+                    SPBRGH1 = receivedPacket.data[0];
+                    SPBRG1 = receivedPacket.data[1];
+                } else if (receivedPacket.messageType == MSG_ReadRamRequest) {
+                    // send byte from required memory possition
+                    processReadRamRequest();
+                    // send response to proper destination
+                    sendResponse();
+                } else if (receivedPacket.messageType == MSG_WriteRamRequest) {
+                    // write byte to required memory possition
+                    processWriteRamRequest();
+
+                    // send response to proper destination
+                    sendResponse();
+                } else if (receivedPacket.messageType == MSG_GetBuildTimeRequest) {
+                    // store build time to outPacket
+                    processGetBuildTimeRequest();
+
+                    // send response to proper destination
+                    sendResponse();
+                } else if ((receivedPacket.messageType & 0b11111100) == MSG_SetPortA) {
+                    // set port value, event mask & tris
+                    processSetPort();
+
+                    // send response to proper destination
+                    sendResponse();
+                } else if (receivedPacket.messageType == MSG_EnablePwmRequest) {
+                    // enable PWM module, change CPU frequency if necessery
+                    processEnablePwmRequest();
+
+                    // send response to proper destination
+                    sendResponse();
+                } else if (receivedPacket.messageType == MSG_SetPwmValueRequest) {
+                    // set new PWM value
+                    processSetPwmValue();
+
+                    // send response to proper destination
+                    sendResponse();
+                } else if (receivedPacket.messageType == MSG_InitializationFinished) {
+                    // set new PWM value
+                    appFlags.isInitialized = 1;
+                    // force to send heart beat immediatelly
+                    appFlags.onPingTimer = 1;
+
+                } else if (receivedPacket.messageType == MSG_OnDebug) {
+
+                } else if (receivedPacket.messageType == MSG_SetFrequencyRequest) {
+                    // set change CPU frequency
+                    processSetFrequencyRequest();
+
+                    // send response to proper destination
+                    sendResponse();
+                } else if (receivedPacket.messageType == MSG_SetManualPwmValueRequest) {
+                    // set change CPU frequency
+                    processSetManualPwmValueRequest();
+
+                    // send response to proper destination
+                    sendResponse();
+                } else if (receivedPacket.messageType == MSG_ResetRequest) {
+                    // set change CPU frequency
+                    processResetRequest();
+                    // do not need to wait for anything, reset will be faster and wait for message sending
+                    // can be risk of deadlock in some casess (or complicated code)
+                } else if (receivedPacket.messageType == MSG_ReadProgramRequest) {
+                    // set change CPU frequency
+                    processReadProgramRequest();
+
+                    // send response to proper destination
+                    sendResponse();
                 }
+            } else if (nodeId == NODE_ROUTER) {
+                //message is not for me, but I'm a router
+                if (receivedPacket.isUart) {
+                    // forward UART message to CAN
+                    can_sendPacket(&receivedPacket);
+                } else {
+                    // forward CAN message to UART
+                    uart_sendPacket(&receivedPacket);
+                }
+                // increment counter to count of forwarded messages
+                if (++displayValue == 1000000) displayValue = 0;
             }
-
-            checkUartErrors();
+        }
 
 #if 0
-            // UartTransmitPerfTest
-            if (perfTestData.packetLeft && (!perfTestData.waitForFreeBuffer || isUartSendBufferFree())) {
-                outPacket.nodeId = nodeId;
-                outPacket.messageType = MSG_UartTransmitPerfTestMessage;
-                outPacket.data[0] = perfTestData.packetLeft--;
-                for (char x = 1; x < perfTestData.packetSize; x++) outPacket.data[x] = perfTestData.nextByte++;
-                outPacket.length = perfTestData.packetSize + 2;
-                //TODO: Update for CAN
-                uart_sendPacket(&outPacket);
-            }
-#endif
-            if (appFlags.onPingTimer) {
-                appFlags.onPingTimer = 0;
-                outPacket.nodeId = nodeId;
-                outPacket.data[0] = heartBeatCounter;
-                if (!appFlags.isInitialized) {
-                    outPacket.messageType = MSG_OnReboot;
-                    outPacket.data[1] = RCON;
-                    outPacket.length = 4;
-                } else {
-                    outPacket.messageType = MSG_OnHeartBeat;
-                    outPacket.length = 3;
-                }
-
-                if (nodeId == NODE_ROUTER) {
-                    uart_sendPacket(&outPacket);
-                } else {
-                    can_sendPacket(&outPacket);
-                }
-            }
-
-            if (nodeId == NODE_ROUTER && displayValue != displayValueOld) {
-                //I'm router (have display) and new value to display is ready
-                recalculateDisplayValue();
-                // break display loop because recalculateDisplayValue() is slow enough
-                break;
-            }
-
-            doManualPwm();
+        // UartTransmitPerfTest
+        if (perfTestData.packetLeft && (!perfTestData.waitForFreeBuffer || isUartSendBufferFree())) {
+            outPacket.nodeId = nodeId;
+            outPacket.messageType = MSG_UartTransmitPerfTestMessage;
+            outPacket.data[0] = perfTestData.packetLeft--;
+            for (char x = 1; x < perfTestData.packetSize; x++) outPacket.data[x] = perfTestData.nextByte++;
+            outPacket.length = perfTestData.packetSize + 2;
+            //TODO: Update for CAN
+            uart_sendPacket(&outPacket);
         }
-        checkInputChange();
+#endif
+        if (appFlags.onPingTimer) {
+            appFlags.onPingTimer = 0;
+            outPacket.nodeId = nodeId;
+            outPacket.data[0] = heartBeatCounter;
+            if (!appFlags.isInitialized) {
+                outPacket.messageType = MSG_OnReboot;
+                outPacket.data[1] = RCON;
+                outPacket.length = 4;
+            } else {
+                outPacket.messageType = MSG_OnHeartBeat;
+                outPacket.length = 3;
+            }
+
+            if (nodeId == NODE_ROUTER) {
+                uart_sendPacket(&outPacket);
+            } else {
+                can_sendPacket(&outPacket);
+            }
+        }
+
         if (nodeId == NODE_ROUTER) {
-            //I'm router (have display)
-            freshenDisplay();
+            checkUartErrors();
+
+            if (loopCounter == 0) {
+                if (displayValue != displayValueOld) {
+                    //I'm router (have display) and new value to display is ready
+                    recalculateDisplayValue();
+                }
+                freshenDisplay();
+            }
+        }
+
+        doManualPwm();
+
+        if (loopCounter++ == 3) {
+            loopCounter = 0;
+            if (checkInput) {
+                checkInputChange();
+            }
+        } else {
+            // nops are here to have bothbranches of this if of the same length. It is necessary for manual PWM.
+            asm ("nop");
+            asm ("nop");
+            asm ("nop");
+            asm ("nop");
+            asm ("nop");
+            asm ("nop");
+            asm ("nop");
+            asm ("nop");
         }
     }
 #endif

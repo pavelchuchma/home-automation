@@ -38,10 +38,11 @@ enum NodeId {
     NODE_18 = 18,
     NODE_19 = 19,
     NODE_20 = 20,
+    NODE_21 = 21,
     NODE_ALL = 255,
 };
 
-#define NODE_ID NODE_20
+#define NODE_ID NODE_16
 #define RUN_TESTS 0
 #define PWM_RESOLUTION 16
 #define PIN_CHANGE_LOOP_COUNT 37
@@ -83,6 +84,7 @@ extern volatile char canReceiveLongMsgCount;
 extern volatile char canReceiveMismatch;
 
 extern volatile ManualPwmData manualPwmPortData[3];
+extern volatile char checkInput;
 
 #define MAPPED_CONbits  RXB0CONbits
 #define MAPPED_CON	RXB0CON

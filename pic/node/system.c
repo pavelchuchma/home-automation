@@ -40,6 +40,7 @@ volatile char canReceiveLongMsgCount;
 volatile char canReceiveMismatch;
 
 volatile ManualPwmData manualPwmPortData[3];
+volatile char checkInput;
 
 /**
  * Returs CPU Frequecny in MHz
@@ -138,6 +139,9 @@ void processSetPort() {
 
     //store tris value to outPacket
     outPacket.data[1] = INDF1;
+
+    // set checkInput
+    checkInput = !!(portConfig.eventMask[0] | portConfig.eventMask[1] | portConfig.eventMask[2] | portConfig.eventMask[3]);
 }
 
 void checkInputChange() {
