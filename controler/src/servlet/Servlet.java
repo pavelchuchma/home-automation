@@ -192,7 +192,7 @@ public class Servlet extends AbstractHandler {
         for (int i = 0; i < lightsActions.length; i += 4) {
             builder.append("<tr>");
             String fieldClass = "louvers";
-            int val = (int) (100 - lightsActions[i].getActor().getValue() / .16);
+            int val = (int) (lightsActions[i].getActor().getValue() / .16);
             builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LIGHTS_ACTION, i, "On"));
             builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LIGHTS_ACTION, i + 1, "+"));
             builder.append(String.format("<td class='%s'>%s %d%%", fieldClass, lightsActions[i].getActor().getId(), val));
