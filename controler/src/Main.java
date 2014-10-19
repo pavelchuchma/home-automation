@@ -10,6 +10,7 @@ import controller.Action.SwitchOffSensorAction;
 import controller.Action.SwitchOnAction;
 import controller.Action.SwitchOnSensorAction;
 import controller.ActionBinding;
+import controller.actor.Indicator;
 import controller.actor.OnOffActor;
 import controller.actor.PwmActor;
 import controller.actor.TestingOnOffActor;
@@ -77,12 +78,15 @@ public class Main {
         Node actor3 = nodeInfoCollector.createNode(3, "Actor3");
         Node zaluzieB = nodeInfoCollector.createNode(4, "ZaluzieB");
         Node lozniceOkno = nodeInfoCollector.createNode(6, "LozniceOkno");
+        Node pirNodeA = nodeInfoCollector.createNode(7, "PirNodeA");
         Node chodbaDole = nodeInfoCollector.createNode(8, "ChodbaDole");
         Node koupelnaHore = nodeInfoCollector.createNode(9, "KoupelnaHore");
         Node vratnice = nodeInfoCollector.createNode(10, "Vratnice");
         Node obyvakSpinacABC = nodeInfoCollector.createNode(11, "ObyvakSpinacABC");
         Node krystof = nodeInfoCollector.createNode(12, "Krystof");
         Node zaluzieA = nodeInfoCollector.createNode(13, "ZaluzieA");
+        Node marek = nodeInfoCollector.createNode(14, "Marek");
+        Node ldd1Actor = nodeInfoCollector.createNode(19, "LDD1-Actor");
 
         WallSwitch obyvakA1Sw = new WallSwitch("obyvakA1Sw", obyvakSpinacABC, 1);
         WallSwitch obyvakA2Sw = new WallSwitch("obyvakA2Sw", obyvakSpinacABC, 2);
@@ -97,6 +101,7 @@ public class Main {
         WallSwitch vratniceSw1 = new WallSwitch("vratniceSw1", vratnice, 1);
         WallSwitch vratniceSw2 = new WallSwitch("vratniceSw2", vratnice, 2);
         WallSwitch krystofSwA1 = new WallSwitch("krystofSwA1", krystof, 1);
+        WallSwitch marekSwA1 = new WallSwitch("marekSwA1", marek, 1);
 
         OnOffActor svKoupelna = new OnOffActor("svKoupelna", triak1Actor3Port3.getOut1(), 1, 0, obyvakA3Sw.getGreenLedIndicator(false), koupelnaHoreSw1.getGreenLedIndicator(false), koupelnaHoreSw1.getRedLedIndicator(true));
         OnOffActor svJidelna = new OnOffActor("svJidelna", triak1Actor3Port3.getOut2(), 1, 0, obyvakA3Sw.getRedLedIndicator(true));
@@ -123,7 +128,6 @@ public class Main {
         lst.addActionBinding(new ActionBinding(chodbaDoldeSwA.getButton3(), new Action[]{onActionPradelna}, null));
         lst.addActionBinding(new ActionBinding(chodbaDoldeSwA.getButton4(), new Action[]{offActionPradelna}, null));
 
-        Node pirNodeA = nodeInfoCollector.createNode(7, "PirNodeA");
         InputDevice pirA3Prizemi = new InputDevice("pirA3Prizemi", pirNodeA, 3);
         lst.addActionBinding(new ActionBinding(pirA3Prizemi.getIn5AndActivate(), new Action[]{new SwitchOffSensorAction(svSpajza, 10)}, new Action[]{new SwitchOnSensorAction(svSpajza, 600)}));
 
@@ -235,6 +239,18 @@ public class Main {
 
         };
 
+        // lights
+        // PWM
+        LddBoardDevice testPwmDevice1 = new LddBoardDevice("testPwmDevice1", ldd1Actor, 1);
+        ArrayList<Action> lightsActions = new ArrayList<Action>();
+        PwmActor marekPwmActor = addLddLight(lightsActions, "Marek", testPwmDevice1.getLdd1(), 0.95, new SwitchIndicator(marekSwA1.getRedLed(), true));
+        addLddLight(lightsActions, "Paťa", testPwmDevice1.getLdd2(), 0.95);
+        addLddLight(lightsActions, "Kryštof", testPwmDevice1.getLdd3(), 0.95);
+        addLddLight(lightsActions, "Ldd4", testPwmDevice1.getLdd4(), 1.00);
+        addLddLight(lightsActions, "Ldd5", testPwmDevice1.getLdd5(), 1.00);
+        addLddLight(lightsActions, "Ldd6", testPwmDevice1.getLdd6(), 1.00);
+
+
         Action[] louversInvertActions = new Action[louversActors.length];
         for (int i = 0; i < louversActors.length; i++) {
             louversInvertActions[i] = new InvertActionWithTimer(louversActors[i], 70);
@@ -261,6 +277,11 @@ public class Main {
         configureLouvers(lst, true, krystofSwA1, zaluziePataUp, zaluziePataDown, 50);
         configureLouvers(lst, false, krystofSwA1, zaluzieKrystofUp, zaluzieKrystofDown, 50);
 
+        // Marek
+        configureLouvers(lst, true, marekSwA1, zaluzieMarekUp, zaluzieMarekDown, 50);
+        lst.addActionBinding(new ActionBinding(marekSwA1.getButton2(), new Action[]{new IncreasePwmAction(marekPwmActor)}, null));
+        lst.addActionBinding(new ActionBinding(marekSwA1.getButton1(), new Action[]{new DecreasePwmAction(marekPwmActor)}, null));
+
         // loznice
         configureLouvers(lst, true, lozniceOknoSwA, zaluzieLoznice1Up, zaluzieLoznice1Down, 40);
         configureLouvers(lst, false, lozniceOknoSwA, zaluzieLoznice2Up, zaluzieLoznice2Down, 40);
@@ -278,9 +299,9 @@ public class Main {
         Servlet.action5 = null;
         Servlet.louversActions = louversInvertActions;
 
+        //test wall switch application
         Node testNode20 = nodeInfoCollector.createNode(20, "TestNode20");
-        //test switch
-        WallSwitch testSw = new WallSwitch("testSwA", testNode20, 2);
+        WallSwitch testSw = new WallSwitch("testSwA", testNode20, 1);
         TestingOnOffActor testingRightOnOffActor = new TestingOnOffActor("RightSwitchTestingActor", null, 0, 1, testSw.getRedLedIndicator(true));
         TestingOnOffActor testingLeftOnOffActor = new TestingOnOffActor("LeftSwitchTestingActor", null, 0, 1, testSw.getGreenLedIndicator(true));
         lst.addActionBinding(new ActionBinding(testSw.getButton1(), new Action[]{new SwitchOffAction(testingRightOnOffActor)}, null));
@@ -288,16 +309,6 @@ public class Main {
         lst.addActionBinding(new ActionBinding(testSw.getButton3(), new Action[]{new SwitchOnAction(testingLeftOnOffActor)}, null));
         lst.addActionBinding(new ActionBinding(testSw.getButton4(), new Action[]{new SwitchOffAction(testingLeftOnOffActor)}, null));
 
-        // lights
-        // PWM
-        LddBoardDevice testPwmDevice1 = new LddBoardDevice("testPwmDevice1", testNode20, 1);
-        ArrayList<Action> lightsActions = new ArrayList<Action>();
-        addLddLight(lightsActions, "Ldd1", testPwmDevice1.getLdd1());
-        addLddLight(lightsActions, "Ldd2", testPwmDevice1.getLdd2());
-        addLddLight(lightsActions, "Ldd3", testPwmDevice1.getLdd3());
-        addLddLight(lightsActions, "Ldd4", testPwmDevice1.getLdd4());
-        addLddLight(lightsActions, "Ldd5", testPwmDevice1.getLdd5());
-        addLddLight(lightsActions, "Ldd6", testPwmDevice1.getLdd6());
 
         Servlet.lightsActions = lightsActions.toArray(new Action[lightsActions.size()]);
 
@@ -307,12 +318,13 @@ public class Main {
 
     }
 
-    static void addLddLight(ArrayList<Action> lightsActions, String name, NodePin pin) {
-        PwmActor pwmA1 = new PwmActor(name,  pin, 0);
-        lightsActions.add(new SwitchOnAction(pwmA1));
-        lightsActions.add(new IncreasePwmAction(pwmA1));
-        lightsActions.add(new DecreasePwmAction(pwmA1));
-        lightsActions.add(new SwitchOffAction(pwmA1));
+    static PwmActor addLddLight(ArrayList<Action> lightsActions, String name, NodePin pin, double maxLoad, Indicator... indicators) {
+        PwmActor pwmActor = new PwmActor(name, pin, maxLoad, indicators);
+        lightsActions.add(new SwitchOnAction(pwmActor));
+        lightsActions.add(new IncreasePwmAction(pwmActor));
+        lightsActions.add(new DecreasePwmAction(pwmActor));
+        lightsActions.add(new SwitchOffAction(pwmActor));
+        return pwmActor;
     }
 
     static void configureLouvers(SwitchListener lst, boolean left, WallSwitch wallSwitch, OnOffActor louversUp, OnOffActor louversDown, int duration) {
