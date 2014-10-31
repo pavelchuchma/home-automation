@@ -101,6 +101,7 @@ public class Main {
         WallSwitch vratniceSw1 = new WallSwitch("vratniceSw1", vratnice, 1);
         WallSwitch vratniceSw2 = new WallSwitch("vratniceSw2", vratnice, 2);
         WallSwitch krystofSwA1 = new WallSwitch("krystofSwA1", krystof, 1);
+        WallSwitch krystofSwA2 = new WallSwitch("krystofSwA2", krystof, 2);
         WallSwitch marekSwA1 = new WallSwitch("marekSwA1", marek, 1);
 
         OnOffActor svKoupelna = new OnOffActor("svKoupelna", triak1Actor3Port3.getOut1(), 1, 0, obyvakA3Sw.getGreenLedIndicator(false), koupelnaHoreSw1.getGreenLedIndicator(false), koupelnaHoreSw1.getRedLedIndicator(true));
@@ -241,14 +242,14 @@ public class Main {
 
         // lights
         // PWM
-        LddBoardDevice testPwmDevice1 = new LddBoardDevice("testPwmDevice1", ldd1Actor, 1);
+        LddBoardDevice lddDevice1 = new LddBoardDevice("lddDevice1", ldd1Actor, 1);
         ArrayList<Action> lightsActions = new ArrayList<Action>();
-        PwmActor marekPwmActor = addLddLight(lightsActions, "Marek", testPwmDevice1.getLdd1(), 0.95, new SwitchIndicator(marekSwA1.getRedLed(), true));
-        addLddLight(lightsActions, "Paťa", testPwmDevice1.getLdd2(), 0.95);
-        addLddLight(lightsActions, "Kryštof", testPwmDevice1.getLdd3(), 0.95);
-        addLddLight(lightsActions, "Ldd4", testPwmDevice1.getLdd4(), 1.00);
-        addLddLight(lightsActions, "Ldd5", testPwmDevice1.getLdd5(), 1.00);
-        addLddLight(lightsActions, "Ldd6", testPwmDevice1.getLdd6(), 1.00);
+        PwmActor marekPwmActor = addLddLight(lightsActions, "Marek", lddDevice1.getLdd1(), 0.95, new SwitchIndicator(marekSwA1.getRedLed(), true));
+        PwmActor pataPwmActor = addLddLight(lightsActions, "Paťa", lddDevice1.getLdd2(), 0.95);
+        PwmActor krystofPwmActor = addLddLight(lightsActions, "Kryštof", lddDevice1.getLdd3(), 0.95, new SwitchIndicator(krystofSwA2.getRedLed(), true));
+        addLddLight(lightsActions, "Ldd4", lddDevice1.getLdd4(), 1.00);
+        addLddLight(lightsActions, "Ldd5", lddDevice1.getLdd5(), 1.00);
+        addLddLight(lightsActions, "Ldd6", lddDevice1.getLdd6(), 1.00);
 
 
         Action[] louversInvertActions = new Action[louversActors.length];
@@ -276,6 +277,10 @@ public class Main {
         // Krystof + Pata
         configureLouvers(lst, true, krystofSwA1, zaluziePataUp, zaluziePataDown, 50);
         configureLouvers(lst, false, krystofSwA1, zaluzieKrystofUp, zaluzieKrystofDown, 50);
+        lst.addActionBinding(new ActionBinding(krystofSwA2.getButton3(), new Action[]{new IncreasePwmAction(pataPwmActor)}, null));
+        lst.addActionBinding(new ActionBinding(krystofSwA2.getButton4(), new Action[]{new DecreasePwmAction(pataPwmActor)}, null));
+        lst.addActionBinding(new ActionBinding(krystofSwA2.getButton2(), new Action[]{new IncreasePwmAction(krystofPwmActor)}, null));
+        lst.addActionBinding(new ActionBinding(krystofSwA2.getButton1(), new Action[]{new DecreasePwmAction(krystofPwmActor)}, null));
 
         // Marek
         configureLouvers(lst, true, marekSwA1, zaluzieMarekUp, zaluzieMarekDown, 50);

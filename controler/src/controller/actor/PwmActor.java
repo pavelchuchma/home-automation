@@ -12,7 +12,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public class PwmActor extends AbstractActor implements IOnOffActor {
-    public static final int MAX_PWM_VALUE = 16;
+    public static final int MAX_PWM_VALUE = 48;
     static Logger log = Logger.getLogger(PwmActor.class.getName());
 
     int value;
@@ -134,7 +134,7 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
                 log.info(String.format("PWM of %s set to: %d", nodePin, value));
                 return true;
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 log.error(String.format("setPwmValue %s failed.", nodePin.toString()), e);
             }
         }

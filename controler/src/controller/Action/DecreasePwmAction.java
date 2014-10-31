@@ -13,15 +13,15 @@ public class DecreasePwmAction extends AbstractAction {
         int step;
         if (value == 0) {
             step = 1;
-        } else if (value == 4) {
-            step = 3;
-        } else if (value == 8) {
-            step = 4;
-        } else if (value > 8) {
-            step = value - 8;
+        } else if (value == PwmActor.MAX_PWM_VALUE / 4) {
+            step = PwmActor.MAX_PWM_VALUE / 4 - 1;
+        } else if (value == PwmActor.MAX_PWM_VALUE / 2) {
+            step = PwmActor.MAX_PWM_VALUE / 4;
+        } else if (value > PwmActor.MAX_PWM_VALUE / 2) {
+            step = value - PwmActor.MAX_PWM_VALUE / 2;
         } else {
-            step = 1;
+            step = PwmActor.MAX_PWM_VALUE / 10;
         }
-        ((PwmActor)getActor()).decreasePwm(step);
+        ((PwmActor) getActor()).decreasePwm(step);
     }
 }
