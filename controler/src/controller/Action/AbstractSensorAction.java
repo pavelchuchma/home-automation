@@ -42,8 +42,8 @@ public class AbstractSensorAction extends AbstractAction {
     }
 
     private void performImpl() {
-        IOnOffActor act = (OnOffActor) getActor();
         try {
+            IOnOffActor act = (IOnOffActor) getActor();
             log.debug("Performing actor: " + act.toString());
             ActionData aData = new ActionData();
             synchronized (act) {
@@ -88,9 +88,8 @@ public class AbstractSensorAction extends AbstractAction {
                 log.debug("nobody modified actor meanwhile -> can switch off");
                 act.switchOff(null);
             }
-        } catch (InterruptedException e) {
-            log.error("perform() method interrupted");
-            return;
+        } catch (Exception e) {
+            log.error("perform() method failed2", e);
         }
     }
 }

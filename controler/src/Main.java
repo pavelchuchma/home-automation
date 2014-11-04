@@ -129,13 +129,6 @@ public class Main {
         lst.addActionBinding(new ActionBinding(chodbaDoldeSwA.getButton3(), new Action[]{onActionPradelna}, null));
         lst.addActionBinding(new ActionBinding(chodbaDoldeSwA.getButton4(), new Action[]{offActionPradelna}, null));
 
-        InputDevice pirA3Prizemi = new InputDevice("pirA3Prizemi", pirNodeA, 3);
-        lst.addActionBinding(new ActionBinding(pirA3Prizemi.getIn5AndActivate(), new Action[]{new SwitchOffSensorAction(svSpajza, 10)}, new Action[]{new SwitchOnSensorAction(svSpajza, 600)}));
-
-        InputDevice pirA1Prizemi = new InputDevice("pirA1Prizemi", pirNodeA, 1);
-        lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn1AndActivate(), new Action[]{new SwitchOffSensorAction(svPradelna, 10)}, new Action[]{new SwitchOnSensorAction(svPradelna, 600)}));
-        lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn2AndActivate(), new Action[]{new SwitchOffSensorAction(svPradelna, 10)}, new Action[]{new SwitchOnSensorAction(svPradelna, 600)}));
-
         // infrazaric v koupelne
         lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getButton1(), new Action[]{new SwitchOffAction(zaricKoupelnaHore2Trubice)}, null));
         lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getButton2(), new Action[]{new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900)}, null));
@@ -247,8 +240,8 @@ public class Main {
         PwmActor marekPwmActor = addLddLight(lightsActions, "Marek", lddDevice1.getLdd1(), 0.95, new SwitchIndicator(marekSwA1.getRedLed(), true));
         PwmActor pataPwmActor = addLddLight(lightsActions, "Paťa", lddDevice1.getLdd2(), 0.95);
         PwmActor krystofPwmActor = addLddLight(lightsActions, "Kryštof", lddDevice1.getLdd3(), 0.95, new SwitchIndicator(krystofSwA2.getRedLed(), true));
-        addLddLight(lightsActions, "Ldd4", lddDevice1.getLdd4(), 1.00);
-        addLddLight(lightsActions, "Ldd5", lddDevice1.getLdd5(), 1.00);
+        PwmActor zadveriPwmActor = addLddLight(lightsActions, "zadveri", lddDevice1.getLdd4(), 0.30); //0.48
+        PwmActor wcPwmActor = addLddLight(lightsActions, "WC patro", lddDevice1.getLdd5(), 0.24);
         addLddLight(lightsActions, "Ldd6", lddDevice1.getLdd6(), 1.00);
 
 
@@ -295,6 +288,21 @@ public class Main {
         configureLouvers(lst, false, vratniceSw1, zaluzieVratnice3Up, zaluzieVratnice3Down, 50);
         configureLouvers(lst, true, vratniceSw2, zaluzieVratnice2Up, zaluzieVratnice2Down, 40);
         configureLouvers(lst, false, vratniceSw2, zaluzieVratnice1Up, zaluzieVratnice1Down, 40);
+
+
+        // PIRs
+        InputDevice pirA1Prizemi = new InputDevice("pirA1Prizemi", pirNodeA, 1);
+        lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn1AndActivate(), new Action[]{new SwitchOffSensorAction(svPradelna, 10)}, new Action[]{new SwitchOnSensorAction(svPradelna, 600)}));
+        lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn2AndActivate(), new Action[]{new SwitchOffSensorAction(svPradelna, 10)}, new Action[]{new SwitchOnSensorAction(svPradelna, 600)}));
+
+        InputDevice pirA2Patro = new InputDevice("pirA2Patro", pirNodeA, 2);
+        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn5AndActivate(), new Action[]{new SwitchOffSensorAction(zadveriPwmActor, 15)}, new Action[]{new SwitchOnSensorAction(zadveriPwmActor, 600)}));
+        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn6AndActivate(), new Action[]{new SwitchOffSensorAction(zadveriPwmActor, 15)}, new Action[]{new SwitchOnSensorAction(zadveriPwmActor, 600)}));
+
+        InputDevice pirA3Prizemi = new InputDevice("pirA3Prizemi", pirNodeA, 3);
+        lst.addActionBinding(new ActionBinding(pirA3Prizemi.getIn5AndActivate(), new Action[]{new SwitchOffSensorAction(svSpajza, 10)}, new Action[]{new SwitchOnSensorAction(svSpajza, 600)}));
+
+
 
         Servlet.action1 = onActionKoupelna;
         Servlet.action2 = offActionKoupelna;
