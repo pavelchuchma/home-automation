@@ -28,7 +28,7 @@ public class SwitchOnSensorAction extends AbstractSensorAction {
     public void perform() {
         if (disabledBeforeSunRiseMinutes != NOT_SET) {
             GregorianCalendar now = new GregorianCalendar();
-            int minutesToday = now.get(Calendar.HOUR_OF_DAY * 60 + now.get(Calendar.MINUTE));
+            int minutesToday = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE);
             if (minutesToday > sunriseMinutes - disabledBeforeSunRiseMinutes && minutesToday < sunsetMinutes + enabledAfterSunsetMinutes) {
                 // sun should be shining enough :-)
                 log.info("Sun is shining instead of me. Ignoring switch on action!");
