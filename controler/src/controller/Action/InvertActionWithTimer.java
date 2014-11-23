@@ -4,7 +4,7 @@ import controller.actor.OnOffActor;
 
 public class InvertActionWithTimer extends AbstractSensorAction {
     public InvertActionWithTimer(OnOffActor actor, int switchOffTimer) {
-        super(actor, switchOffTimer, false);
+        super(actor, switchOffTimer, true);
     }
 
     @Override

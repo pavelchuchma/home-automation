@@ -1,7 +1,6 @@
 package controller.Action;
 
 import controller.actor.IOnOffActor;
-import controller.actor.OnOffActor;
 import org.apache.log4j.Logger;
 
 public class AbstractSensorAction extends AbstractAction {
@@ -17,12 +16,12 @@ public class AbstractSensorAction extends AbstractAction {
     }
 
     int timeout;
-    boolean switchOffOnly;
+    boolean canSwitchOn;
 
-    protected AbstractSensorAction(IOnOffActor actor, int timeout, boolean switchOffOnly) {
+    protected AbstractSensorAction(IOnOffActor actor, int timeout, boolean canSwitchOn) {
         super(actor);
         this.timeout = timeout * 1000;
-        this.switchOffOnly = switchOffOnly;
+        this.canSwitchOn = canSwitchOn;
     }
 
     private static boolean isSensorActionData(IOnOffActor act) {
@@ -51,8 +50,8 @@ public class AbstractSensorAction extends AbstractAction {
                     log.debug("switched on, but by different action type -> do not touch anything");
                     return;
                 }
-                if (switchOffOnly && !act.isOn()) {
-                    log.error("already switched off, nothing to do for switchOffOnly");
+                if (!act.isOn() && !canSwitchOn) {
+                    log.error("already switched off, nothing to do for canSwitchOn == false");
                     return;
                 }
 

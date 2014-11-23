@@ -87,6 +87,7 @@ public class Main {
         Node zaluzieA = nodeInfoCollector.createNode(13, "ZaluzieA");
         Node marek = nodeInfoCollector.createNode(14, "Marek");
         Node ldd1Actor = nodeInfoCollector.createNode(19, "LDD1-Actor");
+        Node testNode20 = nodeInfoCollector.createNode(20, "TestNode20");
 
         WallSwitch obyvakA1Sw = new WallSwitch("obyvakA1Sw", obyvakSpinacABC, 1);
         WallSwitch obyvakA2Sw = new WallSwitch("obyvakA2Sw", obyvakSpinacABC, 2);
@@ -244,6 +245,13 @@ public class Main {
         PwmActor wcPwmActor = addLddLight(lightsActions, "WC patro", lddDevice1.getLdd5(), 0.24);
         addLddLight(lightsActions, "Ldd6", lddDevice1.getLdd6(), 1.00);
 
+        LddBoardDevice lddDeviceTest = new LddBoardDevice("lddTestDevice1", testNode20, 2);
+        addLddLight(lightsActions, "Ldd-test1", lddDeviceTest.getLdd1(), 1.00);
+        addLddLight(lightsActions, "Ldd-test2", lddDeviceTest.getLdd2(), 1.00);
+        addLddLight(lightsActions, "Ldd-test3", lddDeviceTest.getLdd3(), 1.00);
+        addLddLight(lightsActions, "Ldd-test4", lddDeviceTest.getLdd4(), 1.00);
+        addLddLight(lightsActions, "Ldd-test5", lddDeviceTest.getLdd5(), 1.00);
+        addLddLight(lightsActions, "Ldd-test6", lddDeviceTest.getLdd6(), 1.00);
 
         Action[] louversInvertActions = new Action[louversActors.length];
         for (int i = 0; i < louversActors.length; i++) {
@@ -296,8 +304,9 @@ public class Main {
         lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn2AndActivate(), new Action[]{new SwitchOffSensorAction(svPradelna, 10)}, new Action[]{new SwitchOnSensorAction(svPradelna, 600)}));
 
         InputDevice pirA2Patro = new InputDevice("pirA2Patro", pirNodeA, 2);
-        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn5AndActivate(), new Action[]{new SwitchOffSensorAction(zadveriPwmActor, 15)}, new Action[]{new SwitchOnSensorAction(zadveriPwmActor, 600)}));
-        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn6AndActivate(), new Action[]{new SwitchOffSensorAction(zadveriPwmActor, 15)}, new Action[]{new SwitchOnSensorAction(zadveriPwmActor, 600)}));
+        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn3AndActivate(), new Action[]{new SwitchOffSensorAction(wcPwmActor, 60)}, new Action[]{new SwitchOnSensorAction(wcPwmActor, 600, 60, 60)}));
+        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn5AndActivate(), new Action[]{new SwitchOffSensorAction(zadveriPwmActor, 15)}, new Action[]{new SwitchOnSensorAction(zadveriPwmActor, 600, 60, 60)}));
+        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn6AndActivate(), new Action[]{new SwitchOffSensorAction(zadveriPwmActor, 15)}, new Action[]{new SwitchOnSensorAction(zadveriPwmActor, 600, 60, 60)}));
 
         InputDevice pirA3Prizemi = new InputDevice("pirA3Prizemi", pirNodeA, 3);
         lst.addActionBinding(new ActionBinding(pirA3Prizemi.getIn5AndActivate(), new Action[]{new SwitchOffSensorAction(svSpajza, 10)}, new Action[]{new SwitchOnSensorAction(svSpajza, 600)}));
@@ -313,7 +322,7 @@ public class Main {
         Servlet.louversActions = louversInvertActions;
 
         //test wall switch application
-        Node testNode20 = nodeInfoCollector.createNode(20, "TestNode20");
+        /*
         WallSwitch testSw = new WallSwitch("testSwA", testNode20, 1);
         TestingOnOffActor testingRightOnOffActor = new TestingOnOffActor("RightSwitchTestingActor", null, 0, 1, testSw.getRedLedIndicator(true));
         TestingOnOffActor testingLeftOnOffActor = new TestingOnOffActor("LeftSwitchTestingActor", null, 0, 1, testSw.getGreenLedIndicator(true));
@@ -321,7 +330,7 @@ public class Main {
         lst.addActionBinding(new ActionBinding(testSw.getButton2(), new Action[]{new SwitchOnAction(testingRightOnOffActor)}, null));
         lst.addActionBinding(new ActionBinding(testSw.getButton3(), new Action[]{new SwitchOnAction(testingLeftOnOffActor)}, null));
         lst.addActionBinding(new ActionBinding(testSw.getButton4(), new Action[]{new SwitchOffAction(testingLeftOnOffActor)}, null));
-
+          */
 
         Servlet.lightsActions = lightsActions.toArray(new Action[lightsActions.size()]);
 
