@@ -10,20 +10,20 @@ public class WallSwitch extends ConnectedDevice {
         super(id, node, connectorPosition, new String[]{"btn1", "btn2", "btn3", "btn4", "greenLed", "redLed"});
     }
 
-    public NodePin getButton1() {
-        return pins[0];
-    }
-
-    public NodePin getButton2() {
-        return pins[1];
-    }
-
-    public NodePin getButton3() {
+    public NodePin getLeftUpperButton() {
         return pins[2];
     }
 
-    public NodePin getButton4() {
+    public NodePin getLeftBottomButton() {
         return pins[3];
+    }
+
+    public NodePin getRightUpperButton() {
+        return pins[1];
+    }
+
+    public NodePin getRightBottomButton() {
+        return pins[0];
     }
 
     public NodePin getGreenLed() {
