@@ -22,6 +22,8 @@ public class SwitchOnSensorAction extends AbstractSensorAction {
 
     public SwitchOnSensorAction(IOnOffActor actor, int timeout, int disabledBeforeSunRiseMinutes, int enabledAfterSunsetMinutes) {
         super(actor, timeout, true);
+        this.disabledBeforeSunRiseMinutes = disabledBeforeSunRiseMinutes;
+        this.enabledAfterSunsetMinutes = enabledAfterSunsetMinutes;
     }
 
     @Override

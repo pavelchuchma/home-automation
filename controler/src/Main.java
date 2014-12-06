@@ -243,7 +243,7 @@ public class Main {
         PwmActor krystofPwmActor = addLddLight(lightsActions, "Kryštof", lddDevice1.getLdd3(), 0.95, new SwitchIndicator(krystofSwA2.getRedLed(), true));
         PwmActor zadveriPwmActor = addLddLight(lightsActions, "zadveri", lddDevice1.getLdd4(), 0.30); //0.48
         PwmActor wcPwmActor = addLddLight(lightsActions, "WC patro", lddDevice1.getLdd5(), 0.24);
-        addLddLight(lightsActions, "Ldd6", lddDevice1.getLdd6(), 1.00);
+        PwmActor satnaPwmActor = addLddLight(lightsActions, "Šatna", lddDevice1.getLdd6(), 0.30);//0.48
 
         LddBoardDevice lddDeviceTest = new LddBoardDevice("lddTestDevice1", testNode20, 2);
         addLddLight(lightsActions, "Ldd-test1", lddDeviceTest.getLdd1(), 1.00);
@@ -304,9 +304,10 @@ public class Main {
         lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn2AndActivate(), new Action[]{new SwitchOffSensorAction(svPradelna, 10)}, new Action[]{new SwitchOnSensorAction(svPradelna, 600)}));
 
         InputDevice pirA2Patro = new InputDevice("pirA2Patro", pirNodeA, 2);
-        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn3AndActivate(), new Action[]{new SwitchOffSensorAction(wcPwmActor, 60)}, new Action[]{new SwitchOnSensorAction(wcPwmActor, 600, 60, 60)}));
-        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn5AndActivate(), new Action[]{new SwitchOffSensorAction(zadveriPwmActor, 15)}, new Action[]{new SwitchOnSensorAction(zadveriPwmActor, 600, 60, 60)}));
-        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn6AndActivate(), new Action[]{new SwitchOffSensorAction(zadveriPwmActor, 15)}, new Action[]{new SwitchOnSensorAction(zadveriPwmActor, 600, 60, 60)}));
+        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn3AndActivate(), new Action[]{new SwitchOffSensorAction(wcPwmActor, 60)}, new Action[]{new SwitchOnSensorAction(wcPwmActor, 600, 0, -15)}));
+        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn5AndActivate(), new Action[]{new SwitchOffSensorAction(zadveriPwmActor, 15)}, new Action[]{new SwitchOnSensorAction(zadveriPwmActor, 600, 0, -15)}));
+        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn6AndActivate(), new Action[]{new SwitchOffSensorAction(zadveriPwmActor, 15)}, new Action[]{new SwitchOnSensorAction(zadveriPwmActor, 600, 0, -15)}));
+        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn4AndActivate(), new Action[]{new SwitchOffSensorAction(satnaPwmActor, 60)}, new Action[]{new SwitchOnSensorAction(satnaPwmActor, 600, 0, -15)}));
 
         InputDevice pirA3Prizemi = new InputDevice("pirA3Prizemi", pirNodeA, 3);
         lst.addActionBinding(new ActionBinding(pirA3Prizemi.getIn5AndActivate(), new Action[]{new SwitchOffSensorAction(svSpajza, 10)}, new Action[]{new SwitchOnSensorAction(svSpajza, 600)}));
