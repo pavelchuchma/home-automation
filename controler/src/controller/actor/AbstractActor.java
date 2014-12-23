@@ -37,7 +37,7 @@ public abstract class AbstractActor implements Actor {
      */
     protected boolean setPinValue(NodePin nodePin, int value, int retryCount) {
         if (value != 0 && value != 1) {
-            throw new IllegalArgumentException(String.format("Cannot set value %i to pin %s. Pin value can be 0 or 1 only.", value, nodePin));
+            throw new IllegalArgumentException(String.format("Cannot set value %d to pin %s. Pin value can be 0 or 1 only.", value, nodePin));
         }
 
         NodeInfoCollector nodeInfoCollector = NodeInfoCollector.getInstance();
@@ -94,7 +94,7 @@ public abstract class AbstractActor implements Actor {
      * @param invert     - used for blinking
      * @param actionData
      */
-    public synchronized void setIndicators(boolean invert, Object actionData) {
+    public synchronized void setIndicatorsAndActionData(boolean invert, Object actionData) {
         this.actionData = actionData;
         notifyAll();
 
@@ -116,5 +116,10 @@ public abstract class AbstractActor implements Actor {
             }
         }
         return val.toString();
+    }
+
+    @Override
+    public synchronized void removeActionData() {
+        actionData = null;
     }
 }

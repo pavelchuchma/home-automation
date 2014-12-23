@@ -7,5 +7,5 @@ public interface IOnOffActor extends Actor{
 
     boolean isOn();
 
-    void setIndicators(boolean invert, Object actionData);
+    void setIndicatorsAndActionData(boolean invert, Object actionData);
 }

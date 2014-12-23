@@ -72,7 +72,7 @@ public class AbstractSensorAction extends AbstractAction {
 
                 boolean invert = true;
                 while (System.currentTimeMillis() < endTime) {
-                    act.setIndicators(invert, aData);
+                    act.setIndicatorsAndActionData(invert, aData);
                     invert = !invert;
                     long remains = endTime - System.currentTimeMillis();
                     if (remains > 0) {

@@ -11,5 +11,7 @@ public interface Actor {
 
     Object getLastActionData();
 
+    public void removeActionData();
+
     int getValue();
 }

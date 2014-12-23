@@ -193,10 +193,10 @@ public class Servlet extends AbstractHandler {
         for (int i = 0; i < lightsActions.length; i += 4) {
             builder.append("<tr>");
             String fieldClass = "louvers";
-            int val = (int) (lightsActions[i].getActor().getValue() * 100.0 / PwmActor.MAX_PWM_VALUE);
+            PwmActor actor = (PwmActor) lightsActions[i].getActor();
             builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LIGHTS_ACTION, i, "On"));
             builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LIGHTS_ACTION, i + 1, "+"));
-            builder.append(String.format("<td class='%s'>%s %d%%", fieldClass, lightsActions[i].getActor().getId(), val));
+            builder.append(String.format("<td class='%s'>%s %d%% <div class='gray'>(%d/%d)</div>", fieldClass, lightsActions[i].getActor().getId(), actor.getValue(), actor.getPwmValue(), actor.getMaxPwmValue()));
             builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LIGHTS_ACTION, i + 2, "-"));
             builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LIGHTS_ACTION, i + 3, "Off"));
         }

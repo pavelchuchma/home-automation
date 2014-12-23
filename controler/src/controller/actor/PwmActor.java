@@ -16,6 +16,7 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
     static Logger log = Logger.getLogger(PwmActor.class.getName());
 
     int maxPwmValue;
+    int pwmValue = 0;
 
 
     public PwmActor(String id, NodePin output, double maxLoad, Indicator... indicators) {
@@ -28,44 +29,53 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
     }
 
     @Override
-    public synchronized boolean setValue(int val, Object actionData) {
-        validateValue(val);
-        val = min(val, maxPwmValue);
+    public synchronized boolean setValue(int pwmPercent, Object actionData) {
+        validatePercentageValue(pwmPercent);
+        int newPwmValue = (int) (pwmPercent * .01 * maxPwmValue);
+        if (pwmPercent > 0 && newPwmValue == 0) {
+            // nonzero percent -> set pwm at least to 1
+            newPwmValue = 1;
+        }
 
         this.actionData = actionData;
         notifyAll();
 
-        if (setPwmValue(output, val, RETRY_COUNT)) {
-            value = val;
-            setIndicators(true, actionData);
+        if (setPwmValue(output, newPwmValue, RETRY_COUNT)) {
+            value = pwmPercent;
+            setIndicatorsAndActionData(true, actionData);
             return true;
         }
         return false;
     }
 
-    private static void validateValue(int val) {
-        if (val < 0 || val > MAX_PWM_VALUE) {
+    private void validatePwmValue(int val) {
+        if (val < 0 || val > maxPwmValue) {
             throw new IllegalArgumentException("Invalid PWM value: " + val);
         }
     }
 
+    private static void validatePercentageValue(int val) {
+        if (val < 0 || val > 100) {
+            throw new IllegalArgumentException("Invalid PWM percentage value: " + val + "%");
+        }
+    }
     public boolean isOn() {
         return value != 0;
     }
 
-    public boolean increasePwm(int step) {
-        int val = min(value + step, maxPwmValue);
-        return setValue(val, null);
+    public boolean increasePwm(int step, Object actionData) {
+        int val = min(value + step, 100);
+        return setValue(val, actionData);
     }
 
-    public boolean decreasePwm(int step) {
+    public boolean decreasePwm(int step, Object actionData) {
         int val = max(value - step, 0);
-        return setValue(val, null);
+        return setValue(val, actionData);
     }
 
     @Override
     public boolean switchOn(Object actionData) {
-        return setValue(MAX_PWM_VALUE, actionData);
+        return setValue(100, actionData);
     }
 
     @Override
@@ -73,8 +83,8 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
         return setValue(0, actionData);
     }
 
-    private static boolean setPwmValue(NodePin nodePin, int value, int retryCount) {
-        validateValue(value);
+    private boolean setPwmValue(NodePin nodePin, int value, int retryCount) {
+        validatePwmValue(value);
 
         NodeInfoCollector nodeInfoCollector = NodeInfoCollector.getInstance();
         Node node = nodeInfoCollector.getNode(nodePin.getNodeId());
@@ -86,6 +96,7 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
             try {
                 log.debug(String.format("Setting pwm %s to: %d", nodePin, value));
                 Packet response = node.setManualPwmValue(nodePin.getPin(), value);
+
                 if (response == null) {
                     throw new IOException("No response.");
                 }
@@ -97,6 +108,7 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
                     throw new IOException(String.format("Unexpected response code (%d): %s", response.data[0], response.toString()));
                 }
 
+                pwmValue = value;
                 log.info(String.format("PWM of %s set to: %d", nodePin, value));
                 return true;
 
@@ -105,5 +117,13 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
             }
         }
         return false;
+    }
+
+    public int getMaxPwmValue() {
+        return maxPwmValue;
+    }
+
+    public int getPwmValue() {
+        return pwmValue;
     }
 }

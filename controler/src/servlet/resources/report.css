@@ -25,6 +25,13 @@ div.sentMessage
     color: blue;
 }
 
+div.gray
+{
+    color: gray;
+    font-size: .5em;
+    display:inline;
+}
+
 table.buttonTable
 {
     border:2px solid black;

@@ -35,7 +35,7 @@ public class OnOffActor extends AbstractActor implements IOnOffActor {
 
         if (setPinValue(output, val, RETRY_COUNT)) {
             value = val;
-            setIndicators(false, actionData);
+            setIndicatorsAndActionData(false, actionData);
             return true;
         }
         return false;
