@@ -9,6 +9,7 @@ import packet.Packet;
 import java.io.IOException;
 
 public abstract class AbstractActor implements Actor {
+    protected static final int RETRY_COUNT = 5;
     static Logger log = Logger.getLogger(AbstractActor.class.getName());
 
     String id;
@@ -16,10 +17,15 @@ public abstract class AbstractActor implements Actor {
     int initValue;
     Object actionData;
 
-    public AbstractActor(String id, NodePin output, int initValue) {
+    int value;
+    private Indicator[] indicators;
+
+    public AbstractActor(String id, NodePin output, int initValue, Indicator... indicators) {
         this.id = id;
         this.output = output;
         this.initValue = initValue;
+        this.value = initValue;
+        this.indicators = indicators;
     }
 
     /**
@@ -30,6 +36,10 @@ public abstract class AbstractActor implements Actor {
      * @return true if pin was set
      */
     protected boolean setPinValue(NodePin nodePin, int value, int retryCount) {
+        if (value != 0 && value != 1) {
+            throw new IllegalArgumentException(String.format("Cannot set value %i to pin %s. Pin value can be 0 or 1 only.", value, nodePin));
+        }
+
         NodeInfoCollector nodeInfoCollector = NodeInfoCollector.getInstance();
         Node node = nodeInfoCollector.getNode(nodePin.getNodeId());
         if (node == null) {
@@ -73,5 +83,38 @@ public abstract class AbstractActor implements Actor {
 
     public int getInitValue() {
         return initValue;
+    }
+
+    @Override
+    public int getValue() {
+        return value;
+    }
+
+    /**
+     * @param invert     - used for blinking
+     * @param actionData
+     */
+    public synchronized void setIndicators(boolean invert, Object actionData) {
+        this.actionData = actionData;
+        notifyAll();
+
+        if (indicators != null) {
+            for (Indicator i : indicators) {
+                int indVal = ((i.IsInverted() ^ invert) ^ value > 0) ? 1 : 0;
+                setPinValue(i.getPin(), indVal, RETRY_COUNT);
+            }
+        }
+    }
+
+    public String toString() {
+        StringBuilder val = new StringBuilder(String.format("%s(%s) %s", getClass().getSimpleName(), id, output));
+        if (indicators != null) {
+            val.append(", indicators: ");
+            for (Indicator i : indicators) {
+                val.append(i.getPin());
+                val.append(", ");
+            }
+        }
+        return val.toString();
     }
 }

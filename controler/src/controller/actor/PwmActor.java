@@ -15,50 +15,16 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
     public static final int MAX_PWM_VALUE = 48;
     static Logger log = Logger.getLogger(PwmActor.class.getName());
 
-    int value;
     int maxPwmValue;
-    Indicator[] indicators;
-    private int retryCount = 5;
 
 
     public PwmActor(String id, NodePin output, double maxLoad, Indicator... indicators) {
-        super(id, output, 0);
+        super(id, output, 0, indicators);
         if (maxLoad < 0 || maxLoad > 1) {
             throw new IllegalArgumentException("Invalid maxLoad value: " + maxLoad);
         }
 
         this.maxPwmValue = (int) (MAX_PWM_VALUE * maxLoad);
-        this.value = 0;
-        this.indicators = indicators;
-    }
-
-    public String toString() {
-        StringBuilder val = new StringBuilder(String.format("OnOffActor(%s) %s", id, output));
-        if (indicators != null) {
-            val.append(", indicators: ");
-            for (Indicator i : indicators) {
-                val.append(i.getPin());
-                val.append(", ");
-            }
-        }
-        return val.toString();
-    }
-
-    @Override
-    public int getValue() {
-        return value;
-    }
-
-    public synchronized void setIndicators(boolean invert, Object actionData) {
-        this.actionData = actionData;
-        notifyAll();
-
-        if (indicators != null) {
-            for (Indicator i : indicators) {
-                int indVal = (i.IsInverted() ^ invert) ? (value ^ 1) & 1 : value;
-                setPinValue(i.getPin(), indVal, retryCount);
-            }
-        }
     }
 
     @Override
@@ -69,7 +35,7 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
         this.actionData = actionData;
         notifyAll();
 
-        if (setPwmValue(output, val, retryCount)) {
+        if (setPwmValue(output, val, RETRY_COUNT)) {
             value = val;
             setIndicators(true, actionData);
             return true;
