@@ -299,10 +299,8 @@ public class Main {
         configureLouvers(lst, WallSwitch.Side.RIGHT, chodbaA1Sw, zaluzieSatnaUp, zaluzieSatnaDown, 50);
 
         // zadveri
-        lst.addActionBinding(new ActionBinding(zadveriSwA1.getLeftUpperButton(), new Action[]{new IncreasePwmAction(zadveriPwmActor)}, null));
-        lst.addActionBinding(new ActionBinding(zadveriSwA1.getLeftBottomButton(), new Action[]{new DecreasePwmAction(zadveriPwmActor)}, null));
-        lst.addActionBinding(new ActionBinding(zadveriSwA1.getRightUpperButton(), new Action[]{new IncreasePwmAction(zadveriPwmActor)}, null));
-        lst.addActionBinding(new ActionBinding(zadveriSwA1.getRightBottomButton(), new Action[]{new DecreasePwmAction(zadveriPwmActor)}, null));
+        configurePwmLights(lst, zadveriSwA1, WallSwitch.Side.LEFT, 80, zadveriPwmActor);
+        configurePwmLights(lst, zadveriSwA1, WallSwitch.Side.RIGHT, 80, zadveriPwmActor);
 
         // Krystof + Pata
         configureLouvers(lst, WallSwitch.Side.LEFT, krystofSwA1, zaluziePataUp, zaluziePataDown, 50);
@@ -332,8 +330,6 @@ public class Main {
         configureLouvers(lst, WallSwitch.Side.RIGHT, vratniceSw1, zaluzieVratnice3Up, zaluzieVratnice3Down, 50);
         configureLouvers(lst, WallSwitch.Side.LEFT, vratniceSw2, zaluzieVratnice2Up, zaluzieVratnice2Down, 40);
         configureLouvers(lst, WallSwitch.Side.RIGHT, vratniceSw2, zaluzieVratnice1Up, zaluzieVratnice1Down, 40);
-//        lst.addActionBinding(new ActionBinding(vratniceSw1.getLeftUpperButton(), new Action[]{new IncreasePwmAction(vratnice1PwmActor), new IncreasePwmAction(vratnice2PwmActor)}, null));
-//        lst.addActionBinding(new ActionBinding(vratniceSw1.getLeftBottomButton(), new Action[]{new DecreasePwmAction(vratnice1PwmActor), new DecreasePwmAction(vratnice2PwmActor)}, null));
         configurePwmLights(lst, vratniceSw1, WallSwitch.Side.LEFT, 40, vratnice1PwmActor, vratnice2PwmActor);
 
         // PIRs
