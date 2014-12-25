@@ -71,7 +71,7 @@ public class Servlet extends AbstractHandler {
         } else if (target.startsWith(TARGET_LOUVERS)) {
             int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LOUVERS_ACTION);
             if (actionIndex != -1) {
-                louversActions[actionIndex].perform();
+                louversActions[actionIndex].perform(-1);
             }
 
             response.setContentType("text/html;charset=utf-8");
@@ -82,7 +82,7 @@ public class Servlet extends AbstractHandler {
         } else if (target.startsWith(TARGET_LIGHTS)) {
             int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LIGHTS_ACTION);
             if (actionIndex != -1) {
-                lightsActions[actionIndex].perform();
+                lightsActions[actionIndex].perform(-1);
             }
 
             response.setContentType("text/html;charset=utf-8");
@@ -145,19 +145,19 @@ public class Servlet extends AbstractHandler {
 
     private void processAction(String action) {
         if (action.startsWith("/a1") && action1 != null) {
-            action1.perform();
+            action1.perform(-1);
         }
         if (action.startsWith("/a2") && action2 != null) {
-            action2.perform();
+            action2.perform(-1);
         }
         if (action.startsWith("/a3") && action3 != null) {
-            action3.perform();
+            action3.perform(-1);
         }
         if (action.startsWith("/a4") && action4 != null) {
-            action4.perform();
+            action4.perform(-1);
         }
         if (action.startsWith("/a5") && action5 != null) {
-            action5.perform();
+            action5.perform(-1);
         }
     }
 

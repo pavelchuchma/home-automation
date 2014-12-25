@@ -121,5 +121,6 @@ public abstract class AbstractActor implements Actor {
     @Override
     public synchronized void removeActionData() {
         actionData = null;
+        notifyAll();
     }
 }

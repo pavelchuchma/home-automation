@@ -8,7 +8,7 @@ public class IncreasePwmAction extends AbstractAction {
     }
 
     @Override
-    public void perform() {
+    public void perform(int previousDurationMs) {
         PwmActor actor = (PwmActor) getActor();
         int value = actor.getValue();
 

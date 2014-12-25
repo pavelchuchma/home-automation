@@ -20,7 +20,10 @@ public class SwitchListener extends AbstractNodeListener {
 
     public void addActionBinding(ActionBinding sw) {
         String key = createNodePinKey(sw.getTrigger().getNodeId(), sw.getTrigger().getPin());
-        switchMap.put(key, sw);
+        ActionBinding existingMapping = switchMap.put(key, sw);
+        if (existingMapping != null) {
+            throw new IllegalArgumentException("Node #" + sw.getTrigger().getNodeId() + ":" + sw.getTrigger().getPin().name() + " already bound");
+        }
         log.info(String.format("ActionBinding '%s' added", sw));
         if (sw.getButtonDownActions() != null) {
             log.info(" buttonDown");
@@ -38,24 +41,29 @@ public class SwitchListener extends AbstractNodeListener {
 
     @Override
     public void onButtonDown(Node node, Pin pin, int upTime) {
-        onButtonEvent(node, pin, true);
+        onButtonEvent(node, pin, true, upTime);
     }
 
     @Override
     public void onButtonUp(Node node, Pin pin, int downTime) {
-        onButtonEvent(node, pin, false);
+        onButtonEvent(node, pin, false, downTime);
     }
 
-    private void onButtonEvent(Node node, Pin pin, boolean buttonDown) {
+    private void onButtonEvent(Node node, Pin pin, boolean buttonDown, final int previousDurationMs) {
         String swKey = createNodePinKey(node.getNodeId(), pin);
         ActionBinding sw = switchMap.get(swKey);
         if (sw != null) {
             log.debug(String.format("Executing ActionBinding: %s", sw));
             Action[] actions = (buttonDown) ? sw.getButtonDownActions() : sw.getButtonUpActions();
             if (actions != null) {
-                for (Action a : actions) {
+                for (final Action a : actions) {
                     log.debug(String.format("-> action: %s", a.getActor().getId()));
-                    a.perform();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            a.perform(previousDurationMs);
+                        }
+                    }).start();
                 }
             }
         }

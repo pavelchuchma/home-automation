@@ -27,7 +27,7 @@ public class SwitchOnSensorAction extends AbstractSensorAction {
     }
 
     @Override
-    public void perform() {
+    public void perform(int previousDurationMs) {
         if (disabledBeforeSunRiseMinutes != NOT_SET) {
             GregorianCalendar now = new GregorianCalendar();
             int minutesToday = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE);
@@ -37,6 +37,6 @@ public class SwitchOnSensorAction extends AbstractSensorAction {
                 return;
             }
         }
-        super.perform();
+        super.perform(previousDurationMs);
     }
 }

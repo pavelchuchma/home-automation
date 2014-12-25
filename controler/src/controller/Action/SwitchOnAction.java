@@ -8,7 +8,7 @@ public class SwitchOnAction extends AbstractAction {
     }
 
     @Override
-    public void perform() {
+    public void perform(int previousDurationMs) {
         ((IOnOffActor) getActor()).switchOn(null);
     }
 }

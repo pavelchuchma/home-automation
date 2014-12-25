@@ -8,7 +8,7 @@ public class DecreasePwmAction extends AbstractAction {
     }
 
     @Override
-    public void perform() {
+    public void perform(int previousDurationMs) {
         int value = actor.getValue();
         int step;
         if (value == 0) {

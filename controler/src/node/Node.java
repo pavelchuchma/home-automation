@@ -241,7 +241,10 @@ public class Node implements PacketUartIO.PacketReceivedListener {
                     Pin pin = Pin.get(port, i);
 
                     // compute downTime (-1 for first case)
-                    long downTime = (downTimes[pin.ordinal()] > 0) ? new Date().getTime() - downTimes[pin.ordinal()] : -1;
+                    long now = new Date().getTime();
+                    long downTime = (downTimes[pin.ordinal()] > 0) ? now - downTimes[pin.ordinal()] : -1;
+                    downTimes[pin.ordinal()] = now;
+
                     if ((pinMask & eventValue) != 0) {
                         //button UP
                         log.info("button '" + pin + "' UP (" + downTime + "ms)");
@@ -255,7 +258,6 @@ public class Node implements PacketUartIO.PacketReceivedListener {
                             listener.onButtonDown(this, pin, (int) downTime);
                         }
                     }
-                    downTimes[pin.ordinal()] = new Date().getTime();
                 }
             }
             // on reboot

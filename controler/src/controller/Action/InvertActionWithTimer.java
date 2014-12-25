@@ -8,14 +8,14 @@ public class InvertActionWithTimer extends AbstractSensorAction {
     }
 
     @Override
-    public void perform() {
+    public void perform(int previousDurationMs) {
         OnOffActor act = (OnOffActor) actor;
         if (act.isOn()) {
             // is on -> switch off
             act.switchOff(null);
         } else {
             // is off -> switch on with timer
-            super.perform();
+            super.perform(previousDurationMs);
         }
     }
 }

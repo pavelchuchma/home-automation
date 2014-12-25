@@ -30,7 +30,7 @@ public class AbstractSensorAction extends AbstractAction {
     }
 
     @Override
-    public void perform() {
+    public void perform(int previousDurationMs) {
         // run body in extra thread because it can be blocking
         new Thread(new Runnable() {
             @Override

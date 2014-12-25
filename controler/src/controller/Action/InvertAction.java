@@ -8,7 +8,7 @@ public class InvertAction extends AbstractAction {
     }
 
     @Override
-    public void perform() {
+    public void perform(int previousDurationMs) {
         getActor().setValue((actor.getValue() ^ 1) & 1, null);
     }
 }

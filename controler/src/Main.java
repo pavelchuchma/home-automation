@@ -5,6 +5,7 @@ import controller.Action.DecreasePwmAction;
 import controller.Action.IncreasePwmAction;
 import controller.Action.InvertAction;
 import controller.Action.InvertActionWithTimer;
+import controller.Action.PwmActionGroup;
 import controller.Action.SwitchOffAction;
 import controller.Action.SwitchOffSensorAction;
 import controller.Action.SwitchOnAction;
@@ -65,9 +66,11 @@ public class Main {
             System.exit(1);
         } catch (InterruptedException e) {
             log.error("Initialization failed", e);
+            e.printStackTrace();
             System.exit(2);
         } catch (Exception e) {
             log.error("Initialization failed", e);
+            e.printStackTrace();
             System.exit(3);
         }
     }
@@ -292,8 +295,8 @@ public class Main {
 
         // chodba
         // svetla satna
-        lst.addActionBinding(new ActionBinding(chodbaA1Sw.getLeftUpperButton(), new Action[]{new IncreasePwmAction(satnaPwmActor)}, null));
-        lst.addActionBinding(new ActionBinding(chodbaA1Sw.getLeftBottomButton(), new Action[]{new DecreasePwmAction(satnaPwmActor)}, null));
+        configurePwmLights(lst, chodbaA1Sw, WallSwitch.Side.LEFT, 80, satnaPwmActor);
+        configureLouvers(lst, WallSwitch.Side.RIGHT, chodbaA1Sw, zaluzieSatnaUp, zaluzieSatnaDown, 50);
 
         // zadveri
         lst.addActionBinding(new ActionBinding(zadveriSwA1.getLeftUpperButton(), new Action[]{new IncreasePwmAction(zadveriPwmActor)}, null));
@@ -301,27 +304,18 @@ public class Main {
         lst.addActionBinding(new ActionBinding(zadveriSwA1.getRightUpperButton(), new Action[]{new IncreasePwmAction(zadveriPwmActor)}, null));
         lst.addActionBinding(new ActionBinding(zadveriSwA1.getRightBottomButton(), new Action[]{new DecreasePwmAction(zadveriPwmActor)}, null));
 
-        // koupelna
-        configureLouvers(lst, WallSwitch.Side.LEFT, koupelnaHoreSw1, zaluzieKoupelnaUp, zaluzieKoupelnaDown, 50);
-
         // Krystof + Pata
         configureLouvers(lst, WallSwitch.Side.LEFT, krystofSwA1, zaluziePataUp, zaluziePataDown, 50);
         configureLouvers(lst, WallSwitch.Side.RIGHT, krystofSwA1, zaluzieKrystofUp, zaluzieKrystofDown, 50);
-        lst.addActionBinding(new ActionBinding(krystofSwA2.getLeftUpperButton(), new Action[]{new IncreasePwmAction(pataPwmActor)}, null));
-        lst.addActionBinding(new ActionBinding(krystofSwA2.getLeftBottomButton(), new Action[]{new DecreasePwmAction(pataPwmActor)}, null));
-        lst.addActionBinding(new ActionBinding(krystofSwA2.getRightUpperButton(), new Action[]{new IncreasePwmAction(krystofPwmActor)}, null));
-        lst.addActionBinding(new ActionBinding(krystofSwA2.getRightBottomButton(), new Action[]{new DecreasePwmAction(krystofPwmActor)}, null));
+        configurePwmLights(lst, krystofSwA2, WallSwitch.Side.LEFT, 60, pataPwmActor);
+        configurePwmLights(lst, krystofSwA2, WallSwitch.Side.RIGHT, 60, krystofPwmActor);
 
         // Marek
         configureLouvers(lst, WallSwitch.Side.LEFT, marekSwA1, zaluzieMarekUp, zaluzieMarekDown, 50);
-        lst.addActionBinding(new ActionBinding(marekSwA1.getRightUpperButton(), new Action[]{new IncreasePwmAction(marekPwmActor)}, null));
-        lst.addActionBinding(new ActionBinding(marekSwA1.getRightBottomButton(), new Action[]{new DecreasePwmAction(marekPwmActor)}, null));
+        configurePwmLights(lst, marekSwA1, WallSwitch.Side.RIGHT, 60, marekPwmActor);
         configureLouvers(lst, WallSwitch.Side.LEFT, marekPostelSw3, zaluzieMarekUp, zaluzieMarekDown, 50);
-        lst.addActionBinding(new ActionBinding(marekPostelSw3.getRightUpperButton(), new Action[]{new IncreasePwmAction(marekPwmActor)}, null));
-        lst.addActionBinding(new ActionBinding(marekPostelSw3.getRightBottomButton(), new Action[]{new DecreasePwmAction(marekPwmActor)}, null));
+        configurePwmLights(lst, marekPostelSw3, WallSwitch.Side.RIGHT, 60, marekPwmActor);
 
-        // satna
-        configureLouvers(lst, WallSwitch.Side.RIGHT, chodbaA1Sw, zaluzieSatnaUp, zaluzieSatnaDown, 50);
 
         // chodba
         configureLouvers(lst, WallSwitch.Side.LEFT, chodbaA2Sw, zaluzieChodba1Up, zaluzieChodba1Down, 50);
@@ -332,13 +326,15 @@ public class Main {
         configureLouvers(lst, WallSwitch.Side.RIGHT, lozniceOknoSw1, zaluzieLoznice2Up, zaluzieLoznice2Down, 40);
         configureLouvers(lst, WallSwitch.Side.LEFT, lozniceDvereSw1, zaluzieLoznice1Up, zaluzieLoznice1Down, 40);
         configureLouvers(lst, WallSwitch.Side.RIGHT, lozniceDvereSw1, zaluzieLoznice2Up, zaluzieLoznice2Down, 40);
+        configurePwmLights(lst, lozniceDvereSw2, WallSwitch.Side.RIGHT, 80, satnaPwmActor);
 
         // vratnice
         configureLouvers(lst, WallSwitch.Side.RIGHT, vratniceSw1, zaluzieVratnice3Up, zaluzieVratnice3Down, 50);
         configureLouvers(lst, WallSwitch.Side.LEFT, vratniceSw2, zaluzieVratnice2Up, zaluzieVratnice2Down, 40);
         configureLouvers(lst, WallSwitch.Side.RIGHT, vratniceSw2, zaluzieVratnice1Up, zaluzieVratnice1Down, 40);
-        lst.addActionBinding(new ActionBinding(vratniceSw1.getLeftUpperButton(), new Action[]{new IncreasePwmAction(vratnice1PwmActor), new IncreasePwmAction(vratnice2PwmActor)}, null));
-        lst.addActionBinding(new ActionBinding(vratniceSw1.getLeftBottomButton(), new Action[]{new DecreasePwmAction(vratnice1PwmActor), new DecreasePwmAction(vratnice2PwmActor)}, null));
+//        lst.addActionBinding(new ActionBinding(vratniceSw1.getLeftUpperButton(), new Action[]{new IncreasePwmAction(vratnice1PwmActor), new IncreasePwmAction(vratnice2PwmActor)}, null));
+//        lst.addActionBinding(new ActionBinding(vratniceSw1.getLeftBottomButton(), new Action[]{new DecreasePwmAction(vratnice1PwmActor), new DecreasePwmAction(vratnice2PwmActor)}, null));
+        configurePwmLights(lst, vratniceSw1, WallSwitch.Side.LEFT, 40, vratnice1PwmActor, vratnice2PwmActor);
 
         // PIRs
         InputDevice pirA1Prizemi = new InputDevice("pirA1Prizemi", pirNodeA, 1);
@@ -380,6 +376,22 @@ public class Main {
 
     }
 
+    private static void configurePwmLights(SwitchListener lst, WallSwitch wallSwitch, WallSwitch.Side side, int initialPwmValue, PwmActor... pwmActors) {
+        Action[][] actions = new Action[4][pwmActors.length];
+        for (int i = 0; i < pwmActors.length; i++) {
+            PwmActionGroup actionGroup = new PwmActionGroup(pwmActors[i], initialPwmValue);
+            actions[0][i] = actionGroup.getUpButtonDownAction();
+            actions[1][i] = actionGroup.getUpButtonUpAction();
+            actions[2][i] = actionGroup.getDownButtonDownAction();
+            actions[3][i] = actionGroup.getDownButtonUpAction();
+
+        }
+        NodePin upperButton = getUpperButton(wallSwitch, side);
+        NodePin bottomButton = getBottomButton(wallSwitch, side);
+        lst.addActionBinding(new ActionBinding(upperButton, actions[0], actions[1]));
+        lst.addActionBinding(new ActionBinding(bottomButton, actions[2], actions[3]));
+    }
+
     static PwmActor addLddLight(ArrayList<Action> lightsActions, String name, LddBoardDevice.LddNodePin pin, double maxLoad, Indicator... indicators) {
         PwmActor pwmActor = new PwmActor(name, pin, maxLoad / pin.getMaxLddCurrent(), indicators);
         lightsActions.add(new SwitchOnAction(pwmActor));
@@ -390,16 +402,24 @@ public class Main {
     }
 
     static void configureLouvers(SwitchListener lst, WallSwitch.Side side, WallSwitch wallSwitch, OnOffActor louversUp, OnOffActor louversDown, int duration) {
-        NodePin upTrigger = (side == WallSwitch.Side.LEFT) ? wallSwitch.getLeftUpperButton() : wallSwitch.getRightUpperButton();
-        NodePin downTrigger = (side == WallSwitch.Side.LEFT) ? wallSwitch.getLeftBottomButton() : wallSwitch.getRightBottomButton();
+        NodePin upTrigger = getUpperButton(wallSwitch, side);
+        NodePin downTrigger = getBottomButton(wallSwitch, side);
 
         lst.addActionBinding(new ActionBinding(upTrigger, new Action[]{new InvertActionWithTimer(louversUp, duration)}, null));
         lst.addActionBinding(new ActionBinding(downTrigger, new Action[]{new InvertActionWithTimer(louversDown, duration)}, null));
     }
 
+    private static NodePin getBottomButton(WallSwitch wallSwitch, WallSwitch.Side side) {
+        return (side == WallSwitch.Side.LEFT) ? wallSwitch.getLeftBottomButton() : wallSwitch.getRightBottomButton();
+    }
+
+    private static NodePin getUpperButton(WallSwitch wallSwitch, WallSwitch.Side side) {
+        return (side == WallSwitch.Side.LEFT) ? wallSwitch.getLeftUpperButton() : wallSwitch.getRightUpperButton();
+    }
+
     static void configureLouvers(SwitchListener lst, WallSwitch.Side side, WallSwitch wallSwitch, OnOffActor louvers1Up, OnOffActor louvers1Down, OnOffActor louvers2Up, OnOffActor louvers2Down, int duration) {
-        NodePin upTrigger = (side == WallSwitch.Side.LEFT) ? wallSwitch.getLeftUpperButton() : wallSwitch.getRightUpperButton();
-        NodePin downTrigger = (side == WallSwitch.Side.LEFT) ? wallSwitch.getLeftBottomButton() : wallSwitch.getRightBottomButton();
+        NodePin upTrigger = getUpperButton(wallSwitch, side);
+        NodePin downTrigger = getBottomButton(wallSwitch, side);
 
         lst.addActionBinding(new ActionBinding(upTrigger,
                 new Action[]{

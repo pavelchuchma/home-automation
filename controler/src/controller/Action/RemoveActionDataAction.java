@@ -8,7 +8,7 @@ public class RemoveActionDataAction extends AbstractAction {
     }
 
     @Override
-    public void perform() {
+    public void perform(int previousDurationMs) {
         getActor().removeActionData();
     }
 }
