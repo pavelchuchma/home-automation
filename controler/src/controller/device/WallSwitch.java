@@ -6,6 +6,11 @@ import node.NodePin;
 import node.Pin;
 
 public class WallSwitch extends ConnectedDevice {
+    public enum Side {
+        LEFT,
+        RIGHT
+    }
+
     public WallSwitch(String id, Node node, int connectorPosition) {
         super(id, node, connectorPosition, new String[]{"btn1", "btn2", "btn3", "btn4", "greenLed", "redLed"});
     }

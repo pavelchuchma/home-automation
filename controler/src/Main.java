@@ -280,14 +280,14 @@ public class Main {
         }
 
         // koupelna
-        configureLouvers(lst, true, koupelnaHoreSw1, zaluzieKoupelnaUp, zaluzieKoupelnaDown, 50);
+        configureLouvers(lst, WallSwitch.Side.LEFT, koupelnaHoreSw1, zaluzieKoupelnaUp, zaluzieKoupelnaDown, 50);
 
         // kuchyn + obyvak
-        configureLouvers(lst, true, obyvakA1Sw, zaluzieKuchynUp, zaluzieKuchynDown, 70);
-        configureLouvers(lst, false, obyvakA1Sw, zaluzieObyvak1Up, zaluzieObyvak1Down, 70);
-        configureLouvers(lst, true, obyvakA2Sw, zaluzieObyvak2Up, zaluzieObyvak2Down, zaluzieObyvak3Up, zaluzieObyvak3Down, 70);
-        configureLouvers(lst, false, obyvakA2Sw, zaluzieObyvak4Up, zaluzieObyvak4Down, 70);
-        configureLouvers(lst, true, obyvakA3Sw, zaluzieObyvak5Up, zaluzieObyvak5Down, zaluzieObyvak6Up, zaluzieObyvak6Down, 70);
+        configureLouvers(lst, WallSwitch.Side.LEFT, obyvakA1Sw, zaluzieKuchynUp, zaluzieKuchynDown, 70);
+        configureLouvers(lst, WallSwitch.Side.RIGHT, obyvakA1Sw, zaluzieObyvak1Up, zaluzieObyvak1Down, 70);
+        configureLouvers(lst, WallSwitch.Side.LEFT, obyvakA2Sw, zaluzieObyvak2Up, zaluzieObyvak2Down, zaluzieObyvak3Up, zaluzieObyvak3Down, 70);
+        configureLouvers(lst, WallSwitch.Side.RIGHT, obyvakA2Sw, zaluzieObyvak4Up, zaluzieObyvak4Down, 70);
+        configureLouvers(lst, WallSwitch.Side.LEFT, obyvakA3Sw, zaluzieObyvak5Up, zaluzieObyvak5Down, zaluzieObyvak6Up, zaluzieObyvak6Down, 70);
 
 
         // chodba
@@ -302,41 +302,41 @@ public class Main {
         lst.addActionBinding(new ActionBinding(zadveriSwA1.getRightBottomButton(), new Action[]{new DecreasePwmAction(zadveriPwmActor)}, null));
 
         // koupelna
-        configureLouvers(lst, true, koupelnaHoreSw1, zaluzieKoupelnaUp, zaluzieKoupelnaDown, 50);
+        configureLouvers(lst, WallSwitch.Side.LEFT, koupelnaHoreSw1, zaluzieKoupelnaUp, zaluzieKoupelnaDown, 50);
 
         // Krystof + Pata
-        configureLouvers(lst, true, krystofSwA1, zaluziePataUp, zaluziePataDown, 50);
-        configureLouvers(lst, false, krystofSwA1, zaluzieKrystofUp, zaluzieKrystofDown, 50);
+        configureLouvers(lst, WallSwitch.Side.LEFT, krystofSwA1, zaluziePataUp, zaluziePataDown, 50);
+        configureLouvers(lst, WallSwitch.Side.RIGHT, krystofSwA1, zaluzieKrystofUp, zaluzieKrystofDown, 50);
         lst.addActionBinding(new ActionBinding(krystofSwA2.getLeftUpperButton(), new Action[]{new IncreasePwmAction(pataPwmActor)}, null));
         lst.addActionBinding(new ActionBinding(krystofSwA2.getLeftBottomButton(), new Action[]{new DecreasePwmAction(pataPwmActor)}, null));
         lst.addActionBinding(new ActionBinding(krystofSwA2.getRightUpperButton(), new Action[]{new IncreasePwmAction(krystofPwmActor)}, null));
         lst.addActionBinding(new ActionBinding(krystofSwA2.getRightBottomButton(), new Action[]{new DecreasePwmAction(krystofPwmActor)}, null));
 
         // Marek
-        configureLouvers(lst, true, marekSwA1, zaluzieMarekUp, zaluzieMarekDown, 50);
+        configureLouvers(lst, WallSwitch.Side.LEFT, marekSwA1, zaluzieMarekUp, zaluzieMarekDown, 50);
         lst.addActionBinding(new ActionBinding(marekSwA1.getRightUpperButton(), new Action[]{new IncreasePwmAction(marekPwmActor)}, null));
         lst.addActionBinding(new ActionBinding(marekSwA1.getRightBottomButton(), new Action[]{new DecreasePwmAction(marekPwmActor)}, null));
-        configureLouvers(lst, true, marekPostelSw3, zaluzieMarekUp, zaluzieMarekDown, 50);
+        configureLouvers(lst, WallSwitch.Side.LEFT, marekPostelSw3, zaluzieMarekUp, zaluzieMarekDown, 50);
         lst.addActionBinding(new ActionBinding(marekPostelSw3.getRightUpperButton(), new Action[]{new IncreasePwmAction(marekPwmActor)}, null));
         lst.addActionBinding(new ActionBinding(marekPostelSw3.getRightBottomButton(), new Action[]{new DecreasePwmAction(marekPwmActor)}, null));
 
         // satna
-        configureLouvers(lst, false, chodbaA1Sw, zaluzieSatnaUp, zaluzieSatnaDown, 50);
+        configureLouvers(lst, WallSwitch.Side.RIGHT, chodbaA1Sw, zaluzieSatnaUp, zaluzieSatnaDown, 50);
 
         // chodba
-        configureLouvers(lst, true, chodbaA2Sw, zaluzieChodba1Up, zaluzieChodba1Down, 50);
-        configureLouvers(lst, false, chodbaA2Sw, zaluzieChodba2Up, zaluzieChodba2Down, 50);
+        configureLouvers(lst, WallSwitch.Side.LEFT, chodbaA2Sw, zaluzieChodba1Up, zaluzieChodba1Down, 50);
+        configureLouvers(lst, WallSwitch.Side.RIGHT, chodbaA2Sw, zaluzieChodba2Up, zaluzieChodba2Down, 50);
 
         // loznice
-        configureLouvers(lst, true, lozniceOknoSw1, zaluzieLoznice1Up, zaluzieLoznice1Down, 40);
-        configureLouvers(lst, false, lozniceOknoSw1, zaluzieLoznice2Up, zaluzieLoznice2Down, 40);
-        configureLouvers(lst, true, lozniceDvereSw1, zaluzieLoznice1Up, zaluzieLoznice1Down, 40);
-        configureLouvers(lst, false, lozniceDvereSw1, zaluzieLoznice2Up, zaluzieLoznice2Down, 40);
+        configureLouvers(lst, WallSwitch.Side.LEFT, lozniceOknoSw1, zaluzieLoznice1Up, zaluzieLoznice1Down, 40);
+        configureLouvers(lst, WallSwitch.Side.RIGHT, lozniceOknoSw1, zaluzieLoznice2Up, zaluzieLoznice2Down, 40);
+        configureLouvers(lst, WallSwitch.Side.LEFT, lozniceDvereSw1, zaluzieLoznice1Up, zaluzieLoznice1Down, 40);
+        configureLouvers(lst, WallSwitch.Side.RIGHT, lozniceDvereSw1, zaluzieLoznice2Up, zaluzieLoznice2Down, 40);
 
         // vratnice
-        configureLouvers(lst, false, vratniceSw1, zaluzieVratnice3Up, zaluzieVratnice3Down, 50);
-        configureLouvers(lst, true, vratniceSw2, zaluzieVratnice2Up, zaluzieVratnice2Down, 40);
-        configureLouvers(lst, false, vratniceSw2, zaluzieVratnice1Up, zaluzieVratnice1Down, 40);
+        configureLouvers(lst, WallSwitch.Side.RIGHT, vratniceSw1, zaluzieVratnice3Up, zaluzieVratnice3Down, 50);
+        configureLouvers(lst, WallSwitch.Side.LEFT, vratniceSw2, zaluzieVratnice2Up, zaluzieVratnice2Down, 40);
+        configureLouvers(lst, WallSwitch.Side.RIGHT, vratniceSw2, zaluzieVratnice1Up, zaluzieVratnice1Down, 40);
         lst.addActionBinding(new ActionBinding(vratniceSw1.getLeftUpperButton(), new Action[]{new IncreasePwmAction(vratnice1PwmActor), new IncreasePwmAction(vratnice2PwmActor)}, null));
         lst.addActionBinding(new ActionBinding(vratniceSw1.getLeftBottomButton(), new Action[]{new DecreasePwmAction(vratnice1PwmActor), new DecreasePwmAction(vratnice2PwmActor)}, null));
 
@@ -389,17 +389,17 @@ public class Main {
         return pwmActor;
     }
 
-    static void configureLouvers(SwitchListener lst, boolean left, WallSwitch wallSwitch, OnOffActor louversUp, OnOffActor louversDown, int duration) {
-        NodePin upTrigger = (left) ? wallSwitch.getLeftUpperButton() : wallSwitch.getRightUpperButton();
-        NodePin downTrigger = (left) ? wallSwitch.getLeftBottomButton() : wallSwitch.getRightBottomButton();
+    static void configureLouvers(SwitchListener lst, WallSwitch.Side side, WallSwitch wallSwitch, OnOffActor louversUp, OnOffActor louversDown, int duration) {
+        NodePin upTrigger = (side == WallSwitch.Side.LEFT) ? wallSwitch.getLeftUpperButton() : wallSwitch.getRightUpperButton();
+        NodePin downTrigger = (side == WallSwitch.Side.LEFT) ? wallSwitch.getLeftBottomButton() : wallSwitch.getRightBottomButton();
 
         lst.addActionBinding(new ActionBinding(upTrigger, new Action[]{new InvertActionWithTimer(louversUp, duration)}, null));
         lst.addActionBinding(new ActionBinding(downTrigger, new Action[]{new InvertActionWithTimer(louversDown, duration)}, null));
     }
 
-    static void configureLouvers(SwitchListener lst, boolean left, WallSwitch wallSwitch, OnOffActor louvers1Up, OnOffActor louvers1Down, OnOffActor louvers2Up, OnOffActor louvers2Down, int duration) {
-        NodePin upTrigger = (left) ? wallSwitch.getLeftUpperButton() : wallSwitch.getRightUpperButton();
-        NodePin downTrigger = (left) ? wallSwitch.getLeftBottomButton() : wallSwitch.getRightBottomButton();
+    static void configureLouvers(SwitchListener lst, WallSwitch.Side side, WallSwitch wallSwitch, OnOffActor louvers1Up, OnOffActor louvers1Down, OnOffActor louvers2Up, OnOffActor louvers2Down, int duration) {
+        NodePin upTrigger = (side == WallSwitch.Side.LEFT) ? wallSwitch.getLeftUpperButton() : wallSwitch.getRightUpperButton();
+        NodePin downTrigger = (side == WallSwitch.Side.LEFT) ? wallSwitch.getLeftBottomButton() : wallSwitch.getRightBottomButton();
 
         lst.addActionBinding(new ActionBinding(upTrigger,
                 new Action[]{
