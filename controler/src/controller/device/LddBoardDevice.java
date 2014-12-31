@@ -5,16 +5,23 @@ import node.Node;
 import node.NodePin;
 import node.Pin;
 
+import static java.lang.Math.round;
+
 public class LddBoardDevice extends ConnectedDevice {
     public static class LddNodePin extends NodePin {
         double maxLddCurrent;
-        public LddNodePin(NodePin nodePin, double maxLddCurrent) {
+
+        private LddNodePin(NodePin nodePin, double maxLddCurrent) {
             super(nodePin.getId(), nodePin.getNodeId(), nodePin.getPin());
             this.maxLddCurrent = maxLddCurrent;
         }
 
         public double getMaxLddCurrent() {
             return maxLddCurrent;
+        }
+
+        public String getDeviceName() {
+            return String.format("LDD-%d on %s", round(maxLddCurrent * 1000), getId());
         }
     }
 

@@ -1,12 +1,14 @@
 package controller.actor;
 
 import app.NodeInfoCollector;
+import controller.device.LddBoardDevice;
 import node.Node;
 import node.NodePin;
 import org.apache.log4j.Logger;
 import packet.Packet;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -19,7 +21,7 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
     int pwmValue = 0;
 
 
-    public PwmActor(String id, NodePin output, double maxLoad, Indicator... indicators) {
+    public PwmActor(String id, LddBoardDevice.LddNodePin output, double maxLoad, Indicator... indicators) {
         super(id, output, 0, indicators);
         if (maxLoad < 0 || maxLoad > 1) {
             throw new IllegalArgumentException("Invalid maxLoad value: " + maxLoad);
@@ -59,6 +61,7 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
             throw new IllegalArgumentException("Invalid PWM percentage value: " + val + "%");
         }
     }
+
     public boolean isOn() {
         return value != 0;
     }
@@ -97,17 +100,19 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
                 log.debug(String.format("Setting pwm %s to: %d", nodePin, value));
                 Packet response = node.setManualPwmValue(nodePin.getPin(), value);
 
-                if (response == null) {
-                    throw new IOException("No response.");
-                }
-                if (response.data == null || response.data.length != 1) {
-                    throw new IOException(String.format("Unexpected response length %s", response.toString()));
-                }
+                // ignore no-response on Barbucha - testing machine
+                if (!InetAddress.getLocalHost().getHostName().toUpperCase().equals("BARBUCHA")) {
+                    if (response == null) {
+                        throw new IOException("No response.");
+                    }
+                    if (response.data == null || response.data.length != 1) {
+                        throw new IOException(String.format("Unexpected response length %s", response.toString()));
+                    }
 
-                if (response.data[0] != 0) {
-                    throw new IOException(String.format("Unexpected response code (%d): %s", response.data[0], response.toString()));
+                    if (response.data[0] != 0) {
+                        throw new IOException(String.format("Unexpected response code (%d): %s", response.data[0], response.toString()));
+                    }
                 }
-
                 pwmValue = value;
                 log.info(String.format("PWM of %s set to: %d", nodePin, value));
                 return true;
@@ -125,5 +130,17 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
 
     public int getPwmValue() {
         return pwmValue;
+    }
+
+    public double getOutputCurrent() {
+        return (double) pwmValue / MAX_PWM_VALUE * getLddOutput().getMaxLddCurrent();
+    }
+
+    public double getMaxOutputCurrent() {
+        return (double) maxPwmValue / MAX_PWM_VALUE * getLddOutput().getMaxLddCurrent();
+    }
+
+    public LddBoardDevice.LddNodePin getLddOutput() {
+        return (LddBoardDevice.LddNodePin) output;
     }
 }

@@ -262,13 +262,13 @@ public class Main {
         PwmActor pataPwmActor = addLddLight(lightsActions, "Paťa", lddDevice1.getLdd2(), 0.95);
         PwmActor krystofPwmActor = addLddLight(lightsActions, "Kryštof", lddDevice1.getLdd3(), 0.95, new SwitchIndicator(krystofSwA2.getRedLed(), true));
         PwmActor zadveriPwmActor = addLddLight(lightsActions, "Zádveří", lddDevice1.getLdd4(), 0.30, new SwitchIndicator(zadveriSwA1.getRedLed(), true)); //0.48
-        addLddLight(lightsActions, "Ldd-test1.5", lddDevice1.getLdd5(), 0.05);
+        PwmActor loznice1PwmActor = addLddLight(lightsActions, "Ložnice velké", lddDevice1.getLdd5(), 1.0);
         PwmActor satnaPwmActor = addLddLight(lightsActions, "Šatna", lddDevice1.getLdd6(), 0.30, new SwitchIndicator(chodbaA1Sw.getRedLed(), true)); //0.48
 
         LddBoardDevice lddDeviceTest = new LddBoardDevice("lddTestDevice1", lddActorA, 2, 1.0, .7, .7, .7, .7, .35);
         PwmActor vratnice1PwmActor = addLddLight(lightsActions, "Vrátnice 1", lddDeviceTest.getLdd1(), 0.95, new SwitchIndicator(vratniceSw1.getRedLed(), true));
         PwmActor vratnice2PwmActor = addLddLight(lightsActions, "Vrátnice 2", lddDeviceTest.getLdd2(), 0.48);
-        addLddLight(lightsActions, "Ldd-test2.3", lddDeviceTest.getLdd3(), 0.05);
+        PwmActor loznice2PwmActor = addLddLight(lightsActions, "Ložnice malé", lddDeviceTest.getLdd3(), 0.35); // .36
         addLddLight(lightsActions, "Ldd-test2.4", lddDeviceTest.getLdd4(), 0.05);
         addLddLight(lightsActions, "Ldd-test2.5", lddDeviceTest.getLdd5(), 0.05);
         PwmActor wcPwmActor = addLddLight(lightsActions, "WC", lddDeviceTest.getLdd6(), 0.24);
@@ -305,14 +305,14 @@ public class Main {
         // Krystof + Pata
         configureLouvers(lst, WallSwitch.Side.LEFT, krystofSwA1, zaluziePataUp, zaluziePataDown, 50);
         configureLouvers(lst, WallSwitch.Side.RIGHT, krystofSwA1, zaluzieKrystofUp, zaluzieKrystofDown, 50);
-        configurePwmLights(lst, krystofSwA2, WallSwitch.Side.LEFT, 60, pataPwmActor);
-        configurePwmLights(lst, krystofSwA2, WallSwitch.Side.RIGHT, 60, krystofPwmActor);
+        configurePwmLights(lst, krystofSwA2, WallSwitch.Side.LEFT, 50, pataPwmActor);
+        configurePwmLights(lst, krystofSwA2, WallSwitch.Side.RIGHT, 50, krystofPwmActor);
 
         // Marek
         configureLouvers(lst, WallSwitch.Side.LEFT, marekSwA1, zaluzieMarekUp, zaluzieMarekDown, 50);
-        configurePwmLights(lst, marekSwA1, WallSwitch.Side.RIGHT, 60, marekPwmActor);
+        configurePwmLights(lst, marekSwA1, WallSwitch.Side.RIGHT, 50, marekPwmActor);
         configureLouvers(lst, WallSwitch.Side.LEFT, marekPostelSw3, zaluzieMarekUp, zaluzieMarekDown, 50);
-        configurePwmLights(lst, marekPostelSw3, WallSwitch.Side.RIGHT, 60, marekPwmActor);
+        configurePwmLights(lst, marekPostelSw3, WallSwitch.Side.RIGHT, 50, marekPwmActor);
 
 
         // chodba
@@ -324,7 +324,8 @@ public class Main {
         configureLouvers(lst, WallSwitch.Side.RIGHT, lozniceOknoSw1, zaluzieLoznice2Up, zaluzieLoznice2Down, 40);
         configureLouvers(lst, WallSwitch.Side.LEFT, lozniceDvereSw1, zaluzieLoznice1Up, zaluzieLoznice1Down, 40);
         configureLouvers(lst, WallSwitch.Side.RIGHT, lozniceDvereSw1, zaluzieLoznice2Up, zaluzieLoznice2Down, 40);
-        configurePwmLights(lst, lozniceDvereSw2, WallSwitch.Side.RIGHT, 80, satnaPwmActor);
+        configurePwmLights(lst, lozniceDvereSw2, WallSwitch.Side.LEFT, 40, loznice2PwmActor);
+        configurePwmLights(lst, lozniceDvereSw2, WallSwitch.Side.RIGHT, 40, loznice1PwmActor);
 
         // vratnice
         configureLouvers(lst, WallSwitch.Side.RIGHT, vratniceSw1, zaluzieVratnice3Up, zaluzieVratnice3Down, 50);
