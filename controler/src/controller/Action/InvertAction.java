@@ -1,14 +1,19 @@
 package controller.Action;
 
-import controller.actor.Actor;
+import controller.actor.IOnOffActor;
 
 public class InvertAction extends AbstractAction {
-    public InvertAction(Actor actor) {
+    public InvertAction(IOnOffActor actor) {
         super(actor);
     }
 
     @Override
     public void perform(int previousDurationMs) {
-        getActor().setValue((actor.getValue() ^ 1) & 1, null);
+        IOnOffActor onOffActor = (IOnOffActor) actor;
+        if (onOffActor.isOn()) {
+            onOffActor.switchOff(null);
+        }   else {
+            onOffActor.switchOn(null);
+        }
     }
 }
