@@ -21,7 +21,7 @@ public class LddBoardDevice extends ConnectedDevice {
         }
 
         public String getDeviceName() {
-            return String.format("LDD-%d on %s", round(maxLddCurrent * 1000), getId());
+            return String.format("LDD-%d on %s", round(maxLddCurrent * 1000), toString());
         }
     }
 

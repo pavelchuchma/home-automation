@@ -9,11 +9,10 @@
     <bookmark url="file://$PROJECT_DIR$/src/node/Node.java" line="200" mnemonic="1" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="82455535-c405-4c4b-a371-b0bc707cb60b" name="Default" comment="">
+    <list default="true" readonly="true" id="82455535-c405-4c4b-a371-b0bc707cb60b" name="Default" comment="- improving Lights page">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/Action/InvertAction.java" afterPath="$PROJECT_DIR$/src/controller/Action/InvertAction.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/device/LddBoardDevice.java" afterPath="$PROJECT_DIR$/src/controller/device/LddBoardDevice.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Main.java" afterPath="$PROJECT_DIR$/src/Main.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/actor/PwmActor.java" afterPath="$PROJECT_DIR$/src/controller/actor/PwmActor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/servlet/Servlet.java" afterPath="$PROJECT_DIR$/src/servlet/Servlet.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="controler.iws" />
@@ -33,9 +32,9 @@
     <file path="/PacketSerializerTest.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1365541232740" ignored="false" />
     <file path="/PacketHandler.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1359323353943" ignored="false" />
     <file path="/PacketHandlerTest.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1359067131842" ignored="false" />
-    <file path="/Dummy.txt" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1420065967198" ignored="false" />
+    <file path="/Dummy.txt" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1420229492385" ignored="false" />
     <file path="/PacketHandlerException.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1359066720117" ignored="false" />
-    <file path="/Main.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1419975941144" ignored="false" />
+    <file path="/Main.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1421182465448" ignored="false" />
     <file path="/PacketUartIO.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1399810997367" ignored="false" />
     <file path="/log4j.xml" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391378254935" ignored="false" />
     <file path="/PacketUartIOTest.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1399837930115" ignored="false" />
@@ -91,7 +90,7 @@
     <file path="/SwitchIndicator.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391897499448" ignored="false" />
     <file path="/OnOffActorImpl.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1392674928459" ignored="false" />
     <file path="/AbstractAction.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1407103111280" ignored="false" />
-    <file path="/InvertAction.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1392844472871" ignored="false" />
+    <file path="/InvertAction.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1420230005292" ignored="false" />
     <file path="/SwtchOnAction.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1392762035153" ignored="false" />
     <file path="/SwitchOffAction.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1408891791686" ignored="false" />
     <file path="/SensorAction.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1395435034377" ignored="false" />
@@ -110,7 +109,7 @@
     <file path="/InvertActionWithTimer.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1416782041881" ignored="false" />
     <file path="/IOnOffActor.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1408891863088" ignored="false" />
     <file path="/TestingOnOffActor.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1412624794500" ignored="false" />
-    <file path="/LddBoardDevice.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1420068235860" ignored="false" />
+    <file path="/LddBoardDevice.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1420068772248" ignored="false" />
     <file path="/IncreasePwmAction.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1419513087932" ignored="false" />
     <file path="/RemoveActionDataAction.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1419372499580" ignored="false" />
     <file path="/PwmActions.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1419517421996" ignored="false" />
@@ -134,6 +133,59 @@
     <disable_hints />
   </component>
   <component name="DebuggerManager">
+    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
+    <exception_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true">
+      <breakpoint class_name="java.lang.Exception" package_name="java.lang">
+        <option name="NOTIFY_CAUGHT" value="true" />
+        <option name="NOTIFY_UNCAUGHT" value="true" />
+        <option name="ENABLED" value="false" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="&#13;&#13;JAVA" />
+        <option name="LOG_MESSAGE" value="&#13;&#13;JAVA" />
+      </breakpoint>
+    </exception_breakpoints>
+    <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
+      <breakpoint>
+        <option name="NOTIFY_CAUGHT" value="true" />
+        <option name="NOTIFY_UNCAUGHT" value="true" />
+        <option name="ENABLED" value="false" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint>
+        <option name="NOTIFY_CAUGHT" value="true" />
+        <option name="NOTIFY_UNCAUGHT" value="true" />
+        <option name="ENABLED" value="false" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+    </breakpoint_any>
     <line_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true">
       <breakpoint url="file://$PROJECT_DIR$/test/node/NodeTest.java" line="528" class="node.NodeTest" package="node">
         <option name="ENABLED" value="false" />
@@ -220,59 +272,6 @@
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
     </line_breakpoints>
-    <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
-      <breakpoint>
-        <option name="NOTIFY_CAUGHT" value="true" />
-        <option name="NOTIFY_UNCAUGHT" value="true" />
-        <option name="ENABLED" value="false" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="SUSPEND" value="true" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="true" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint>
-        <option name="NOTIFY_CAUGHT" value="true" />
-        <option name="NOTIFY_UNCAUGHT" value="true" />
-        <option name="ENABLED" value="false" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="SUSPEND" value="true" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="true" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-    </breakpoint_any>
-    <exception_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true">
-      <breakpoint class_name="java.lang.Exception" package_name="java.lang">
-        <option name="NOTIFY_CAUGHT" value="true" />
-        <option name="NOTIFY_UNCAUGHT" value="true" />
-        <option name="ENABLED" value="false" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="SUSPEND" value="true" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="true" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="&#13;&#13;JAVA" />
-        <option name="LOG_MESSAGE" value="&#13;&#13;JAVA" />
-      </breakpoint>
-    </exception_breakpoints>
-    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_rules />
     <ui_properties />
   </component>
@@ -282,85 +281,22 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="AbstractActor.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/controller/actor/AbstractActor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="22" column="11" selection-start="498" selection-end="498" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Main.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="Main.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="264" column="77" selection-start="16271" selection-end="16271" vertical-scroll-proportion="-7.08">
+            <state line="322" column="8" selection-start="20076" selection-end="20076" vertical-scroll-proportion="0.4820457">
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#15568#15576#0" expanded="true" />
+                <element signature="e#15017#15025#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LddBoardDevice.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/controller/device/LddBoardDevice.java">
+      <file leaf-file-name="SwitchOffSensorAction.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/controller/Action/SwitchOffSensorAction.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="39" column="14" selection-start="1396" selection-end="1396" vertical-scroll-proportion="0.5177665">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="NodePin.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/node/NodePin.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="30" column="18" selection-start="570" selection-end="570" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ConnectedDevice.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/controller/device/ConnectedDevice.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="31" column="11" selection-start="951" selection-end="951" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Servlet.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/servlet/Servlet.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="207" column="55" selection-start="9010" selection-end="9010" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Math.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="jar://C:/Program Files/Java/jdk1.7.0_03/src.zip!/java/lang/Math.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="675" column="23" selection-start="27201" selection-end="27201" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PwmActor.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/controller/actor/PwmActor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="134" column="21" selection-start="4372" selection-end="4372" vertical-scroll-proportion="-24.72">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="IncreasePwmAction.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/controller/Action/IncreasePwmAction.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="11" selection-start="130" selection-end="130" vertical-scroll-proportion="0.0">
+            <state line="4" column="52" selection-start="118" selection-end="118" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -369,7 +305,70 @@
       <file leaf-file-name="AbstractSensorAction.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/controller/Action/AbstractSensorAction.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="22" column="0" selection-start="561" selection-end="561" vertical-scroll-proportion="0.0">
+            <state line="5" column="13" selection-start="111" selection-end="111" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SwitchOnAction.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/controller/Action/SwitchOnAction.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="4" column="13" selection-start="79" selection-end="79" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SwitchOnSensorAction.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/controller/Action/SwitchOnSensorAction.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="8" column="13" selection-start="175" selection-end="175" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="InvertAction.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/controller/Action/InvertAction.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="17" column="0" selection-start="450" selection-end="450" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="IOnOffActor.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/controller/actor/IOnOffActor.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="3" column="12" selection-start="83" selection-end="83" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AbstractAction.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/controller/Action/AbstractAction.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="5" column="17" selection-start="134" selection-end="134" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SwitchListener.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/app/SwitchListener.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="20" column="16" selection-start="641" selection-end="641" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PwmActor.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/controller/actor/PwmActor.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="15" column="13" selection-start="332" selection-end="332" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -395,7 +394,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/controller/Action/RemoveActionDataAction.java" />
         <option value="$PROJECT_DIR$/src/controller/actor/IOnOffActor.java" />
         <option value="$PROJECT_DIR$/src/controller/Action/DecreasePwmAction.java" />
         <option value="$PROJECT_DIR$/src/servlet/resources/report.css" />
@@ -407,10 +405,11 @@
         <option value="$PROJECT_DIR$/src/app/SwitchListener.java" />
         <option value="$PROJECT_DIR$/src/controller/Action/IncreasePwmAction.java" />
         <option value="$PROJECT_DIR$/src/controller/Action/PwmActionGroup.java" />
-        <option value="$PROJECT_DIR$/src/Main.java" />
         <option value="$PROJECT_DIR$/src/controller/actor/PwmActor.java" />
         <option value="$PROJECT_DIR$/src/servlet/Servlet.java" />
         <option value="$PROJECT_DIR$/src/controller/device/LddBoardDevice.java" />
+        <option value="$PROJECT_DIR$/src/controller/Action/InvertAction.java" />
+        <option value="$PROJECT_DIR$/src/Main.java" />
       </list>
     </option>
   </component>
@@ -450,7 +449,6 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -791,20 +789,21 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="GenerateAntBuildDialog.generateIdeaHomeProperty" value="false" />
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
-    <property name="OverrideImplement.combined" value="false" />
     <property name="project.structure.proportion" value="0.15" />
+    <property name="OverrideImplement.combined" value="false" />
     <property name="options.splitter.main.proportions" value="0.3" />
-    <property name="recentsLimit" value="5" />
-    <property name="MemberChooser.sorted" value="false" />
     <property name="GenerateAntBuildDialog.generateSingleFile" value="true" />
-    <property name="GenerateAntBuildDialog.inclineRuntiemClasspath" value="false" />
+    <property name="MemberChooser.sorted" value="false" />
+    <property name="recentsLimit" value="5" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/lib/javax.transaction.jar!/" />
+    <property name="GenerateAntBuildDialog.inclineRuntiemClasspath" value="false" />
     <property name="GenerateAntBuildDialog.outputFileNameProperty" value="controler" />
     <property name="GenerateAntBuildDialog.enableUiFormCompile" value="true" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
@@ -820,8 +819,8 @@
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.includeInheritedMembers" value="false" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="GenerateAntBuildDialog.backupFiles" value="true" />
-    <property name="options.searchVisible" value="true" />
     <property name="dynamic.classpath" value="false" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CreateTestDialog.Recents.Supers">
@@ -1201,7 +1200,11 @@
       <created>1419526723310</created>
       <updated>1419526723310</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="- improving Lights page">
+      <created>1420068516141</created>
+      <updated>1420068516141</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -1231,10 +1234,9 @@
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3278856" sideWeight="0.49786553" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32986537" sideWeight="0.6004592" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.17364658" sideWeight="0.43276414" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.36976507" sideWeight="0.64461046" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.36952192" sideWeight="0.64461046" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.40347293" sideWeight="0.5635005" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
@@ -1246,10 +1248,11 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32986537" sideWeight="0.7164179" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25453576" sideWeight="0.63023496" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25400212" sideWeight="0.63023496" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.35852912" sideWeight="0.4615795" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.17364658" sideWeight="0.43276414" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28335375" sideWeight="0.82629675" order="7" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.13547647" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
     </layout>
@@ -1292,7 +1295,7 @@
     <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="using PwmActionGroup on zadveri" />
+    <option name="LAST_COMMIT_MESSAGE" value="- improving Lights page" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1318,6 +1321,7 @@
     <MESSAGE value="- introducing enum WallSwitch.Side&#10;" />
     <MESSAGE value="- adding uniqueness check on SwitchListener.addActionBinding()&#10;- propagating up &amp; down time to Action.perform() methods. But it is not very precize yet.&#10;- introducing and using PwmActionGroup" />
     <MESSAGE value="using PwmActionGroup on zadveri" />
+    <MESSAGE value="- improving Lights page" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1331,62 +1335,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/controller/Action/AbstractAction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="0" selection-start="145" selection-end="145" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/controller/ActionBinding.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="0" selection-start="221" selection-end="221" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/controller/Action/InvertActionWithTimer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="18" selection-start="539" selection-end="539" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/app/SwitchListener.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="5" selection-start="2670" selection-end="2670" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/controller/Action/SwitchOffSensorAction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="11" selection-start="210" selection-end="210" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/controller/Action/AbstractSensorAction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="0" selection-start="561" selection-end="561" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/controller/Action/IncreasePwmAction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="11" selection-start="130" selection-end="130" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/controller/Action/PwmActionGroup.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="61" column="47" selection-start="1861" selection-end="1861" vertical-scroll-proportion="1.0944206">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/controller/actor/AbstractActor.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="22" column="11" selection-start="498" selection-end="498" vertical-scroll-proportion="0.0">
@@ -1396,40 +1344,7 @@
     </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.7.0_03/src.zip!/java/lang/Math.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="675" column="23" selection-start="27201" selection-end="27201" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="264" column="77" selection-start="16271" selection-end="16271" vertical-scroll-proportion="-7.08">
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#15568#15576#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/controller/actor/PwmActor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="134" column="21" selection-start="4372" selection-end="4372" vertical-scroll-proportion="-24.72">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/servlet/Servlet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="207" column="55" selection-start="9010" selection-end="9010" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/node/NodePin.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="18" selection-start="570" selection-end="570" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="675" column="23" selection-start="27201" selection-end="27201" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/controller/device/ConnectedDevice.java">
@@ -1439,10 +1354,97 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/node/NodePin.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="13" selection-start="28" selection-end="28" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/servlet/Servlet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="203" column="48" selection-start="8712" selection-end="8712" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/controller/device/LddBoardDevice.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="39" column="14" selection-start="1396" selection-end="1396" vertical-scroll-proportion="0.5177665">
+        <state line="79" column="1" selection-start="2301" selection-end="2301" vertical-scroll-proportion="0.0">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/app/SwitchListener.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="16" selection-start="641" selection-end="641" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/controller/Action/AbstractAction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="17" selection-start="134" selection-end="134" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/controller/actor/IOnOffActor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3" column="12" selection-start="83" selection-end="83" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/controller/actor/PwmActor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="13" selection-start="332" selection-end="332" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/controller/Action/InvertAction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="17" column="0" selection-start="450" selection-end="450" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/controller/Action/SwitchOnAction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="13" selection-start="79" selection-end="79" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/controller/Action/SwitchOnSensorAction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="13" selection-start="175" selection-end="175" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/controller/Action/AbstractSensorAction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="13" selection-start="111" selection-end="111" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/controller/Action/SwitchOffSensorAction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="52" selection-start="118" selection-end="118" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="322" column="8" selection-start="20076" selection-end="20076" vertical-scroll-proportion="0.4820457">
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#15017#15025#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

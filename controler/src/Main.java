@@ -110,6 +110,7 @@ public class Main {
         WallSwitch koupelnaHoreSw2 = new WallSwitch("koupelnaHoreSw2", koupelnaHore, 2);
         WallSwitch chodbaDoldeSwA = new WallSwitch("chodbaDoldeSwA", chodbaDole, 1);
         WallSwitch lozniceOknoSw1 = new WallSwitch("lozniceOknoSw1", lozniceOkno, 1);
+        WallSwitch lozniceOknoSw2 = new WallSwitch("lozniceOknoSw2", lozniceOkno, 2);
         WallSwitch lozniceDvereSw1 = new WallSwitch("lozniceDvereSw1", lozniceDvere, 1);
         WallSwitch lozniceDvereSw2 = new WallSwitch("lozniceDvereSw2", lozniceDvere, 2);
         WallSwitch marekPostelSw3 = new WallSwitch("marekPostelSw3", lozniceDvere, 3);
@@ -136,13 +137,6 @@ public class Main {
         Action offActionKoupelna = new SwitchOffAction(svKoupelna);
         lst.addActionBinding(new ActionBinding(koupelnaHoreSw1.getRightBottomButton(), new Action[]{offActionKoupelna}, null));
         lst.addActionBinding(new ActionBinding(koupelnaHoreSw1.getRightUpperButton(), new Action[]{onActionKoupelna}, null));
-
-        Action onActionPradelna = new SwitchOnAction(svPradelna);
-        Action offActionPradelna = new SwitchOffAction(svPradelna);
-        lst.addActionBinding(new ActionBinding(chodbaDoldeSwA.getRightBottomButton(), new Action[]{offActionPradelna}, null));
-        lst.addActionBinding(new ActionBinding(chodbaDoldeSwA.getRightUpperButton(), new Action[]{onActionPradelna}, null));
-        lst.addActionBinding(new ActionBinding(chodbaDoldeSwA.getLeftUpperButton(), new Action[]{onActionPradelna}, null));
-        lst.addActionBinding(new ActionBinding(chodbaDoldeSwA.getLeftBottomButton(), new Action[]{offActionPradelna}, null));
 
         // infrazaric v koupelne
         lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightBottomButton(), new Action[]{new SwitchOffAction(zaricKoupelnaHore2Trubice)}, null));
@@ -265,13 +259,13 @@ public class Main {
         PwmActor loznice1PwmActor = addLddLight(lightsActions, "Ložnice velké", lddDevice1.getLdd5(), 1.0);
         PwmActor satnaPwmActor = addLddLight(lightsActions, "Šatna", lddDevice1.getLdd6(), 0.30, new SwitchIndicator(chodbaA1Sw.getRedLed(), true)); //0.48
 
-        LddBoardDevice lddDeviceTest = new LddBoardDevice("lddTestDevice1", lddActorA, 2, 1.0, .7, .7, .7, .7, .35);
-        PwmActor vratnice1PwmActor = addLddLight(lightsActions, "Vrátnice 1", lddDeviceTest.getLdd1(), 0.95, new SwitchIndicator(vratniceSw1.getRedLed(), true));
-        PwmActor vratnice2PwmActor = addLddLight(lightsActions, "Vrátnice 2", lddDeviceTest.getLdd2(), 0.48);
-        PwmActor loznice2PwmActor = addLddLight(lightsActions, "Ložnice malé", lddDeviceTest.getLdd3(), 0.35); // .36
-        addLddLight(lightsActions, "Ldd-test2.4", lddDeviceTest.getLdd4(), 0.05);
-        addLddLight(lightsActions, "Ldd-test2.5", lddDeviceTest.getLdd5(), 0.05);
-        PwmActor wcPwmActor = addLddLight(lightsActions, "WC", lddDeviceTest.getLdd6(), 0.24);
+        LddBoardDevice lddDevice2 = new LddBoardDevice("lddDevice2", lddActorA, 2, 1.0, .7, .7, .7, .7, .35);
+        PwmActor vratnice1PwmActor = addLddLight(lightsActions, "Vrátnice 1", lddDevice2.getLdd1(), 0.95, new SwitchIndicator(vratniceSw1.getRedLed(), true));
+        PwmActor vratnice2PwmActor = addLddLight(lightsActions, "Vrátnice 2", lddDevice2.getLdd2(), 0.48);
+        PwmActor loznice2PwmActor = addLddLight(lightsActions, "Ložnice malé", lddDevice2.getLdd3(), 0.35); // .36
+        PwmActor chodbaDolePwmActor = addLddLight(lightsActions, "Chodba dole", lddDevice2.getLdd4(), 0.45);
+        PwmActor zadveriDolePwmActor = addLddLight(lightsActions, "Zádveří dole", lddDevice2.getLdd5(), 0.45); // .48
+        PwmActor wcPwmActor = addLddLight(lightsActions, "WC", lddDevice2.getLdd6(), 0.24);
 
         Action[] louversInvertActions = new Action[louversActors.length];
         for (int i = 0; i < louversActors.length; i++) {
@@ -326,6 +320,8 @@ public class Main {
         configureLouvers(lst, WallSwitch.Side.RIGHT, lozniceDvereSw1, zaluzieLoznice2Up, zaluzieLoznice2Down, 40);
         configurePwmLights(lst, lozniceDvereSw2, WallSwitch.Side.LEFT, 40, loznice2PwmActor);
         configurePwmLights(lst, lozniceDvereSw2, WallSwitch.Side.RIGHT, 40, loznice1PwmActor);
+        configurePwmLights(lst, lozniceOknoSw2, WallSwitch.Side.LEFT, 40, loznice1PwmActor);
+        configurePwmLights(lst, lozniceOknoSw2, WallSwitch.Side.RIGHT, 40, loznice2PwmActor);
 
         // vratnice
         configureLouvers(lst, WallSwitch.Side.RIGHT, vratniceSw1, zaluzieVratnice3Up, zaluzieVratnice3Down, 50);
@@ -333,10 +329,16 @@ public class Main {
         configureLouvers(lst, WallSwitch.Side.RIGHT, vratniceSw2, zaluzieVratnice1Up, zaluzieVratnice1Down, 40);
         configurePwmLights(lst, vratniceSw1, WallSwitch.Side.LEFT, 40, vratnice1PwmActor, vratnice2PwmActor);
 
+        // chodba dole
+        lst.addActionBinding(new ActionBinding(chodbaDoldeSwA.getRightBottomButton(), new Action[]{new SwitchOffAction(svPradelna)}, null));
+        lst.addActionBinding(new ActionBinding(chodbaDoldeSwA.getRightUpperButton(), new Action[]{new SwitchOnAction(svPradelna)}, null));
+        lst.addActionBinding(new ActionBinding(chodbaDoldeSwA.getLeftUpperButton(), new Action[]{new InvertAction(chodbaDolePwmActor)}, null));
+        lst.addActionBinding(new ActionBinding(chodbaDoldeSwA.getLeftBottomButton(), new Action[]{new InvertAction(zadveriDolePwmActor)}, null));
+
         // PIRs
         InputDevice pirA1Prizemi = new InputDevice("pirA1Prizemi", pirNodeA, 1);
-        lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn1AndActivate(), new Action[]{new SwitchOffSensorAction(svPradelna, 10)}, new Action[]{new SwitchOnSensorAction(svPradelna, 600)}));
-        lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn2AndActivate(), new Action[]{new SwitchOffSensorAction(svPradelna, 10)}, new Action[]{new SwitchOnSensorAction(svPradelna, 600)}));
+        lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn1AndActivate(), new Action[]{new SwitchOffSensorAction(svPradelna, 60)}, new Action[]{new SwitchOnSensorAction(svPradelna, 600)}));
+        lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn2AndActivate(), new Action[]{new SwitchOffSensorAction(svPradelna, 60)}, new Action[]{new SwitchOnSensorAction(svPradelna, 600)}));
 
         InputDevice pirA2Patro = new InputDevice("pirA2Patro", pirNodeA, 2);
         lst.addActionBinding(new ActionBinding(pirA2Patro.getIn3AndActivate(), new Action[]{new SwitchOffSensorAction(wcPwmActor, 60)}, new Action[]{new SwitchOnSensorAction(wcPwmActor, 600, 0, -15)}));
@@ -345,8 +347,9 @@ public class Main {
         lst.addActionBinding(new ActionBinding(pirA2Patro.getIn4AndActivate(), new Action[]{new SwitchOffSensorAction(satnaPwmActor, 60)}, new Action[]{new SwitchOnSensorAction(satnaPwmActor, 600, 0, -15)}));
 
         InputDevice pirA3Prizemi = new InputDevice("pirA3Prizemi", pirNodeA, 3);
-        lst.addActionBinding(new ActionBinding(pirA3Prizemi.getIn5AndActivate(), new Action[]{new SwitchOffSensorAction(svSpajza, 10)}, new Action[]{new SwitchOnSensorAction(svSpajza, 600)}));
-
+        lst.addActionBinding(new ActionBinding(pirA3Prizemi.getIn3AndActivate(), new Action[]{new SwitchOffSensorAction(chodbaDolePwmActor, 15)}, new Action[]{new SwitchOnSensorAction(chodbaDolePwmActor, 600, 0, -15)}));
+        lst.addActionBinding(new ActionBinding(pirA3Prizemi.getIn5AndActivate(), new Action[]{new SwitchOffSensorAction(svSpajza, 20)}, new Action[]{new SwitchOnSensorAction(svSpajza, 600)}));
+        lst.addActionBinding(new ActionBinding(pirA3Prizemi.getIn6AndActivate(), new Action[]{new SwitchOffSensorAction(zadveriDolePwmActor, 15)}, new Action[]{new SwitchOnSensorAction(zadveriDolePwmActor, 600, -15, -30)}));
 
         Servlet.action1 = onActionKoupelna;
         Servlet.action2 = offActionKoupelna;
