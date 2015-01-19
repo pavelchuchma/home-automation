@@ -288,18 +288,18 @@ public class Main {
         }
 
         // koupelna
-        configureLouvers(lst, WallSwitch.Side.LEFT, koupelnaHoreSw1, zaluzieKoupelnaUp, zaluzieKoupelnaDown, 50);
+        configureLouvers(lst, koupelnaHoreSw1, WallSwitch.Side.LEFT, zaluzieKoupelnaUp, zaluzieKoupelnaDown, 50);
         // koupelna u okna
-        configureLouvers(lst, WallSwitch.Side.LEFT, koupelnaHoreOknoSw, zaluzieKoupelnaUp, zaluzieKoupelnaDown, 50);
+        configureLouvers(lst, koupelnaHoreOknoSw, WallSwitch.Side.LEFT, zaluzieKoupelnaUp, zaluzieKoupelnaDown, 50);
         lst.addActionBinding(new ActionBinding(koupelnaHoreOknoSw.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900), new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900)}, null));
         lst.addActionBinding(new ActionBinding(koupelnaHoreOknoSw.getRightBottomButton(), new Action[]{new SwitchOffAction(zaricKoupelnaHore1Trubice), new SwitchOffAction(zaricKoupelnaHore2Trubice)}, null));
 
 
         // kuchyn + obyvak
-        configureLouvers(lst, WallSwitch.Side.LEFT, obyvakA1Sw, zaluzieKuchynUp, zaluzieKuchynDown, 70);
-        configureLouvers(lst, WallSwitch.Side.RIGHT, obyvakA1Sw, zaluzieObyvak1Up, zaluzieObyvak1Down, 70);
+        configureLouvers(lst, obyvakA1Sw, WallSwitch.Side.LEFT, zaluzieKuchynUp, zaluzieKuchynDown, 70);
+        configureLouvers(lst, obyvakA1Sw, WallSwitch.Side.RIGHT, zaluzieObyvak1Up, zaluzieObyvak1Down, 70);
         configureLouvers(lst, WallSwitch.Side.LEFT, obyvakA2Sw, zaluzieObyvak2Up, zaluzieObyvak2Down, zaluzieObyvak3Up, zaluzieObyvak3Down, 70);
-        configureLouvers(lst, WallSwitch.Side.RIGHT, obyvakA2Sw, zaluzieObyvak4Up, zaluzieObyvak4Down, 70);
+        configureLouvers(lst, obyvakA2Sw, WallSwitch.Side.RIGHT, zaluzieObyvak4Up, zaluzieObyvak4Down, 70);
         configureLouvers(lst, WallSwitch.Side.LEFT, obyvakA3Sw, zaluzieObyvak5Up, zaluzieObyvak5Down, zaluzieObyvak6Up, zaluzieObyvak6Down, 70);
 
         // wc
@@ -310,10 +310,10 @@ public class Main {
         // chodba
         // svetla satna
         configurePwmLights(lst, chodbaA1Sw, WallSwitch.Side.LEFT, 80, satnaPwmActor);
-        configureLouvers(lst, WallSwitch.Side.RIGHT, chodbaA1Sw, zaluzieSatnaUp, zaluzieSatnaDown, 50);
+        configureLouvers(lst, chodbaA1Sw, WallSwitch.Side.RIGHT, zaluzieSatnaUp, zaluzieSatnaDown, 50);
 
         configurePwmLights(lst, satnaSw3, WallSwitch.Side.RIGHT, 80, satnaPwmActor);
-        configureLouvers(lst, WallSwitch.Side.LEFT, satnaSw3, zaluzieSatnaUp, zaluzieSatnaDown, 50);
+        configureLouvers(lst, satnaSw3, WallSwitch.Side.LEFT, zaluzieSatnaUp, zaluzieSatnaDown, 50);
 
         // zadveri
         configurePwmLights(lst, zadveriSwA1, WallSwitch.Side.LEFT, 80, zadveriPwmActor);
@@ -322,8 +322,8 @@ public class Main {
         configurePwmLights(lst, zadveriVratniceSw3, WallSwitch.Side.RIGHT, 80, zadveriPwmActor);
 
         // Krystof + Pata
-        configureLouvers(lst, WallSwitch.Side.LEFT, krystofSwA1, zaluziePataUp, zaluziePataDown, 50);
-        configureLouvers(lst, WallSwitch.Side.RIGHT, krystofSwA1, zaluzieKrystofUp, zaluzieKrystofDown, 50);
+        configureLouvers(lst, krystofSwA1, WallSwitch.Side.LEFT, zaluziePataUp, zaluziePataDown, 50);
+        configureLouvers(lst, krystofSwA1, WallSwitch.Side.RIGHT, zaluzieKrystofUp, zaluzieKrystofDown, 50);
         configurePwmLights(lst, krystofSwA2, WallSwitch.Side.LEFT, 50, pataPwmActor);
         configurePwmLights(lst, krystofSwA2, WallSwitch.Side.RIGHT, 50, krystofPwmActor);
 
@@ -331,37 +331,37 @@ public class Main {
         configurePwmLights(lst, patrikSw1, WallSwitch.Side.RIGHT, 50, krystofPwmActor);
 
         configurePwmLights(lst, krystofPostelSw, WallSwitch.Side.LEFT, 50, krystofPwmActor);
-        configureLouvers(lst, WallSwitch.Side.RIGHT, krystofPostelSw, zaluzieKrystofUp, zaluzieKrystofDown, 50);
+        configureLouvers(lst, krystofPostelSw, WallSwitch.Side.RIGHT, zaluzieKrystofUp, zaluzieKrystofDown, 50);
 
         // Marek
-        configureLouvers(lst, WallSwitch.Side.LEFT, marekSwA1, zaluzieMarekUp, zaluzieMarekDown, 50);
+        configureLouvers(lst, marekSwA1, WallSwitch.Side.LEFT, zaluzieMarekUp, zaluzieMarekDown, 50);
         configurePwmLights(lst, marekSwA1, WallSwitch.Side.RIGHT, 50, marekPwmActor);
-        configureLouvers(lst, WallSwitch.Side.LEFT, marekPostelSw3, zaluzieMarekUp, zaluzieMarekDown, 50);
+        configureLouvers(lst, marekPostelSw3, WallSwitch.Side.LEFT, zaluzieMarekUp, zaluzieMarekDown, 50);
         configurePwmLights(lst, marekPostelSw3, WallSwitch.Side.RIGHT, 50, marekPwmActor);
 
 
         // chodba
-        configureLouvers(lst, WallSwitch.Side.LEFT, chodbaA2Sw, zaluzieChodba1Up, zaluzieChodba1Down, 50);
-        configureLouvers(lst, WallSwitch.Side.RIGHT, chodbaA2Sw, zaluzieChodba2Up, zaluzieChodba2Down, 50);
+        configureLouvers(lst, chodbaA2Sw, WallSwitch.Side.LEFT, zaluzieChodba1Up, zaluzieChodba1Down, 50);
+        configureLouvers(lst, chodbaA2Sw, WallSwitch.Side.RIGHT, zaluzieChodba2Up, zaluzieChodba2Down, 50);
 
         // loznice
-        configureLouvers(lst, WallSwitch.Side.LEFT, lozniceOknoSw1, zaluzieLoznice1Up, zaluzieLoznice1Down, 40);
-        configureLouvers(lst, WallSwitch.Side.RIGHT, lozniceOknoSw1, zaluzieLoznice2Up, zaluzieLoznice2Down, 40);
-        configureLouvers(lst, WallSwitch.Side.LEFT, lozniceDvereSw1, zaluzieLoznice1Up, zaluzieLoznice1Down, 40);
-        configureLouvers(lst, WallSwitch.Side.RIGHT, lozniceDvereSw1, zaluzieLoznice2Up, zaluzieLoznice2Down, 40);
+        configureLouvers(lst, lozniceOknoSw1, WallSwitch.Side.LEFT, zaluzieLoznice1Up, zaluzieLoznice1Down, 40);
+        configureLouvers(lst, lozniceOknoSw1, WallSwitch.Side.RIGHT, zaluzieLoznice2Up, zaluzieLoznice2Down, 40);
+        configureLouvers(lst, lozniceDvereSw1, WallSwitch.Side.LEFT, zaluzieLoznice1Up, zaluzieLoznice1Down, 40);
+        configureLouvers(lst, lozniceDvereSw1, WallSwitch.Side.RIGHT, zaluzieLoznice2Up, zaluzieLoznice2Down, 40);
 //        configurePwmLights(lst, lozniceDvereSw2, WallSwitch.Side.LEFT, 40, loznice2PwmActor);
         configurePwmLights(lst, lozniceDvereSw2, WallSwitch.Side.RIGHT, 40, loznice1PwmActor);
         configurePwmLights(lst, lozniceOknoSw2, WallSwitch.Side.LEFT, 40, loznice1PwmActor);
 //        configurePwmLights(lst, lozniceOknoSw2, WallSwitch.Side.RIGHT, 40, loznice2PwmActor);
 
         //pracovna
-        configureLouvers(lst, WallSwitch.Side.LEFT, pracovnaSw2, zaluziePracovnaUp, zaluziePracovnaDown, 70);
+        configureLouvers(lst, pracovnaSw2, WallSwitch.Side.LEFT, zaluziePracovnaUp, zaluziePracovnaDown, 70);
         configurePwmLights(lst, pracovnaSw2, WallSwitch.Side.RIGHT, 40, loznice2PwmActor);
 
         // vratnice
-        configureLouvers(lst, WallSwitch.Side.RIGHT, vratniceSw1, zaluzieVratnice1Up, zaluzieVratnice1Down, 50);
-        configureLouvers(lst, WallSwitch.Side.LEFT, vratniceSw2, zaluzieVratnice2Up, zaluzieVratnice2Down, 40);
-        configureLouvers(lst, WallSwitch.Side.RIGHT, vratniceSw2, zaluzieVratnice3Up, zaluzieVratnice3Down, 40);
+        configureLouvers(lst, vratniceSw1, WallSwitch.Side.RIGHT, zaluzieVratnice1Up, zaluzieVratnice1Down, 50);
+        configureLouvers(lst, vratniceSw2, WallSwitch.Side.LEFT, zaluzieVratnice2Up, zaluzieVratnice2Down, 40);
+        configureLouvers(lst, vratniceSw2, WallSwitch.Side.RIGHT, zaluzieVratnice3Up, zaluzieVratnice3Down, 40);
         configurePwmLights(lst, vratniceSw1, WallSwitch.Side.LEFT, 40, vratnice1PwmActor, vratnice2PwmActor);
 
         // chodba dole
@@ -436,7 +436,7 @@ public class Main {
         return pwmActor;
     }
 
-    static void configureLouvers(SwitchListener lst, WallSwitch.Side side, WallSwitch wallSwitch, OnOffActor louversUp, OnOffActor louversDown, int duration) {
+    static void configureLouvers(SwitchListener lst, WallSwitch wallSwitch, WallSwitch.Side side, OnOffActor louversUp, OnOffActor louversDown, int duration) {
         NodePin upTrigger = getUpperButton(wallSwitch, side);
         NodePin downTrigger = getBottomButton(wallSwitch, side);
 
