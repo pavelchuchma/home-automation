@@ -13,10 +13,6 @@ public class OutputDevice extends ConnectedDevice {
         super(id, node, connectorPosition, PIN_NAMES);
     }
 
-    public OutputDevice(String id, Node node, int connectorPosition, CpuFrequency requiredCpuFrequency) {
-        super(id, node, connectorPosition, PIN_NAMES, requiredCpuFrequency);
-    }
-
     public NodePin getOut1() {
         return pins[0];
     }

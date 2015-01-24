@@ -1,7 +1,7 @@
 package controller.actor;
 
 public interface IOnOffActor extends Actor{
-    boolean switchOn(Object actionData);
+    boolean switchOn(int percent, Object actionData);
 
     boolean switchOff(Object actionData);
 

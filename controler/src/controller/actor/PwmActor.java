@@ -77,8 +77,8 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
     }
 
     @Override
-    public boolean switchOn(Object actionData) {
-        return setValue(100, actionData);
+    public boolean switchOn(int percent, Object actionData) {
+        return setValue(percent, actionData);
     }
 
     @Override

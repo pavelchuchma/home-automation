@@ -116,7 +116,7 @@ public class NodeInfoCollector implements Iterable<NodeInfo> {
                 "</head>" +
                 "<body>");
 
-        String[] actionNames = new String[]{"KoupelnaOn", "KoupelnaOff", "Jidelna"};
+        String[] actionNames = new String[]{"Jidelna"};
         for (int i = 0; i < actionNames.length; i++) {
             builder.append(String.format("<a href='/a%d'>%s</a>&nbsp;&nbsp;&nbsp;&nbsp;", i + 1, actionNames[i]));
         }

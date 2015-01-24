@@ -58,7 +58,7 @@ public class AbstractSensorAction extends AbstractAction {
                 long endTime = System.currentTimeMillis() + timeout;
 
                 log.debug("is switched off or switched on by my action type -> switch on, set my data");
-                act.switchOn(aData);
+                act.switchOn(100, aData);
 
                 if (timeout > MAX_BLINK_DURATION) {
                     log.debug(String.format("Going to wait for %d ms", timeout - MAX_BLINK_DURATION));

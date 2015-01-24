@@ -41,7 +41,7 @@ public class OnOffActor extends AbstractActor implements IOnOffActor {
         return false;
     }
 
-    public boolean switchOn(Object actionData) {
+    public boolean switchOn(int percent, Object actionData) {
         log.debug("switchOn: " + toString());
         return setValue(onValue, actionData);
     }

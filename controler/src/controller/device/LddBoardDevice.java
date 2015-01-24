@@ -29,7 +29,7 @@ public class LddBoardDevice extends ConnectedDevice {
 
     public LddBoardDevice(String id, Node node, int connectorPosition, double ldd1Current, double ldd2Current,
                           double ldd3Current, double ldd4Current, double ldd5Current, double ldd6Current) {
-        super(id, node, connectorPosition, PIN_NAMES, CpuFrequency.eightMHz);
+        super(id, node, connectorPosition, PIN_NAMES, CpuFrequency.sixteenMHz);
 
          pins[5] = new LddNodePin(pins[5], ldd1Current);
          pins[4] = new LddNodePin(pins[4], ldd2Current);

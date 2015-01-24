@@ -1,10 +1,19 @@
 package controller.Action;
 
+import controller.actor.Actor;
 import controller.actor.IOnOffActor;
 
 public class InvertAction extends AbstractAction {
+
+    private int switchOnPercent;
+
     public InvertAction(IOnOffActor actor) {
+        this(actor, 100);
+    }
+
+    public InvertAction(Actor actor, int switchOnPercent) {
         super(actor);
+        this.switchOnPercent = switchOnPercent;
     }
 
     @Override
@@ -13,7 +22,7 @@ public class InvertAction extends AbstractAction {
         if (onOffActor.isOn()) {
             onOffActor.switchOff(null);
         }   else {
-            onOffActor.switchOn(null);
+            onOffActor.switchOn(switchOnPercent, null);
         }
     }
 }
