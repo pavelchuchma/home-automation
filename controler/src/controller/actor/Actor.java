@@ -1,7 +1,5 @@
 package controller.actor;
 
-import node.NodePin;
-
 public interface Actor {
     String getId();
 

@@ -3,6 +3,7 @@ package servlet;
 import app.NodeInfo;
 import app.NodeInfoCollector;
 import controller.Action.Action;
+import controller.PirStatus;
 import controller.actor.PwmActor;
 import controller.device.ConnectedDevice;
 import controller.device.OutputDevice;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.List;
 
 public class Servlet extends AbstractHandler {
     public static final String TARGET_SYSTEM_INFO = "/system/i";
@@ -30,6 +32,7 @@ public class Servlet extends AbstractHandler {
     public static final String TARGET_SYSTEM_TEST_ALL_OFF = "/system/testAllOff";
     public static final String TARGET_SYSTEM_TEST_END = "/system/testEnd";
     public static final String TARGET_SYSTEM = "/system";
+    public static final String TARGET_PIR_STATUS = "/pirStatus";
     public static final String TARGET_LIGHTS = "/lights";
     public static final String TARGET_LIGHTS_ACTION = "/lights/a";
     public static final String TARGET_LOUVERS = "/zaluzie";
@@ -37,6 +40,7 @@ public class Servlet extends AbstractHandler {
     private NodeInfoCollector nodeInfoCollector;
     static Logger log = Logger.getLogger(Servlet.class.getName());
     private HashMap<NodeInfo, NodeTestRunner> testRunners = new HashMap<NodeInfo, NodeTestRunner>();
+
 
     public Servlet(NodeInfoCollector nodeInfoCollector) {
         this.nodeInfoCollector = nodeInfoCollector;
@@ -91,6 +95,12 @@ public class Servlet extends AbstractHandler {
             baseRequest.setHandled(true);
             response.getWriter().println(getLightsPage());
 
+        } else if (target.startsWith(TARGET_PIR_STATUS)) {
+            response.setContentType("text/html;charset=utf-8");
+            response.setStatus(HttpServletResponse.SC_OK);
+            baseRequest.setHandled(true);
+            response.getWriter().println(getPirPage());
+
         } else if (target.startsWith(TARGET_SYSTEM)) {
             int debugNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_INFO);
             int resetNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_RESET);
@@ -143,6 +153,7 @@ public class Servlet extends AbstractHandler {
     public static Action action5;
     public static Action[] louversActions;
     public static Action[] lightsActions;
+    public static List<PirStatus> pirStatusList;
 
     private void processAction(String action) {
         if (action.startsWith("/a1") && action1 != null) {
@@ -209,6 +220,30 @@ public class Servlet extends AbstractHandler {
         }
         builder.append("</table>");
 
+
+        builder.append("</body></html>");
+        return builder.toString();
+    }
+
+    private String getPirPage() {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("<html>" +
+                "<meta http-equiv='refresh' content='1;url=" + TARGET_PIR_STATUS + "'/>" +
+                "<head>" +
+                "<link href='/report.css' rel='stylesheet' type='text/css'/>\n" +
+                "</head>" +
+                "<body><a href='" + TARGET_PIR_STATUS + "'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
+
+        builder.append("<br/><br/><table class='buttonTable'>");
+        for (PirStatus status : pirStatusList) {
+            builder.append("<tr>");
+            String stateFieldClass = (status.isActive()) ? "louversRunning" : "louvers";
+            builder.append(String.format("<td class='%s'>%s", stateFieldClass, status.getName()));
+            String fieldClass = "louvers";
+            builder.append(String.format("<td class='%s'>%s", fieldClass, status.getLastActivate()));
+        }
+        builder.append("</table>");
 
         builder.append("</body></html>");
         return builder.toString();

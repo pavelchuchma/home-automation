@@ -11,6 +11,7 @@ import controller.Action.SwitchOffSensorAction;
 import controller.Action.SwitchOnAction;
 import controller.Action.SwitchOnSensorAction;
 import controller.ActionBinding;
+import controller.PirStatus;
 import controller.actor.Indicator;
 import controller.actor.OnOffActor;
 import controller.actor.PwmActor;
@@ -31,9 +32,12 @@ import packet.PacketUartIOMock;
 import servlet.Servlet;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     static Logger log = Logger.getLogger(Main.class.getName());
+    static List<PirStatus> pirStatusList = new ArrayList<PirStatus>();
+
 
     public static void main(String[] args) {
         try {
@@ -397,19 +401,24 @@ public class Main {
 
         // PIRs
         InputDevice pirA1Prizemi = new InputDevice("pirA1Prizemi", pirNodeA, 1);
-        lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn1AndActivate(), new Action[]{new SwitchOffSensorAction(svPradelna, 60)}, new Action[]{new SwitchOnSensorAction(svPradelna, 600)}));
-        lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn2AndActivate(), new Action[]{new SwitchOffSensorAction(svPradelna, 60)}, new Action[]{new SwitchOnSensorAction(svPradelna, 600)}));
+        setupPir(lst, pirA1Prizemi.getIn1AndActivate(), "Pradelna dvere", new SwitchOnSensorAction(svPradelna, 600), new SwitchOffSensorAction(svPradelna, 60));
+        setupPir(lst, pirA1Prizemi.getIn2AndActivate(), "Pradelna pracka", new SwitchOnSensorAction(svPradelna, 600), new SwitchOffSensorAction(svPradelna, 60));
 
         InputDevice pirA2Patro = new InputDevice("pirA2Patro", pirNodeA, 2);
-        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn3AndActivate(), new Action[]{new SwitchOffSensorAction(wcPwmActor, 60)}, new Action[]{new SwitchOnSensorAction(wcPwmActor, 600, 0, -15)}));
-        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn5AndActivate(), new Action[]{new SwitchOffSensorAction(zadveriPwmActor, 15)}, new Action[]{new SwitchOnSensorAction(zadveriPwmActor, 600, 0, -15)}));
-        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn6AndActivate(), new Action[]{new SwitchOffSensorAction(zadveriPwmActor, 15)}, new Action[]{new SwitchOnSensorAction(zadveriPwmActor, 600, 0, -15)}));
-        lst.addActionBinding(new ActionBinding(pirA2Patro.getIn4AndActivate(), new Action[]{new SwitchOffSensorAction(satnaPwmActor, 60)}, new Action[]{new SwitchOnSensorAction(satnaPwmActor, 600, 0, -15)}));
+        setupPir(lst, pirA2Patro.getIn1AndActivate(), "Chodba pred WC", (Action) null, null);
+        setupPir(lst, pirA2Patro.getIn2AndActivate(), "Chodba", (Action) null, null);
+        setupPir(lst, pirA2Patro.getIn3AndActivate(), "WC", new SwitchOnSensorAction(wcPwmActor, 600, 0, -15), new SwitchOffSensorAction(wcPwmActor, 60));
+        setupPir(lst, pirA2Patro.getIn5AndActivate(), "Zadveri hore vchod", new SwitchOnSensorAction(zadveriPwmActor, 600, 0, -15), new SwitchOffSensorAction(zadveriPwmActor, 15));
+        setupPir(lst, pirA2Patro.getIn6AndActivate(), "Zadveri hore chodba", new SwitchOnSensorAction(zadveriPwmActor, 600, 0, -15), new SwitchOffSensorAction(zadveriPwmActor, 15));
+        setupPir(lst, pirA2Patro.getIn4AndActivate(), "Chodba nad Markem", new SwitchOnSensorAction(satnaPwmActor, 600, 0, -15), new SwitchOffSensorAction(satnaPwmActor, 60));
 
         InputDevice pirA3Prizemi = new InputDevice("pirA3Prizemi", pirNodeA, 3);
-        lst.addActionBinding(new ActionBinding(pirA3Prizemi.getIn3AndActivate(), new Action[]{new SwitchOffSensorAction(chodbaDolePwmActor, 15)}, new Action[]{new SwitchOnSensorAction(chodbaDolePwmActor, 600, 0, -15)}));
-        lst.addActionBinding(new ActionBinding(pirA3Prizemi.getIn5AndActivate(), new Action[]{new SwitchOffSensorAction(svSpajza, 20)}, new Action[]{new SwitchOnSensorAction(svSpajza, 600)}));
-        lst.addActionBinding(new ActionBinding(pirA3Prizemi.getIn6AndActivate(), new Action[]{new SwitchOffSensorAction(zadveriDolePwmActor, 15)}, new Action[]{new SwitchOnSensorAction(zadveriDolePwmActor, 600, -15, -30)}));
+        setupPir(lst, pirA3Prizemi.getIn1AndActivate(), "Jidelna", (Action) null, null);
+        setupPir(lst, pirA3Prizemi.getIn2AndActivate(), "Obyvak", (Action) null, null);
+        setupPir(lst, pirA3Prizemi.getIn3AndActivate(), "Chodba dole", new SwitchOnSensorAction(chodbaDolePwmActor, 600, 0, -15), new SwitchOffSensorAction(chodbaDolePwmActor, 15));
+        setupPir(lst, pirA3Prizemi.getIn4AndActivate(), "Koupelna dole", (Action) null, null);
+        setupPir(lst, pirA3Prizemi.getIn5AndActivate(), "Spajza", new SwitchOnSensorAction(svSpajza, 600), new SwitchOffSensorAction(svSpajza, 20));
+        setupPir(lst, pirA3Prizemi.getIn6AndActivate(), "Zadveri dole", new SwitchOnSensorAction(zadveriDolePwmActor, 600, -15, -30), new SwitchOffSensorAction(zadveriDolePwmActor, 15));
 
 //        Servlet.action1 = onActionKoupelna;
 //        Servlet.action2 = offActionKoupelna;
@@ -429,11 +438,21 @@ public class Main {
         lst.addActionBinding(new ActionBinding(testSw.getLeftBottomButton(), new Action[]{new SwitchOffAction(testingLeftOnOffActor)}, null));
 
         Servlet.lightsActions = lightsActions.toArray(new Action[lightsActions.size()]);
-
+        Servlet.pirStatusList = pirStatusList;
 //        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);
 //        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));
+    }
 
+    private static void setupPir(SwitchListener lst, NodePin pirPin, String name, Action activateAction, Action deactivateAction) {
+        PirStatus status = new PirStatus(name);
+        Action[] activateActions = (activateAction != null) ? new Action[]{activateAction, status.getActivateAction()} : new Action[]{status.getActivateAction()};
+        Action[] deactivateActions = (deactivateAction != null) ? new Action[]{deactivateAction, status.getActivateAction()} : new Action[]{status.getDeactivateAction()};
+        setupPir(lst, pirPin, name, activateActions, deactivateActions);
+        pirStatusList.add(status);
+    }
 
+    private static void setupPir(SwitchListener lst, NodePin pirPin, String name, Action[] activateActions, Action[] deactivateActions) {
+        lst.addActionBinding(new ActionBinding(pirPin, deactivateActions, activateActions));
     }
 
     private static void configurePwmLights(SwitchListener lst, WallSwitch wallSwitch, WallSwitch.Side side, int initialPwmValue, PwmActor... pwmActors) {
