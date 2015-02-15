@@ -13,4 +13,8 @@ public abstract class AbstractAction implements Action {
     public Actor getActor() {
         return actor;
     }
+
+    public String toString() {
+        return String.format("%s@%s(%s)", getClass().getName(), Integer.toHexString(System.identityHashCode(this)), actor.getId());
+    }
 }

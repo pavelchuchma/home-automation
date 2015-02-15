@@ -15,6 +15,7 @@
         <param name="file" value="out/app.log"/>
         <param name="MaxFileSize" value="100MB"/>
         <param name="MaxBackupIndex" value="100"/>
+        <param name="encoding" value="UTF-8"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d{DATE} [%t] %-5p [%c{1}] %m%n"/>
         </layout>

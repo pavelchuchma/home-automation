@@ -51,7 +51,7 @@ public class AbstractSensorAction extends AbstractAction {
                     return;
                 }
                 if (!act.isOn() && !canSwitchOn) {
-                    log.error("already switched off, nothing to do for canSwitchOn == false");
+                    log.debug("already switched off, nothing to do for canSwitchOn == false");
                     return;
                 }
 

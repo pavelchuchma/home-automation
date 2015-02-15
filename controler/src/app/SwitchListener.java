@@ -24,7 +24,7 @@ public class SwitchListener extends AbstractNodeListener {
         if (existingMapping != null) {
             throw new IllegalArgumentException("Node #" + sw.getTrigger().getNodeId() + ":" + sw.getTrigger().getPin().name() + " already bound");
         }
-        log.info(String.format("ActionBinding '%s' added", sw));
+        log.info(String.format("ActionBinding '%s' added", sw.toString()));
         if (sw.getButtonDownActions() != null) {
             log.info(" buttonDown");
             for (Action a : sw.getButtonDownActions()) {
@@ -51,7 +51,7 @@ public class SwitchListener extends AbstractNodeListener {
 
     private void onButtonEvent(Node node, Pin pin, boolean buttonDown, final int previousDurationMs) {
         String swKey = createNodePinKey(node.getNodeId(), pin);
-        ActionBinding sw = switchMap.get(swKey);
+        final ActionBinding sw = switchMap.get(swKey);
         if (sw != null) {
             log.debug(String.format("Executing ActionBinding: %s", sw));
             Action[] actions = (buttonDown) ? sw.getButtonDownActions() : sw.getButtonUpActions();
@@ -61,7 +61,11 @@ public class SwitchListener extends AbstractNodeListener {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            a.perform(previousDurationMs);
+                            try {
+                                a.perform(previousDurationMs);
+                            } catch (Exception e) {
+                                log.error("Failed to perform actions of " + sw.toString(), e);
+                            }
                         }
                     }).start();
                 }
