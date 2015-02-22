@@ -13,15 +13,15 @@ public class SwitchOnSensorAction extends AbstractSensorAction {
     protected int disabledBeforeSunRiseMinutes;
     protected int enabledAfterSunsetMinutes;
     int sunriseMinutes = 7 * 60 + 7;
-    int sunsetMinutes = 16 * 60 + 0;
+    int sunsetMinutes = 17 * 60 + 0;
 
-    public SwitchOnSensorAction(IOnOffActor actor, int timeout) {
-        super(actor, timeout, true);
+    public SwitchOnSensorAction(IOnOffActor actor, int timeout, int switchOnPercent) {
+        super(actor, timeout, true, switchOnPercent);
         disabledBeforeSunRiseMinutes = enabledAfterSunsetMinutes = NOT_SET;
     }
 
-    public SwitchOnSensorAction(IOnOffActor actor, int timeout, int disabledBeforeSunRiseMinutes, int enabledAfterSunsetMinutes) {
-        super(actor, timeout, true);
+    public SwitchOnSensorAction(IOnOffActor actor, int timeout, int switchOnPercent, int disabledBeforeSunRiseMinutes, int enabledAfterSunsetMinutes) {
+        super(actor, timeout, true, switchOnPercent);
         this.disabledBeforeSunRiseMinutes = disabledBeforeSunRiseMinutes;
         this.enabledAfterSunsetMinutes = enabledAfterSunsetMinutes;
     }
