@@ -12,4 +12,8 @@ public interface Actor {
     public void removeActionData();
 
     int getValue();
+
+    void setActionData(Object actionData);
+
+    void setIndicatorsAndActionData(boolean invert, Object actionData);
 }

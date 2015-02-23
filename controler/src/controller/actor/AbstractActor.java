@@ -94,9 +94,9 @@ public abstract class AbstractActor implements Actor {
      * @param invert     - used for blinking
      * @param actionData
      */
+    @Override
     public synchronized void setIndicatorsAndActionData(boolean invert, Object actionData) {
-        this.actionData = actionData;
-        notifyAll();
+        setActionData(actionData);
 
         if (indicators != null) {
             for (Indicator i : indicators) {
@@ -104,6 +104,12 @@ public abstract class AbstractActor implements Actor {
                 setPinValue(i.getPin(), indVal, RETRY_COUNT);
             }
         }
+    }
+
+    @Override
+    public synchronized void setActionData(Object actionData) {
+        this.actionData = actionData;
+        notifyAll();
     }
 
     public String toString() {
@@ -120,7 +126,6 @@ public abstract class AbstractActor implements Actor {
 
     @Override
     public synchronized void removeActionData() {
-        actionData = null;
-        notifyAll();
+        setActionData(null);
     }
 }

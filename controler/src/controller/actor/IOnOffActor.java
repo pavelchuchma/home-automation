@@ -6,6 +6,4 @@ public interface IOnOffActor extends Actor{
     boolean switchOff(Object actionData);
 
     boolean isOn();
-
-    void setIndicatorsAndActionData(boolean invert, Object actionData);
 }

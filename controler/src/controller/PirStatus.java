@@ -81,5 +81,13 @@ public class PirStatus {
         public int getValue() {
             return 0;
         }
+
+        @Override
+        public void setActionData(Object actionData) {
+        }
+
+        @Override
+        public void setIndicatorsAndActionData(boolean invert, Object actionData) {
+        }
     }
 }
