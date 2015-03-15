@@ -4,31 +4,42 @@ import controller.actor.IOnOffActor;
 import org.apache.log4j.Logger;
 
 public class AbstractSensorAction extends AbstractAction {
-
+    public enum Priority {
+        LOW,
+        MEDIUM,
+        HIGH
+    }
     static Logger log = Logger.getLogger(AbstractSensorAction.class.getName());
 
     public static final int BLINK_DELAY = 600;
     public static final int MAX_BLINK_DURATION = 10000;
     private final int switchOnPercent;
+    private final Priority priority;
 
-    class ActionData {
-        ActionData() {
+    static class ActionData {
+        private final Priority priority;
+
+        ActionData(Priority priority) {
+            this.priority = priority;
         }
     }
 
     int timeout;
     boolean canSwitchOn;
 
-    protected AbstractSensorAction(IOnOffActor actor, int timeout, boolean canSwitchOn, int switchOnPercent) {
+    protected AbstractSensorAction(IOnOffActor actor, int timeout, boolean canSwitchOn, int switchOnPercent, Priority priority) {
         super(actor);
+        this.priority = priority;
         this.timeout = timeout * 1000;
         this.canSwitchOn = canSwitchOn;
         this.switchOnPercent = switchOnPercent;
     }
 
-    private static boolean isSensorActionData(IOnOffActor act) {
+    private  boolean canOverwriteState(IOnOffActor act) {
         Object actionData = act.getLastActionData();
-        return actionData != null && actionData.getClass() == ActionData.class;
+        return actionData != null
+                && actionData.getClass() == ActionData.class
+                && ((ActionData)actionData).priority.ordinal() <= priority.ordinal();
     }
 
     @Override
@@ -46,9 +57,10 @@ public class AbstractSensorAction extends AbstractAction {
         try {
             IOnOffActor act = (IOnOffActor) getActor();
             log.debug("Performing actor: " + act.toString());
-            ActionData aData = new ActionData();
+            ActionData aData = new ActionData(priority);
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (act) {
-                if (act.isOn() && !isSensorActionData(act)) {
+                if (act.isOn() && !canOverwriteState(act)) {
                     log.debug("switched on, but by different action type -> do not touch anything");
                     return;
                 }
