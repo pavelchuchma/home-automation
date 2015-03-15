@@ -12,8 +12,8 @@ public class SwitchOnSensorAction extends AbstractSensorAction {
     public static final int NOT_SET = Integer.MIN_VALUE;
     protected int disabledBeforeSunRiseMinutes;
     protected int enabledAfterSunsetMinutes;
-    int sunriseMinutes = 7 * 60 + 7;
-    int sunsetMinutes = 17 * 60 + 0;
+    int sunriseMinutes = 6 * 60 + 30;
+    int sunsetMinutes = 17 * 60 + 30;
 
     public SwitchOnSensorAction(IOnOffActor actor, int timeout, int switchOnPercent) {
         super(actor, timeout, true, switchOnPercent);

@@ -166,10 +166,10 @@ public class Main {
 
 
         // infrazaric v koupelne
-        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightBottomButton(), new Action[]{new SwitchOffAction(zaricKoupelnaHore2Trubice)}, null));
-        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900, 100)}, null));
-        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getLeftUpperButton(), new Action[]{new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900, 100)}, null));
-        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getLeftBottomButton(), new Action[]{new SwitchOffAction(zaricKoupelnaHore1Trubice)}, null));
+//        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightBottomButton(), new Action[]{new SwitchOffAction(zaricKoupelnaHore2Trubice)}, null));
+//        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900, 100)}, null));
+//        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getLeftUpperButton(), new Action[]{new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900, 100)}, null));
+//        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getLeftBottomButton(), new Action[]{new SwitchOffAction(zaricKoupelnaHore1Trubice)}, null));
 
 
         // zaluzie
@@ -313,10 +313,13 @@ public class Main {
         }
 
         // koupelna
-        configureLouvers(lst, koupelnaHoreSw1, WallSwitch.Side.LEFT, zaluzieKoupelnaUp, zaluzieKoupelnaDown, 50);
+        configurePwmLights(lst, koupelnaHoreSw1, WallSwitch.Side.LEFT, 50, koupelnaZrcadlaPwmActor);
         configurePwmLights(lst, koupelnaHoreSw1, WallSwitch.Side.RIGHT, 25, koupelnaPwmActor);
         lst.addActionBinding(new ActionBinding(obyvakA3Sw.getRightBottomButton(), new Action[]{new InvertAction(koupelnaPwmActor, 30)}, null));
-        //configurePwmLights(lst, obyvakA3Sw, WallSwitch.Side.RIGHT, 50, koupelnaPwmActor);
+
+        configureLouvers(lst, koupelnaHoreSw2, WallSwitch.Side.LEFT, zaluzieKoupelnaUp, zaluzieKoupelnaDown, 50);
+        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900, 100), new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900, 100)}, null));
+        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightBottomButton(), new Action[]{new SwitchOffAction(zaricKoupelnaHore1Trubice), new SwitchOffAction(zaricKoupelnaHore2Trubice)}, null));
 
         // koupelna u okna
         configureLouvers(lst, koupelnaHoreOknoSw, WallSwitch.Side.LEFT, zaluzieKoupelnaUp, zaluzieKoupelnaDown, 50);
