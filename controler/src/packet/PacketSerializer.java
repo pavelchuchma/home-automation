@@ -10,6 +10,8 @@ import java.util.List;
 
 public class PacketSerializer {
     static Logger log = Logger.getLogger(PacketSerializer.class.getName());
+    static Logger msgLog = Logger.getLogger(PacketUartIO.class.getName() + ".msg");
+
     List<Integer> buff = new ArrayList<Integer>();
 
     private void reset() {
@@ -50,8 +52,12 @@ public class PacketSerializer {
 
     public Packet readPacket(InputStream inputStream) throws IOException {
         try {
-            while (inputStream.available() > 0) {
+            while (true) {
                 int b = inputStream.read();
+                msgLog.trace(" > byte: " + b);
+                if (b < 0) {
+                    throw new IOException("End of stream reached");
+                }
                 Packet p = readPacket(b);
                 if (p != null) {
                     return p;
@@ -61,7 +67,6 @@ public class PacketSerializer {
             reset();
             throw e;
         }
-        return null;
     }
 
     synchronized public void writePacket(Packet packet, OutputStream outputStream) throws IOException {

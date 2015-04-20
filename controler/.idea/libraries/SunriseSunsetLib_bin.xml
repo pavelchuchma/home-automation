@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="SunriseSunsetLib-bin">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/SunriseSunsetLib-bin.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://C:/Temp/sunrise/mikereedell-sunrisesunsetlib-java/src/main/java" />
+    </SOURCES>
+  </library>
+</component>

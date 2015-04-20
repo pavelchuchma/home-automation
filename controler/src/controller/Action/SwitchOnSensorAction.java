@@ -1,10 +1,12 @@
 package controller.Action;
 
+import app.SunCalculator;
 import controller.actor.IOnOffActor;
 import org.apache.log4j.Logger;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 public class SwitchOnSensorAction extends AbstractSensorAction {
     static Logger log = Logger.getLogger(SwitchOnSensorAction.class.getName());
@@ -12,8 +14,7 @@ public class SwitchOnSensorAction extends AbstractSensorAction {
     public static final int NOT_SET = Integer.MIN_VALUE;
     protected int disabledBeforeSunRiseMinutes;
     protected int enabledAfterSunsetMinutes;
-    int sunriseMinutes = 6 * 60 + 30;
-    int sunsetMinutes = 17 * 60 + 30;
+    SunCalculator sunCalculator = SunCalculator.getInstance();
 
     public SwitchOnSensorAction(IOnOffActor actor, int timeout, int switchOnPercent) {
         this(actor, timeout, switchOnPercent, Priority.LOW, NOT_SET, NOT_SET);
@@ -36,9 +37,9 @@ public class SwitchOnSensorAction extends AbstractSensorAction {
     @Override
     public void perform(int previousDurationMs) {
         if (disabledBeforeSunRiseMinutes != NOT_SET) {
-            GregorianCalendar now = new GregorianCalendar();
+            GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
             int minutesToday = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE);
-            if (minutesToday > sunriseMinutes - disabledBeforeSunRiseMinutes && minutesToday < sunsetMinutes + enabledAfterSunsetMinutes) {
+            if (minutesToday > sunCalculator.getSunriseMinutes() - disabledBeforeSunRiseMinutes && minutesToday < sunCalculator.getSunsetMinutes() + enabledAfterSunsetMinutes) {
                 // sun should be shining enough :-)
                 log.info("Sun is shining instead of me. Ignoring switch on action!");
                 return;

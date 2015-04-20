@@ -1,6 +1,8 @@
 package packet;
 
-import gnu.io.*;
+import gnu.io.CommPortIdentifier;
+import gnu.io.NoSuchPortException;
+import gnu.io.SerialPort;
 import node.MessageType;
 import org.apache.log4j.Logger;
 
@@ -14,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class PacketUartIO implements SerialPortEventListener, IPacketUartIO {
+public class PacketUartIO implements IPacketUartIO {
     private class ResponseWrapper implements PacketReceivedListener {
         private Packet packet;
 
@@ -55,7 +57,8 @@ public class PacketUartIO implements SerialPortEventListener, IPacketUartIO {
     SerialPort serialPort;
     InputStream inputStream;
     PacketSerializer packetSerializer = new PacketSerializer();
-    ExecutorService threadPool = Executors.newFixedThreadPool(20);
+    ExecutorService threadPool = Executors.newFixedThreadPool(40);
+    boolean closed = false;
 
     public PacketUartIO(String portName, int baudRate) throws PacketUartIOException {
         log.debug("Creating '" + portName + "' @" + baudRate + " bauds...");
@@ -68,13 +71,14 @@ public class PacketUartIO implements SerialPortEventListener, IPacketUartIO {
                     try {
                         serialPort = (SerialPort) portId.open("SimpleReadApp", 2000);
                         inputStream = serialPort.getInputStream();
-                        serialPort.addEventListener(this);
-                        serialPort.notifyOnDataAvailable(true);
+//                        serialPort.addEventListener(this);
+                        serialPort.notifyOnDataAvailable(false);
                         serialPort.setSerialPortParams(baudRate,
                                 SerialPort.DATABITS_8,
                                 SerialPort.STOPBITS_1,
                                 SerialPort.PARITY_NONE);
                         log.debug("  serial port listener started");
+                        startRead();
                         return;
                     } catch (Exception e) {
                         log.error("Cannot open serial port", e);
@@ -87,59 +91,24 @@ public class PacketUartIO implements SerialPortEventListener, IPacketUartIO {
         throw new PacketUartIOException(new NoSuchPortException());
     }
 
-    private String serialPortEventToString(SerialPortEvent e) {
-        switch (e.getEventType()) {
-            case SerialPortEvent.BI:
-                return "BI";
-            case SerialPortEvent.OE:
-                return "OE";
-            case SerialPortEvent.FE:
-                return "FE";
-            case SerialPortEvent.PE:
-                return "PE";
-            case SerialPortEvent.CD:
-                return "CD";
-            case SerialPortEvent.CTS:
-                return "CTS";
-            case SerialPortEvent.DSR:
-                return "DSR";
-            case SerialPortEvent.RI:
-                return "RI";
-            case SerialPortEvent.OUTPUT_BUFFER_EMPTY:
-                return "OUTPUT_BUFFER_EMPTY";
-            case SerialPortEvent.DATA_AVAILABLE:
-                return "DATA_AVAILABLE";
-        }
-        return "unknown(" + e.getEventType() + ")";
-    }
-
-    @Override
-    public void serialEvent(SerialPortEvent event) {
-        log.trace("serialEvent: " + serialPortEventToString(event));
-        switch (event.getEventType()) {
-            case SerialPortEvent.BI:
-            case SerialPortEvent.OE:
-            case SerialPortEvent.FE:
-            case SerialPortEvent.PE:
-            case SerialPortEvent.CD:
-            case SerialPortEvent.CTS:
-            case SerialPortEvent.DSR:
-            case SerialPortEvent.RI:
-            case SerialPortEvent.OUTPUT_BUFFER_EMPTY:
-                break;
-            case SerialPortEvent.DATA_AVAILABLE:
-                try {
-                    Packet receivedPacket = packetSerializer.readPacket(inputStream);
-                    if (receivedPacket != null) {
+    private void startRead() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                log.debug("Starting read com thread");
+                while (!closed) {
+                    try {
+                        Packet receivedPacket = packetSerializer.readPacket(inputStream);
                         processPacket(receivedPacket);
+                    } catch (IOException e) {
+                        msgLog.error("receiveError", e);
+                        log.error(e);
+                        e.printStackTrace();
                     }
-                } catch (IOException e) {
-                    msgLog.error("receiveError", e);
-                    log.error(e);
-                    e.printStackTrace();
                 }
-                break;
-        }
+                log.debug("Ending read com thread");
+            }
+        },"ComRead").start();
     }
 
     void processPacket(final Packet packet) {
@@ -245,6 +214,7 @@ public class PacketUartIO implements SerialPortEventListener, IPacketUartIO {
 
     @Override
     public void close() {
+        closed = true;
         if (serialPort != null) {
             serialPort.close();
             log.debug("Serial port listener closed");
