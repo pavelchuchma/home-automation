@@ -71,7 +71,6 @@ public class PacketUartIO implements IPacketUartIO {
                     try {
                         serialPort = (SerialPort) portId.open("SimpleReadApp", 2000);
                         inputStream = serialPort.getInputStream();
-//                        serialPort.addEventListener(this);
                         serialPort.notifyOnDataAvailable(false);
                         serialPort.setSerialPortParams(baudRate,
                                 SerialPort.DATABITS_8,
