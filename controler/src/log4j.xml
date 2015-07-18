@@ -43,6 +43,11 @@
         <appender-ref ref="applicationLog"/>
     </category>
 
+    <category name="app.SwitchListener" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="applicationLog"/>
+    </category>
+
     <category name="packet.PacketSerializer" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="applicationLog"/>

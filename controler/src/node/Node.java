@@ -12,6 +12,8 @@ import java.util.*;
 
 public class Node implements PacketUartIO.PacketReceivedListener {
     public static final int HEART_BEAT_PERIOD = 60;
+    public static final int SET_PORT_TIMEOUT = 100;
+    public static final int GET_BUILD_TIME_TIMEOUT = 500;
     static Logger log = Logger.getLogger(Node.class.getName());
     private static Object initializationLock = new Object();
 
@@ -117,7 +119,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
     public Date getBuildTime() throws IOException {
         log.debug("getBuildTime");
-        Packet response = packetUartIO.send(Packet.createMsgGetBuildTime(nodeId), MessageType.MSG_GetBuildTimeResponse, 300);
+        Packet response = packetUartIO.send(Packet.createMsgGetBuildTime(nodeId), MessageType.MSG_GetBuildTimeResponse, GET_BUILD_TIME_TIMEOUT);
         log.debug("getBuildTime -> " + response);
         return (response != null) ?
                 new GregorianCalendar(response.data[0] + 2000, response.data[1] - 1, response.data[2], response.data[3], response.data[4]).getTime()
@@ -146,7 +148,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         log.debug("setPortValue");
         Packet response = packetUartIO.send(
                 Packet.createMsgSetPort(nodeId, port, valueMask, value, eventMask, trisValue),
-                MessageType.MSG_SetPortResponse, 100);
+                MessageType.MSG_SetPortResponse, SET_PORT_TIMEOUT);
         log.debug("setPortValue: done.");
         return response;
     }
@@ -189,7 +191,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     synchronized public Packet setManualPwmValue(Pin pin, int value) throws IOException, IllegalArgumentException {
         log.debug("setPwmValue");
         Packet req = Packet.createMsgMSGSetManualPwmValue(nodeId, pin.getPort(), pin.getPinIndex(), value);
-        return packetUartIO.send(req, MessageType.MSG_SetManualPwmValueResponse, 100);
+        return packetUartIO.send(req, MessageType.MSG_SetManualPwmValueResponse, SET_PORT_TIMEOUT);
     }
 
     synchronized public void setInitializationFinished() throws IOException {
@@ -209,7 +211,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         if (cpuFrequency == CpuFrequency.unknown)
             throw new IllegalArgumentException("Unsupported frequency value: " + cpuFrequency);
         Packet req = Packet.createMsgSetFrequency(nodeId, cpuFrequency.getValue());
-        Packet response = packetUartIO.send(req, MessageType.MSG_SetFrequencyResponse, 300);
+        Packet response = packetUartIO.send(req, MessageType.MSG_SetFrequencyResponse, SET_PORT_TIMEOUT);
         if (response == null) return false;
 
         log.debug("  < " + response);
@@ -362,7 +364,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         log.debug("RESET");
         Packet response = packetUartIO.send(
                 Packet.createMsgReset(getNodeId()),
-                MessageType.MSG_ResetResponse, 100);
+                MessageType.MSG_ResetResponse, SET_PORT_TIMEOUT);
         log.debug("RESET done.");
         return response;
     }
@@ -370,7 +372,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     public int[] readProgramMemory(int address) throws IOException {
         Packet response = packetUartIO.send(
                 Packet.createMsgReadProgramMemory(getNodeId(), address),
-                MessageType.MSG_ReadProgramResponse, 100);
+                MessageType.MSG_ReadProgramResponse, SET_PORT_TIMEOUT);
         if (response != null) {
             return Arrays.copyOf(response.data, response.data.length);
         }

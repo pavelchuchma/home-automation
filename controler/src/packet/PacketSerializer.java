@@ -90,6 +90,6 @@ public class PacketSerializer {
         buff[buff.length-1] = (byte) (crc & 127);
 
         outputStream.write(buff);
+        outputStream.flush();
     }
-
 }

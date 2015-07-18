@@ -204,6 +204,10 @@ public class PacketUartIO implements IPacketUartIO {
         ResponseWrapper responseWrapper = new ResponseWrapper(packet.nodeId, responseType);
         long begin = new Date().getTime();
         send(packet);
+
+        // hack to force output write
+        send(Packet.createMsgEchoRequest(49, 1, 2));
+
         Packet response = responseWrapper.waitForResponse(timeout);
         log.debug("resp (in " + (new Date().getTime() - begin) + " of " + timeout + "ms) " + response);
         if (response == null) log.error("No response for " + packet + ", " + MessageType.toString(responseType) + ")");
