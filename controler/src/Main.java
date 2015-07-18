@@ -105,6 +105,7 @@ public class Main {
         Node testNode20 = nodeInfoCollector.createNode(20, "TestNode20");
         Node lozniceDvere = nodeInfoCollector.createNode(21, "LozniceDvere");
         Node pradelna = nodeInfoCollector.createNode(23, "Pradelna");
+        Node lddActorB = nodeInfoCollector.createNode(24, "LDD-ActorB");
         Node koupelnaDole = nodeInfoCollector.createNode(25, "KoupelnaDole");
 
         WallSwitch chodbaA1Sw = new WallSwitch("chodbaA1Sw", chodbaA, 1);
@@ -118,6 +119,7 @@ public class Main {
         RelayBoardDevice rele1Actor3Port2 = new RelayBoardDevice("rele1Actor3Port2", actor3, 2);
 
         WallSwitch zadveriSwA1 = new WallSwitch("zadveriSwA1", zadveri, 1);
+        WallSwitch zadveriSwA2 = new WallSwitch("zadveriSwA2", zadveri, 2);
 
         WallSwitch koupelnaHoreSw1 = new WallSwitch("koupelnaHoreSw1", koupelnaHore, 1);
         WallSwitch koupelnaHoreSw2 = new WallSwitch("koupelnaHoreSw2", koupelnaHore, 2);
@@ -289,6 +291,23 @@ public class Main {
         PwmActor koupelnaDolePwmActor = addLddLight(lightsActions, "Koupelna dole", lddDevice3.getLdd5(), 0.60, new SwitchIndicator(koupelnaDoleSw1.getRedLed(), true), new SwitchIndicator(koupelnaDoleSw1.getGreenLed(), false)); // .60
         PwmActor chodbaSchodyPwmActor = addLddLight(lightsActions, "Chodba schody", lddDevice3.getLdd6(), 0.70); // .72
 
+        LddBoardDevice lddDevice4 = new LddBoardDevice("lddDevice4", lddActorB, 1, .7, .7, .7, .7, .7, .7);
+        PwmActor garaz1PwmActor = addLddLight(lightsActions, "Garáž 1", lddDevice4.getLdd1(), 0.7, new SwitchIndicator(zadveriSwA2.getRedLed(), false)); // .72
+        PwmActor garaz2PwmActor = addLddLight(lightsActions, "Garáž 2", lddDevice4.getLdd2(), 0.7); // ??
+        PwmActor test43 = addLddLight(lightsActions, "test43", lddDevice4.getLdd3(), 0.1); // ??
+        PwmActor test44 = addLddLight(lightsActions, "test44", lddDevice4.getLdd4(), 0.1); // ??
+        PwmActor test45 = addLddLight(lightsActions, "test45", lddDevice4.getLdd5(), 0.1); // ??
+        PwmActor test46 = addLddLight(lightsActions, "test46", lddDevice4.getLdd6(), 0.1); // ??
+
+        LddBoardDevice lddDevice5 = new LddBoardDevice("lddDevice5", lddActorB, 2, .35, .35, 1.0, 1.0, 1.0, 1.0);
+        PwmActor garaz3PwmActor = addLddLight(lightsActions, "Garáž 3", lddDevice5.getLdd1(), 0.35, new SwitchIndicator(zadveriSwA2.getGreenLed(), false)); // .36
+        PwmActor test52 = addLddLight(lightsActions, "test52", lddDevice5.getLdd2(), 0.1); // ??
+        PwmActor test53 = addLddLight(lightsActions, "test53", lddDevice5.getLdd3(), 0.1); // ??
+        PwmActor test54 = addLddLight(lightsActions, "test54", lddDevice5.getLdd4(), 0.1); // ??
+        PwmActor test55 = addLddLight(lightsActions, "test55", lddDevice5.getLdd5(), 0.1); // ??
+        PwmActor test56 = addLddLight(lightsActions, "test56", lddDevice5.getLdd6(), 0.1); // ??
+
+
         Action[] louversInvertActions = new Action[louversActors.length];
         for (int i = 0; i < louversActors.length; i++) {
             louversInvertActions[i] = new InvertActionWithTimer(louversActors[i], 70);
@@ -304,13 +323,13 @@ public class Main {
         lst.addActionBinding(new ActionBinding(obyvakA3Sw.getRightBottomButton(), new Action[]{new InvertAction(koupelnaPwmActor, 30)}, null));
 
         configureLouvers(lst, koupelnaHoreSw2, WallSwitch.Side.LEFT, zaluzieKoupelnaUp, zaluzieKoupelnaDown, 50);
-//        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900, 100), new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900, 100)}, null));
-//        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightBottomButton(), new Action[]{new SwitchOffAction(zaricKoupelnaHore1Trubice), new SwitchOffAction(zaricKoupelnaHore2Trubice)}, null));
+        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900, 100), new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900, 100)}, null));
+        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightBottomButton(), new Action[]{new SwitchOffAction(zaricKoupelnaHore1Trubice), new SwitchOffAction(zaricKoupelnaHore2Trubice)}, null));
 
         // koupelna u okna
         configureLouvers(lst, koupelnaHoreOknoSw, WallSwitch.Side.LEFT, zaluzieKoupelnaUp, zaluzieKoupelnaDown, 50);
-//        lst.addActionBinding(new ActionBinding(koupelnaHoreOknoSw.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900, 100), new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900, 100)}, null));
-//        lst.addActionBinding(new ActionBinding(koupelnaHoreOknoSw.getRightBottomButton(), new Action[]{new SwitchOffAction(zaricKoupelnaHore1Trubice), new SwitchOffAction(zaricKoupelnaHore2Trubice)}, null));
+        lst.addActionBinding(new ActionBinding(koupelnaHoreOknoSw.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900, 100), new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900, 100)}, null));
+        lst.addActionBinding(new ActionBinding(koupelnaHoreOknoSw.getRightBottomButton(), new Action[]{new SwitchOffAction(zaricKoupelnaHore1Trubice), new SwitchOffAction(zaricKoupelnaHore2Trubice)}, null));
 
 
         // kuchyn + obyvak
@@ -334,6 +353,10 @@ public class Main {
         configurePwmLights(lst, zadveriSwA1, WallSwitch.Side.RIGHT, 80, zadveriPwmActor);
         configurePwmLights(lst, zadveriVratniceSw3, WallSwitch.Side.LEFT, 80, zadveriPwmActor);
         configurePwmLights(lst, zadveriVratniceSw3, WallSwitch.Side.RIGHT, 80, zadveriPwmActor);
+
+        // garaz
+        configurePwmLights(lst, zadveriSwA2, WallSwitch.Side.LEFT, 50, garaz1PwmActor, garaz2PwmActor);
+        configurePwmLights(lst, zadveriSwA2, WallSwitch.Side.RIGHT, 100, garaz3PwmActor);
 
 
         // Krystof + Pata
