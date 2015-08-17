@@ -160,7 +160,7 @@ cam_n_y: 1
 cam_space_x: 0
 cam_space_y: 0
 
-report_options: 0
+report_options: 4096
 drc_check_unrouted: 1
 drc_trace_width: 254000
 drc_pad_pad: 254000
@@ -749,7 +749,7 @@ part: MH7400
 part: R14
   ref_text: 635000 63500 0 2540000 -254000 1
   package: ""
-  value: "1K" 635000 63500 0 3302000 -254000 0
+  value: "820R" 635000 63500 0 3302000 -254000 0
   shape: "Resistor-short"
   pos: -17780000 15240000 0 90 0
 
@@ -800,14 +800,14 @@ part: PI
 part: R20
   ref_text: 635000 63500 0 508000 -254000 1
   package: ""
-  value: "460R" 635000 63500 0 3302000 -254000 1
+  value: "470R" 635000 63500 0 3302000 -254000 1
   shape: "Resistor-short"
   pos: -17780000 21590000 0 0 0
 
 part: R21
   ref_text: 635000 63500 0 508000 -254000 1
   package: ""
-  value: "920R" 635000 63500 0 3302000 -254000 1
+  value: "820R" 635000 63500 0 3302000 -254000 1
   shape: "Resistor-short"
   pos: -17780000 34925000 0 90 0
 
@@ -848,7 +848,7 @@ part: R03
 part: R05
   ref_text: 635000 63500 0 508000 -254000 1
   package: ""
-  value: "460R" 635000 63500 0 3302000 -254000 1
+  value: "470R" 635000 63500 0 3302000 -254000 1
   shape: "Resistor-short"
   pos: -17780000 24130000 0 0 0
 
