@@ -39,7 +39,7 @@ char digitToBCD(char digit) @ 0xE0
 }
 
 void recalculateDisplayValue() {
-    unsigned short long num = displayValueOld = displayValue;
+    unsigned short long num = displayValue;
 
     char tmp = 0; // count 100 000s
     while (num > 99999) {

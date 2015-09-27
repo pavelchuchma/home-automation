@@ -39,6 +39,8 @@ volatile char displaySegments[6];
 volatile char canReceiveLongMsgCount;
 volatile char canReceiveMismatch;
 
+volatile char switchBridgeLedOffCounter;
+
 volatile ManualPwmData manualPwmPortData[3];
 volatile char checkInput;
 

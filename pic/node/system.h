@@ -39,10 +39,16 @@ enum NodeId {
     NODE_19 = 19,
     NODE_20 = 20,
     NODE_21 = 21,
+    NODE_22 = 22,
+    NODE_23 = 23,
+    NODE_24 = 24,
+    NODE_25 = 25,
+    NODE_26 = 26,
     NODE_ALL = 255,
 };
+#define HAS_ROUTER_DISPLAY 0
 
-#define NODE_ID NODE_19
+#define NODE_ID NODE_ROUTER
 #define RUN_TESTS 0
 #define PWM_RESOLUTION 48
 #define PIN_CHANGE_LOOP_COUNT 37
@@ -82,6 +88,8 @@ extern volatile char displaySegments[6];
 
 extern volatile char canReceiveLongMsgCount;
 extern volatile char canReceiveMismatch;
+
+extern volatile char switchBridgeLedOffCounter;
 
 extern volatile ManualPwmData manualPwmPortData[3];
 extern volatile char checkInput;

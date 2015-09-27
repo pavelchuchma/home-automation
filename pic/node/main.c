@@ -47,7 +47,6 @@ void freshenDisplay() {
 
     // switch segments on
     PORTA &= val | 0b11110000;
-    ;
     PORTC &= (val >> 4) | 0b11110000;
 
     // switch selected digit on
@@ -271,11 +270,29 @@ void main(void) {
             checkUartErrors();
 
             if (loopCounter == 0) {
-                if (displayValue != displayValueOld) {
-                    //I'm router (have display) and new value to display is ready
-                    recalculateDisplayValue();
+                // refresh display
+                if (HAS_ROUTER_DISPLAY) {
+                    freshenDisplay();
+                } else {
+                    if (switchBridgeLedOffCounter == 0) {
+                        // turn packet lenght OFF
+                        PORTBbits.RB1 = 1;
+                    } else {
+                        switchBridgeLedOffCounter--;
+                    }
                 }
-                freshenDisplay();
+
+                if (displayValue != displayValueOld) {
+                    displayValueOld = displayValue;
+                    if (HAS_ROUTER_DISPLAY) {
+                        //I'm router (have display) and new value to display is ready
+                        recalculateDisplayValue();
+                    } else {
+                        // turn packet lenght ON
+                        PORTBbits.RB1 = 0;
+                        switchBridgeLedOffCounter = 23; // approx 10 ms
+                    }
+                }
             }
         }
 

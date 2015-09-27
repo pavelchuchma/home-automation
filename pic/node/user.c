@@ -60,10 +60,15 @@ void InitApp(void) {
 
     // setup USART if NODE_ROUTER
     if (nodeId == NODE_ROUTER) {
-        // setup TRIS for display
-        TRISA &= 0b00010000;
-        TRISB0 = 0;
-        TRISC &= 0b11000000;
+        if (HAS_ROUTER_DISPLAY) {
+            // setup TRIS for display
+            TRISA &= 0b00010000;
+            TRISB0 = 0;
+            TRISC &= 0b11000000;
+        } else {
+            // packet signal led only
+            TRISB1 = 0;
+        }
 
         // 832 (0x0340) for 300 Bauds @ 1 MHz clock (250 kHz clock cycle)
         // 12 (0x000C) for 19230 Bauds @ 1 MHz clock (250 kHz clock cycle)
@@ -97,6 +102,7 @@ void InitApp(void) {
 
     
     checkInput = 0;
+    switchBridgeLedOffCounter = 0;
 
     /* Initialize User Ports/Peripherals/Project here */
 
