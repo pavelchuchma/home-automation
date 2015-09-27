@@ -76,6 +76,7 @@ public class PacketUartIO implements IPacketUartIO {
                                 SerialPort.DATABITS_8,
                                 SerialPort.STOPBITS_1,
                                 SerialPort.PARITY_NONE);
+                        serialPort.enableReceiveTimeout(3600000);
                         log.debug("  serial port listener started");
                         startRead();
                         return;

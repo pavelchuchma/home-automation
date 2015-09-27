@@ -274,7 +274,7 @@ public class Main {
         // PWM
         LddBoardDevice lddDevice1 = new LddBoardDevice("lddDevice1", lddActorA, 1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
         ArrayList<Action> lightsActions = new ArrayList<Action>();
-        PwmActor marekPwmActor = addLddLight(lightsActions, "Marek", lddDevice1.getLdd1(), 0.95, new SwitchIndicator(marekSwA1.getRedLed(), true), new SwitchIndicator(marekPostelSw3.getRedLed(), true)); //.96
+        PwmActor marekPwmActor = addLddLight(lightsActions, "Marek", lddDevice1.getLdd1(), 0.95, new SwitchIndicator(marekSwA1.getRedLed(), true)); //.96
         PwmActor pataPwmActor = addLddLight(lightsActions, "Paťa", lddDevice1.getLdd2(), 0.95, new SwitchIndicator(patrikSw1.getRedLed(), true)); //.96
         PwmActor krystofPwmActor = addLddLight(lightsActions, "Kryštof", lddDevice1.getLdd3(), 0.95, new SwitchIndicator(krystofSwA2.getRedLed(), true)); //.96
         PwmActor koupelnaPwmActor = addLddLight(lightsActions, "Koupelna", lddDevice1.getLdd4(), 1.0, obyvakA3Sw.getGreenLedIndicator(false), koupelnaHoreSw1.getGreenLedIndicator(false), koupelnaHoreSw1.getRedLedIndicator(true)); // 1.08
