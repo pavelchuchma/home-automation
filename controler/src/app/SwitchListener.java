@@ -1,6 +1,6 @@
 package app;
 
-import controller.Action.Action;
+import controller.action.Action;
 import controller.ActionBinding;
 import node.Node;
 import node.Pin;

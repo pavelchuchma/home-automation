@@ -1,5 +1,6 @@
-package controller.Action;
+package controller.action;
 
+import controller.action.AbstractAction;
 import controller.actor.IOnOffActor;
 import org.apache.log4j.Logger;
 

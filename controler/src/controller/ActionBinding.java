@@ -1,6 +1,6 @@
 package controller;
 
-import controller.Action.Action;
+import controller.action.Action;
 import controller.actor.Actor;
 import node.NodePin;
 

@@ -1,4 +1,4 @@
-package controller.Action;
+package controller.action;
 
 import controller.actor.OnOffActor;
 

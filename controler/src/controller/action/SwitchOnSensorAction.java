@@ -1,4 +1,4 @@
-package controller.Action;
+package controller.action;
 
 import app.SunCalculator;
 import controller.actor.IOnOffActor;

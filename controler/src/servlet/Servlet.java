@@ -2,7 +2,7 @@ package servlet;
 
 import app.NodeInfo;
 import app.NodeInfoCollector;
-import controller.Action.Action;
+import controller.action.Action;
 import controller.PirStatus;
 import controller.actor.PwmActor;
 import controller.device.ConnectedDevice;
