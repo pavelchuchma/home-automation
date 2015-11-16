@@ -101,9 +101,9 @@ public class Main {
         Node zadveriDoleVchod = nodeInfoCollector.createNode(17, "ZadveriDoleUVchodu");
         Node pracovna = nodeInfoCollector.createNode(18, "Pracovna");
         Node lddActorA = nodeInfoCollector.createNode(19, "LDD-ActorA");
-        Node testNode20 = nodeInfoCollector.createNode(20, "TestNode20");
+        Node garazVzadu = nodeInfoCollector.createNode(20, "GarazVzadu");
         Node lozniceDvere = nodeInfoCollector.createNode(21, "LozniceDvere");
-        Node garazA = nodeInfoCollector.createNode(22, "GarazA");
+        Node garazVpredu = nodeInfoCollector.createNode(22, "GarazVpredu");
         Node pradelna = nodeInfoCollector.createNode(23, "Pradelna");
         Node lddActorB = nodeInfoCollector.createNode(24, "LDD-ActorB");
         Node koupelnaDole = nodeInfoCollector.createNode(25, "KoupelnaDole");
@@ -146,12 +146,13 @@ public class Main {
         WallSwitch pracovnaSw2 = new WallSwitch("pracovnaSw2", pracovna, 2);
         WallSwitch satnaSw3 = new WallSwitch("satnaSw3", pracovna, 3);
         WallSwitch koupelnaHoreOknoSw = new WallSwitch("koupelnaHoreOknoSw", zadveriDoleVchod, 3);
-        WallSwitch garazASw1 = new WallSwitch("garazASw1", garazA, 1);
-        WallSwitch garazASw2 = new WallSwitch("garazASw2", garazA, 2);
+        WallSwitch garazASw1 = new WallSwitch("garazASw1", garazVpredu, 1);
+        WallSwitch garazASw2 = new WallSwitch("garazASw2", garazVpredu, 2);
         WallSwitch pradelnaSw1 = new WallSwitch("pradelnaSw1", pradelna, 1);
         WallSwitch chodbaDoleSpajzSw3 = new WallSwitch("chodbaDoleSpajzSw3", pradelna, 3);
         WallSwitch koupelnaDoleSw1 = new WallSwitch("koupelnaDoleSw1", koupelnaDole, 1);
         WallSwitch kuchynSw1 = new WallSwitch("kuchynSw1", kuchyn, 1);
+        WallSwitch kuchynSw2 = new WallSwitch("kuchynSw2", kuchyn, 2);
 
         OnOffActor svJidelna = new OnOffActor("svJidelna", triak1Actor3Port3.getOut1(), 1, 0, obyvakA3Sw.getRedLedIndicator(true));
         OnOffActor svSklepLevy = new OnOffActor("svSklepLevy", triak1Actor3Port3.getOut2(), 1, 0, zadveriDoldePradelnaSw.getGreenLedIndicator(false));
@@ -304,14 +305,14 @@ public class Main {
         PwmActor garaz1PwmActor = addLddLight(lightsActions, "Garáž 1", lddDevice4.getLdd1(), 0.7, new SwitchIndicator(zadveriSwA2.getRedLed(), false), new SwitchIndicator(garazASw1.getRedLed(), true)); // .72
         PwmActor garaz2PwmActor = addLddLight(lightsActions, "Garáž 2", lddDevice4.getLdd2(), 0.7); // ??
         PwmActor test43 = addLddLight(lightsActions, "test43", lddDevice4.getLdd3(), 0.1); // ??
-        PwmActor test44 = addLddLight(lightsActions, "test44", lddDevice4.getLdd4(), 0.1); // ??
+        PwmActor kuchyn2PwmActor = addLddLight(lightsActions, "Kuchyň 2", lddDevice4.getLdd4(), 0.7, new SwitchIndicator(kuchynSw1.getRedLed(), true)); // .72
         PwmActor test45 = addLddLight(lightsActions, "test45", lddDevice4.getLdd5(), 0.1); // ??
         PwmActor test46 = addLddLight(lightsActions, "test46", lddDevice4.getLdd6(), 0.1); // ??
 
         LddBoardDevice lddDevice5 = new LddBoardDevice("lddDevice5", lddActorB, 2, .35, .35, 1.0, 1.0, 1.0, 1.0);
         PwmActor garaz3PwmActor = addLddLight(lightsActions, "Garáž 3", lddDevice5.getLdd1(), 0.35, new SwitchIndicator(zadveriSwA2.getGreenLed(), false)); // .36
         PwmActor test52 = addLddLight(lightsActions, "test52", lddDevice5.getLdd2(), 0.1); // ??
-        PwmActor test53 = addLddLight(lightsActions, "test53", lddDevice5.getLdd3(), 0.1); // ??
+        PwmActor obyvak01PwmActor = addLddLight(lightsActions, "Obyvák 01", lddDevice5.getLdd3(), 0.7); // .72
         PwmActor test54 = addLddLight(lightsActions, "test54", lddDevice5.getLdd4(), 0.1); // ??
         PwmActor test55 = addLddLight(lightsActions, "test55", lddDevice5.getLdd5(), 0.1); // ??
         PwmActor test56 = addLddLight(lightsActions, "test56", lddDevice5.getLdd6(), 0.1); // ??
@@ -471,6 +472,10 @@ public class Main {
         }, new Action[]{}));
 
 
+        configurePwmLights(lst, kuchynSw1, WallSwitch.Side.RIGHT, 80, kuchyn2PwmActor);
+        configurePwmLights(lst, kuchynSw2, WallSwitch.Side.RIGHT, 80, obyvak01PwmActor);
+
+
         // PIRs
         InputDevice pirA1Prizemi = new InputDevice("pirA1Prizemi", pirNodeA, 1);
         setupPir(lst, pirA1Prizemi.getIn1AndActivate(), "Pradelna dvere", new SwitchOnSensorAction(svPradelna, 600, 100), new SwitchOffSensorAction(svPradelna, 60));
@@ -485,13 +490,16 @@ public class Main {
         setupPir(lst, pirA2Patro.getIn4AndActivate(), "Chodba nad Markem", new SwitchOnSensorAction(satnaPwmActor, 600, 66, 0, -15), new SwitchOffSensorAction(satnaPwmActor, 60));
 
         InputDevice pirA3Prizemi = new InputDevice("pirA3Prizemi", pirNodeA, 3);
-        setupPir(lst, pirA3Prizemi.getIn1AndActivate(), "Jidelna", (Action) null, null);
-        setupPir(lst, pirA3Prizemi.getIn2AndActivate(), "Obyvak", (Action) null, null);
+        setupPir(lst, pirA3Prizemi.getIn1AndActivate(), "Jidelna", null, null);
+        setupPir(lst, pirA3Prizemi.getIn2AndActivate(), "Obyvak", null, null);
         setupPir(lst, pirA3Prizemi.getIn3AndActivate(), "Chodba dole", new SwitchOnSensorAction(chodbaDolePwmActor, 600, 100, 0, -15), new SwitchOffSensorAction(chodbaDolePwmActor, 15));
         setupPir(lst, pirA3Prizemi.getIn4AndActivate(), "Koupelna dole", new SwitchOnSensorAction(koupelnaDolePwmActor, 600, 50, 0, -15), new SwitchOffSensorAction(koupelnaDolePwmActor, 60));
         setupPir(lst, pirA3Prizemi.getIn5AndActivate(), "Spajza", new SwitchOnSensorAction(svSpajza, 600, 100), new SwitchOffSensorAction(svSpajza, 20));
         setupPir(lst, pirA3Prizemi.getIn6AndActivate(), "Zadveri dole", new SwitchOnSensorAction(zadveriDolePwmActor, 600, 100, -15, -30), new SwitchOffSensorAction(zadveriDolePwmActor, 15));
 
+        InputDevice cidlaGaraz = new InputDevice("cidlaGaraz", garazVzadu, 3);
+        setupMagneticSensor(lst, cidlaGaraz.getIn1AndActivate(), "Garaz hore", null, null);
+        setupMagneticSensor(lst, cidlaGaraz.getIn2AndActivate(), "Garaz dole", null, null);
 
 
         Servlet.action1 = new SwitchOnSensorAction(bzucakDvere, 3, 100);
@@ -522,15 +530,23 @@ public class Main {
     }
 
     private static void setupPir(SwitchListener lst, NodePin pirPin, String name, Action activateAction, Action deactivateAction) {
+        setupSensor(lst, pirPin, name, activateAction, deactivateAction, true);
+    }
+
+    private static void setupMagneticSensor(SwitchListener lst, NodePin pirPin, String name, Action activateAction, Action deactivateAction) {
+        setupSensor(lst, pirPin, name, activateAction, deactivateAction, false);
+    }
+
+    private static void setupSensor(SwitchListener lst, NodePin pirPin, String name, Action activateAction, Action deactivateAction, boolean logicalOneIsActivate) {
         PirStatus status = new PirStatus(name);
         Action[] activateActions = (activateAction != null) ? new Action[]{activateAction, status.getActivateAction()} : new Action[]{status.getActivateAction()};
         Action[] deactivateActions = (deactivateAction != null) ? new Action[]{deactivateAction, status.getDeactivateAction()} : new Action[]{status.getDeactivateAction()};
-        setupPir(lst, pirPin, name, activateActions, deactivateActions);
+        if (logicalOneIsActivate) {
+            lst.addActionBinding(new ActionBinding(pirPin, deactivateActions, activateActions));
+        } else {
+            lst.addActionBinding(new ActionBinding(pirPin, activateActions, deactivateActions));
+        }
         pirStatusList.add(status);
-    }
-
-    private static void setupPir(SwitchListener lst, NodePin pirPin, String name, Action[] activateActions, Action[] deactivateActions) {
-        lst.addActionBinding(new ActionBinding(pirPin, deactivateActions, activateActions));
     }
 
     private static void configurePwmLights(SwitchListener lst, WallSwitch wallSwitch, WallSwitch.Side side, int initialPwmValue, PwmActor... pwmActors) {
