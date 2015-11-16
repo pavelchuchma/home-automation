@@ -1,0 +1,5 @@
+(gerbv-file-version! "2.0A")
+(define-layer! 1 (cons 'filename "bottom_copper.grb")(cons 'visible #t)(cons 'color #(0 0 0)))
+(define-layer! 0 (cons 'filename "drill_file.drl")(cons 'visible #t)(cons 'color #(65535 65535 65535))(cons 'attribs (list (list 'autodetect 'Boolean 1) (list 'zero_supression 'Enum 0) (list 'units 'Enum 0) (list 'digits 'Integer 4))))
+(define-layer! -1 (cons 'filename "N:/work/HomeAutomation/pcb/ledDriver/CAM")(cons 'visible #f)(cons 'color #(0 0 0)))
+(set-render-type! 2)
