@@ -158,7 +158,7 @@ public class Main {
         OnOffActor svJidelna = new OnOffActor("svJidelna", triak1Actor3Port3.getOut1(), 1, 0, obyvakA3Sw.getRedLedIndicator(true));
         OnOffActor svSklepLevy = new OnOffActor("svSklepLevy", triak1Actor3Port3.getOut2(), 1, 0, zadveriDoldePradelnaSw.getGreenLedIndicator(false));
         OnOffActor svSpajza = new OnOffActor("svSpajza", triak1Actor3Port3.getOut3(), 1, 0, chodbaDoleSpajzSw3.getRedLedIndicator(false));
-        OnOffActor zasStromek = new OnOffActor("zasStromek", triak1Actor3Port3.getOut4(), 1, 0);
+        OnOffActor zasStromek = new OnOffActor("zasStromek", triak1Actor3Port3.getOut4(), 1, 0, zadveriSwA1.getGreenLedIndicator(false));
         OnOffActor svSklepPravy = new OnOffActor("svSklepPravy", triak1Actor3Port3.getOut5(), 1, 0);
         OnOffActor zaricKoupelnaHore2Trubice = new OnOffActor("zaricKoupelnaHore2Trubice", rele1Actor3Port2.getRele1(), 0, 1, koupelnaHoreSw2.getRedLedIndicator(true), koupelnaHoreOknoSw.getRedLedIndicator(true));
         OnOffActor zaricKoupelnaHore1Trubice = new OnOffActor("zaricKoupelnaHore1Trubice", rele1Actor3Port2.getRele2(), 0, 1, koupelnaHoreSw2.getGreenLedIndicator(true), koupelnaHoreOknoSw.getGreenLedIndicator(true));
@@ -380,8 +380,9 @@ public class Main {
         configurePwmLights(lst, zadveriSwA1, WallSwitch.Side.LEFT, 80, zadveriPwmActor);
 
         SwitchOnSensorAction ovladacGarazAction = new SwitchOnSensorAction(ovladacGaraz, 1, 100);
+        InvertActionWithTimer stomekAction = new InvertActionWithTimer(zasStromek, 12600);
         lst.addActionBinding(new ActionBinding(zadveriSwA1.getRightUpperButton(), new Action[]{ovladacGarazAction}, null));
-        lst.addActionBinding(new ActionBinding(zadveriSwA1.getRightBottomButton(), new Action[]{ovladacGarazAction}, null));
+        lst.addActionBinding(new ActionBinding(zadveriSwA1.getRightBottomButton(), new Action[]{stomekAction}, null));
 
         configurePwmLights(lst, zadveriSwA2, WallSwitch.Side.LEFT, 80, garaz1PwmActor, garaz2PwmActor);
         configurePwmLights(lst, zadveriSwA2, WallSwitch.Side.RIGHT, 100, garaz3PwmActor);
