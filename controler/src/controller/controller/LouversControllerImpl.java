@@ -2,9 +2,9 @@ package controller.controller;
 
 import controller.actor.IOnOffActor;
 
-public class LouverControllerImpl implements LouverController {
-    public LouverControllerImpl(int downPositionMs) {
-//        this.downPositionMs = downPositionMs;
+public class LouversControllerImpl implements LouversController {
+    public LouversControllerImpl(int downPositionMs) {
+//        this.maxPositionMs = maxPositionMs;
     }
 
     IOnOffActor upActor;
@@ -12,7 +12,7 @@ public class LouverControllerImpl implements LouverController {
 
 
     @Override
-    public synchronized void open() {
+    public synchronized void up() {
         if (!downActor.switchOff(this)) {
             //bla
         }
@@ -20,12 +20,12 @@ public class LouverControllerImpl implements LouverController {
     }
 
     @Override
-    public void blind() {
+    public synchronized void blind() {
 
     }
 
     @Override
-    public void outshine() {
+    public synchronized void outshine() {
 
     }
 

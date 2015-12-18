@@ -1,7 +1,7 @@
 package controller.controller;
 
-public interface LouverController {
-    void open();
+public interface LouversController {
+    void up();
 
     void blind();
 
