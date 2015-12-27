@@ -5,5 +5,7 @@ public interface LouversController {
 
     void blind();
 
-    void outshine();
+    void outshine(int percent);
+
+    void stop();
 }

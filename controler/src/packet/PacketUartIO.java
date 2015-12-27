@@ -207,7 +207,7 @@ public class PacketUartIO implements IPacketUartIO {
         send(packet);
 
         // hack to force output write
-        send(Packet.createMsgEchoRequest(49, 1, 2));
+//        send(Packet.createMsgEchoRequest(49, 1, 2));
 
         Packet response = responseWrapper.waitForResponse(timeout);
         log.debug("resp (in " + (new Date().getTime() - begin) + " of " + timeout + "ms) " + response);

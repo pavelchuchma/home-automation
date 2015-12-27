@@ -3,24 +3,25 @@ package controller.controller;
 public class LouversPosition {
     Position position;
     Position offset;
+    int upReserve;
 
-    public LouversPosition(int maxPositionMs, int maxOffsetMs) {
+    public LouversPosition(int maxPositionMs, int maxOffsetMs, int upReserve) {
         position = new Position(maxPositionMs);
         offset = new Position(maxOffsetMs);
+        this.upReserve = upReserve;
     }
 
-    int up() {
+    public int startUp() {
         long now = stopImpl();
-
-        offset.up(now);
-        return position.up(now);
+        offset.startUp(now);
+        return position.startUp(now) + upReserve;
     }
 
-    int down() {
+    public int startDown() {
         long now = stopImpl();
 
-        offset.down(now);
-        return position.down(now);
+        offset.startDown(now);
+        return position.startDown(now);
     }
 
     private long stopImpl() {
@@ -30,17 +31,23 @@ public class LouversPosition {
         return now;
     }
 
-    void stop() {
+    public void stop() {
         stopImpl();
     }
 
-    int getPosition() {
+    public int getPosition() {
         return position.getPositionMs(System.currentTimeMillis());
     }
 
-    int getOffset() {
+    public int getOffset() {
         return offset.getPositionMs(System.currentTimeMillis());
     }
 
+    public boolean isDown() {
+        return getPosition() >= position.maxPositionMs - offset.maxPositionMs;
+    }
 
+    public Position.Activity getActivity() {
+        return position.activity;
+    }
 }

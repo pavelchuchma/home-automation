@@ -39,7 +39,7 @@ import java.util.List;
 
 public class Main {
     static Logger log = Logger.getLogger(Main.class.getName());
-    static List<PirStatus> pirStatusList = new ArrayList<PirStatus>();
+    static List<PirStatus> pirStatusList = new ArrayList<>();
 
 
     public static void main(String[] args) {
@@ -330,7 +330,7 @@ public class Main {
 
         LddBoardDevice lddDevice7 = new LddBoardDevice("lddDevice7", lddActorC, 3, .7, .7, .7, .7, .7, .7);
         PwmActor pradelna2PwmActor = addLddLight(lightsActions, "Prádelna 2", lddDevice7.getLdd1(), 0.7); // .72
-        PwmActor test72 = addLddLight(lightsActions, "test7.2", lddDevice7.getLdd2(), 0.05); // ??
+        PwmActor vchodHorePwmActor = addLddLight(lightsActions, "Vchod hore", lddDevice7.getLdd2(), 0.48); // .48
         PwmActor test73 = addLddLight(lightsActions, "test7.3", lddDevice7.getLdd3(), 0.05); // ??
         PwmActor test74 = addLddLight(lightsActions, "test7.4", lddDevice7.getLdd4(), 0.05); // ??
         PwmActor test75 = addLddLight(lightsActions, "test7.5", lddDevice7.getLdd5(), 0.05); // ??
@@ -501,8 +501,10 @@ public class Main {
 
         // PIRs
         InputDevice pirA1Prizemi = new InputDevice("pirA1Prizemi", pirNodeA, 1);
-        setupPir(lst, pirA1Prizemi.getIn1AndActivate(), "Pradelna dvere", new SwitchOnSensorAction(pradelna1PwmActor, 600, 60), new SwitchOffSensorAction(pradelna1PwmActor, 60));
-        setupPir(lst, pirA1Prizemi.getIn2AndActivate(), "Pradelna pracka", new SwitchOnSensorAction(pradelna1PwmActor, 600, 60), new SwitchOffSensorAction(pradelna1PwmActor, 60));
+        setupPir(lst, pirA1Prizemi.getIn1AndActivate(), "Pradelna dvere", new SwitchOnSensorAction(pradelna1PwmActor, 600, 80), new SwitchOffSensorAction(pradelna1PwmActor, 60));
+        setupPir(lst, pirA1Prizemi.getIn2AndActivate(), "Pradelna pracka", new SwitchOnSensorAction(pradelna1PwmActor, 600, 80), new SwitchOffSensorAction(pradelna1PwmActor, 60));
+        setupPir(lst, pirA1Prizemi.getIn4AndActivate(), "Vchod hore", new SwitchOnSensorAction(vchodHorePwmActor, 600, 80, 0, -15), new SwitchOffSensorAction(vchodHorePwmActor, 60));
+        setupPir(lst, pirA1Prizemi.getIn5AndActivate(), "Schodiste", null, null);
 
         InputDevice pirA2Patro = new InputDevice("pirA2Patro", pirNodeA, 2);
         setupPir(lst, pirA2Patro.getIn1AndActivate(), "Chodba pred WC", (Action) null, null);
@@ -576,10 +578,10 @@ public class Main {
     }
 
     private static void configurePwmLightsImpl(SwitchListener lst, WallSwitch wallSwitch, WallSwitch.Side side, int initialPwmValue, PwmActor[] pwmActors, IOnOffActor[] switchOffOnlyActors) {
-        List<Action> upperButtonUpActions = new ArrayList<Action>();
-        List<Action> upperButtonDownActions = new ArrayList<Action>();
-        List<Action> downButtonUpActions = new ArrayList<Action>();
-        List<Action> downButtonDownActions = new ArrayList<Action>();
+        List<Action> upperButtonUpActions = new ArrayList<>();
+        List<Action> upperButtonDownActions = new ArrayList<>();
+        List<Action> downButtonUpActions = new ArrayList<>();
+        List<Action> downButtonDownActions = new ArrayList<>();
 
         for (PwmActor pwmActor : pwmActors) {
             PwmActionGroup actionGroup = new PwmActionGroup(pwmActor, initialPwmValue);

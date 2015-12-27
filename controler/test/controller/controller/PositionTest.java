@@ -11,38 +11,38 @@ public class PositionTest {
         // start at unknown position
         Assert.assertTrue(p.getPositionMs(System.currentTimeMillis()) < 0);
         // UP for 10 ms
-        int i = p.up(System.currentTimeMillis());
+        int i = p.startUp(System.currentTimeMillis());
         Assert.assertTrue(String.valueOf(i), i == 100);
         Thread.sleep(10);
         p.stop(System.currentTimeMillis());
         Assert.assertTrue(p.getPositionMs(System.currentTimeMillis()) < 0);
 
         // up for 80 ms
-        i = p.up(System.currentTimeMillis());
+        i = p.startUp(System.currentTimeMillis());
         Assert.assertTrue(String.valueOf(i), i <= 90);
         Thread.sleep(80);
         p.stop(System.currentTimeMillis());
         Assert.assertTrue(p.getPositionMs(System.currentTimeMillis()) < 0);
 
         // up for 11 ms to find position
-        i = p.up(System.currentTimeMillis());
+        i = p.startUp(System.currentTimeMillis());
         Assert.assertTrue(String.valueOf(i), i <= 10);
         Thread.sleep(11);
         p.stop(System.currentTimeMillis());
         Assert.assertTrue(p.getPositionMs(System.currentTimeMillis()) == 0);
-        i = p.up(System.currentTimeMillis());
+        i = p.startUp(System.currentTimeMillis());
         Assert.assertTrue(String.valueOf(i), i == 0);
 
         // down for 20 ms
-        i = p.down(System.currentTimeMillis());
+        i = p.startDown(System.currentTimeMillis());
         Assert.assertTrue(String.valueOf(i), i == 100);
         Thread.sleep(20);
         p.stop(System.currentTimeMillis());
         // down for 10 ms
-        i = p.down(System.currentTimeMillis());
+        i = p.startDown(System.currentTimeMillis());
         Assert.assertEquals(80, i);
         Thread.sleep(10);
-        i = p.up(System.currentTimeMillis());
+        i = p.startUp(System.currentTimeMillis());
         Assert.assertEquals(30, i);
         Assert.assertEquals(30, p.getPositionMs(System.currentTimeMillis()));
         Thread.sleep(10);
@@ -50,7 +50,7 @@ public class PositionTest {
         Thread.sleep(10);
         long currentTime = System.currentTimeMillis();
         Assert.assertEquals(10, p.getPositionMs(currentTime));
-        i = p.up(System.currentTimeMillis());
+        i = p.startUp(System.currentTimeMillis());
         Assert.assertEquals(10, i);
     }
 
@@ -61,31 +61,31 @@ public class PositionTest {
         // start at unknown position
         Assert.assertTrue(p.getPositionMs(System.currentTimeMillis()) < 0);
         // DOWN for 10 ms
-        int i = p.down(System.currentTimeMillis());
+        int i = p.startDown(System.currentTimeMillis());
         Assert.assertTrue(String.valueOf(i), i == 100);
         Thread.sleep(10);
         p.stop(System.currentTimeMillis());
         Assert.assertTrue(p.getPositionMs(System.currentTimeMillis()) < 0);
 
         // DOWN for 80 ms
-        i = p.down(System.currentTimeMillis());
+        i = p.startDown(System.currentTimeMillis());
         Assert.assertTrue(String.valueOf(i), i == 90);
         Assert.assertTrue(p.getPositionMs(System.currentTimeMillis()) < 0);
         Thread.sleep(80);
 
         // UP for 20 ms
-        i = p.up(System.currentTimeMillis());
+        i = p.startUp(System.currentTimeMillis());
         Assert.assertTrue(String.valueOf(i), i == 100);
         Assert.assertTrue(p.getPositionMs(System.currentTimeMillis()) < 0);
         Thread.sleep(20);
 
         // DOWN for 35 ms
-        i = p.down(System.currentTimeMillis());
+        i = p.startDown(System.currentTimeMillis());
         Assert.assertTrue(String.valueOf(i), i == 30);
         Assert.assertTrue(p.getPositionMs(System.currentTimeMillis()) < 0);
         Thread.sleep(35);
 
-        i = p.down(System.currentTimeMillis());
+        i = p.startDown(System.currentTimeMillis());
         Assert.assertTrue(String.valueOf(i), i == 0);
         i = p.getPositionMs(System.currentTimeMillis());
         Assert.assertTrue(String.valueOf(i), i == 100);
@@ -98,10 +98,10 @@ public class PositionTest {
         // start at unknown position
         Assert.assertTrue(p.getPositionMs(System.currentTimeMillis()) < 0);
         // DOWN for 10 ms
-        int i = p.down(System.currentTimeMillis());
+        int i = p.startDown(System.currentTimeMillis());
         Assert.assertTrue(String.valueOf(i), i == 100);
         Thread.sleep(10);
-        i = p.up(System.currentTimeMillis());
+        i = p.startUp(System.currentTimeMillis());
         Assert.assertTrue(String.valueOf(i), i == 100);
         Assert.assertTrue(p.getPositionMs(System.currentTimeMillis()) < 0);
     }
@@ -113,10 +113,10 @@ public class PositionTest {
         // start at unknown position
         Assert.assertTrue(p.getPositionMs(System.currentTimeMillis()) < 0);
         // DOWN for 10 ms
-        int i = p.up(System.currentTimeMillis());
+        int i = p.startUp(System.currentTimeMillis());
         Assert.assertTrue(String.valueOf(i), i == 100);
         Thread.sleep(10);
-        i = p.down(System.currentTimeMillis());
+        i = p.startDown(System.currentTimeMillis());
         Assert.assertTrue(String.valueOf(i), i == 100);
         Assert.assertTrue(p.getPositionMs(System.currentTimeMillis()) < 0);
     }

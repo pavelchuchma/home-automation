@@ -22,14 +22,14 @@ class Position {
      * @param currentTime
      * @return expected count of milliseconds to up position
      */
-    int up(long currentTime) {
+    int startUp(long currentTime) {
         stop(currentTime);
         activityStartTime = currentTime;
         activity = Activity.movingUp;
         return (positionIsKnown) ? positionMs : Math.min(maxPositionMs + positionMs, maxPositionMs);
     }
 
-    int down(long currentTime) {
+    int startDown(long currentTime) {
         stop(currentTime);
         activityStartTime = currentTime;
         activity = Activity.movingDown;

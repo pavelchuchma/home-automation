@@ -19,7 +19,7 @@ public class NodeInfoCollector implements Iterable<NodeInfo> {
     static NodeInfoCollector instance;
 
     IPacketUartIO packetUartIO;
-    NodeInfo[] nodeInfoArray = new NodeInfo[50];
+    NodeInfo[] nodeInfoArray = new NodeInfo[70];
 
     SwitchListener switchListener = new SwitchListener();
 

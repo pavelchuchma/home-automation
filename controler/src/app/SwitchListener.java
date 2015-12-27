@@ -58,14 +58,11 @@ public class SwitchListener extends AbstractNodeListener {
             if (actions != null) {
                 for (final Action a : actions) {
                     log.debug(String.format("-> action: %s of action type %s", a.getActor().getId(), a.getClass().getSimpleName()));
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                a.perform(previousDurationMs);
-                            } catch (Exception e) {
-                                log.error("Failed to perform actions of " + sw.toString(), e);
-                            }
+                    new Thread(() -> {
+                        try {
+                            a.perform(previousDurationMs);
+                        } catch (Exception e) {
+                            log.error("Failed to perform actions of " + sw.toString(), e);
                         }
                     }).start();
                 }

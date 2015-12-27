@@ -6,11 +6,11 @@ import org.junit.Test;
 public class LouversPositionTest {
     @Test
     public void testFindDownPosition() throws Exception {
-        LouversPosition lp = new LouversPosition(100, 10);
+        LouversPosition lp = new LouversPosition(100, 10, 0);
         Assert.assertEquals(-1, lp.getPosition());
         Assert.assertEquals(-1, lp.getOffset());
 
-        int i = lp.down();
+        int i = lp.startDown();
         Assert.assertEquals(100, i);
         Thread.sleep(7);
         Assert.assertEquals(-1, lp.getPosition());
@@ -20,7 +20,7 @@ public class LouversPositionTest {
         Thread.sleep(20);
         Assert.assertEquals(-1, lp.getPosition());
         Assert.assertEquals(-1, lp.getOffset());
-        i = lp.down();
+        i = lp.startDown();
         Assert.assertEquals(93, i);
 
         Thread.sleep(8);
@@ -38,13 +38,13 @@ public class LouversPositionTest {
         Assert.assertEquals(-1, lp.getPosition());
         Assert.assertEquals(10, lp.getOffset());
 
-        lp.up();
+        lp.startUp();
         Thread.sleep(4);
         // 91 ms down
         Assert.assertEquals(-1, lp.getPosition());
         Assert.assertEquals(6, lp.getOffset());
 
-        lp.down();
+        lp.startDown();
         Thread.sleep(3);
         // 94 ms down
         Assert.assertEquals(-1, lp.getPosition());
@@ -63,11 +63,11 @@ public class LouversPositionTest {
 
     @Test
     public void testFindUpperPosition() throws Exception {
-        LouversPosition lp = new LouversPosition(100, 10);
+        LouversPosition lp = new LouversPosition(100, 10, 0);
         Assert.assertEquals(-1, lp.getPosition());
         Assert.assertEquals(-1, lp.getOffset());
 
-        int i = lp.up();
+        int i = lp.startUp();
         Assert.assertEquals(100, i);
 
         Thread.sleep(7);
@@ -75,7 +75,7 @@ public class LouversPositionTest {
         Assert.assertEquals(-1, lp.getPosition());
         Assert.assertEquals(-1, lp.getOffset());
 
-        i = lp.down();
+        i = lp.startDown();
         Assert.assertEquals(100, i);
         Assert.assertEquals(-1, lp.getPosition());
         Assert.assertEquals(-1, lp.getOffset());
@@ -86,7 +86,7 @@ public class LouversPositionTest {
         Assert.assertEquals(-1, lp.getOffset());
 
 
-        lp.up();
+        lp.startUp();
         Thread.sleep(17);
         // -9 ms
         Assert.assertEquals(-1, lp.getPosition());
@@ -106,5 +106,43 @@ public class LouversPositionTest {
         // -100 ms
         Assert.assertEquals(0, lp.getPosition());
         Assert.assertEquals(0, lp.getOffset());
+    }
+
+    @Test
+    public void testMovement() throws Exception {
+        LouversPosition lp = new LouversPosition(100, 10, 0);
+
+        int i = lp.startDown();
+        Assert.assertEquals(100, i);
+        Thread.sleep(120);
+        Assert.assertEquals(100, lp.getPosition());
+        Assert.assertEquals(10, lp.getOffset());
+        Assert.assertTrue(lp.isDown());
+
+        i = lp.startUp();
+        Assert.assertEquals(100, i);
+        Thread.sleep(4);
+        Assert.assertEquals(96, lp.getPosition());
+        Assert.assertEquals(6, lp.getOffset());
+        Assert.assertTrue(lp.isDown());
+
+        Thread.sleep(4);
+        Assert.assertEquals(92, lp.getPosition());
+        Assert.assertEquals(2, lp.getOffset());
+        Assert.assertTrue(lp.isDown());
+
+        Thread.sleep(4);
+        Assert.assertEquals(88, lp.getPosition());
+        Assert.assertEquals(0, lp.getOffset());
+        Assert.assertTrue(!lp.isDown());
+
+        i = lp.startDown();
+        Assert.assertEquals(12, i);
+        Thread.sleep(4);
+        Assert.assertEquals(92, lp.getPosition());
+        Assert.assertEquals(4, lp.getOffset());
+        Assert.assertTrue(lp.isDown());
+
+        lp.stop();
     }
 }
