@@ -47,6 +47,11 @@ public class LouversPosition {
         return getPosition() >= position.maxPositionMs - offset.maxPositionMs;
     }
 
+    public void invalidate() {
+        position.invalidate();
+        offset.invalidate();
+    }
+
     public Position.Activity getActivity() {
         return position.activity;
     }

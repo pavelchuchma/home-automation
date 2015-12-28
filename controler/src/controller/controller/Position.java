@@ -76,4 +76,10 @@ class Position {
         recalculate(currentTime);
         return (positionIsKnown) ? positionMs : -1;
     }
+
+    public void invalidate() {
+        activity = Activity.stopped;
+        activityStartTime = -1;
+        positionIsKnown = false;
+    }
 }

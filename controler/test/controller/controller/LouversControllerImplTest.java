@@ -53,17 +53,22 @@ public class LouversControllerImplTest {
     }
 
     List<ActionItem> actions = new ArrayList<>();
-    IOnOffActor upActor = new Actor("UP");
-    IOnOffActor downActor = new Actor("DOWN");
+    Actor upActor = new Actor("UP");
+    Actor downActor = new Actor("DOWN");
 
     class Actor implements IOnOffActor {
         boolean active = false;
         Object actionData;
         private String id;
         long switchOnTime;
+        boolean broken = false;
 
         Actor(String id) {
             this.id = id;
+        }
+
+        public void breakIt() {
+            broken = true;
         }
 
         @Override
@@ -72,7 +77,7 @@ public class LouversControllerImplTest {
             this.actionData = actionData;
             switchOnTime = System.currentTimeMillis();
             actions.add(new ActionItem(this, "on", 0));
-            return true;
+            return !broken;
         }
 
         @Override
@@ -84,7 +89,7 @@ public class LouversControllerImplTest {
             actions.add(new ActionItem(this, "off", (int) duration));
 
             switchOnTime = 0;
-            return true;
+            return !broken;
         }
 
         @Override
@@ -317,6 +322,45 @@ public class LouversControllerImplTest {
 
         Assert.assertEquals(0, lc.louversPosition.getPosition());
         Assert.assertEquals(0, lc.louversPosition.getOffset());
+    }
+
+    @Test
+    public void testDownAndUpBroken() throws Exception {
+
+        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 1000, 100, 5);
+        lc.up();
+
+        Thread thread = new Thread(() -> {
+            waitNoException(300);
+            downActor.breakIt();
+            lc.up();
+        });
+        thread.start();
+
+        long start = System.currentTimeMillis();
+        lc.blind();
+        thread.join();
+        long duration = System.currentTimeMillis() - start;
+        Assert.assertTrue("duration: " + duration, duration >= 300 && duration < 330);
+
+        Iterator<ActionItem> iterator = actions.iterator();
+
+        // up()
+        Assert.assertEquals(new ActionItem(downActor, "off", 0), iterator.next());
+        Assert.assertEquals(new ActionItem(upActor, "on", 0), iterator.next());
+        Assert.assertEquals(new ActionItem(upActor, "off", 1005, 5), iterator.next()); // 100 ms + 5 ms upReserve
+
+        // down()
+        Assert.assertEquals(new ActionItem(upActor, "off", 0), iterator.next());
+        Assert.assertEquals(new ActionItem(downActor, "on", 0), iterator.next());
+
+        // up() from another thread after 30 ms
+        Assert.assertEquals(new ActionItem(downActor, "off", 300, 10), iterator.next());
+        // broken downActor, no more actions
+        Assert.assertTrue(!iterator.hasNext());
+
+        Assert.assertEquals(-1, lc.louversPosition.getPosition());
+        Assert.assertEquals(-1, lc.louversPosition.getOffset());
     }
 
     private void waitNoException(int millis) {

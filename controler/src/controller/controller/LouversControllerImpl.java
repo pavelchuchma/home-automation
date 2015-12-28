@@ -99,6 +99,10 @@ public class LouversControllerImpl implements LouversController {
             }
         } catch (ExternalModificationException e) {
             log.debug("External modification, exiting");
+        } catch (Exception e) {
+            log.error("Unexpected exception caught, invalidating position info", e);
+            louversPosition.invalidate();
+            throw e;
         }
     }
 
