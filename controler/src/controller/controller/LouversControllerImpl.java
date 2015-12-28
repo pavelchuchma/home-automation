@@ -19,7 +19,7 @@ public class LouversControllerImpl implements LouversController {
     }
 
 
-    public LouversControllerImpl(String name, IOnOffActor upActor, IOnOffActor downActor, int maxOffsetMs, int downPositionMs, int upReserve) {
+    public LouversControllerImpl(String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs, int maxOffsetMs, int upReserve) {
         this.name = name;
         this.upActor = upActor;
         this.downActor = downActor;
@@ -65,13 +65,18 @@ public class LouversControllerImpl implements LouversController {
                 Validate.isTrue(position >= 0);
                 Validate.isTrue(offset >= 0);
 
+                boolean needStopConflictingActor = true;
                 int posMsDiff = desiredPositionMs - position;
+                if (desiredPositionMs == 0) {
+                    posMsDiff -= louversPosition.upReserve;
+                }
                 log.debug(String.format(" Before move: desiredPos: %d, currentPos: %d, diff: %d", desiredPositionMs, position, posMsDiff));
                 if (Math.abs(posMsDiff) > louversPosition.position.maxPositionMs * 0.05
                         && (downPercent != 100 || !louversPosition.isDown())) {
                     // position needs a correction
-                    moveImpl(posMsDiff, aData, true);
+                    moveImpl(posMsDiff, aData, needStopConflictingActor);
                     position = louversPosition.getPosition();
+                    needStopConflictingActor = false;
                     log.debug(String.format(" After move: desiredPos: %d, currentPos: %d, diff: %d", desiredPositionMs, position, desiredPositionMs - position));
                 } else {
                     log.debug("  no position change needed");
@@ -83,7 +88,7 @@ public class LouversControllerImpl implements LouversController {
 
                 if (Math.abs(offMsDiff) > louversPosition.offset.maxPositionMs * 0.05) {
                     // offset needs a correction
-                    moveImpl(offMsDiff, aData, true);
+                    moveImpl(offMsDiff, aData, needStopConflictingActor);
                     offset = louversPosition.getOffset();
                     log.debug(String.format(" After move: desiredOff: %d, currentOff: %d, diff: %d", desiredOffsetMs, offset, desiredOffsetMs - offset));
                 } else {
@@ -111,7 +116,7 @@ public class LouversControllerImpl implements LouversController {
         } else {
             // move up
             louversPosition.startUp();
-            moveImpl(upActor, downActor, () -> -msDiff, true, aData);
+            moveImpl(upActor, downActor, () -> -msDiff, stopConflictingActor, aData);
         }
     }
 
