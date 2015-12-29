@@ -1,6 +1,7 @@
 package controller.controller;
 
 import controller.actor.IOnOffActor;
+import controller.actor.OnOffActor;
 import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
 
@@ -18,12 +19,24 @@ public class LouversControllerImpl implements LouversController {
     class ExternalModificationException extends Exception {
     }
 
-
     public LouversControllerImpl(String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs, int maxOffsetMs, int upReserve) {
         this.name = name;
         this.upActor = upActor;
         this.downActor = downActor;
         louversPosition = new LouversPosition(downPositionMs, maxOffsetMs, upReserve);
+
+        ((OnOffActor) upActor).setConflictingActor(null);
+        ((OnOffActor) downActor).setConflictingActor(null);
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public Position.Activity getActivity() {
+        return louversPosition.getActivity();
     }
 
     @Override

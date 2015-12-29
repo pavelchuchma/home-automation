@@ -1,7 +1,7 @@
 package controller.controller;
 
 class Position {
-    enum Activity {
+    public enum Activity {
         movingUp,
         movingDown,
         stopped

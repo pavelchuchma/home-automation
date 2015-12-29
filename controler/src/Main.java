@@ -8,6 +8,7 @@ import controller.action.DecreasePwmAction;
 import controller.action.IncreasePwmAction;
 import controller.action.InvertAction;
 import controller.action.InvertActionWithTimer;
+import controller.action.LouversActionGroup;
 import controller.action.PwmActionGroup;
 import controller.action.SwitchOffAction;
 import controller.action.SwitchOffSensorAction;
@@ -17,6 +18,9 @@ import controller.actor.IOnOffActor;
 import controller.actor.Indicator;
 import controller.actor.OnOffActor;
 import controller.actor.PwmActor;
+import controller.actor.TestingOnOffActor;
+import controller.controller.LouversController;
+import controller.controller.LouversControllerImpl;
 import controller.device.InputDevice;
 import controller.device.LddBoardDevice;
 import controller.device.OutputDevice;
@@ -109,6 +113,8 @@ public class Main {
         Node koupelnaDole = nodeInfoCollector.createNode(25, "KoupelnaDole");
         Node kuchyn = nodeInfoCollector.createNode(26, "KuchynDole");
         Node lddActorC = nodeInfoCollector.createNode(29, "LDD-ActorC");
+        Node switchTestNode50 = nodeInfoCollector.createNode(50, "SwitchTestNode50");
+        Node switchTestNode41 = nodeInfoCollector.createNode(41, "SwitchTestNode41");
 
         WallSwitch chodbaA1Sw = new WallSwitch("chodbaA1Sw", chodbaA, 1);
         WallSwitch chodbaA2Sw = new WallSwitch("chodbaA2Sw", chodbaA, 2);
@@ -454,7 +460,12 @@ public class Main {
         configurePwmLights(lst, pracovnaSw2, WallSwitch.Side.RIGHT, 30, pracovnaPwmActor);
 
         // vratnice
-        configureLouvers(lst, vratniceSw1, WallSwitch.Side.RIGHT, zaluzieVratnice1Up, zaluzieVratnice1Down, 50);
+
+        //TODO: Remove test 41
+        WallSwitch test41Sw1 = new WallSwitch("Test41.1", switchTestNode41, 1);
+        configureLouversNew(lst, test41Sw1, WallSwitch.Side.RIGHT, zaluzieVratnice1Up, zaluzieVratnice1Down, 29);
+
+        configureLouversNew(lst, vratniceSw1, WallSwitch.Side.RIGHT, zaluzieVratnice1Up, zaluzieVratnice1Down, 29);
         configureLouvers(lst, vratniceSw2, WallSwitch.Side.LEFT, zaluzieVratnice2Up, zaluzieVratnice2Down, 40);
         configureLouvers(lst, vratniceSw2, WallSwitch.Side.RIGHT, zaluzieVratnice3Up, zaluzieVratnice3Down, 40);
         configurePwmLights(lst, vratniceSw1, WallSwitch.Side.LEFT, 40, vratnice1PwmActor, vratnice2PwmActor);
@@ -536,15 +547,13 @@ public class Main {
         Servlet.louversActions = louversInvertActions;
 
         //test wall switch application
-/*
-        WallSwitch testSw = new WallSwitch("testSwA", testNode20, 1);
+        WallSwitch testSw = new WallSwitch("testSwA", switchTestNode50, 1);
         TestingOnOffActor testingRightOnOffActor = new TestingOnOffActor("RightSwitchTestingActor", null, 0, 1, testSw.getRedLedIndicator(true));
         TestingOnOffActor testingLeftOnOffActor = new TestingOnOffActor("LeftSwitchTestingActor", null, 0, 1, testSw.getGreenLedIndicator(true));
         lst.addActionBinding(new ActionBinding(testSw.getRightBottomButton(), new Action[]{new SwitchOffAction(testingRightOnOffActor)}, null));
         lst.addActionBinding(new ActionBinding(testSw.getRightUpperButton(), new Action[]{new SwitchOnAction(testingRightOnOffActor)}, null));
         lst.addActionBinding(new ActionBinding(testSw.getLeftUpperButton(), new Action[]{new SwitchOnAction(testingLeftOnOffActor)}, null));
         lst.addActionBinding(new ActionBinding(testSw.getLeftBottomButton(), new Action[]{new SwitchOffAction(testingLeftOnOffActor)}, null));
-*/
 
 
         Servlet.lightsActions = lightsActions.toArray(new Action[lightsActions.size()]);
@@ -620,6 +629,16 @@ public class Main {
 
         lst.addActionBinding(new ActionBinding(upTrigger, new Action[]{new InvertActionWithTimer(louversUp, duration)}, null));
         lst.addActionBinding(new ActionBinding(downTrigger, new Action[]{new InvertActionWithTimer(louversDown, duration)}, null));
+    }
+
+    static void configureLouversNew(SwitchListener lst, WallSwitch wallSwitch, WallSwitch.Side side, OnOffActor upActor, OnOffActor downActor, int duration) {
+        LouversController lc = new LouversControllerImpl(upActor.getId(), upActor, downActor, duration * 1000, 1600, 1);
+        LouversActionGroup group = new LouversActionGroup(lc);
+
+        NodePin upTrigger = getUpperButton(wallSwitch, side);
+        NodePin downTrigger = getBottomButton(wallSwitch, side);
+        lst.addActionBinding(new ActionBinding(upTrigger, new Action[]{group.getUpButtonDownAction()}, new Action[]{group.getUpButtonUpAction()}));
+        lst.addActionBinding(new ActionBinding(downTrigger, new Action[]{group.getDownButtonDownAction()}, new Action[]{group.getDownButtonUpAction()}));
     }
 
     private static NodePin getBottomButton(WallSwitch wallSwitch, WallSwitch.Side side) {
