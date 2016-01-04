@@ -2,9 +2,11 @@ package servlet;
 
 import app.NodeInfo;
 import app.NodeInfoCollector;
-import controller.action.Action;
 import controller.PirStatus;
+import controller.action.Action;
 import controller.actor.PwmActor;
+import controller.controller.Activity;
+import controller.controller.LouversController;
 import controller.device.ConnectedDevice;
 import controller.device.OutputDevice;
 import node.Node;
@@ -37,6 +39,8 @@ public class Servlet extends AbstractHandler {
     public static final String TARGET_LIGHTS_ACTION = "/lights/a";
     public static final String TARGET_LOUVERS = "/zaluzie";
     public static final String TARGET_LOUVERS_ACTION = "/zaluzie/a";
+    public static final String CLASS_LOUVERS_ARROW = "louversArrow";
+    public static final String CLASS_LOUVERS_ARROW_ACTIVE = "louversArrow louversArrow-moving";
     private NodeInfoCollector nodeInfoCollector;
     static Logger log = Logger.getLogger(Servlet.class.getName());
     private HashMap<NodeInfo, NodeTestRunner> testRunners = new HashMap<NodeInfo, NodeTestRunner>();
@@ -73,68 +77,94 @@ public class Servlet extends AbstractHandler {
             }
         } else if (target.startsWith("/restart")) {
             System.exit(100);
-        } else if (target.startsWith(TARGET_LOUVERS)) {
-            int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LOUVERS_ACTION);
-            if (actionIndex != -1) {
-                louversActions[actionIndex].perform(-1);
-            }
-
-            response.setContentType("text/html;charset=utf-8");
-            response.setStatus(HttpServletResponse.SC_OK);
-            baseRequest.setHandled(true);
-            response.getWriter().println(getLouversPage());
-
-        } else if (target.startsWith(TARGET_LIGHTS)) {
-            int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LIGHTS_ACTION);
-            if (actionIndex != -1) {
-                lightsActions[actionIndex].perform(-1);
-            }
-
-            response.setContentType("text/html;charset=utf-8");
-            response.setStatus(HttpServletResponse.SC_OK);
-            baseRequest.setHandled(true);
-            response.getWriter().println(getLightsPage());
-
-        } else if (target.startsWith(TARGET_PIR_STATUS)) {
-            response.setContentType("text/html;charset=utf-8");
-            response.setStatus(HttpServletResponse.SC_OK);
-            baseRequest.setHandled(true);
-            response.getWriter().println(getPirPage());
-
-        } else if (target.startsWith(TARGET_SYSTEM)) {
-            int debugNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_INFO);
-            int resetNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_RESET);
-            int testCycleNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_CYCLE);
-            int testAllOnNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_ALL_ON);
-            int testAllOffNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_ALL_OFF);
-            int testEndNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_END);
-
-            if (resetNodeId != -1) {
-                Node n = NodeInfoCollector.getInstance().getNode(resetNodeId);
-                n.reset();
-            } else if (testCycleNodeId >= 0) {
-                startNodeTest(testCycleNodeId, NodeTestRunner.Mode.cycle);
-            } else if (testAllOnNodeId >= 0) {
-                startNodeTest(testAllOnNodeId, NodeTestRunner.Mode.fullOn);
-            } else if (testAllOffNodeId >= 0) {
-                startNodeTest(testAllOffNodeId, NodeTestRunner.Mode.fullOff);
-            } else if (testEndNodeId >= 0) {
-                stopNodeTest(testEndNodeId);
-            }
-
-            response.setContentType("text/html;charset=utf-8");
-            response.setStatus(HttpServletResponse.SC_OK);
-            baseRequest.setHandled(true);
-            response.getWriter().println(getSystemPage(debugNodeId));
-
         } else {
-            if (target.startsWith("/a")) {
-                processAction(target);
+            if (target.startsWith(TARGET_LOUVERS)) {
+                int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LOUVERS_ACTION);
+                if (actionIndex != -1) {
+                    processLouversAction(actionIndex);
+                    //TODO: do something
+//                louversActions[actionIndex].perform(-1);
+                }
+
+                response.setContentType("text/html;charset=utf-8");
+                response.setStatus(HttpServletResponse.SC_OK);
+                baseRequest.setHandled(true);
+                response.getWriter().println(getLouversPage());
+
+            } else if (target.startsWith(TARGET_LIGHTS)) {
+                int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LIGHTS_ACTION);
+                if (actionIndex != -1) {
+                    lightsActions[actionIndex].perform(-1);
+                }
+
+                response.setContentType("text/html;charset=utf-8");
+                response.setStatus(HttpServletResponse.SC_OK);
+                baseRequest.setHandled(true);
+                response.getWriter().println(getLightsPage());
+
+            } else if (target.startsWith(TARGET_PIR_STATUS)) {
+                response.setContentType("text/html;charset=utf-8");
+                response.setStatus(HttpServletResponse.SC_OK);
+                baseRequest.setHandled(true);
+                response.getWriter().println(getPirPage());
+
+            } else if (target.startsWith(TARGET_SYSTEM)) {
+                int debugNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_INFO);
+                int resetNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_RESET);
+                int testCycleNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_CYCLE);
+                int testAllOnNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_ALL_ON);
+                int testAllOffNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_ALL_OFF);
+                int testEndNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_END);
+
+                if (resetNodeId != -1) {
+                    Node n = NodeInfoCollector.getInstance().getNode(resetNodeId);
+                    n.reset();
+                } else if (testCycleNodeId >= 0) {
+                    startNodeTest(testCycleNodeId, NodeTestRunner.Mode.cycle);
+                } else if (testAllOnNodeId >= 0) {
+                    startNodeTest(testAllOnNodeId, NodeTestRunner.Mode.fullOn);
+                } else if (testAllOffNodeId >= 0) {
+                    startNodeTest(testAllOffNodeId, NodeTestRunner.Mode.fullOff);
+                } else if (testEndNodeId >= 0) {
+                    stopNodeTest(testEndNodeId);
+                }
+
+                response.setContentType("text/html;charset=utf-8");
+                response.setStatus(HttpServletResponse.SC_OK);
+                baseRequest.setHandled(true);
+                response.getWriter().println(getSystemPage(debugNodeId));
+
+            } else {
+                if (target.startsWith("/a")) {
+                    processAction(target);
+                }
+                response.setContentType("text/html;charset=utf-8");
+                response.setStatus(HttpServletResponse.SC_OK);
+                baseRequest.setHandled(true);
+                response.getWriter().println(nodeInfoCollector.getReport());
             }
-            response.setContentType("text/html;charset=utf-8");
-            response.setStatus(HttpServletResponse.SC_OK);
-            baseRequest.setHandled(true);
-            response.getWriter().println(nodeInfoCollector.getReport());
+        }
+    }
+
+    private void processLouversAction(int actionIndex) {
+        LouversController lc = louversControllers[actionIndex / 3];
+        switch (actionIndex % 3) {
+            case 0:
+                if (lc.getActivity() == Activity.movingUp) {
+                    lc.stop();
+                } else {
+                    lc.up();
+                }
+                break;
+            case 1:
+                lc.outshine(0);
+                break;
+            case 2:
+                if (lc.getActivity() == Activity.movingDown) {
+                    lc.stop();
+                } else {
+                    lc.blind();
+                }
         }
     }
 
@@ -151,9 +181,9 @@ public class Servlet extends AbstractHandler {
     public static Action action3;
     public static Action action4;
     public static Action action5;
-    public static Action[] louversActions;
     public static Action[] lightsActions;
     public static List<PirStatus> pirStatusList;
+    public static LouversController[] louversControllers;
 
     private void processAction(String action) {
         if (action.startsWith("/a1") && action1 != null) {
@@ -182,11 +212,11 @@ public class Servlet extends AbstractHandler {
                 "</head>" +
                 "<body><a href='" + TARGET_LOUVERS + "'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
 
-        builder.append(getLouversTable(0, 8));
-        builder.append(getLouversTable(8, 8));
-        builder.append(getLouversTable(16, 8));
-        builder.append(getLouversTable(24, 8));
-        builder.append(getLouversTable(32, 10));
+        builder.append(getLouversTable(0, 4));
+        builder.append(getLouversTable(4, 4));
+        builder.append(getLouversTable(8, 4));
+        builder.append(getLouversTable(12, 4));
+        builder.append(getLouversTable(16, 5));
 
         builder.append("</body></html>");
         return builder.toString();
@@ -213,7 +243,7 @@ public class Servlet extends AbstractHandler {
             builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LIGHTS_ACTION, i + 1, "+"));
             builder.append(String.format("<td title='%s, max %s A' class='%s'>%s %d%% <div class='gray'>(%d/%d) %sA</div>",
                     actor.getLddOutput().getDeviceName(), currentValueFormatter.format(actor.getMaxOutputCurrent()),
-                    stateFieldClass, lightsActions[i].getActor().getId(), actor.getValue(), actor.getPwmValue(), actor.getMaxPwmValue(),
+                    stateFieldClass, lightsActions[i].getActor().getName(), actor.getValue(), actor.getPwmValue(), actor.getMaxPwmValue(),
                     currentValueFormatter.format(actor.getOutputCurrent())));
             builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LIGHTS_ACTION, i + 2, "-"));
             builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LIGHTS_ACTION, i + 3, "Off"));
@@ -376,15 +406,34 @@ public class Servlet extends AbstractHandler {
     private String getLouversTable(int startIndex, int count) {
         StringBuilder builder = new StringBuilder();
         builder.append("<br/><br/><table class='buttonTable'>");
-        for (int row = 0; row < 2; row++) {
-            builder.append("<tr>");
-            for (int i = startIndex + row; i < startIndex + count; i += 2) {
-                String fieldClass = (louversActions[i].getActor().getValue() == 0) ? "louvers" : "louversRunning";
-                builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LOUVERS_ACTION, i, louversActions[i].getActor().getId()));
-            }
+        for (int i = startIndex; i < startIndex + count; i++) {
+            LouversController lc = louversControllers[i];
+            String upArrow = (lc.isUp()) ? "▲" : "△";
+            String downArrow = (lc.isDown()) ? "▼" : "▽";
+            String outshineCharacter = "☀";
+
+            Activity activity = lc.getActivity();
+            String upArrowClazz = (activity == Activity.movingUp) ? CLASS_LOUVERS_ARROW_ACTIVE : CLASS_LOUVERS_ARROW;
+            String downArrowClazz = (activity == Activity.movingDown) ? CLASS_LOUVERS_ARROW_ACTIVE : CLASS_LOUVERS_ARROW;
+            String outShineClazz = CLASS_LOUVERS_ARROW;
+            builder.append("    <td class='louversItem'>\n" +
+                    "        <table>\n");
+
+            appendLouversIcon(builder, upArrow, 3 * i, upArrowClazz);
+            appendLouversIcon(builder, outshineCharacter, 3 * i + 1, outShineClazz);
+            appendLouversIcon(builder, downArrow, 3 * i + 2, downArrowClazz);
+
+            builder.append(String.format("<tr>" +
+                    "            <td colspan=\"3\" class='louversName'>%s<tr>\n" +
+                    "        </table>\n", lc.getName()));
+
         }
         builder.append("</table>");
         return builder.toString();
+    }
+
+    private void appendLouversIcon(StringBuilder builder, String icon, int linkAction, String clazz) {
+        builder.append(String.format("<td onClick=\"document.location.href='%s%s'\" class='%s'>%s\n", TARGET_LOUVERS_ACTION, linkAction, clazz, icon));
     }
 
     Pin[] getOutputDevicePins(OutputDevice dev) {

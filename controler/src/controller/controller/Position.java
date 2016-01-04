@@ -1,11 +1,6 @@
 package controller.controller;
 
 class Position {
-    public enum Activity {
-        movingUp,
-        movingDown,
-        stopped
-    }
 
     int maxPositionMs;
     // current position. Negative means unknown, 0 means up, maxPositionMs means down

@@ -2,6 +2,7 @@ package controller.controller;
 
 import controller.actor.IOnOffActor;
 import controller.actor.OnOffActor;
+import node.NodePin;
 import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
 
@@ -19,15 +20,25 @@ public class LouversControllerImpl implements LouversController {
     class ExternalModificationException extends Exception {
     }
 
-    public LouversControllerImpl(String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs, int maxOffsetMs, int upReserve) {
+    public LouversControllerImpl(String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs, int maxOffsetMs) {
+        init(name, upActor, downActor, downPositionMs, maxOffsetMs);
+    }
+
+    private void init(String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs, int maxOffsetMs) {
         this.name = name;
         this.upActor = upActor;
         this.downActor = downActor;
-        louversPosition = new LouversPosition(downPositionMs, maxOffsetMs, upReserve);
-
-        ((OnOffActor) upActor).setConflictingActor(null);
-        ((OnOffActor) downActor).setConflictingActor(null);
+        louversPosition = new LouversPosition(downPositionMs, maxOffsetMs, (int) (downPositionMs * 0.08));
     }
+
+    public LouversControllerImpl(String name, NodePin relayUp, NodePin relayDown, int downPositionMs, int maxOffsetMs) {
+
+        IOnOffActor upActor = new OnOffActor(name + " Up", relayUp, 0, 1);
+        IOnOffActor downActor = new OnOffActor(name + " Down", relayDown, 0, 1);
+
+        init(name, upActor, downActor, downPositionMs, maxOffsetMs);
+    }
+
 
     @Override
     public String getName() {
@@ -35,8 +46,24 @@ public class LouversControllerImpl implements LouversController {
     }
 
     @Override
-    public Position.Activity getActivity() {
+    public Activity getActivity() {
         return louversPosition.getActivity();
+    }
+
+    @Override
+    public boolean isUp() {
+        return louversPosition.getPosition() == 0;
+    }
+
+    @Override
+    public boolean isDown() {
+        return louversPosition.isDown();
+    }
+
+    @Override
+    public double getOffsetPercent() {
+        int offset = louversPosition.getOffset();
+        return (offset >=0) ? offset / louversPosition.offset.maxPositionMs : -1;
     }
 
     @Override
@@ -80,11 +107,11 @@ public class LouversControllerImpl implements LouversController {
 
                 boolean needStopConflictingActor = true;
                 int posMsDiff = desiredPositionMs - position;
-                if (desiredPositionMs == 0) {
+                if (desiredPositionMs == 0 && position != 0) {
                     posMsDiff -= louversPosition.upReserve;
                 }
                 log.debug(String.format(" Before move: desiredPos: %d, currentPos: %d, diff: %d", desiredPositionMs, position, posMsDiff));
-                if (Math.abs(posMsDiff) > louversPosition.position.maxPositionMs * 0.05
+                if (Math.abs(posMsDiff) > louversPosition.position.maxPositionMs * 0.005
                         && (downPercent != 100 || !louversPosition.isDown())) {
                     // position needs a correction
                     moveImpl(posMsDiff, aData, needStopConflictingActor);
@@ -99,7 +126,7 @@ public class LouversControllerImpl implements LouversController {
                 int offMsDiff = desiredOffsetMs - offset;
                 log.debug(String.format(" Before move: desiredOff: %d, currentOff: %d, diff: %d", desiredOffsetMs, offset, offMsDiff));
 
-                if (Math.abs(offMsDiff) > louversPosition.offset.maxPositionMs * 0.05) {
+                if (Math.abs(offMsDiff) > louversPosition.offset.maxPositionMs * 0.025) {
                     // offset needs a correction
                     moveImpl(offMsDiff, aData, needStopConflictingActor);
                     offset = louversPosition.getOffset();
@@ -141,7 +168,7 @@ public class LouversControllerImpl implements LouversController {
         actionData = aData;
         if (stopConflictingActor) {
             if (!conflictingActor.switchOff(aData)) {
-                throw new RuntimeException("Failed to stop actor '" + conflictingActor.getId() + "'");
+                throw new RuntimeException("Failed to stop actor '" + conflictingActor.getName() + "'");
             }
         } else {
             // not stopping, but verify last modification was done by me
@@ -152,14 +179,14 @@ public class LouversControllerImpl implements LouversController {
         }
         int moveMs = positionAction.getAsInt();
         if (moveMs > 0) {
-            log.debug(String.format("%s switching on actor '%s' for %d ms", name, actor.getId(), moveMs));
+            log.debug(String.format("%s switching on actor '%s' for %d ms", name, actor.getName(), moveMs));
             actor.switchOn(aData);
             wait(actor, aData, moveMs);
-            log.debug(String.format("done, switching actor '%s' off", actor.getId()));
+            log.debug(String.format("done, switching actor '%s' off", actor.getName()));
         }
         louversPosition.stop();
         if (!actor.switchOff(aData)) {
-            throw new RuntimeException("Failed to stop actor '" + actor.getId() + "'");
+            throw new RuntimeException("Failed to stop actor '" + actor.getName() + "'");
         }
     }
 

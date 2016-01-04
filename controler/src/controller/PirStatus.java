@@ -59,7 +59,7 @@ public class PirStatus {
     private class ActorImpl implements Actor {
 
         @Override
-        public String getId() {
+        public String getName() {
             return name;
         }
 

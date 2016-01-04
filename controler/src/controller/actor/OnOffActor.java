@@ -28,7 +28,7 @@ public class OnOffActor extends AbstractActor implements IOnOffActor {
         // necessary for louvers
         if (conflictingActor != null && val == onValue) {
             if (!conflictingActor.switchOff(actionData)) {
-                log.error(String.format("Actor %s: Cannot switch off conflicting actor %s", getId(), conflictingActor.getId()));
+                log.error(String.format("Actor %s: Cannot switch off conflicting actor %s", getName(), conflictingActor.getName()));
                 return false;
             }
         }

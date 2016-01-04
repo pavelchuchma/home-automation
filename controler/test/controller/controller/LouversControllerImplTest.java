@@ -98,7 +98,7 @@ public class LouversControllerImplTest {
         }
 
         @Override
-        public String getId() {
+        public String getName() {
             return id;
         }
 
@@ -141,7 +141,7 @@ public class LouversControllerImplTest {
 
     @Test
     public void testUp() throws Exception {
-        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 100, 10, 0);
+        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 100, 10);
 
         lc.up();
 
@@ -155,7 +155,7 @@ public class LouversControllerImplTest {
 
     @Test
     public void testDown() throws Exception {
-        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 100, 10, 0);
+        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 100, 10);
 
         lc.blind();
 
@@ -168,7 +168,7 @@ public class LouversControllerImplTest {
 
     @Test
     public void testDownAndOutshine() throws Exception {
-        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 1000, 100, 0);
+        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 1000, 100);
 
         lc.blind();
 
@@ -209,7 +209,7 @@ public class LouversControllerImplTest {
 
     @Test
     public void testDownAndOutshineAsync() throws Exception {
-        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 1000, 100, 20);
+        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 1000, 100);
 
         lc.up();
 
@@ -253,7 +253,7 @@ public class LouversControllerImplTest {
     @Test
     public void testDownAndStop() throws Exception {
 
-        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 1000, 100, 0);
+        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 1000, 100);
         lc.up();
 
         new Thread(() -> {
@@ -275,7 +275,7 @@ public class LouversControllerImplTest {
 
         Assert.assertEquals(new ActionItem(upActor, "off", 0), iterator.next());
         Assert.assertEquals(new ActionItem(downActor, "on", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(downActor, "off", 300, 5), iterator.next());
+        Assert.assertEquals(new ActionItem(downActor, "off", 300, 10), iterator.next());
         Assert.assertTrue(!iterator.hasNext());
 
         int pos = lc.louversPosition.getPosition();
@@ -286,7 +286,7 @@ public class LouversControllerImplTest {
     @Test
     public void testDownAndUp() throws Exception {
 
-        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 1000, 100, 5);
+        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 1000, 100);
         lc.up();
 
         Thread thread = new Thread(() -> {
@@ -327,7 +327,7 @@ public class LouversControllerImplTest {
     @Test
     public void testDownAndUpBroken() throws Exception {
 
-        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 1000, 100, 5);
+        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 1000, 100);
         lc.up();
 
         Thread thread = new Thread(() -> {

@@ -3,7 +3,13 @@ package controller.controller;
 public interface LouversController {
     String getName();
 
-    Position.Activity getActivity();
+    Activity getActivity();
+
+    boolean isUp();
+
+    boolean isDown();
+
+    double getOffsetPercent();
 
     void up();
 

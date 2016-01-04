@@ -1,6 +1,7 @@
 package controller.controller;
 
 public class LouversPosition {
+    public static final int DOWN_TOLERANCE = 50;
     Position position;
     Position offset;
     int upReserve;
@@ -44,7 +45,7 @@ public class LouversPosition {
     }
 
     public boolean isDown() {
-        return getPosition() >= position.maxPositionMs - offset.maxPositionMs;
+        return getPosition() >= position.maxPositionMs - offset.maxPositionMs + DOWN_TOLERANCE;
     }
 
     public void invalidate() {
@@ -52,7 +53,7 @@ public class LouversPosition {
         offset.invalidate();
     }
 
-    public Position.Activity getActivity() {
+    public Activity getActivity() {
         return position.activity;
     }
 }
