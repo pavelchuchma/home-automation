@@ -52,7 +52,8 @@ public class LouversActionGroup {
     private class DownReleased extends LAction {
         @Override
         public void perform(int buttonDownDuration) {
-            if (buttonDownDuration > 2000) {
+            // limit to max 5s to don't panic after switch reboot or reconnect
+            if (buttonDownDuration > 2000 && buttonDownDuration < 5000) {
                 louversController.outshine(0);
             }
         }
