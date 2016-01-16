@@ -148,7 +148,13 @@ public class Servlet extends AbstractHandler {
 
     private void processLouversAction(int actionIndex) {
         LouversController lc = louversControllers[actionIndex / 3];
-        switch (actionIndex % 3) {
+        new Thread(() -> {
+            processLouversActionImpl(lc, actionIndex % 3);
+        }).start();
+    }
+
+    private void processLouversActionImpl(LouversController lc, int action) {
+        switch (action) {
             case 0:
                 if (lc.getActivity() == Activity.movingUp) {
                     lc.stop();

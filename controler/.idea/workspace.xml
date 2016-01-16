@@ -6,28 +6,15 @@
     </artifacts-to-build>
   </component>
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/src/Main.java" line="512" mnemonic="1" />
-    <bookmark url="file://$PROJECT_DIR$/src/Main.java" line="592" mnemonic="3" />
+    <bookmark url="file://$PROJECT_DIR$/src/Main.java" line="645" mnemonic="3" />
     <bookmark url="file://$PROJECT_DIR$/src/controller/controller/LouversControllerImpl.java" line="22" mnemonic="4" />
-    <bookmark url="file://$PROJECT_DIR$/src/Main.java" line="213" mnemonic="2" />
+    <bookmark url="file://$PROJECT_DIR$/src/Main.java" line="278" mnemonic="2" />
+    <bookmark url="file://$PROJECT_DIR$/src/Main.java" line="190" mnemonic="1" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="82455535-c405-4c4b-a371-b0bc707cb60b" name="Default" comment="- first use of LouversController">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/controller/controller/Activity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/action/AbstractAction.java" afterPath="$PROJECT_DIR$/src/controller/action/AbstractAction.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/actor/AbstractActor.java" afterPath="$PROJECT_DIR$/src/controller/actor/AbstractActor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/actor/Actor.java" afterPath="$PROJECT_DIR$/src/controller/actor/Actor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/controller/LouversController.java" afterPath="$PROJECT_DIR$/src/controller/controller/LouversController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/controller/LouversControllerImpl.java" afterPath="$PROJECT_DIR$/src/controller/controller/LouversControllerImpl.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/controller/controller/LouversControllerImplTest.java" afterPath="$PROJECT_DIR$/test/controller/controller/LouversControllerImplTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/controller/LouversPosition.java" afterPath="$PROJECT_DIR$/src/controller/controller/LouversPosition.java" />
+    <list default="true" readonly="true" id="82455535-c405-4c4b-a371-b0bc707cb60b" name="Default" comment="- using new LouversControllerImpl&#10;- renaming Actor.Id -&gt;Actor.Name&#10;- adding new LDDs&#10;- rewriting Louvers web page">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Main.java" afterPath="$PROJECT_DIR$/src/Main.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/actor/OnOffActor.java" afterPath="$PROJECT_DIR$/src/controller/actor/OnOffActor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/PirStatus.java" afterPath="$PROJECT_DIR$/src/controller/PirStatus.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/controller/Position.java" afterPath="$PROJECT_DIR$/src/controller/controller/Position.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/servlet/Servlet.java" afterPath="$PROJECT_DIR$/src/servlet/Servlet.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/app/SwitchListener.java" afterPath="$PROJECT_DIR$/src/app/SwitchListener.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/servlet/resources/report.css" afterPath="$PROJECT_DIR$/src/servlet/resources/report.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="controler.iws" />
@@ -47,9 +34,9 @@
     <file path="/PacketSerializerTest.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1365541232740" ignored="false" />
     <file path="/PacketHandler.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1359323353943" ignored="false" />
     <file path="/PacketHandlerTest.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1359067131842" ignored="false" />
-    <file path="/Dummy.txt" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1451681324285" ignored="false" />
+    <file path="/Dummy.txt" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1452778506538" ignored="false" />
     <file path="/PacketHandlerException.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1359066720117" ignored="false" />
-    <file path="/Main.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1451946459397" ignored="false" />
+    <file path="/Main.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1452955979778" ignored="false" />
     <file path="/PacketUartIO.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1443395034328" ignored="false" />
     <file path="/log4j.xml" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1451251324467" ignored="false" />
     <file path="/PacketUartIOTest.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1399837930115" ignored="false" />
@@ -58,7 +45,7 @@
     <file path="/NodeTest.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1396041414092" ignored="false" />
     <file path="/MessageType.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1394314588394" ignored="false" />
     <file path="/Bits.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1359580567947" ignored="false" />
-    <file path="/a.dummy" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1451510375329" ignored="false" />
+    <file path="/a.dummy" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1452696001663" ignored="false" />
     <file path="$PROJECT_DIR$/Test01/mplab8proj/Test01.sdb" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1365540825665" ignored="false" />
     <file path="$PROJECT_DIR$/SerialPort/Packet.cpp.bak" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1365540813512" ignored="false" />
     <file path="$PROJECT_DIR$/Test01/mplab8proj/display.p1" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1365540813513" ignored="false" />
@@ -91,7 +78,7 @@
     <file path="/OnOffActor.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1419369204308" ignored="false" />
     <file path="N:/work/MPLab/PiTest/aa/src/Hi.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1390435399731" ignored="false" />
     <file path="/Hi.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1390435392826" ignored="false" />
-    <file path="/Servlet.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1451740273377" ignored="false" />
+    <file path="/Servlet.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1452875718533" ignored="false" />
     <file path="/HttpServer.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1390865316788" ignored="false" />
     <file path="/SwitchListener.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1451348311288" ignored="false" />
     <file path="/AddressedPin.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1391463041161" ignored="false" />
@@ -143,9 +130,10 @@
     <file path="/LouversControllerImpl.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1451686770313" ignored="false" />
     <file path="/LouversControllerImplTest.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1451262545267" ignored="false" />
     <file path="/LouversController.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1451686472404" ignored="false" />
-    <file path="/LouversActionGroup.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1451348524117" ignored="false" />
+    <file path="/LouversActionGroup.java" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1452677347833" ignored="false" />
     <file path="/a.html" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1451688149716" ignored="false" />
     <file path="C:/Temp/html/report.css" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1451679878365" ignored="false" />
+    <file path="/b.html" changelist="82455535-c405-4c4b-a371-b0bc707cb60b" time="1452983959361" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -165,25 +153,6 @@
     <disable_hints />
   </component>
   <component name="DebuggerManager">
-    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
-    <exception_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true">
-      <breakpoint class_name="java.lang.Exception" package_name="java.lang">
-        <option name="NOTIFY_CAUGHT" value="true" />
-        <option name="NOTIFY_UNCAUGHT" value="true" />
-        <option name="ENABLED" value="false" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="SUSPEND" value="true" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="true" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="&#13;&#13;JAVA" />
-        <option name="LOG_MESSAGE" value="&#13;&#13;JAVA" />
-      </breakpoint>
-    </exception_breakpoints>
     <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
       <breakpoint>
         <option name="NOTIFY_CAUGHT" value="true" />
@@ -317,21 +286,7 @@
         <option name="CONDITION" value="" />
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/src/controller/action/LouversActionGroup.java" line="69" class="controller.action.LouversActionGroup.UpPressed" package="controller.action">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="SUSPEND" value="true" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="true" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/src/servlet/Servlet.java" line="149" class="servlet.Servlet" package="servlet">
+      <breakpoint url="file://$PROJECT_DIR$/src/controller/action/LouversActionGroup.java" line="70" class="controller.action.LouversActionGroup.UpPressed" package="controller.action">
         <option name="ENABLED" value="true" />
         <option name="LOG_ENABLED" value="false" />
         <option name="LOG_EXPRESSION_ENABLED" value="false" />
@@ -346,6 +301,25 @@
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
     </line_breakpoints>
+    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
+    <exception_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true">
+      <breakpoint class_name="java.lang.Exception" package_name="java.lang">
+        <option name="NOTIFY_CAUGHT" value="true" />
+        <option name="NOTIFY_UNCAUGHT" value="true" />
+        <option name="ENABLED" value="false" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="&#13;&#13;JAVA" />
+        <option name="LOG_MESSAGE" value="&#13;&#13;JAVA" />
+      </breakpoint>
+    </exception_breakpoints>
     <breakpoint_rules />
     <ui_properties />
   </component>
@@ -355,58 +329,37 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="report.css" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/servlet/resources/report.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="76" column="22" selection-start="1140" selection-end="1159" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="a.html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/servlet/resources/a.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="103" selection-start="510" selection-end="542" vertical-scroll-proportion="-3.7307692">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="Servlet.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/servlet/Servlet.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="158" column="75" selection-start="7062" selection-end="7062" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#2049#2075#0" expanded="true" />
-              </folding>
+            <state line="150" column="39" selection-start="6827" selection-end="6827" vertical-scroll-proportion="0.0">
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Main.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="b.html" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://C:/Temp/html/b.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="8" column="11" selection-start="123" selection-end="123" vertical-scroll-proportion="0.125">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Main.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="451" column="137" selection-start="32788" selection-end="32788" vertical-scroll-proportion="0.5651515">
+            <state line="470" column="129" selection-start="34427" selection-end="34427" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LouversController.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/controller/controller/LouversController.java">
+      <file leaf-file-name="WallSwitch.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/controller/device/WallSwitch.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="17" selection-start="8" selection-end="29" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="log4j.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/log4j.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+            <state line="45" column="15" selection-start="997" selection-end="997" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -415,25 +368,16 @@
       <file leaf-file-name="LouversControllerImpl.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/controller/controller/LouversControllerImpl.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="128" column="86" selection-start="5223" selection-end="5223" vertical-scroll-proportion="0.0">
+            <state line="51" column="0" selection-start="1717" selection-end="1717" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LouversPosition.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/controller/controller/LouversPosition.java">
+      <file leaf-file-name="LouversActionGroup.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/controller/action/LouversActionGroup.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="47" column="80" selection-start="1200" selection-end="1200" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Position.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/controller/controller/Position.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="16" selection-start="48" selection-end="48" vertical-scroll-proportion="0.0">
+            <state line="75" column="39" selection-start="2167" selection-end="2167" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -468,10 +412,8 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/test/controller/controler/LouversControllerImplTest.java" />
         <option value="$PROJECT_DIR$/src/packet/PacketUartIO.java" />
         <option value="$PROJECT_DIR$/src/app/SwitchListener.java" />
-        <option value="$PROJECT_DIR$/src/controller/action/LouversActionGroup.java" />
         <option value="$PROJECT_DIR$/src/controller/actor/AbstractActor.java" />
         <option value="$PROJECT_DIR$/test/controller/controller/LouversControllerImplTest.java" />
         <option value="C:/Temp/html/a.html" />
@@ -480,10 +422,12 @@
         <option value="$PROJECT_DIR$/src/servlet/resources/a.html" />
         <option value="$PROJECT_DIR$/src/controller/controller/Position.java" />
         <option value="$PROJECT_DIR$/src/controller/controller/Activity.java" />
-        <option value="$PROJECT_DIR$/src/servlet/Servlet.java" />
         <option value="$PROJECT_DIR$/src/controller/controller/LouversPosition.java" />
         <option value="$PROJECT_DIR$/src/controller/controller/LouversControllerImpl.java" />
+        <option value="$PROJECT_DIR$/src/controller/action/LouversActionGroup.java" />
+        <option value="$PROJECT_DIR$/src/servlet/Servlet.java" />
         <option value="$PROJECT_DIR$/src/Main.java" />
+        <option value="C:/Temp/html/b.html" />
       </list>
     </option>
   </component>
@@ -493,8 +437,8 @@
   <component name="ProjectFrameBounds">
     <option name="x" value="-4" />
     <option name="y" value="-4" />
-    <option name="width" value="1928" />
-    <option name="height" value="1126" />
+    <option name="width" value="1688" />
+    <option name="height" value="976" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -522,7 +466,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -555,209 +498,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="&lt; 1.8 &gt;" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="rt.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
               <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="&lt; 1.8 &gt;" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="rt.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="javax" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="&lt; 1.8 &gt;" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="rt.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="javax" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="swing" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="&lt; 1.8 &gt;" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="rt.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="javax" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="swing" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="undo" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="&lt; 1.8 &gt;" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="rt.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="util" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="&lt; 1.8 &gt;" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="rt.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="External Libraries" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ExternalLibrariesNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="&lt; 1.8 &gt;" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.NamedLibraryElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="rt.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lang" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controller" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -790,46 +531,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="servlet" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="servlet" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="resources" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="packet" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -909,28 +610,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="controller" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controller" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="actor" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -967,70 +646,13 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="lib" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lib" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="RXTXcomm.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiFileNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controler" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lib" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="RXTXcomm.jar" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiFileNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="io" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
       <pane id="PackagesPane" />
     </panes>
   </component>
@@ -1049,15 +671,15 @@
     <property name="GoToClass.includeLibraries" value="false" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="GoToFile.includeJavaFiles" value="false" />
-    <property name="options.lastSelected" value="fileTemplates" />
-    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="options.lastSelected" value="reference.settings.ide.settings.web.browsers" />
     <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
+    <property name="project.structure.side.proportion" value="0.2" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.includeInheritedMembers" value="false" />
     <property name="TODO_SCOPE" value="Project Files" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth1" value="243" />
-    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth0" value="242" />
     <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth0" value="242" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatWidth3" value="75" />
     <property name="project.structure.proportion" value="0.15" />
@@ -1070,7 +692,7 @@
     <property name="GenerateAntBuildDialog.generateSingleFile" value="true" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder5" value="5" />
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_flatOrder4" value="4" />
-    <property name="last_opened_file_path" value="C:/Temp/html/a.html" />
+    <property name="last_opened_file_path" value="C:/Temp/html/b.html" />
     <property name="GenerateAntBuildDialog.inclineRuntiemClasspath" value="false" />
     <property name="GoToClass.includeJavaFiles" value="false" />
     <property name="GenerateAntBuildDialog.outputFileNameProperty" value="controler" />
@@ -1088,8 +710,8 @@
     <property name="FileHistory.org.jetbrains.idea.svn.history.SvnHistoryProvider_treeOrder0" value="0" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="GenerateAntBuildDialog.backupFiles" value="true" />
-    <property name="options.searchVisible" value="true" />
     <property name="dynamic.classpath" value="false" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CreateTestDialog.Recents.Supers">
@@ -1215,40 +837,6 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
-    <configuration default="false" name="LouversControllerImplTest.testDownAndOutshineAsync" type="JUnit" factoryName="JUnit" temporary="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-        <pattern>
-          <option name="PATTERN" value="controller.controller.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <module name="controler" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" value="" />
-      <option name="PACKAGE_NAME" value="controller.controller" />
-      <option name="MAIN_CLASS_NAME" value="controller.controller.LouversControllerImplTest" />
-      <option name="METHOD_NAME" value="testDownAndOutshineAsync" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" value="-Djava.library.path=lib -Dlog4j.configuration=log4j.xml" />
-      <option name="PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <envs />
-      <patterns />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Debug" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
-    </configuration>
     <configuration default="false" name="LouversControllerImplTest.testDownAndUpBroken" type="JUnit" factoryName="JUnit" temporary="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
@@ -1275,6 +863,15 @@
       <patterns />
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="b.html" type="JavascriptDebugSession" factoryName="Local" singleton="true" temporary="true">
+      <JSDebuggerConfigurationSettings>
+        <option name="engineId" value="chrome" />
+        <option name="fileUrl" value="file://C:/Temp/html/b.html" />
+      </JSDebuggerConfigurationSettings>
+      <RunnerSettings RunnerId="JavascriptDebugRunner" />
+      <ConfigurationWrapper RunnerId="JavascriptDebugRunner" />
       <method />
     </configuration>
     <configuration default="true" type="Remote" factoryName="Remote">
@@ -1321,6 +918,13 @@
       <patterns />
       <method />
     </configuration>
+    <configuration default="true" type="JavascriptDebugSession" factoryName="Local" singleton="true">
+      <JSDebuggerConfigurationSettings>
+        <option name="engineId" value="embedded" />
+        <option name="fileUrl" />
+      </JSDebuggerConfigurationSettings>
+      <method />
+    </configuration>
     <configuration default="false" name="Pi" type="Remote" factoryName="Remote">
       <module name="controler" />
       <option name="USE_SOCKET_TRANSPORT" value="true" />
@@ -1341,16 +945,16 @@
       <item index="1" class="java.lang.String" itemvalue="Application.Main" />
       <item index="2" class="java.lang.String" itemvalue="JUnit.LouversControllerImplTest" />
       <item index="3" class="java.lang.String" itemvalue="JUnit.LouversControllerImplTest.testDownAndOutshine" />
-      <item index="4" class="java.lang.String" itemvalue="JUnit.LouversControllerImplTest.testDownAndOutshineAsync" />
-      <item index="5" class="java.lang.String" itemvalue="JUnit.LouversControllerImplTest.testDownAndUpBroken" />
+      <item index="4" class="java.lang.String" itemvalue="JUnit.LouversControllerImplTest.testDownAndUpBroken" />
+      <item index="5" class="java.lang.String" itemvalue="JavaScript Debug.b.html" />
     </list>
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Application.Main" />
-        <item index="1" class="java.lang.String" itemvalue="JUnit.LouversControllerImplTest" />
-        <item index="2" class="java.lang.String" itemvalue="JUnit.LouversControllerImplTest.testDownAndUpBroken" />
-        <item index="3" class="java.lang.String" itemvalue="JUnit.LouversControllerImplTest.testDownAndOutshine" />
-        <item index="4" class="java.lang.String" itemvalue="JUnit.LouversControllerImplTest.testDownAndOutshineAsync" />
+        <item index="1" class="java.lang.String" itemvalue="JavaScript Debug.b.html" />
+        <item index="2" class="java.lang.String" itemvalue="JUnit.LouversControllerImplTest" />
+        <item index="3" class="java.lang.String" itemvalue="JUnit.LouversControllerImplTest.testDownAndUpBroken" />
+        <item index="4" class="java.lang.String" itemvalue="JUnit.LouversControllerImplTest.testDownAndOutshine" />
       </list>
     </recent_temporary>
   </component>
@@ -1488,7 +1092,11 @@
       <created>1451349837140</created>
       <updated>1451349837140</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="- fixing louvers Outshine Panic after restart of all PICs">
+      <created>1452677416150</created>
+      <updated>1452677416150</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="TodoView" selected-index="0">
@@ -1512,28 +1120,28 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-4" y="-4" width="1928" height="1126" extended-state="6" />
+    <frame x="-4" y="-4" width="1688" height="976" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3278856" sideWeight="0.49573106" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32986537" sideWeight="0.7659831" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2819203" sideWeight="0.73745996" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28106153" sideWeight="0.7190943" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28600612" sideWeight="0.6163287" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28347406" sideWeight="0.6009792" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28600612" sideWeight="0.37993598" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28106153" sideWeight="0.2766218" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2129743" sideWeight="0.20024125" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2753978" sideWeight="0.6513872" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.8202247" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30639324" sideWeight="0.45471236" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30639324" sideWeight="0.4498164" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3421859" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.17686659" sideWeight="0.1363088" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32986537" sideWeight="0.7164179" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21504803" sideWeight="0.71399385" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2129743" sideWeight="0.71893847" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4535585" sideWeight="0.6334149" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -1579,7 +1187,7 @@
     <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="- first use of LouversController" />
+    <option name="LAST_COMMIT_MESSAGE" value="- fixing louvers Outshine Panic after restart of all PICs" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1592,8 +1200,6 @@
     <option name="UPDATE_GROUP_BY_CHANGELIST" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="- InvertAction with switchOnPercent value&#10;- new koupelna light" />
-    <MESSAGE value="- new switches" />
     <MESSAGE value="- new LDD module &amp; lights reorg" />
     <MESSAGE value="- new lights &amp; switch" />
     <MESSAGE value="- adding PirStatus" />
@@ -1617,12 +1223,15 @@
     <MESSAGE value="- minor optimalization&#10;- extending times in tests to stabilize them" />
     <MESSAGE value="- invalidating position on exception" />
     <MESSAGE value="- first use of LouversController" />
+    <MESSAGE value="- using new LouversControllerImpl&#10;- renaming Actor.Id -&gt;Actor.Name&#10;- adding new LDDs&#10;- rewriting Louvers web page" />
+    <MESSAGE value="- fixing louvers Outshine Panic after restart of all PICs" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
+      <option name="time" value="1" />
     </breakpoint-manager>
   </component>
   <component name="antWorkspaceConfiguration">
@@ -1630,90 +1239,20 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/controller/actor/AbstractActor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="17" selection-start="602" selection-end="602" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/controller/device/RelayBoardDevice.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="19" selection-start="445" selection-end="445" vertical-scroll-proportion="0.3153014">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/controller/controller/LouversControllerImplTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="282" column="65" selection-start="9551" selection-end="9551" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Temp/html/a.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="35" selection-start="425" selection-end="425" vertical-scroll-proportion="-7.1923075">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/controller/action/LouversActionGroup.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="72" column="11" selection-start="1971" selection-end="1971" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/controller/controller/LouversPositionTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="119" column="31" selection-start="3611" selection-end="3611" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/servlet/resources/a.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="103" selection-start="510" selection-end="542" vertical-scroll-proportion="-3.7307692">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/servlet/resources/report.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="22" selection-start="1140" selection-end="1159" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="76" column="22" selection-start="1140" selection-end="1159" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/controller/controller/Position.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="16" selection-start="48" selection-end="48" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/controller/controller/Activity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="12" selection-start="44" selection-end="44" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="2" column="16" selection-start="48" selection-end="48" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/controller/controller/LouversPosition.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="47" column="80" selection-start="1200" selection-end="1200" vertical-scroll-proportion="0.0">
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/servlet/Servlet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="158" column="75" selection-start="7062" selection-end="7062" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#2049#2075#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1731,16 +1270,77 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/controller/controller/Activity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="12" selection-start="44" selection-end="44" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/controller/controller/LouversControllerImpl.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="128" column="86" selection-start="5223" selection-end="5223" vertical-scroll-proportion="0.0">
+        <state line="51" column="0" selection-start="1717" selection-end="1717" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/controller/action/LouversActionGroup.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="75" column="39" selection-start="2167" selection-end="2167" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Temp/html/a.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="35" selection-start="425" selection-end="425" vertical-scroll-proportion="0.26959848" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/servlet/Servlet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="150" column="39" selection-start="6827" selection-end="6827" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/node/NodePin.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="13" selection-start="28" selection-end="28" vertical-scroll-proportion="-0.014035088">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/controller/actor/AbstractActor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="37" column="37" selection-start="1015" selection-end="1015" vertical-scroll-proportion="-1.2368422">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/controller/actor/Indicator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="15" selection-start="93" selection-end="93" vertical-scroll-proportion="0.1491228">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/controller/device/WallSwitch.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="45" column="15" selection-start="997" selection-end="997" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="451" column="137" selection-start="32788" selection-end="32788" vertical-scroll-proportion="0.5651515">
+        <state line="470" column="129" selection-start="34427" selection-end="34427" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Temp/html/b.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="11" selection-start="123" selection-end="123" vertical-scroll-proportion="0.125">
           <folding />
         </state>
       </provider>
@@ -1752,13 +1352,13 @@
         <settings>
           <artifact-editor>
             <show-content>
+              <type id="artifact" />
               <type id="javaee-facet-resources" />
               <type id="library" />
               <type id="jpa-descriptors" />
-              <type id="artifact" />
             </show-content>
           </artifact-editor>
-          <last-edited>homeAutomation:jar</last-edited>
+          <last-edited>firefi</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
