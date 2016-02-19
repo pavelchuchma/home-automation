@@ -36,7 +36,9 @@ public class Servlet extends AbstractHandler {
     public static final String TARGET_SYSTEM = "/system";
     public static final String TARGET_PIR_STATUS = "/pirStatus";
     public static final String TARGET_LIGHTS = "/lights";
+    public static final String TARGET_LIGHTS_STATUS = "/lights/status";
     public static final String TARGET_LIGHTS_ACTION = "/lights/a";
+    public static final String TARGET_LIGHTS_OBYVAK = "/lightsObyvak.html";
     public static final String TARGET_LOUVERS = "/zaluzie";
     public static final String TARGET_LOUVERS_ACTION = "/zaluzie/a";
     public static final String CLASS_LOUVERS_ARROW = "louversArrow";
@@ -65,18 +67,18 @@ public class Servlet extends AbstractHandler {
                        HttpServletRequest request,
                        HttpServletResponse response)
             throws IOException, ServletException {
-        if (target.startsWith("/report.css")) {
-            response.setContentType("text/css;charset=utf-8");
+        if (target.endsWith(".css")) {
+            sendFile(target, response, "text/css;charset=utf-8");
             baseRequest.setHandled(true);
-
-            InputStream a = this.getClass().getResourceAsStream("/servlet/resources/report.css");
-            byte[] buff = new byte[1024];
-            int read;
-            while ((read = a.read(buff)) > 0) {
-                response.getOutputStream().write(buff, 0, read);
-            }
-        } else if (target.startsWith("/restart")) {
-            System.exit(100);
+        } else if (target.endsWith(".html")) {
+            sendFile(target, response, "text/html;charset=utf-8");
+            baseRequest.setHandled(true);
+        } else if (target.endsWith(".jpg")) {
+            sendFile(target, response, "image/jpeg");
+            baseRequest.setHandled(true);
+        } else if (target.endsWith(".js")) {
+            sendFile(target, response, "application/javascript;charset=utf-8");
+            baseRequest.setHandled(true);
         } else {
             if (target.startsWith(TARGET_LOUVERS)) {
                 int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LOUVERS_ACTION);
@@ -92,16 +94,20 @@ public class Servlet extends AbstractHandler {
                 response.getWriter().println(getLouversPage());
 
             } else if (target.startsWith(TARGET_LIGHTS)) {
-                int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LIGHTS_ACTION);
-                if (actionIndex != -1) {
-                    lightsActions[actionIndex].perform(-1);
+                if (target.startsWith(TARGET_LIGHTS_STATUS)) {
+                    writeLightsStatusJson(baseRequest, response);
+
+                } else {
+                    int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LIGHTS_ACTION);
+                    if (actionIndex != -1) {
+                        lightsActions[actionIndex].perform(-1);
+                    }
+
+                    response.setContentType("text/html;charset=utf-8");
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    baseRequest.setHandled(true);
+                    response.getWriter().println(getLightsPage());
                 }
-
-                response.setContentType("text/html;charset=utf-8");
-                response.setStatus(HttpServletResponse.SC_OK);
-                baseRequest.setHandled(true);
-                response.getWriter().println(getLightsPage());
-
             } else if (target.startsWith(TARGET_PIR_STATUS)) {
                 response.setContentType("text/html;charset=utf-8");
                 response.setStatus(HttpServletResponse.SC_OK);
@@ -144,6 +150,55 @@ public class Servlet extends AbstractHandler {
                 response.getWriter().println(nodeInfoCollector.getReport());
             }
         }
+    }
+
+    private void sendFile(String target, HttpServletResponse response, String contentType) throws IOException {
+        if (!target.contains(":") && !target.contains("..")) {
+            response.setContentType(contentType);
+
+            InputStream in = this.getClass().getResourceAsStream("/servlet/resources" + target);
+            if (in != null) {
+                byte[] buff = new byte[1024];
+                int read;
+                while ((read = in.read(buff)) > 0) {
+                    response.getOutputStream().write(buff, 0, read);
+                }
+                return;
+            }
+        }
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+    }
+
+    private void writeLightsStatusJson(Request baseRequest, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json;charset=utf-8");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setStatus(HttpServletResponse.SC_OK);
+        baseRequest.setHandled(true);
+        StringBuffer b = new StringBuffer();
+        b.append("{ \"lights\" : [\n");
+        for (int i = 0; i < lightsActions.length; i += 4) {
+            PwmActor actor = (PwmActor) lightsActions[i].getActor();
+            b.append('{');
+            appendNameValue(b, "id", Integer.toString(i / 4));
+            b.append(',');
+            appendNameValue(b, "name", actor.getName());
+            b.append(',');
+            appendNameValue(b, "val", Integer.toString(actor.getPwmValue()));
+            b.append(',');
+            appendNameValue(b, "maxVal", Integer.toString(actor.getMaxPwmValue()));
+            b.append(',');
+            appendNameValue(b, "curr", currentValueFormatter.format(actor.getOutputCurrent()));
+            b.append('}');
+            if (i < lightsActions.length - 4) {
+                b.append(",\n");
+            }
+        }
+        b.append("\n]}");
+        response.getWriter().println(b);
+    }
+
+    private void appendNameValue(StringBuffer b, String name, String value) {
+        b.append("\"").append(name).append("\":\"").append(value).append("\"");
     }
 
     private void processLouversAction(int actionIndex) {

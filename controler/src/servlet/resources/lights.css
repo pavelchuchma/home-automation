@@ -2,24 +2,6 @@ td {
     vertical-align: top;
 }
 
-td.errorValue {
-    color: red;
-}
-
-td.fineValue {
-    color: black;
-}
-
-td.messageLog {
-    font-size: smaller;
-    border-top-style: dashed;
-    border-top-width: 2px;
-}
-
-div.sentMessage {
-    color: blue;
-}
-
 div.gray {
     color: gray;
     font-size: .5em;
@@ -29,7 +11,7 @@ div.gray {
 table.buttonTable {
     border: 2px solid black;
     border-collapse: collapse;
-    width: 100%
+    width: 66%
 }
 
 td.lightName {
@@ -41,9 +23,9 @@ td.lightName {
     font-size: 2em;
 }
 
-td.louversRunning {
+td.lightNameSelected {
+    background-color: #ff8c00;
     border: 2px solid black;
-    background-color: red;
     border-collapse: collapse;
     padding: 10px;
     width: 20%;
@@ -98,4 +80,8 @@ td.nodeInfoConnectors {
 
 .activeLight {
     color: red;
+}
+
+.noBreak {
+    display:inline;
 }

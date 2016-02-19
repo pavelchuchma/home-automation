@@ -116,7 +116,7 @@ public class NodeInfoCollector implements Iterable<NodeInfo> {
                 "</head>" +
                 "<body>");
 
-        String[] actionNames = new String[]{"Bzucak", "Garaz","Jidelna"};
+        String[] actionNames = new String[]{"Bzucak", "Garaz","Jidelna", "Zvuk"};
         for (int i = 0; i < actionNames.length; i++) {
             builder.append(String.format("<a href='/a%d'>%s</a>&nbsp;&nbsp;&nbsp;&nbsp;", i + 1, actionNames[i]));
         }
@@ -125,6 +125,7 @@ public class NodeInfoCollector implements Iterable<NodeInfo> {
         builder.append("<a href='" + Servlet.TARGET_LIGHTS + "'>Svetla...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
         builder.append("<a href='" + Servlet.TARGET_SYSTEM + "'>System...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
         builder.append("<a href='" + Servlet.TARGET_PIR_STATUS + "'>Pir Status...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
+        builder.append("<a href='" + Servlet.TARGET_LIGHTS_OBYVAK + "'>Obyvak...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
 
         builder.append("<table class='nodeTable'>\n" +
                 "<tr><th class=''>Node #<th class=''>Last Ping Time<th class=''>Boot Time<th class=''>Build Time<th class=''>MessageLog");

@@ -4,6 +4,7 @@ import controller.ActionBinding;
 import controller.PirStatus;
 import controller.action.AbstractSensorAction;
 import controller.action.Action;
+import controller.action.AudioAction;
 import controller.action.DecreasePwmAction;
 import controller.action.IncreasePwmAction;
 import controller.action.InvertAction;
@@ -303,7 +304,7 @@ public class Main {
         PwmActor koupelnaDoleZrcadlaPwmActor = addLddLight(lightsActions, "Koupelna dole zrcadla", lddDevice5.getLdd2(), 0.35); // .36
         PwmActor kuchyn1PwmActor = addLddLight(lightsActions, "Kuchyň 1", lddDevice5.getLdd3(), 0.7); // .72
         PwmActor obyvak05PwmActor = addLddLight(lightsActions, "Obyvák 05 (x)", lddDevice5.getLdd4(), 0.7); // .72
-        PwmActor test55 = addLddLight(lightsActions, "test5.5", lddDevice5.getLdd5(), 0.1); // ?? (kuchyn stul?)
+        PwmActor pracovnaPwmActor = addLddLight(lightsActions, "Pracovna", lddDevice5.getLdd5(), 0.6); // .6
         PwmActor test56 = addLddLight(lightsActions, "test5.6", lddDevice5.getLdd6(), 0.1); // ?? (kuchyn stul?)
 
         LddBoardDevice lddDevice6 = new LddBoardDevice("lddDevice6", lddActorC, 2, .7, .7, .7, .7, .7, .7);
@@ -323,7 +324,8 @@ public class Main {
         PwmActor obyvak12PwmActor = addLddLight(lightsActions, "Obyvák 12 (x)", lddDevice7.getLdd6(), 0.05); // .72
 
         LddBoardDevice lddDevice8 = new LddBoardDevice("lddDevice8", lddActorC, 1, .6, .6, .5, .5, .5, .5);
-        PwmActor pracovnaPwmActor = addLddLight(lightsActions, "Pracovna", lddDevice8.getLdd1(), 0.6); // .6
+//        PwmActor pracovnaPwmActor = addLddLight(lightsActions, "Pracovna", lddDevice8.getLdd1(), 0.6); // .6
+        PwmActor test81 = addLddLight(lightsActions, "test81", lddDevice8.getLdd1(), 0.1); // .6
         PwmActor koupelnaDolePwmActor = addLddLight(lightsActions, "Koupelna dole", lddDevice8.getLdd2(), 0.6, new SwitchIndicator(koupelnaDoleSw2.getRedLed(), true), new SwitchIndicator(koupelnaDoleSw2.getGreenLed(), false)); // .60
         PwmActor vratnice2PwmActor = addLddLight(lightsActions, "Vrátnice 2", lddDevice8.getLdd3(), 0.48); //.48
         PwmActor chodbaDolePwmActor = addLddLight(lightsActions, "Chodba dole", lddDevice8.getLdd4(), 0.48); //.48
@@ -543,7 +545,7 @@ public class Main {
         Servlet.action2 = ovladacGarazAction;
         Servlet.action3 = invertJidelna;
 
-        Servlet.action4 = null;
+        Servlet.action4 = new AudioAction();
         Servlet.action5 = null;
         Servlet.louversControllers = louversControllers;
 
