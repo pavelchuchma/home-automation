@@ -12,6 +12,7 @@ import controller.device.OutputDevice;
 import node.Node;
 import node.Pic;
 import node.Pin;
+import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -25,6 +26,7 @@ import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Servlet extends AbstractHandler {
     public static final String TARGET_SYSTEM_INFO = "/system/i";
@@ -38,6 +40,7 @@ public class Servlet extends AbstractHandler {
     public static final String TARGET_LIGHTS = "/lights";
     public static final String TARGET_LIGHTS_STATUS = "/lights/status";
     public static final String TARGET_LIGHTS_ACTION = "/lights/a";
+    public static final String TARGET_LIGHTS_PARAM_ACTION = "/lights/acton";
     public static final String TARGET_LIGHTS_OBYVAK = "/lightsObyvak.html";
     public static final String TARGET_LOUVERS = "/zaluzie";
     public static final String TARGET_LOUVERS_ACTION = "/zaluzie/a";
@@ -88,31 +91,34 @@ public class Servlet extends AbstractHandler {
 //                louversActions[actionIndex].perform(-1);
                 }
 
-                response.setContentType("text/html;charset=utf-8");
-                response.setStatus(HttpServletResponse.SC_OK);
-                baseRequest.setHandled(true);
-                response.getWriter().println(getLouversPage());
+                sendOkResponse(baseRequest, response, getLouversPage());
 
             } else if (target.startsWith(TARGET_LIGHTS)) {
                 if (target.startsWith(TARGET_LIGHTS_STATUS)) {
                     writeLightsStatusJson(baseRequest, response);
+                } else if (target.startsWith(TARGET_LIGHTS_PARAM_ACTION)) {
+                    String id = request.getParameter("id");
+                    Validate.notNull(id, "no id specified");
+                    PwmActor actor = lightActors.get(id);
+                    Validate.notNull(actor, "unknown light actor name");
 
+                    String valStr = request.getParameter("val");
+                    if (valStr != null) {
+                        int value = Integer.parseInt(valStr);
+                        actor.setValue(value, null);
+                        sendOkResponse(baseRequest, response, "");
+                        return;
+                    }
                 } else {
                     int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LIGHTS_ACTION);
                     if (actionIndex != -1) {
-                        lightsActions[actionIndex].perform(-1);
+                        lightActions[actionIndex].perform(-1);
                     }
 
-                    response.setContentType("text/html;charset=utf-8");
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    baseRequest.setHandled(true);
-                    response.getWriter().println(getLightsPage());
+                    sendOkResponse(baseRequest, response, getLightsPage());
                 }
             } else if (target.startsWith(TARGET_PIR_STATUS)) {
-                response.setContentType("text/html;charset=utf-8");
-                response.setStatus(HttpServletResponse.SC_OK);
-                baseRequest.setHandled(true);
-                response.getWriter().println(getPirPage());
+                sendOkResponse(baseRequest, response, getPirPage());
 
             } else if (target.startsWith(TARGET_SYSTEM)) {
                 int debugNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_INFO);
@@ -135,21 +141,22 @@ public class Servlet extends AbstractHandler {
                     stopNodeTest(testEndNodeId);
                 }
 
-                response.setContentType("text/html;charset=utf-8");
-                response.setStatus(HttpServletResponse.SC_OK);
-                baseRequest.setHandled(true);
-                response.getWriter().println(getSystemPage(debugNodeId));
+                sendOkResponse(baseRequest, response, getSystemPage(debugNodeId));
 
             } else {
                 if (target.startsWith("/a")) {
                     processAction(target);
                 }
-                response.setContentType("text/html;charset=utf-8");
-                response.setStatus(HttpServletResponse.SC_OK);
-                baseRequest.setHandled(true);
-                response.getWriter().println(nodeInfoCollector.getReport());
+                sendOkResponse(baseRequest, response, nodeInfoCollector.getReport());
             }
         }
+    }
+
+    private void sendOkResponse(Request baseRequest, HttpServletResponse response, String body) throws IOException {
+        response.setContentType("text/html;charset=utf-8");
+        response.setStatus(HttpServletResponse.SC_OK);
+        baseRequest.setHandled(true);
+        response.getWriter().println(body);
     }
 
     private void sendFile(String target, HttpServletResponse response, String contentType) throws IOException {
@@ -176,12 +183,17 @@ public class Servlet extends AbstractHandler {
         baseRequest.setHandled(true);
         StringBuffer b = new StringBuffer();
         b.append("{ \"lights\" : [\n");
-        for (int i = 0; i < lightsActions.length; i += 4) {
-            PwmActor actor = (PwmActor) lightsActions[i].getActor();
+        boolean first = true;
+        for (PwmActor actor : lightActors.values()) {
+            if (first) {
+                first = false;
+            } else {
+                b.append(",\n");
+            }
             b.append('{');
-            appendNameValue(b, "id", Integer.toString(i / 4));
+            appendNameValue(b, "id", actor.getId());
             b.append(',');
-            appendNameValue(b, "name", actor.getName());
+            appendNameValue(b, "name", actor.getLabel());
             b.append(',');
             appendNameValue(b, "val", Integer.toString(actor.getPwmValue()));
             b.append(',');
@@ -189,9 +201,6 @@ public class Servlet extends AbstractHandler {
             b.append(',');
             appendNameValue(b, "curr", currentValueFormatter.format(actor.getOutputCurrent()));
             b.append('}');
-            if (i < lightsActions.length - 4) {
-                b.append(",\n");
-            }
         }
         b.append("\n]}");
         response.getWriter().println(b);
@@ -242,9 +251,22 @@ public class Servlet extends AbstractHandler {
     public static Action action3;
     public static Action action4;
     public static Action action5;
-    public static Action[] lightsActions;
+    private static Action[] lightActions;
+    private static Map<String, PwmActor> lightActors;
     public static List<PirStatus> pirStatusList;
     public static LouversController[] louversControllers;
+
+    public static void setLightActions(Action[] lightActions) {
+        Servlet.lightActions = lightActions;
+        lightActors = new HashMap<>();
+        for (int i = 0; i < lightActions.length; i += 4) {
+            PwmActor actor = (PwmActor) lightActions[i].getActor();
+            if (lightActors.containsKey(actor.getId())) {
+                throw new RuntimeException("Id of actor '" + actor.getId() + "' is not unique");
+            }
+            lightActors.put(actor.getId(), actor);
+        }
+    }
 
     private void processAction(String action) {
         if (action.startsWith("/a1") && action1 != null) {
@@ -295,16 +317,16 @@ public class Servlet extends AbstractHandler {
                 "<body><a href='" + TARGET_LIGHTS + "'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
 
         builder.append("<br/><br/><table class='buttonTable'>");
-        for (int i = 0; i < lightsActions.length; i += 4) {
+        for (int i = 0; i < lightActions.length; i += 4) {
             builder.append("<tr>");
-            PwmActor actor = (PwmActor) lightsActions[i].getActor();
+            PwmActor actor = (PwmActor) lightActions[i].getActor();
             String fieldClass = "louvers";
             String stateFieldClass = (actor.isOn()) ? "louversRunning" : "louvers";
             builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LIGHTS_ACTION, i, "On"));
             builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LIGHTS_ACTION, i + 1, "+"));
             builder.append(String.format("<td title='%s, max %s A' class='%s'>%s %d%% <div class='gray'>(%d/%d) %sA</div>",
                     actor.getLddOutput().getDeviceName(), currentValueFormatter.format(actor.getMaxOutputCurrent()),
-                    stateFieldClass, lightsActions[i].getActor().getName(), actor.getValue(), actor.getPwmValue(), actor.getMaxPwmValue(),
+                    stateFieldClass, lightActions[i].getActor().getLabel(), actor.getValue(), actor.getPwmValue(), actor.getMaxPwmValue(),
                     currentValueFormatter.format(actor.getOutputCurrent())));
             builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LIGHTS_ACTION, i + 2, "-"));
             builder.append(String.format("<td class='%s'><a href='%s%d'>%s</a>", fieldClass, TARGET_LIGHTS_ACTION, i + 3, "Off"));

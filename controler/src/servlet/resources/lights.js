@@ -3,36 +3,36 @@ var ctx;
 var e = '';
 
 var lightCoordinates = [
-    //x, y, actorIndex, name
-    [465, 205, 26, 'Kuchyn 1'],
-    [429, 133, 21, 'Kuchyn 2'],
-    [360, 169, 22, 'Kuchyn 3'],
-    [269, 102, 23, 'Kuchyn 4'],
-    [292, 273, 40, 'Kuchyn 5'],
-    [247, 372, 30, 'Jídelna 1'],
-    [97, 396, 38, 'Jidelna 2'],
-    [185, 485, 39, 'Jidelna 3'],
-    [418, 1004, 33, 'Obyvák 01'],
-    [362, 956, 16, 'Obyvák 02'],
-    [454, 904, 10, 'Obyvák 03'],
-    [423, 811, 37, 'Obyvák 04'],
-    [486, 694, 27, 'Obyvák 05'],
-    [435, 591, 31, 'Obyvák 06'],
-    [255, 1002, 9, 'Obyvák 07'],
-    [226, 904, 8, 'Obyvák 08'],
-    [198, 833, 7, 'Obyvák 09'],
-    [120, 723, 32, 'Obyvák 10'],
-    [272, 753, 20, 'Obyvák 11'],
-    [153, 916, 41, 'Obyvák 12'],
-    [158, 986, 34, 'Obyvák 13']
+    //id, x, y
+    ['pwmKch1', 465, 205],
+    ['pwmKch2', 429, 133],
+    ['pwmKch3', 360, 169],
+    ['pwmKch4', 269, 102],
+    ['pwmKch5', 292, 273],
+    ["pwmJid1", 247, 372],
+    ["pwmJid2", 97, 396],
+    ["pwmJid3", 185, 485],
+    ['pwmOb1', 418, 1004],
+    ['pwmOb2', 362, 956],
+    ['pwmOb3', 454, 904],
+    ['pwmOb4', 423, 811],
+    ['pwmOb5', 486, 694],
+    ['pwmOb6', 435, 591],
+    ['pwmOb7', 255, 1002],
+    ['pwmOb8', 226, 904],
+    ['pwmOb9', 198, 833],
+    ['pwmOb10', 120, 723],
+    ['pwmOb11', 272, 753],
+    ['pwmOb12', 153, 916],
+    ['pwmOb13', 158, 986]
 ];
 
 var lightStatusMap;
 var lightCoordinateMap = {};
 
 // Creation
-lightCoordinates.forEach(function(lc) {
-    lightCoordinateMap[lc[2]] = [lc[0], lc[1]];
+lightCoordinates.forEach(function (lc) {
+    lightCoordinateMap[lc[0]] = [lc[1], lc[2]];
 });
 
 window.onload = function () {
@@ -49,21 +49,21 @@ function computeDistance(x1, y1, x2, y2) {
 }
 
 function findNearestLight(x, y) {
-    var resIndex = 0;
-    var resDist = computeDistance(x, y, lightCoordinates[0][0], lightCoordinates[0][1]);
-    for (var i = 1; i < lightCoordinates.length; i++) {
-        var dist = computeDistance(x, y, lightCoordinates[i][0], lightCoordinates[i][1]);
-        if (dist < resDist) {
+    var resId = null;
+    var resDist = -1;
+    lightCoordinates.forEach(function (lc) {
+        var dist = computeDistance(x, y, lc[1], lc[2]);
+        if (resDist < 0 || dist < resDist) {
             resDist = dist;
-            resIndex = i;
+            resId = lc[0];
         }
-    }
-    return lightStatusMap[lightCoordinates[resIndex][2]];
+    });
+    return lightStatusMap[resId];
 }
 
 function drawLights() {
-    lightCoordinates.forEach(function(lc) {
-        drawLight(lc[2])
+    lightCoordinates.forEach(function (lc) {
+        drawLight(lc[0])
     });
 }
 function drawCanvas() {
@@ -77,13 +77,16 @@ function drawCanvas() {
 
 function drawLight(id) {
     var lightStatus = lightStatusMap[id];
-    var coords = lightCoordinateMap[id];
     var power = lightStatus.val / lightStatus.maxVal;
+
+    var coords = lightCoordinateMap[id];
+    var x = coords[0];
+    var y = coords[1];
 
     // black background
     if (power < 1) {
         ctx.beginPath();
-        ctx.arc(coords[0], coords[1], 20, 0, 2 * Math.PI);
+        ctx.arc(x, y, 20, 0, 2 * Math.PI);
         ctx.fillStyle = 'black';
         ctx.fill();
     }
@@ -91,13 +94,13 @@ function drawLight(id) {
     // yellow pie
     ctx.beginPath();
     if (power < 1) {
-        ctx.moveTo(coords[0], coords[1]);
+        ctx.moveTo(x, y);
     }
     var startAngle = 1.5 * Math.PI;
     var endAngle = (1.5 + 2 * power) * Math.PI;
-    ctx.arc(coords[0], coords[1], 20, startAngle, endAngle);
+    ctx.arc(x, y, 20, startAngle, endAngle);
     if (power < 1) {
-        ctx.lineTo(coords[0], coords[1]);
+        ctx.lineTo(x, y);
     }
     ctx.fillStyle = 'yellow';
     ctx.fill();
@@ -106,7 +109,7 @@ function drawLight(id) {
     // central circle
     if (power > 0 && power < 1) {
         ctx.beginPath();
-        ctx.arc(coords[0], coords[1], 7, 0, 2 * Math.PI);
+        ctx.arc(x, y, 7, 0, 2 * Math.PI);
         ctx.fill();
     }
 }
@@ -120,23 +123,41 @@ function createLightStatusMap(request) {
     return map;
 }
 
-function onCanvasClick(event) {
-    var lightStatus = findNearestLight(event.offsetX, event.offsetY);
-
-    var action = (lightStatus.id * 4) + ((lightStatus.val == 0) ? 0 : 3);
+function sendAction(action) {
+    //document.getElementById('error').innerHTML = action;
     try {
         var request = new XMLHttpRequest();
-        request.open('GET', 'http://10.0.0.150/lights/a' + action, true);
+        request.open('GET', 'http://10.0.0.150' + action, true);
         request.onreadystatechange = function () {
             request.close();
         };
         request.send();
 
     } catch (e) {
-        document.getElementById('error').innerHTML = e.message;
+        printException(e);
     }
 }
+function onCanvasClick(event) {
+    var lightStatus = findNearestLight(event.offsetX, event.offsetY);
 
+    var value = (lightStatus.val == 0) ? 66 : 0;
+    var action = '/lights/acton?id=' + lightStatus.id + "&" + "val=" + value;
+
+    sendAction(action);
+
+    var coords = lightCoordinateMap[lightStatus.id];
+
+    ctx.beginPath();
+    ctx.arc(coords[0], coords[1], 20, 0, 2 * Math.PI);
+    ctx.fillStyle = 'gray';
+    ctx.fill();
+
+}
+
+function printException(e) {
+    var stackTrace = new Error().stack;
+    document.getElementById('error').innerHTML = e.message + '<br>' + stackTrace.replace('\n', '<br>');
+}
 function updateLights() {
     var request = new XMLHttpRequest();
     request.open('GET', 'http://10.0.0.150/lights/status', true);
@@ -147,12 +168,12 @@ function updateLights() {
                 lightStatusMap = createLightStatusMap(request);
                 drawLights();
             } catch (e) {
-                document.getElementById('error').innerHTML = e.message;
+                printException(e);
             } finally {
                 request.close();
             }
         }
-    }
+    };
 
     request.send();
 }

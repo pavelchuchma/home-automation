@@ -185,17 +185,17 @@ public class Main {
         WallSwitch kuchynSw1 = new WallSwitch("kuchynSw1", kuchyn, 1);
         WallSwitch kuchynSw2 = new WallSwitch("kuchynSw2", kuchyn, 2);
 
-        OnOffActor svJidelna = new OnOffActor("svJidelna", triak1Actor3Port3.getOut1(), 1, 0, schodyDoleR3Sw.getRedLedIndicator(true));
-        OnOffActor svSklepLevy = new OnOffActor("svSklepLevy", triak1Actor3Port3.getOut2(), 1, 0, sklepLevyLSw.getRedLedIndicator(false), zadveriDoleVchodRSw.getGreenLedIndicator(false));
-        OnOffActor svSklepPravy = new OnOffActor("svSklepPravy", triak1Actor3Port3.getOut5(), 1, 0, sklepLevyRSw.getRedLedIndicator(false), zadveriDoleVchodRSw.getRedLedIndicator(false));
-        OnOffActor svSpajza = new OnOffActor("svSpajza", triak1Actor3Port3.getOut3(), 1, 0, chodbaDoleSpajzSw3.getRedLedIndicator(false));
-        OnOffActor zasStromek = new OnOffActor("zasStromek", triak1Actor3Port3.getOut4(), 1, 0, zadveriSwA1.getGreenLedIndicator(false));
-        OnOffActor zaricKoupelnaHore2Trubice = new OnOffActor("zaricKoupelnaHore2Trubice", rele1Actor3Port2.getRele1(), 0, 1, koupelnaHoreSw2.getRedLedIndicator(true), koupelnaHoreOknoSw.getRedLedIndicator(true));
-        OnOffActor zaricKoupelnaHore1Trubice = new OnOffActor("zaricKoupelnaHore1Trubice", rele1Actor3Port2.getRele2(), 0, 1, koupelnaHoreSw2.getGreenLedIndicator(true), koupelnaHoreOknoSw.getGreenLedIndicator(true));
+        OnOffActor svJidelna = new OnOffActor("svJidelna", "Jídelna Stul", triak1Actor3Port3.getOut1(), 1, 0, schodyDoleR3Sw.getRedLedIndicator(true));
+        OnOffActor svSklepLevy = new OnOffActor("svSklepLevy", "Levy Sklep", triak1Actor3Port3.getOut2(), 1, 0, sklepLevyRSw.getRedLedIndicator(false), zadveriDoleVchodRSw.getGreenLedIndicator(false));
+        OnOffActor svSklepPravy = new OnOffActor("svSklepPravy", "Pravy Sklep", triak1Actor3Port3.getOut5(), 1, 0, sklepPravySw.getRedLedIndicator(false), zadveriDoleVchodRSw.getRedLedIndicator(false));
+        OnOffActor svSpajza = new OnOffActor("svSpajza", "Spajza", triak1Actor3Port3.getOut3(), 1, 0, chodbaDoleSpajzSw3.getRedLedIndicator(false));
+        OnOffActor zasStromek = new OnOffActor("zasStromek", "Zasuvka Stromek", triak1Actor3Port3.getOut4(), 1, 0, zadveriSwA1.getGreenLedIndicator(false));
+        OnOffActor zaricKoupelnaHore2Trubice = new OnOffActor("zaricKoupelnaHore2Trubice", "Zaric koupelna 2 rubice", rele1Actor3Port2.getRele1(), 0, 1, koupelnaHoreSw2.getRedLedIndicator(true), koupelnaHoreOknoSw.getRedLedIndicator(true));
+        OnOffActor zaricKoupelnaHore1Trubice = new OnOffActor("zaricKoupelnaHore1Trubice", "Zaric koupelna 1 rubice", rele1Actor3Port2.getRele2(), 0, 1, koupelnaHoreSw2.getGreenLedIndicator(true), koupelnaHoreOknoSw.getGreenLedIndicator(true));
 
         RelayBoardDevice rele9 = new RelayBoardDevice("rele9", lddActorB, 3);
-        OnOffActor ovladacGaraz = new OnOffActor("ovladacGaraz", rele9.getRele2(), 0, 1);
-        OnOffActor bzucakDvere = new OnOffActor("bzucakDvere", rele9.getRele1(), 0, 1);
+        OnOffActor ovladacGaraz = new OnOffActor("ovladacGaraz", "Vrata garaz", rele9.getRele2(), 0, 1);
+        OnOffActor bzucakDvere = new OnOffActor("bzucakDvere", "Bzucak Dvere", rele9.getRele1(), 0, 1);
 
         SwitchListener lst = nodeInfoCollector.getSwitchListener();
 
@@ -268,69 +268,69 @@ public class Main {
         // PWM
         LddBoardDevice lddDevice1 = new LddBoardDevice("lddDevice1", lddActorA, 1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
         ArrayList<Action> lightsActions = new ArrayList<Action>();
-        PwmActor marekPwmActor = addLddLight(lightsActions, "Marek", lddDevice1.getLdd1(), 0.95, new SwitchIndicator(marekSwA1.getRedLed(), true)); //.96
-        PwmActor pataPwmActor = addLddLight(lightsActions, "Paťa", lddDevice1.getLdd2(), 0.95, new SwitchIndicator(patrikSw1.getRedLed(), true)); //.96
-        PwmActor krystofPwmActor = addLddLight(lightsActions, "Kryštof", lddDevice1.getLdd3(), 0.95, new SwitchIndicator(krystofSwA2.getRedLed(), true)); //.96
-        PwmActor koupelnaPwmActor = addLddLight(lightsActions, "Koupelna", lddDevice1.getLdd4(), 1.0, schodyDoleR3Sw.getGreenLedIndicator(false), koupelnaHoreSw1.getGreenLedIndicator(false), koupelnaHoreSw1.getRedLedIndicator(true)); // 1.08
-        PwmActor loznice1PwmActor = addLddLight(lightsActions, "Ložnice velké", lddDevice1.getLdd5(), 1.0); //1.08
-        PwmActor chodbaUPokojuPwmActor = addLddLight(lightsActions, "Chodba u pokoju", lddDevice1.getLdd6(), 1.0, new SwitchIndicator(chodbaHoreKoupelnaSw3.getRedLed(), true), new SwitchIndicator(chodbaHoreKrystofSwA3.getRedLed(), true), new SwitchIndicator(chodbaHorePatrikSw3.getRedLed(), true)); // 1.08
+        PwmActor marekPwmActor = addLddLight(lightsActions, "pwmMarek", "Marek", lddDevice1.getLdd1(), 0.95, new SwitchIndicator(marekSwA1.getRedLed(), true)); //.96
+        PwmActor pataPwmActor = addLddLight(lightsActions, "pwmPata", "Paťa", lddDevice1.getLdd2(), 0.95, new SwitchIndicator(patrikSw1.getRedLed(), true)); //.96
+        PwmActor krystofPwmActor = addLddLight(lightsActions, "pwmKry", "Kryštof", lddDevice1.getLdd3(), 0.95, new SwitchIndicator(krystofSwA2.getRedLed(), true)); //.96
+        PwmActor koupelnaPwmActor = addLddLight(lightsActions, "pwmKpH", "Koupelna", lddDevice1.getLdd4(), 1.0, schodyDoleR3Sw.getGreenLedIndicator(false), koupelnaHoreSw1.getGreenLedIndicator(false), koupelnaHoreSw1.getRedLedIndicator(true)); // 1.08
+        PwmActor loznice1PwmActor = addLddLight(lightsActions, "pwmLozV", "Ložnice velké", lddDevice1.getLdd5(), 1.0); //1.08
+        PwmActor chodbaUPokojuPwmActor = addLddLight(lightsActions, "pwmChP", "Chodba u pokoju", lddDevice1.getLdd6(), 1.0, new SwitchIndicator(chodbaHoreKoupelnaSw3.getRedLed(), true), new SwitchIndicator(chodbaHoreKrystofSwA3.getRedLed(), true), new SwitchIndicator(chodbaHorePatrikSw3.getRedLed(), true)); // 1.08
 
         LddBoardDevice lddDevice2 = new LddBoardDevice("lddDevice2", lddActorA, 2, 1.0, .7, .7, .7, .7, .35);
-        PwmActor vratnice1PwmActor = addLddLight(lightsActions, "Vrátnice 1", lddDevice2.getLdd1(), 0.95, new SwitchIndicator(vratniceSw1.getRedLed(), true)); // .96
-        PwmActor obyvak09PwmActor = addLddLight(lightsActions, "Obyvák 09 (x)", lddDevice2.getLdd2(), 0.7); // .72
-        PwmActor obyvak08PwmActor = addLddLight(lightsActions, "Obyvák 08 (x)", lddDevice2.getLdd3(), 0.7); // .72
-        PwmActor obyvak07PwmActor = addLddLight(lightsActions, "Obyvák 07 (x)", lddDevice2.getLdd4(), 0.7); // .72
-        PwmActor obyvak03PwmActor = addLddLight(lightsActions, "Obyvák 03 (x)", lddDevice2.getLdd5(), 0.7); // .72
-        PwmActor wcPwmActor = addLddLight(lightsActions, "WC", lddDevice2.getLdd6(), 0.24);
+        PwmActor vratnice1PwmActor = addLddLight(lightsActions, "pwmVrt1", "Vrátnice 1", lddDevice2.getLdd1(), 0.95, new SwitchIndicator(vratniceSw1.getRedLed(), true)); // .96
+        PwmActor obyvak09PwmActor = addLddLight(lightsActions, "pwmOb9", "Obyvák 09", lddDevice2.getLdd2(), 0.7); // .72
+        PwmActor obyvak08PwmActor = addLddLight(lightsActions, "pwmOb8", "Obyvák 08", lddDevice2.getLdd3(), 0.7); // .72
+        PwmActor obyvak07PwmActor = addLddLight(lightsActions, "pwmOb7", "Obyvák 07", lddDevice2.getLdd4(), 0.7); // .72
+        PwmActor obyvak03PwmActor = addLddLight(lightsActions, "pwmOb3", "Obyvák 03", lddDevice2.getLdd5(), 0.7); // .72
+        PwmActor wcPwmActor = addLddLight(lightsActions, "pwmWc", "WC", lddDevice2.getLdd6(), 0.24);
 
         LddBoardDevice lddDevice3 = new LddBoardDevice("lddDevice3", lddActorA, 3, .35, .35, .35, .35, .7, .7);
-        PwmActor loznice2PwmActor = addLddLight(lightsActions, "Ložnice malé", lddDevice3.getLdd1(), 0.35, new SwitchIndicator(lozniceDvereSw2.getRedLed(), true), new SwitchIndicator(lozniceOknoSw2.getRedLed(), true)); // .36
-        PwmActor satnaPwmActor = addLddLight(lightsActions, "Šatna", lddDevice3.getLdd2(), 0.35, new SwitchIndicator(chodbaALSw.getRedLed(), true), new SwitchIndicator(satnaSw3.getRedLed(), true)); //0.48
-        PwmActor zadveriPwmActor = addLddLight(lightsActions, "Zádveří", lddDevice3.getLdd3(), 0.35, new SwitchIndicator(zadveriSwA1.getRedLed(), true)); // 0.48
-        PwmActor koupelnaZrcadlaPwmActor = addLddLight(lightsActions, "Koupena zrcadla", lddDevice3.getLdd4(), 0.35); // .36
-        PwmActor obyvak02PwmActor = addLddLight(lightsActions, "Obyvák 02 (x)", lddDevice3.getLdd5(), 0.7); // .72
-        PwmActor chodbaSchodyPwmActor = addLddLight(lightsActions, "Chodba schody", lddDevice3.getLdd6(), 0.70); // .72
+        PwmActor loznice2PwmActor = addLddLight(lightsActions, "pwmLozM", "Ložnice malé", lddDevice3.getLdd1(), 0.35, new SwitchIndicator(lozniceDvereSw2.getRedLed(), true), new SwitchIndicator(lozniceOknoSw2.getRedLed(), true)); // .36
+        PwmActor satnaPwmActor = addLddLight(lightsActions, "pwmSat", "Šatna", lddDevice3.getLdd2(), 0.35, new SwitchIndicator(chodbaALSw.getRedLed(), true), new SwitchIndicator(satnaSw3.getRedLed(), true)); //0.48
+        PwmActor zadveriPwmActor = addLddLight(lightsActions, "pwmZadH", "Zádveří", lddDevice3.getLdd3(), 0.35, new SwitchIndicator(zadveriSwA1.getRedLed(), true)); // 0.48
+        PwmActor koupelnaZrcadlaPwmActor = addLddLight(lightsActions, "pwmKpHZrc", "Koupena zrcadla", lddDevice3.getLdd4(), 0.35); // .36
+        PwmActor obyvak02PwmActor = addLddLight(lightsActions, "pwmOb2", "Obyvák 02", lddDevice3.getLdd5(), 0.7); // .72
+        PwmActor chodbaSchodyPwmActor = addLddLight(lightsActions, "pwmChSch", "Chodba schody", lddDevice3.getLdd6(), 0.70); // .72
 
         LddBoardDevice lddDevice4 = new LddBoardDevice("lddDevice4", lddActorB, 1, .7, .7, .7, .7, .7, .7);
-        PwmActor garaz1PwmActor = addLddLight(lightsActions, "Garáž 1", lddDevice4.getLdd1(), 0.7, new SwitchIndicator(zadveriSwA2.getRedLed(), false), new SwitchIndicator(garazASw1.getRedLed(), true)); // .72
-        PwmActor garaz2PwmActor = addLddLight(lightsActions, "Garáž 2", lddDevice4.getLdd2(), 0.7); // .72
-        PwmActor obyvak11PwmActor = addLddLight(lightsActions, "Obyvák 11 (x)", lddDevice4.getLdd3(), 0.7); // .72
-        PwmActor kuchyn2PwmActor = addLddLight(lightsActions, "Kuchyň 2", lddDevice4.getLdd4(), 0.7, new SwitchIndicator(kuchynSw1.getRedLed(), true)); // .72
-        PwmActor kuchyn3PwmActor = addLddLight(lightsActions, "Kuchyň 3", lddDevice4.getLdd5(), 0.7); // .72
-        PwmActor kuchyn4PwmActor = addLddLight(lightsActions, "Kuchyň 4", lddDevice4.getLdd6(), 0.7); // .72
+        PwmActor garaz1PwmActor = addLddLight(lightsActions, "pwmG1", "Garáž 1", lddDevice4.getLdd1(), 0.7, new SwitchIndicator(zadveriSwA2.getRedLed(), false), new SwitchIndicator(garazASw1.getRedLed(), true)); // .72
+        PwmActor garaz2PwmActor = addLddLight(lightsActions, "pwmG2", "Garáž 2", lddDevice4.getLdd2(), 0.7); // .72
+        PwmActor obyvak11PwmActor = addLddLight(lightsActions, "pwmOb11", "Obyvák 11", lddDevice4.getLdd3(), 0.7); // .72
+        PwmActor kuchyn2PwmActor = addLddLight(lightsActions, "pwmKch2", "Kuchyň 2", lddDevice4.getLdd4(), 0.7, new SwitchIndicator(kuchynSw1.getRedLed(), true)); // .72
+        PwmActor kuchyn3PwmActor = addLddLight(lightsActions, "pwmKch3", "Kuchyň 3", lddDevice4.getLdd5(), 0.7); // .72
+        PwmActor kuchyn4PwmActor = addLddLight(lightsActions, "pwmKch4", "Kuchyň 4", lddDevice4.getLdd6(), 0.7); // .72
 
         LddBoardDevice lddDevice5 = new LddBoardDevice("lddDevice5", lddActorB, 2, .35, .35, 1.0, 1.0, 1.0, 1.0);
-        PwmActor garaz3PwmActor = addLddLight(lightsActions, "Garáž 3", lddDevice5.getLdd1(), 0.35, new SwitchIndicator(zadveriSwA2.getGreenLed(), false)); // .36
-        PwmActor koupelnaDoleZrcadlaPwmActor = addLddLight(lightsActions, "Koupelna dole zrcadla", lddDevice5.getLdd2(), 0.35); // .36
-        PwmActor kuchyn1PwmActor = addLddLight(lightsActions, "Kuchyň 1", lddDevice5.getLdd3(), 0.7); // .72
-        PwmActor obyvak05PwmActor = addLddLight(lightsActions, "Obyvák 05 (x)", lddDevice5.getLdd4(), 0.7); // .72
-        PwmActor pracovnaPwmActor = addLddLight(lightsActions, "Pracovna", lddDevice5.getLdd5(), 0.6); // .6
-        PwmActor test56 = addLddLight(lightsActions, "test5.6", lddDevice5.getLdd6(), 0.1); // ?? (kuchyn stul?)
+        PwmActor garaz3PwmActor = addLddLight(lightsActions, "pwmG3", "Garáž 3", lddDevice5.getLdd1(), 0.35, new SwitchIndicator(zadveriSwA2.getGreenLed(), false)); // .36
+        PwmActor koupelnaDoleZrcadlaPwmActor = addLddLight(lightsActions, "pwmKpDZrc", "Koupelna dole zrcadla", lddDevice5.getLdd2(), 0.35); // .36
+        PwmActor kuchyn1PwmActor = addLddLight(lightsActions, "pwmKch1", "Kuchyň 1", lddDevice5.getLdd3(), 0.7); // .72
+        PwmActor obyvak05PwmActor = addLddLight(lightsActions, "pwmOb5", "Obyvák 05", lddDevice5.getLdd4(), 0.7); // .72
+        PwmActor pracovnaPwmActor = addLddLight(lightsActions, "pwmPrac", "Pracovna", lddDevice5.getLdd5(), 0.6); // .6
+        PwmActor test56 = addLddLight(lightsActions, "pwmTest56", "test5.6", lddDevice5.getLdd6(), 0.1); // ?? (kuchyn stul?)
 
         LddBoardDevice lddDevice6 = new LddBoardDevice("lddDevice6", lddActorC, 2, .7, .7, .7, .7, .7, .7);
-        PwmActor jidelna1PwmActor = addLddLight(lightsActions, "Jídelna 01", lddDevice6.getLdd1(), 0.7); // .72
-        PwmActor obyvak06PwmActor = addLddLight(lightsActions, "Obyvák 06", lddDevice6.getLdd2(), 0.7); // .72
-        PwmActor obyvak10PwmActor = addLddLight(lightsActions, "Obyvák 10", lddDevice6.getLdd3(), 0.7); // .72
-        PwmActor obyvak01PwmActor = addLddLight(lightsActions, "Obyvák 01", lddDevice6.getLdd4(), 0.7); // .72
-        PwmActor obyvak13PwmActor = addLddLight(lightsActions, "Obyvák 13", lddDevice6.getLdd5(), 0.7); // .72
-        PwmActor pradelna1PwmActor = addLddLight(lightsActions, "Prádelna 1", lddDevice6.getLdd6(), 0.7, zadveriDoldePradelnaSw.getRedLedIndicator(false), pradelnaSw1.getRedLedIndicator(true)); // .72
+        PwmActor jidelna1PwmActor = addLddLight(lightsActions, "pwmJid1", "Jídelna 1", lddDevice6.getLdd1(), 0.7); // .72
+        PwmActor obyvak06PwmActor = addLddLight(lightsActions, "pwmOb6", "Obyvák 06", lddDevice6.getLdd2(), 0.7); // .72
+        PwmActor obyvak10PwmActor = addLddLight(lightsActions, "pwmOb10", "Obyvák 10", lddDevice6.getLdd3(), 0.7); // .72
+        PwmActor obyvak01PwmActor = addLddLight(lightsActions, "pwmOb1", "Obyvák 01", lddDevice6.getLdd4(), 0.7); // .72
+        PwmActor obyvak13PwmActor = addLddLight(lightsActions, "pwmOb13", "Obyvák 13", lddDevice6.getLdd5(), 0.7); // .72
+        PwmActor pradelna1PwmActor = addLddLight(lightsActions, "pwmPrd1", "Prádelna 1", lddDevice6.getLdd6(), 0.7, zadveriDoldePradelnaSw.getRedLedIndicator(false), pradelnaSw1.getRedLedIndicator(true)); // .72
 
         LddBoardDevice lddDevice7 = new LddBoardDevice("lddDevice7", lddActorC, 3, .7, .7, .7, .7, .7, .7);
-        PwmActor pradelna2PwmActor = addLddLight(lightsActions, "Prádelna 2", lddDevice7.getLdd1(), 0.7); // .72
-        PwmActor obyvak04PwmActor = addLddLight(lightsActions, "Obyvák 04 (x)", lddDevice7.getLdd2(), 0.7); // .72
-        PwmActor jidelna2PwmActor = addLddLight(lightsActions, "Jidelna 2", lddDevice7.getLdd3(), 0.7); // .72
-        PwmActor jidelna3PwmActor = addLddLight(lightsActions, "Jidelna 3", lddDevice7.getLdd4(), 0.7); // .72
-        PwmActor kuchyn5PwmActor = addLddLight(lightsActions, "Kuchyň 5", lddDevice7.getLdd5(), 0.7); // .72
-        PwmActor obyvak12PwmActor = addLddLight(lightsActions, "Obyvák 12 (x)", lddDevice7.getLdd6(), 0.05); // .72
+        PwmActor pradelna2PwmActor = addLddLight(lightsActions, "pwmPrd2", "Prádelna 2", lddDevice7.getLdd1(), 0.7); // .72
+        PwmActor obyvak04PwmActor = addLddLight(lightsActions, "pwmOb4", "Obyvák 04", lddDevice7.getLdd2(), 0.7); // .72
+        PwmActor jidelna2PwmActor = addLddLight(lightsActions, "pwmJid2", "Jídelna 2", lddDevice7.getLdd3(), 0.7); // .72
+        PwmActor jidelna3PwmActor = addLddLight(lightsActions, "pwmJid3", "Jídelna 3", lddDevice7.getLdd4(), 0.7); // .72
+        PwmActor kuchyn5PwmActor = addLddLight(lightsActions, "pwmKch5", "Kuchyň 5", lddDevice7.getLdd5(), 0.7); // .72
+        PwmActor obyvak12PwmActor = addLddLight(lightsActions, "pwmOb12", "Obyvák 12", lddDevice7.getLdd6(), 0.05); // .72
 
         LddBoardDevice lddDevice8 = new LddBoardDevice("lddDevice8", lddActorC, 1, .6, .6, .5, .5, .5, .5);
 //        PwmActor pracovnaPwmActor = addLddLight(lightsActions, "Pracovna", lddDevice8.getLdd1(), 0.6); // .6
-        PwmActor test81 = addLddLight(lightsActions, "test81", lddDevice8.getLdd1(), 0.1); // .6
-        PwmActor koupelnaDolePwmActor = addLddLight(lightsActions, "Koupelna dole", lddDevice8.getLdd2(), 0.6, new SwitchIndicator(koupelnaDoleSw2.getRedLed(), true), new SwitchIndicator(koupelnaDoleSw2.getGreenLed(), false)); // .60
-        PwmActor vratnice2PwmActor = addLddLight(lightsActions, "Vrátnice 2", lddDevice8.getLdd3(), 0.48); //.48
-        PwmActor chodbaDolePwmActor = addLddLight(lightsActions, "Chodba dole", lddDevice8.getLdd4(), 0.48); //.48
-        PwmActor zadveriDolePwmActor = addLddLight(lightsActions, "Zádveří dole", lddDevice8.getLdd5(), 0.48, zadveriDoleChodbaSw.getGreenLedIndicator(false), zadveriDoleChodbaSw.getRedLedIndicator(true)); // .48
-        PwmActor vchodHorePwmActor = addLddLight(lightsActions, "Vchod hore", lddDevice8.getLdd6(), 0.48); // .48
+        PwmActor test81 = addLddLight(lightsActions, "pwmTest81", "test81", lddDevice8.getLdd1(), 0.1); // .6
+        PwmActor koupelnaDolePwmActor = addLddLight(lightsActions, "pwmKpD", "Koupelna dole", lddDevice8.getLdd2(), 0.6, new SwitchIndicator(koupelnaDoleSw2.getRedLed(), true), new SwitchIndicator(koupelnaDoleSw2.getGreenLed(), false)); // .60
+        PwmActor vratnice2PwmActor = addLddLight(lightsActions, "pwmVrt2", "Vrátnice 2", lddDevice8.getLdd3(), 0.48); //.48
+        PwmActor chodbaDolePwmActor = addLddLight(lightsActions, "pwmChoD", "Chodba dole", lddDevice8.getLdd4(), 0.48); //.48
+        PwmActor zadveriDolePwmActor = addLddLight(lightsActions, "pwmZadD", "Zádveří dole", lddDevice8.getLdd5(), 0.48, zadveriDoleChodbaSw.getGreenLedIndicator(false), zadveriDoleChodbaSw.getRedLedIndicator(true)); // .48
+        PwmActor vchodHorePwmActor = addLddLight(lightsActions, "pwmVchH", "Vchod hore", lddDevice8.getLdd6(), 0.48); // .48
 
 
         // koupelna
@@ -461,16 +461,16 @@ public class Main {
         lst.addActionBinding(new ActionBinding(zadveriDoleVchodRSw.getRightBottomButton(), new Action[]{new SwitchOffAction(svSklepPravy)}, null));
 
         //    - venku Levy
-        lst.addActionBinding(new ActionBinding(sklepLevyLSw.getLeftUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepLevy, 1800, 100)}, null));
-        lst.addActionBinding(new ActionBinding(sklepLevyLSw.getLeftBottomButton(), new Action[]{new SwitchOffAction(svSklepLevy)}, null));
-        lst.addActionBinding(new ActionBinding(sklepLevyLSw.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepLevy, 1800, 100)}, null));
-        lst.addActionBinding(new ActionBinding(sklepLevyLSw.getRightBottomButton(), new Action[]{new SwitchOffAction(svSklepLevy)}, null));
+        lst.addActionBinding(new ActionBinding(sklepLevyRSw.getLeftUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepLevy, 1800, 100)}, null));
+        lst.addActionBinding(new ActionBinding(sklepLevyRSw.getLeftBottomButton(), new Action[]{new SwitchOffAction(svSklepLevy)}, null));
+        lst.addActionBinding(new ActionBinding(sklepLevyRSw.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepLevy, 1800, 100)}, null));
+        lst.addActionBinding(new ActionBinding(sklepLevyRSw.getRightBottomButton(), new Action[]{new SwitchOffAction(svSklepLevy)}, null));
 
         //    - venku pravy
-        lst.addActionBinding(new ActionBinding(sklepLevyRSw.getLeftUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepPravy, 1800, 100)}, null));
-        lst.addActionBinding(new ActionBinding(sklepLevyRSw.getLeftBottomButton(), new Action[]{new SwitchOffAction(svSklepPravy)}, null));
-        lst.addActionBinding(new ActionBinding(sklepLevyRSw.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepPravy, 1800, 100)}, null));
-        lst.addActionBinding(new ActionBinding(sklepLevyRSw.getRightBottomButton(), new Action[]{new SwitchOffAction(svSklepPravy)}, null));
+        lst.addActionBinding(new ActionBinding(sklepPravySw.getLeftUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepPravy, 1800, 100)}, null));
+        lst.addActionBinding(new ActionBinding(sklepPravySw.getLeftBottomButton(), new Action[]{new SwitchOffAction(svSklepPravy)}, null));
+        lst.addActionBinding(new ActionBinding(sklepPravySw.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepPravy, 1800, 100)}, null));
+        lst.addActionBinding(new ActionBinding(sklepPravySw.getRightBottomButton(), new Action[]{new SwitchOffAction(svSklepPravy)}, null));
 
 
         // zadveri dole
@@ -559,7 +559,7 @@ public class Main {
         lst.addActionBinding(new ActionBinding(testSw.getLeftBottomButton(), new Action[]{new SwitchOffAction(testingLeftOnOffActor)}, null));
 
 
-        Servlet.lightsActions = lightsActions.toArray(new Action[lightsActions.size()]);
+        Servlet.setLightActions(lightsActions.toArray(new Action[lightsActions.size()]));
         Servlet.pirStatusList = pirStatusList;
 //        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);
 //        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));
@@ -618,8 +618,8 @@ public class Main {
         return list.toArray(new Action[list.size()]);
     }
 
-    static PwmActor addLddLight(ArrayList<Action> lightsActions, String name, LddBoardDevice.LddNodePin pin, double maxLoad, Indicator... indicators) {
-        PwmActor pwmActor = new PwmActor(name, pin, maxLoad / pin.getMaxLddCurrent(), indicators);
+    static PwmActor addLddLight(ArrayList<Action> lightsActions, String id, String label, LddBoardDevice.LddNodePin pin, double maxLoad, Indicator... indicators) {
+        PwmActor pwmActor = new PwmActor(id, label, pin, maxLoad / pin.getMaxLddCurrent(), indicators);
         lightsActions.add(new SwitchOnAction(pwmActor));
         lightsActions.add(new IncreasePwmAction(pwmActor));
         lightsActions.add(new DecreasePwmAction(pwmActor));

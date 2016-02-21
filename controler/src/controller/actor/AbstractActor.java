@@ -12,7 +12,8 @@ public abstract class AbstractActor implements Actor {
     protected static final int RETRY_COUNT = 5;
     static Logger log = Logger.getLogger(AbstractActor.class.getName());
 
-    String name;
+    String id;
+    String label;
     NodePin output;
     int initValue;
     Object actionData;
@@ -20,8 +21,9 @@ public abstract class AbstractActor implements Actor {
     int value;
     private Indicator[] indicators;
 
-    public AbstractActor(String name, NodePin output, int initValue, Indicator... indicators) {
-        this.name = name;
+    public AbstractActor(String id, String label, NodePin output, int initValue, Indicator... indicators) {
+        this.id = id;
+        this.label = label;
         this.output = output;
         this.initValue = initValue;
         this.value = initValue;
@@ -72,17 +74,19 @@ public abstract class AbstractActor implements Actor {
         return false;
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public String getLabel() {
+        return label;
     }
 
     @Override
     public Object getLastActionData() {
         return actionData;
-    }
-
-    public int getInitValue() {
-        return initValue;
     }
 
     @Override
@@ -113,7 +117,7 @@ public abstract class AbstractActor implements Actor {
     }
 
     public String toString() {
-        StringBuilder val = new StringBuilder(String.format("%s(%s) %s", getClass().getSimpleName(), name, output));
+        StringBuilder val = new StringBuilder(String.format("%s(%s) %s", getClass().getSimpleName(), id, output));
         if (indicators != null) {
             val.append(", indicators: ");
             for (Indicator i : indicators) {

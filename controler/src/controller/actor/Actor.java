@@ -1,7 +1,9 @@
 package controller.actor;
 
 public interface Actor {
-    String getName();
+    String getId();
+
+    String getLabel();
 
     //abstract NodePin[] getOutputPins();
 

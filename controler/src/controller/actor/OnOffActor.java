@@ -8,30 +8,15 @@ public class OnOffActor extends AbstractActor implements IOnOffActor {
 
     int onValue;
 
-    OnOffActor conflictingActor;
-
-    public OnOffActor(String id, NodePin output, int initValue, int onValue, Indicator... indicators) {
-        super(id, output, initValue, indicators);
+    public OnOffActor(String id, String label, NodePin output, int initValue, int onValue, Indicator... indicators) {
+        super(id, label, output, initValue, indicators);
         this.onValue = onValue;
-    }
-
-    public void setConflictingActor(OnOffActor conflictingActor) {
-        this.conflictingActor = conflictingActor;
     }
 
     @Override
     public synchronized boolean setValue(int val, Object actionData) {
         this.actionData = actionData;
         notifyAll();
-
-        // turn off conflicting actor if turning on
-        // necessary for louvers
-        if (conflictingActor != null && val == onValue) {
-            if (!conflictingActor.switchOff(actionData)) {
-                log.error(String.format("Actor %s: Cannot switch off conflicting actor %s", getName(), conflictingActor.getName()));
-                return false;
-            }
-        }
 
         if (setPinValue(output, val, RETRY_COUNT)) {
             value = val;

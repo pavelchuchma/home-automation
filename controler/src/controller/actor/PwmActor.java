@@ -21,8 +21,8 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
     int pwmValue = 0;
 
 
-    public PwmActor(String id, LddBoardDevice.LddNodePin output, double maxLoad, Indicator... indicators) {
-        super(id, output, 0, indicators);
+    public PwmActor(String name, String label, LddBoardDevice.LddNodePin output, double maxLoad, Indicator... indicators) {
+        super(name, label, output, 0, indicators);
         if (maxLoad < 0 || maxLoad > 1) {
             throw new IllegalArgumentException("Invalid maxLoad value: " + maxLoad);
         }

@@ -42,6 +42,7 @@ public class PirStatus {
             }
         };
     }
+
     public Action getDeactivateAction() {
         return new Action() {
             @Override
@@ -59,7 +60,12 @@ public class PirStatus {
     private class ActorImpl implements Actor {
 
         @Override
-        public String getName() {
+        public String getId() {
+            return name;
+        }
+
+        @Override
+        public String getLabel() {
             return name;
         }
 

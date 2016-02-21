@@ -57,7 +57,7 @@ public class SwitchListener extends AbstractNodeListener {
             Action[] actions = (buttonDown) ? sw.getButtonDownActions() : sw.getButtonUpActions();
             if (actions != null) {
                 for (final Action a : actions) {
-                    log.debug(String.format("-> action: %s of action type %s", (a.getActor() != null) ? a.getActor().getName() : "{null}", a.getClass().getSimpleName()));
+                    log.debug(String.format("-> action: %s of action type %s", (a.getActor() != null) ? a.getActor().getId() : "{null}", a.getClass().getSimpleName()));
                     new Thread(() -> {
                         try {
                             a.perform(previousDurationMs);

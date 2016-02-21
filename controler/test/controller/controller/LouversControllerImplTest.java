@@ -98,7 +98,12 @@ public class LouversControllerImplTest {
         }
 
         @Override
-        public String getName() {
+        public String getId() {
+            return id;
+        }
+
+        @Override
+        public String getLabel() {
             return id;
         }
 

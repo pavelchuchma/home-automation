@@ -33,8 +33,8 @@ public class LouversControllerImpl implements LouversController {
 
     public LouversControllerImpl(String name, NodePin relayUp, NodePin relayDown, int downPositionMs, int maxOffsetMs) {
 
-        IOnOffActor upActor = new OnOffActor(name + " Up", relayUp, 0, 1);
-        IOnOffActor downActor = new OnOffActor(name + " Down", relayDown, 0, 1);
+        IOnOffActor upActor = new OnOffActor(name + " Up", "LABEL", relayUp, 0, 1);
+        IOnOffActor downActor = new OnOffActor(name + " Down", "LABEL", relayDown, 0, 1);
 
         init(name, upActor, downActor, downPositionMs, maxOffsetMs);
     }
@@ -168,7 +168,7 @@ public class LouversControllerImpl implements LouversController {
         actionData = aData;
         if (stopConflictingActor) {
             if (!conflictingActor.switchOff(aData)) {
-                throw new RuntimeException("Failed to stop actor '" + conflictingActor.getName() + "'");
+                throw new RuntimeException("Failed to stop actor '" + conflictingActor.getId() + "'");
             }
         } else {
             // not stopping, but verify last modification was done by me
@@ -179,14 +179,14 @@ public class LouversControllerImpl implements LouversController {
         }
         int moveMs = positionAction.getAsInt();
         if (moveMs > 0) {
-            log.debug(String.format("%s switching on actor '%s' for %d ms", name, actor.getName(), moveMs));
+            log.debug(String.format("%s switching on actor '%s' for %d ms", name, actor.getId(), moveMs));
             actor.switchOn(aData);
             wait(actor, aData, moveMs);
-            log.debug(String.format("done, switching actor '%s' off", actor.getName()));
+            log.debug(String.format("done, switching actor '%s' off", actor.getId()));
         }
         louversPosition.stop();
         if (!actor.switchOff(aData)) {
-            throw new RuntimeException("Failed to stop actor '" + actor.getName() + "'");
+            throw new RuntimeException("Failed to stop actor '" + actor.getId() + "'");
         }
     }
 

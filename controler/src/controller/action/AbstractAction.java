@@ -15,6 +15,6 @@ public abstract class AbstractAction implements Action {
     }
 
     public String toString() {
-        return String.format("%s@%s(%s)", getClass().getName(), Integer.toHexString(System.identityHashCode(this)), actor.getName());
+        return String.format("%s@%s(%s)", getClass().getName(), Integer.toHexString(System.identityHashCode(this)), actor.getId());
     }
 }
