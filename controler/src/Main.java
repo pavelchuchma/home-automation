@@ -321,7 +321,7 @@ public class Main {
         PwmActor jidelna2PwmActor = addLddLight(lightsActions, "pwmJid2", "Jídelna 2", lddDevice7.getLdd3(), 0.7); // .72
         PwmActor jidelna3PwmActor = addLddLight(lightsActions, "pwmJid3", "Jídelna 3", lddDevice7.getLdd4(), 0.7); // .72
         PwmActor kuchyn5PwmActor = addLddLight(lightsActions, "pwmKch5", "Kuchyň 5", lddDevice7.getLdd5(), 0.7); // .72
-        PwmActor obyvak12PwmActor = addLddLight(lightsActions, "pwmOb12", "Obyvák 12", lddDevice7.getLdd6(), 0.05); // .72
+        PwmActor obyvak12PwmActor = addLddLight(lightsActions, "pwmOb12", "Obyvák 12", lddDevice7.getLdd6(), 0.7); // .72
 
         LddBoardDevice lddDevice8 = new LddBoardDevice("lddDevice8", lddActorC, 1, .6, .6, .5, .5, .5, .5);
 //        PwmActor pracovnaPwmActor = addLddLight(lightsActions, "Pracovna", lddDevice8.getLdd1(), 0.6); // .6
