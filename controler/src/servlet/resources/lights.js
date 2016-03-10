@@ -1,4 +1,3 @@
-myTimer = setInterval(onTimer, 750);
 var mainCtx;
 var toolsCtx;
 var e = '';
@@ -33,6 +32,17 @@ var lightCoordinates = [
 
 var lightStatusMap;
 var lightCoordinateMap = {};
+
+var louversCoordinates = [
+    //id, x, y
+    ['vrt1', 200, 200],
+    ['vrt2', 300, 300],
+    ['vrt3', 300, 400]
+];
+
+var louversStatusMap;
+var louversCoordinateMap = {};
+
 function drawLightToolSign(x, y, ctx, drawVertical) {
     ctx.beginPath();
     var r = 15;
@@ -47,49 +57,127 @@ function drawLightToolSign(x, y, ctx, drawVertical) {
     ctx.lineWidth = 7;
     ctx.stroke();
 }
+
 var toolsCoordinates = [
     //id, x, y, draw function
     ['ligthToogle', 50, 50, function (x, y, ctx) {
-        drawLightImpl(x-10, y, 0, ctx);
-        drawLightImpl(x+10, y, 1, ctx);
+        drawLightIcon(x - 10, y, 0, ctx);
+        drawLightIcon(x + 10, y, 1, ctx);
     }],
     ['ligthPlus', 50, 150, function (x, y, ctx) {
-        drawLightImpl(x, y, toolLightPlusValue / 100, ctx);
+        drawLightIcon(x, y, toolLightPlusValue / 100, ctx);
         drawLightToolSign(x, y, ctx, true);
     }],
     ['ligthMinus', 50, 250, function (x, y, ctx) {
-        drawLightImpl(x, y, .25, ctx);
+        drawLightIcon(x, y, .25, ctx);
         drawLightToolSign(x, y, ctx, false);
     }],
     ['ligthFull', 50, 350, function (x, y, ctx) {
-        drawLightImpl(x, y, 1, ctx);
+        drawLightIcon(x, y, 1, ctx);
     }],
     ['ligthOff', 50, 450, function (x, y, ctx) {
-        drawLightImpl(x, y, 0, ctx);
+        drawLightIcon(x, y, 0, ctx);
+    }],
+    ['louversUp', 50, 550, function (x, y, ctx) {
+        drawLouversToolIcon(x, y, .5, 0, 'stopped', ctx);
+    }],
+    ['louversDown', 50, 650, function (x, y, ctx) {
+        drawLouversToolIcon(x, y, 1, .5, 'stopped', ctx);
     }]
 ];
+
+
+function drawLouversToolIcon(x, y, position, offset, action, ctx) {
+    var w = 50;
+    var h = 60;
+    drawLouversIconImpl(x, y, position, offset, action, ctx, w, h);
+}
+
+function drawLouversIcon(x, y, position, offset, action, ctx) {
+    var w = 70;
+    var h = 80;
+    drawLouversIconImpl(x, y, position, offset, action, ctx, w, h);
+}
+
+function drawLouversIconImpl(x, y, position, offset, action, ctx, w, h) {
+    const louverHeight = 7;
+    // white rectangle
+    ctx.beginPath();
+    ctx.rect(x - w / 2, y - h / 2, w, h);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    if (position >= 0) {
+        // louvers background box
+        ctx.beginPath();
+        ctx.rect(x - w / 2, y - h / 2, w, h * position);
+        ctx.fillStyle = 'lightgray';
+        ctx.fill();
+
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // louvers
+        var lineWidth = louverHeight * offset;
+        ctx.beginPath();
+        for (var i = h * position - lineWidth / 2; i >= lineWidth / 2; i -= louverHeight) {
+            var yy = y - h / 2 + i;
+            ctx.moveTo(x - w / 2, yy);
+            ctx.lineTo(x + w / 2, yy);
+        }
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = lineWidth;
+        ctx.stroke();
+    } else {
+        ctx.beginPath();
+        ctx.font = h + "px Arial Bold";
+        ctx.fillStyle = 'black';
+        ctx.textAlign = "center";
+        ctx.textBaseline = 'middle';
+        ctx.fillText("?", x, y);
+        ctx.stroke();
+    }
+}
 
 var toolCoordinateMap = {};
 var selectedToolId = toolsCoordinates[0][0];
 
 
-// Creation
-lightCoordinates.forEach(function (lc) {
-    lightCoordinateMap[lc[0]] = [lc[1], lc[2]];
-});
-
-toolsCoordinates.forEach(function (tc) {
-    toolCoordinateMap[tc[0]] = [tc[1], tc[2]];
-});
-
 window.onload = function () {
-    drawMainCanvas();
-    drawToolsCanvas();
-    updateLights();
+    try {
+        lightCoordinates.forEach(function (lc) {
+            lightCoordinateMap[lc[0]] = [lc[1], lc[2]];
+        });
+
+        louversCoordinates.forEach(function (lc) {
+            louversCoordinateMap[lc[0]] = [lc[1], lc[2]];
+        });
+
+        toolsCoordinates.forEach(function (tc) {
+            toolCoordinateMap[tc[0]] = [tc[1], tc[2]];
+        });
+
+
+        drawMainCanvas();
+        drawToolsCanvas();
+        setInterval(onTimer, 750);
+        onTimer();
+    } catch (e) {
+        printException(e);
+    }
 };
 
 function onTimer() {
-    updateLights();
+    try {
+        updateLights();
+        updateLouvers();
+    } catch (e) {
+        printException(e);
+    }
 }
 
 function computeDistance(x1, y1, x2, y2) {
@@ -114,6 +202,14 @@ function drawLights() {
         drawLight(lc[0])
     });
 }
+
+function drawAllLouvers() {
+    louversCoordinates.forEach(function (lc) {
+        drawOneLouvers(lc[0])
+    });
+}
+
+
 function drawMainCanvas() {
     var c = document.getElementById("mainCanvas");
     mainCtx = c.getContext("2d");
@@ -150,7 +246,7 @@ function drawToolsCanvas() {
     drawToolSelection();
 }
 
-function drawLightImpl(x, y, power, ctx) {
+function drawLightIcon(x, y, power, ctx) {
     // black background
     ctx.strokeStyle = 'black';
     ctx.lineWidth = 1;
@@ -183,6 +279,7 @@ function drawLightImpl(x, y, power, ctx) {
         ctx.fill();
     }
 }
+
 function drawLight(id) {
     var lightStatus = lightStatusMap[id];
     var power = lightStatus.val / lightStatus.maxVal;
@@ -191,13 +288,24 @@ function drawLight(id) {
     var x = coords[0];
     var y = coords[1];
 
-    drawLightImpl(x, y, power, mainCtx);
+    drawLightIcon(x, y, power, mainCtx);
 }
 
-function createLightStatusMap(request) {
+function drawOneLouvers(id) {
+    var louversStatus = louversStatusMap[id];
+    //var power = louversStatus.val / louversStatus.maxVal;
+
+    var coords = louversCoordinateMap[id];
+    var x = coords[0];
+    var y = coords[1];
+
+    drawLouversIcon(x, y, louversStatus.pos, louversStatus.off, louversStatus.act, mainCtx);
+}
+
+function parseJsonStatusResponse(request, rootName) {
     var content = JSON.parse(request.responseText);
     var map = {};
-    content.lights.forEach(function (l) {
+    content[rootName].forEach(function (l) {
         map[l.id] = l;
     });
     return map;
@@ -261,19 +369,18 @@ function onCanvasClick(event) {
 }
 
 function printException(e) {
-    var stackTrace = new Error().stack;
-    document.getElementById('error').innerHTML = e.message + '<br>' + stackTrace.replace('\n', '<br>');
+    document.getElementById('error').innerHTML = e.message + '<br>' + e.stack.split('\n').join('<br>');
 }
 
-function updateLights() {
+function updateImpl(path, code) {
     var request = new XMLHttpRequest();
-    request.open('GET', 'http://10.0.0.150/lights/status', true);
+
+    request.open('GET', 'http://10.0.0.150' + path, true);
 
     request.onreadystatechange = function () {
         if (request.readyState == 4 && request.status == 200) {
             try {
-                lightStatusMap = createLightStatusMap(request);
-                drawLights();
+                code(request);
             } catch (e) {
                 printException(e);
             } finally {
@@ -283,6 +390,19 @@ function updateLights() {
     };
 
     request.send();
+}
+function updateLights() {
+    updateImpl('/lights/status', function (request) {
+        lightStatusMap = parseJsonStatusResponse(request, 'lights');
+        drawLights();
+    });
+}
+
+function updateLouvers() {
+    updateImpl('/louvers/status', function (request) {
+        louversStatusMap = parseJsonStatusResponse(request, 'louvers');
+        drawAllLouvers();
+    });
 }
 
 function debug(s) {

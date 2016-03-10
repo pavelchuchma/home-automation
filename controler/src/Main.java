@@ -4,7 +4,6 @@ import controller.ActionBinding;
 import controller.PirStatus;
 import controller.action.AbstractSensorAction;
 import controller.action.Action;
-import controller.action.AudioAction;
 import controller.action.DecreasePwmAction;
 import controller.action.IncreasePwmAction;
 import controller.action.InvertAction;
@@ -64,8 +63,6 @@ public class Main {
 
             nodeInfoCollector.start();
             System.out.println("Listening ...");
-
-            //testParallelGetBuildTime(nodeInfoCollector);
 
             Servlet.startServer(nodeInfoCollector);
 
@@ -147,6 +144,8 @@ public class Main {
 
         WallSwitch zadveriSwA1 = new WallSwitch("zadveriSwA1", zadveri, 1);
         WallSwitch zadveriSwA2 = new WallSwitch("zadveriSwA2", zadveri, 2);
+        WallSwitch zvonekPravySw = new WallSwitch("zvonekPravySw", zadveri, 3);
+        WallSwitch zvonekLevySw = new WallSwitch("zvonekLevySw", garazVpredu, 3);
 
         WallSwitch koupelnaHoreSw1 = new WallSwitch("koupelnaHoreSw1", koupelnaHore, 1);
         WallSwitch koupelnaHoreSw2 = new WallSwitch("koupelnaHoreSw2", koupelnaHore, 2);
@@ -187,9 +186,10 @@ public class Main {
 
         OnOffActor svJidelna = new OnOffActor("svJidelna", "Jídelna Stul", triak1Actor3Port3.getOut1(), 1, 0, schodyDoleR3Sw.getRedLedIndicator(true));
         OnOffActor svSklepLevy = new OnOffActor("svSklepLevy", "Levy Sklep", triak1Actor3Port3.getOut2(), 1, 0, sklepLevyRSw.getRedLedIndicator(false), zadveriDoleVchodRSw.getGreenLedIndicator(false));
-        OnOffActor svSklepPravy = new OnOffActor("svSklepPravy", "Pravy Sklep", triak1Actor3Port3.getOut5(), 1, 0, sklepPravySw.getRedLedIndicator(false), zadveriDoleVchodRSw.getRedLedIndicator(false));
         OnOffActor svSpajza = new OnOffActor("svSpajza", "Spajza", triak1Actor3Port3.getOut3(), 1, 0, chodbaDoleSpajzSw3.getRedLedIndicator(false));
         OnOffActor zasStromek = new OnOffActor("zasStromek", "Zasuvka Stromek", triak1Actor3Port3.getOut4(), 1, 0, zadveriSwA1.getGreenLedIndicator(false));
+        OnOffActor svSklepPravy = new OnOffActor("svSklepPravy", "Pravy Sklep", triak1Actor3Port3.getOut5(), 1, 0, sklepPravySw.getRedLedIndicator(false), zadveriDoleVchodRSw.getRedLedIndicator(false));
+        OnOffActor obyvakZasLZvonek = new OnOffActor("obyvakZasL", "ObyvakZasLZvonek", triak1Actor3Port3.getOut6(), 1, 0, zvonekPravySw.getRedLedIndicator(true), zvonekLevySw.getGreenLedIndicator(true));
         OnOffActor zaricKoupelnaHore2Trubice = new OnOffActor("zaricKoupelnaHore2Trubice", "Zaric koupelna 2 rubice", rele1Actor3Port2.getRele1(), 0, 1, koupelnaHoreSw2.getRedLedIndicator(true), koupelnaHoreOknoSw.getRedLedIndicator(true));
         OnOffActor zaricKoupelnaHore1Trubice = new OnOffActor("zaricKoupelnaHore1Trubice", "Zaric koupelna 1 rubice", rele1Actor3Port2.getRele2(), 0, 1, koupelnaHoreSw2.getGreenLedIndicator(true), koupelnaHoreOknoSw.getGreenLedIndicator(true));
 
@@ -237,31 +237,31 @@ public class Main {
         LouversController zaluzieKoupelnaDole;
 
         LouversController[] louversControllers = new LouversController[]{
-                zaluzieKoupelna = new LouversControllerImpl("Koupelna", rele6ZaluzieBPort1.getRele1(), rele6ZaluzieBPort1.getRele2(), 39000, 1600),
-                zaluzieKrystof = new LouversControllerImpl("Kryštof", rele3ZaluzieAPort1.getRele1(), rele3ZaluzieAPort1.getRele2(), 35000, 1600),
-                zaluziePata = new LouversControllerImpl("Paťa", rele3ZaluzieAPort1.getRele3(), rele3ZaluzieAPort1.getRele4(), 35000, 1600),
-                zaluzieMarek = new LouversControllerImpl("Marek", rele4ZaluzieAPort2.getRele1(), rele4ZaluzieAPort2.getRele2(), 35000, 1600),
+                zaluzieKoupelna = new LouversControllerImpl("koupH", "Koupelna", rele6ZaluzieBPort1.getRele1(), rele6ZaluzieBPort1.getRele2(), 39000, 1600),
+                zaluzieKrystof = new LouversControllerImpl("krys", "Kryštof", rele3ZaluzieAPort1.getRele1(), rele3ZaluzieAPort1.getRele2(), 35000, 1600),
+                zaluziePata = new LouversControllerImpl("pata", "Paťa", rele3ZaluzieAPort1.getRele3(), rele3ZaluzieAPort1.getRele4(), 35000, 1600),
+                zaluzieMarek = new LouversControllerImpl("marek", "Marek", rele4ZaluzieAPort2.getRele1(), rele4ZaluzieAPort2.getRele2(), 35000, 1600),
 
-                zaluzieLoznice1 = new LouversControllerImpl("Ložnice 1", rele4ZaluzieAPort2.getRele5(), rele4ZaluzieAPort2.getRele6(), 28000, 1600),
-                zaluzieLoznice2 = new LouversControllerImpl("Ložnice 2", rele3ZaluzieAPort1.getRele5(), rele3ZaluzieAPort1.getRele6(), 28000, 1600),
-                zaluzieSatna = new LouversControllerImpl("Šatna", rele8Actor3Port1.getRele3(), rele8Actor3Port1.getRele4(), 39000, 1600),
-                zaluziePracovna = new LouversControllerImpl("Pracovna", rele7ZaluzieBPort3.getRele1(), rele7ZaluzieBPort3.getRele2(), 54000, 1600),
+                zaluzieLoznice1 = new LouversControllerImpl("loz1", "Ložnice 1", rele4ZaluzieAPort2.getRele5(), rele4ZaluzieAPort2.getRele6(), 28000, 1600),
+                zaluzieLoznice2 = new LouversControllerImpl("loz2", "Ložnice 2", rele3ZaluzieAPort1.getRele5(), rele3ZaluzieAPort1.getRele6(), 28000, 1600),
+                zaluzieSatna = new LouversControllerImpl("sat", "Šatna", rele8Actor3Port1.getRele3(), rele8Actor3Port1.getRele4(), 39000, 1600),
+                zaluziePracovna = new LouversControllerImpl("", "Pracovna", rele7ZaluzieBPort3.getRele1(), rele7ZaluzieBPort3.getRele2(), 54000, 1600),
 
-                zaluzieKuchyn = new LouversControllerImpl("Kuchyně", rele2ZaluzieAPort3.getRele5(), rele2ZaluzieAPort3.getRele6(), 58000, 1600),
-                zaluzieObyvak1 = new LouversControllerImpl("Obývák 1", rele2ZaluzieAPort3.getRele1(), rele2ZaluzieAPort3.getRele2(), 58000, 1600),
-                zaluzieObyvak2 = new LouversControllerImpl("Obývák 2", rele8Actor3Port1.getRele5(), rele8Actor3Port1.getRele6(), 58000, 1600),
-                zaluzieObyvak3 = new LouversControllerImpl("Obývák 3", rele2ZaluzieAPort3.getRele3(), rele2ZaluzieAPort3.getRele4(), 58000, 1600),
+                zaluzieKuchyn = new LouversControllerImpl("kuch", "Kuchyně", rele2ZaluzieAPort3.getRele5(), rele2ZaluzieAPort3.getRele6(), 58000, 1600),
+                zaluzieObyvak1 = new LouversControllerImpl("ob1", "Obývák 1", rele2ZaluzieAPort3.getRele1(), rele2ZaluzieAPort3.getRele2(), 58000, 1600),
+                zaluzieObyvak2 = new LouversControllerImpl("ob2", "Obývák 2", rele8Actor3Port1.getRele5(), rele8Actor3Port1.getRele6(), 58000, 1600),
+                zaluzieObyvak3 = new LouversControllerImpl("ob3", "Obývák 3", rele2ZaluzieAPort3.getRele3(), rele2ZaluzieAPort3.getRele4(), 58000, 1600),
 
-                zaluzieObyvak4 = new LouversControllerImpl("Obývák 4", rele4ZaluzieAPort2.getRele3(), rele4ZaluzieAPort2.getRele4(), 58000, 1600),
-                zaluzieObyvak5 = new LouversControllerImpl("Obývák 5", rele7ZaluzieBPort3.getRele3(), rele7ZaluzieBPort3.getRele4(), 34000, 1600),
-                zaluzieObyvak6 = new LouversControllerImpl("Obývák 6", rele7ZaluzieBPort3.getRele5(), rele7ZaluzieBPort3.getRele6(), 20000, 1600),
-                zaluzieKoupelnaDole = new LouversControllerImpl("Koupelna 2", rele8Actor3Port1.getRele1(), rele8Actor3Port1.getRele2(), 26000, 1600),
+                zaluzieObyvak4 = new LouversControllerImpl("ob4", "Obývák 4", rele4ZaluzieAPort2.getRele3(), rele4ZaluzieAPort2.getRele4(), 58000, 1600),
+                zaluzieObyvak5 = new LouversControllerImpl("ob5", "Obývák 5", rele7ZaluzieBPort3.getRele3(), rele7ZaluzieBPort3.getRele4(), 34000, 1600),
+                zaluzieObyvak6 = new LouversControllerImpl("ob6", "Obývák 6", rele7ZaluzieBPort3.getRele5(), rele7ZaluzieBPort3.getRele6(), 20000, 1600),
+                zaluzieKoupelnaDole = new LouversControllerImpl("koupD", "Koupelna dole", rele8Actor3Port1.getRele1(), rele8Actor3Port1.getRele2(), 26000, 1600),
 
-                zaluzieChodba1 = new LouversControllerImpl("Chodba 1", rele6ZaluzieBPort1.getRele3(), rele6ZaluzieBPort1.getRele4(), 39000, 1600),
-                zaluzieChodba2 = new LouversControllerImpl("Chodba 2", rele6ZaluzieBPort1.getRele5(), rele6ZaluzieBPort1.getRele6(), 39000, 1600),
-                zaluzieVratnice1 = new LouversControllerImpl("Vrátnice 1", rele5ZaluzieBPort2.getRele1(), rele5ZaluzieBPort2.getRele2(), 29000, 1600),
-                zaluzieVratnice2 = new LouversControllerImpl("Vrátnice 2", rele5ZaluzieBPort2.getRele3(), rele5ZaluzieBPort2.getRele4(), 29000, 1600),
-                zaluzieVratnice3 = new LouversControllerImpl("Vrátnice 3", rele5ZaluzieBPort2.getRele5(), rele5ZaluzieBPort2.getRele6(), 40000, 1600),
+                zaluzieChodba1 = new LouversControllerImpl("ch1", "Chodba 1", rele6ZaluzieBPort1.getRele3(), rele6ZaluzieBPort1.getRele4(), 39000, 1600),
+                zaluzieChodba2 = new LouversControllerImpl("ch2", "Chodba 2", rele6ZaluzieBPort1.getRele5(), rele6ZaluzieBPort1.getRele6(), 39000, 1600),
+                zaluzieVratnice1 = new LouversControllerImpl("vrt1", "Vrátnice 1", rele5ZaluzieBPort2.getRele1(), rele5ZaluzieBPort2.getRele2(), 29000, 1600),
+                zaluzieVratnice2 = new LouversControllerImpl("vrt2", "Vrátnice 2", rele5ZaluzieBPort2.getRele3(), rele5ZaluzieBPort2.getRele4(), 29000, 1600),
+                zaluzieVratnice3 = new LouversControllerImpl("vrt3", "Vrátnice 3", rele5ZaluzieBPort2.getRele5(), rele5ZaluzieBPort2.getRele6(), 40000, 1600),
         };
 
         // lights
@@ -376,6 +376,17 @@ public class Main {
         configurePwmLights(lst, zadveriSwA2, WallSwitch.Side.RIGHT, 100, garaz3PwmActor);
         configurePwmLights(lst, zadveriVratniceSw3, WallSwitch.Side.LEFT, 80, zadveriPwmActor);
         configurePwmLights(lst, zadveriVratniceSw3, WallSwitch.Side.RIGHT, 80, zadveriPwmActor);
+
+        // zadveri venku
+        SwitchOnSensorAction zvonekAction = new SwitchOnSensorAction(obyvakZasLZvonek, 5, 100);
+        lst.addActionBinding(new ActionBinding(zvonekLevySw.getLeftUpperButton(), new Action[]{zvonekAction}, null));
+        lst.addActionBinding(new ActionBinding(zvonekLevySw.getRightUpperButton(), new Action[]{zvonekAction}, null));
+        lst.addActionBinding(new ActionBinding(zvonekLevySw.getLeftBottomButton(), new Action[]{zvonekAction}, null));
+        lst.addActionBinding(new ActionBinding(zvonekLevySw.getRightBottomButton(), new Action[]{zvonekAction}, null));
+        lst.addActionBinding(new ActionBinding(zvonekPravySw.getLeftUpperButton(), new Action[]{zvonekAction}, null));
+        lst.addActionBinding(new ActionBinding(zvonekPravySw.getRightUpperButton(), new Action[]{zvonekAction}, null));
+        lst.addActionBinding(new ActionBinding(zvonekPravySw.getLeftBottomButton(), new Action[]{zvonekAction}, null));
+        lst.addActionBinding(new ActionBinding(zvonekPravySw.getRightBottomButton(), new Action[]{zvonekAction}, null));
 
         // garaz
         configurePwmLights(lst, garazASw1, WallSwitch.Side.LEFT, 80, garaz1PwmActor, garaz2PwmActor);
@@ -545,7 +556,7 @@ public class Main {
         Servlet.action2 = ovladacGarazAction;
         Servlet.action3 = invertJidelna;
 
-        Servlet.action4 = new AudioAction();
+//        Servlet.action4 = new AudioAction();
         Servlet.action5 = null;
         Servlet.louversControllers = louversControllers;
 
@@ -628,7 +639,6 @@ public class Main {
     }
 
     static void configureLouvers(SwitchListener lst, WallSwitch wallSwitch, WallSwitch.Side side, LouversController... louversControllers) {
-        LouversActionGroup[] actionGroups = new LouversActionGroup[louversControllers.length];
         Action[] upButtonDownAction = new Action[louversControllers.length];
         Action[] upButtonUpAction = new Action[louversControllers.length];
         Action[] downButtonDownAction = new Action[louversControllers.length];

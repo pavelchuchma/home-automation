@@ -1,7 +1,9 @@
 package controller.controller;
 
 public interface LouversController {
-    String getName();
+    String getId();
+
+    String getLabel();
 
     Activity getActivity();
 
@@ -9,7 +11,17 @@ public interface LouversController {
 
     boolean isDown();
 
-    double getOffsetPercent();
+    /**
+     * 0 - up, 1 - down
+     * @return
+     */
+    double getPosition();
+
+    /**
+     * 0 - horizontal (open), 1 - closed
+     * @return
+     */
+    double getOffset();
 
     void up();
 

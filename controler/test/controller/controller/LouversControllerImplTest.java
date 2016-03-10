@@ -146,7 +146,7 @@ public class LouversControllerImplTest {
 
     @Test
     public void testUp() throws Exception {
-        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 100, 10);
+        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, 100, 10);
 
         lc.up();
 
@@ -160,7 +160,7 @@ public class LouversControllerImplTest {
 
     @Test
     public void testDown() throws Exception {
-        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 100, 10);
+        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, 100, 10);
 
         lc.blind();
 
@@ -173,7 +173,7 @@ public class LouversControllerImplTest {
 
     @Test
     public void testDownAndOutshine() throws Exception {
-        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 1000, 100);
+        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, 1000, 100);
 
         lc.blind();
 
@@ -214,7 +214,7 @@ public class LouversControllerImplTest {
 
     @Test
     public void testDownAndOutshineAsync() throws Exception {
-        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 1000, 100);
+        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, 1000, 100);
 
         lc.up();
 
@@ -258,7 +258,7 @@ public class LouversControllerImplTest {
     @Test
     public void testDownAndStop() throws Exception {
 
-        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 1000, 100);
+        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, 1000, 100);
         lc.up();
 
         new Thread(() -> {
@@ -291,7 +291,7 @@ public class LouversControllerImplTest {
     @Test
     public void testDownAndUp() throws Exception {
 
-        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 1000, 100);
+        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, 1000, 100);
         lc.up();
 
         Thread thread = new Thread(() -> {
@@ -332,7 +332,7 @@ public class LouversControllerImplTest {
     @Test
     public void testDownAndUpBroken() throws Exception {
 
-        LouversControllerImpl lc = new LouversControllerImpl("LC", upActor, downActor, 1000, 100);
+        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, 1000, 100);
         lc.up();
 
         Thread thread = new Thread(() -> {

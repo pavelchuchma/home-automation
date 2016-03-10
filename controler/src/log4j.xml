@@ -63,6 +63,11 @@
         <appender-ref ref="applicationLog"/>
     </category>
 
+    <category name="servlet" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="applicationLog"/>
+    </category>
+
     <root>
         <level value="INFO"/>
         <appender-ref ref="applicationLog"/>

@@ -21,6 +21,7 @@ public class AudioAction implements Action {
     static Logger log = Logger.getLogger(AudioAction.class.getName());
 
     public AudioAction() {
+        log.info("Initializing audio");
         Mixer.Info[] mixers = AudioSystem.getMixerInfo();
         log.info("There are " + mixers.length + " mixer info objects");
         for (Mixer.Info mixerInfo : mixers) {

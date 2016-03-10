@@ -12,6 +12,7 @@ public class LouversControllerImpl implements LouversController {
     LouversPosition louversPosition;
     IOnOffActor upActor;
     IOnOffActor downActor;
+    String id;
     String name;
     // initialization necessary due to optimized stop()
     Object actionData = new Object();
@@ -20,29 +21,34 @@ public class LouversControllerImpl implements LouversController {
     class ExternalModificationException extends Exception {
     }
 
-    public LouversControllerImpl(String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs, int maxOffsetMs) {
-        init(name, upActor, downActor, downPositionMs, maxOffsetMs);
+    public LouversControllerImpl(String id, String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs, int maxOffsetMs) {
+        init(id, name, upActor, downActor, downPositionMs, maxOffsetMs);
     }
 
-    private void init(String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs, int maxOffsetMs) {
+    private void init(String id, String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs, int maxOffsetMs) {
+        this.id = id;
         this.name = name;
         this.upActor = upActor;
         this.downActor = downActor;
         louversPosition = new LouversPosition(downPositionMs, maxOffsetMs, (int) (downPositionMs * 0.08));
     }
 
-    public LouversControllerImpl(String name, NodePin relayUp, NodePin relayDown, int downPositionMs, int maxOffsetMs) {
+    public LouversControllerImpl(String id, String name, NodePin relayUp, NodePin relayDown, int downPositionMs, int maxOffsetMs) {
 
         IOnOffActor upActor = new OnOffActor(name + " Up", "LABEL", relayUp, 0, 1);
         IOnOffActor downActor = new OnOffActor(name + " Down", "LABEL", relayDown, 0, 1);
 
-        init(name, upActor, downActor, downPositionMs, maxOffsetMs);
+        init(id, name, upActor, downActor, downPositionMs, maxOffsetMs);
     }
 
+    @Override
+    public String getLabel() {
+        return name;
+    }
 
     @Override
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
     @Override
@@ -61,9 +67,15 @@ public class LouversControllerImpl implements LouversController {
     }
 
     @Override
-    public double getOffsetPercent() {
-        int offset = louversPosition.getOffset();
-        return (offset >=0) ? offset / louversPosition.offset.maxPositionMs : -1;
+    public double getPosition() {
+        double pos = louversPosition.getPosition();
+        return (pos >= 0) ? pos / louversPosition.position.maxPositionMs : -1;
+    }
+
+    @Override
+    public double getOffset() {
+        double offset = louversPosition.getOffset();
+        return (offset >= 0) ? offset / louversPosition.offset.maxPositionMs : -1;
     }
 
     @Override

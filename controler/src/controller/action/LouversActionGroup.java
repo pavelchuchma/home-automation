@@ -21,7 +21,7 @@ public class LouversActionGroup {
         }
 
         public String toString() {
-            return String.format("%s@%s(%s)", getClass().getName(), Integer.toHexString(System.identityHashCode(this)), louversController.getName());
+            return String.format("%s@%s(%s)", getClass().getName(), Integer.toHexString(System.identityHashCode(this)), louversController.getLabel());
         }
     }
 

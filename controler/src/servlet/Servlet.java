@@ -38,12 +38,13 @@ public class Servlet extends AbstractHandler {
     public static final String TARGET_SYSTEM = "/system";
     public static final String TARGET_PIR_STATUS = "/pirStatus";
     public static final String TARGET_LIGHTS = "/lights";
-    public static final String TARGET_LIGHTS_STATUS = "/lights/status";
-    public static final String TARGET_LIGHTS_ACTION = "/lights/a";
-    public static final String TARGET_LIGHTS_PARAM_ACTION = "/lights/acton";
+    public static final String TARGET_LIGHTS_STATUS = TARGET_LIGHTS + "/status";
+    public static final String TARGET_LIGHTS_ACTION = TARGET_LIGHTS + "/a";
+    public static final String TARGET_LIGHTS_PARAM_ACTION = TARGET_LIGHTS + "/acton";
     public static final String TARGET_LIGHTS_OBYVAK = "/lightsObyvak.html";
-    public static final String TARGET_LOUVERS = "/zaluzie";
-    public static final String TARGET_LOUVERS_ACTION = "/zaluzie/a";
+    public static final String TARGET_LOUVERS = "/louvers";
+    public static final String TARGET_LOUVERS_STATUS = TARGET_LOUVERS + "/status";
+    public static final String TARGET_LOUVERS_ACTION = TARGET_LOUVERS + "/a";
     public static final String CLASS_LOUVERS_ARROW = "louversArrow";
     public static final String CLASS_LOUVERS_ARROW_ACTIVE = "louversArrow louversArrow-moving";
     private NodeInfoCollector nodeInfoCollector;
@@ -70,6 +71,8 @@ public class Servlet extends AbstractHandler {
                        HttpServletRequest request,
                        HttpServletResponse response)
             throws IOException, ServletException {
+
+        log.debug("handle: " + target);
         if (target.endsWith(".css")) {
             sendFile(target, response, "text/css;charset=utf-8");
             baseRequest.setHandled(true);
@@ -84,14 +87,18 @@ public class Servlet extends AbstractHandler {
             baseRequest.setHandled(true);
         } else {
             if (target.startsWith(TARGET_LOUVERS)) {
-                int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LOUVERS_ACTION);
-                if (actionIndex != -1) {
-                    processLouversAction(actionIndex);
-                    //TODO: do something
+                if (target.startsWith(TARGET_LOUVERS_STATUS)) {
+                    writeLouversStatusJson(baseRequest, response);
+                } else {
+                    int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LOUVERS_ACTION);
+                    if (actionIndex != -1) {
+                        processLouversAction(actionIndex);
+                        //TODO: do something
 //                louversActions[actionIndex].perform(-1);
-                }
+                    }
 
-                sendOkResponse(baseRequest, response, getLouversPage());
+                    sendOkResponse(baseRequest, response, getLouversPage());
+                }
 
             } else if (target.startsWith(TARGET_LIGHTS)) {
                 if (target.startsWith(TARGET_LIGHTS_STATUS)) {
@@ -177,10 +184,7 @@ public class Servlet extends AbstractHandler {
     }
 
     private void writeLightsStatusJson(Request baseRequest, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json;charset=utf-8");
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setStatus(HttpServletResponse.SC_OK);
-        baseRequest.setHandled(true);
+        initJsonResponse(baseRequest, response);
         StringBuffer b = new StringBuffer();
         b.append("{ \"lights\" : [\n");
         boolean first = true;
@@ -204,6 +208,41 @@ public class Servlet extends AbstractHandler {
         }
         b.append("\n]}");
         response.getWriter().println(b);
+    }
+
+    private void writeLouversStatusJson(Request baseRequest, HttpServletResponse response) throws IOException {
+        log.debug("writeLouversStatusJson");
+        initJsonResponse(baseRequest, response);
+        StringBuffer b = new StringBuffer();
+        b.append("{ \"louvers\" : [\n");
+        boolean first = true;
+        for (LouversController lc : louversControllers) {
+            if (first) {
+                first = false;
+            } else {
+                b.append(",\n");
+            }
+            b.append('{');
+            appendNameValue(b, "id", lc.getId());
+            b.append(',');
+            appendNameValue(b, "name", lc.getLabel());
+            b.append(',');
+            appendNameValue(b, "pos", Double.toString(lc.getPosition()));
+            b.append(',');
+            appendNameValue(b, "off", Double.toString(lc.getOffset()));
+            b.append(',');
+            appendNameValue(b, "act", lc.getActivity().toString());
+            b.append('}');
+        }
+        b.append("\n]}");
+        response.getWriter().println(b);
+    }
+
+    private void initJsonResponse(Request baseRequest, HttpServletResponse response) {
+        response.setContentType("application/json;charset=utf-8");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setStatus(HttpServletResponse.SC_OK);
+        baseRequest.setHandled(true);
     }
 
     private void appendNameValue(StringBuffer b, String name, String value) {
@@ -239,10 +278,12 @@ public class Servlet extends AbstractHandler {
     }
 
     public static void startServer(NodeInfoCollector nodeInfoCollector) throws Exception {
+        log.info("Starting web server");
         Server server = new Server(80);
         server.setHandler(new Servlet(nodeInfoCollector));
 
         server.start();
+        log.info("Web server started");
         server.join();
     }
 
@@ -508,7 +549,7 @@ public class Servlet extends AbstractHandler {
 
             builder.append(String.format("<tr>" +
                     "            <td colspan=\"3\" class='louversName'>%s<tr>\n" +
-                    "        </table>\n", lc.getName()));
+                    "        </table>\n", lc.getLabel()));
 
         }
         builder.append("</table>");
