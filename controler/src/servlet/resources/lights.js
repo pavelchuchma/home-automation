@@ -1,33 +1,46 @@
 var mainCtx;
 var toolsCtx;
 var e = '';
+var tmp = "";
 
 const toolBoxBackground = 'lightgray';
 const toolLightPlusValue = 66;
 
 var lightCoordinates = [
     //id, x, y
-    ['pwmKch1', 465, 205],
-    ['pwmKch2', 429, 133],
-    ['pwmKch3', 360, 169],
-    ['pwmKch4', 269, 102],
-    ['pwmKch5', 292, 273],
-    ["pwmJid1", 247, 372],
-    ["pwmJid2", 97, 396],
-    ["pwmJid3", 185, 485],
-    ['pwmOb1', 418, 1004],
-    ['pwmOb2', 362, 956],
-    ['pwmOb3', 454, 904],
-    ['pwmOb4', 423, 811],
-    ['pwmOb5', 486, 694],
-    ['pwmOb6', 435, 591],
-    ['pwmOb7', 255, 1002],
-    ['pwmOb8', 226, 904],
-    ['pwmOb9', 198, 833],
-    ['pwmOb10', 120, 723],
-    ['pwmOb11', 272, 753],
-    ['pwmOb12', 153, 916],
-    ['pwmOb13', 158, 986]
+    ['pwmKch1', 410, 759],
+    ['pwmKch2', 382, 708],
+    ['pwmKch3', 331, 733],
+    ['pwmKch4', 268, 686],
+    ['pwmKch5', 285, 808],
+    ["pwmJid1", 250, 880],
+    ["pwmJid2", 142, 896],
+    ["pwmJid3", 205, 962],
+    ['pwmOb1', 375, 1338],
+    ['pwmOb2', 337, 1303],
+    ['pwmOb3', 402, 1269],
+    ['pwmOb4', 380, 1199],
+    ['pwmOb5', 427, 1112],
+    ['pwmOb6', 390, 1037],
+    ['pwmOb7', 260, 1340],
+    ['pwmOb8', 236, 1269],
+    ['pwmOb9', 217, 1217],
+    ['pwmOb10', 160, 1135],
+    ['pwmOb11', 270, 1157],
+    ['pwmOb12', 185, 1276],
+    ['pwmOb13', 189, 1327],
+    ['pwmPrd1', 407, 408],
+    ['pwmPrd2', 361, 158],
+    ['pwmZadD', 390, 544],
+    ['pwmChoD', 266, 517],
+    ['pwmKpD', 153, 489],
+    ['pwmKpDZrc', 189, 544],
+    //['spajz', 206, 328],
+    //['sklepL', 518, 345],
+    //['sklepP', 567, 350],
+    ['pwmG1', 65, 150],
+    ['pwmG2', 45, 210],
+    ['pwmG3', 25, 270]
 ];
 
 var lightStatusMap;
@@ -35,9 +48,14 @@ var lightCoordinateMap = {};
 
 var louversCoordinates = [
     //id, x, y
-    ['vrt1', 200, 200],
-    ['vrt2', 300, 300],
-    ['vrt3', 300, 400]
+    ['lvKuch', 510, 809],
+    ['lvOb1', 510, 978],
+    ['lvOb2', 510, 1121],
+    ['lvOb3', 510, 1285],
+    ['lvOb4', 360, 1430],
+    ['lvOb5', 65, 1286],
+    ['lvOb6', 65, 882],
+    ['lvKoupD', 65, 510]
 ];
 
 var louversStatusMap;
@@ -62,7 +80,7 @@ var toolsCoordinates = [
     //id, x, y, draw function
     ['ligthToogle', 50, 50, function (x, y, ctx) {
         drawLightIcon(x - 10, y, 0, ctx);
-        drawLightIcon(x + 10, y, 1, ctx);
+        drawLightIcon(x + 10, y, .75, ctx);
     }],
     ['ligthPlus', 50, 150, function (x, y, ctx) {
         drawLightIcon(x, y, toolLightPlusValue / 100, ctx);
@@ -338,7 +356,7 @@ function getLightValue(lightStatus) {
     var vPerc = Math.round(val / maxVal * 100);
     switch (selectedToolId) {
         case 'ligthToogle':
-            return (vPerc == 0) ? 100 : 0;
+            return (vPerc == 0) ? 75 : 0;
         case 'ligthPlus':
             return (vPerc == 0) ? toolLightPlusValue : Math.min(100, vPerc + step);
         case 'ligthMinus':
@@ -351,6 +369,10 @@ function getLightValue(lightStatus) {
     return val;
 }
 function onCanvasClick(event) {
+    //tmp += "['pwm', " + event.offsetX + ", " + event.offsetY + "]<br>";
+    //debug(tmp);
+    //return;
+
     var lightId = findNearestItem(event.offsetX, event.offsetY, lightCoordinates);
     var lightStatus = lightStatusMap[lightId];
 
@@ -360,7 +382,7 @@ function onCanvasClick(event) {
     sendAction(action);
 
     var coords = lightCoordinateMap[lightStatus.id];
-
+    // draw changed light as gray
     mainCtx.beginPath();
     mainCtx.arc(coords[0], coords[1], 20, 0, 2 * Math.PI);
     mainCtx.fillStyle = 'gray';
