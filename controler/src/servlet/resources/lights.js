@@ -6,7 +6,7 @@ var tmp = "";
 const toolBoxBackground = 'lightgray';
 const toolLightPlusValue = 66;
 
-var lightCoordinates = [
+var itemCoordinates = [
     //id, x, y
     ['pwmKch1', 410, 759],
     ['pwmKch2', 382, 708],
@@ -40,14 +40,8 @@ var lightCoordinates = [
     //['sklepP', 567, 350],
     ['pwmG1', 65, 150],
     ['pwmG2', 45, 210],
-    ['pwmG3', 25, 270]
-];
+    ['pwmG3', 25, 270],
 
-var lightStatusMap;
-var lightCoordinateMap = {};
-
-var louversCoordinates = [
-    //id, x, y
     ['lvKuch', 510, 809],
     ['lvOb1', 510, 978],
     ['lvOb2', 510, 1121],
@@ -58,8 +52,12 @@ var louversCoordinates = [
     ['lvKoupD', 65, 510]
 ];
 
-var louversStatusMap;
-var louversCoordinateMap = {};
+var itemStatusMap = {};
+var itemCoordinateMap = {};
+
+var louversCoordinates = [
+    //id, x, y
+];
 
 function drawLightToolSign(x, y, ctx, drawVertical) {
     ctx.beginPath();
@@ -77,31 +75,31 @@ function drawLightToolSign(x, y, ctx, drawVertical) {
 }
 
 var toolsCoordinates = [
-    //id, x, y, draw function
-    ['ligthToogle', 50, 50, function (x, y, ctx) {
+    //id, x, y, draw function, prefixValidator
+    ['lightToggle', 50, 50, function (x, y, ctx) {
         drawLightIcon(x - 10, y, 0, ctx);
         drawLightIcon(x + 10, y, .75, ctx);
-    }],
-    ['ligthPlus', 50, 150, function (x, y, ctx) {
+    }, [isPwmId]],
+    ['lightPlus', 50, 150, function (x, y, ctx) {
         drawLightIcon(x, y, toolLightPlusValue / 100, ctx);
         drawLightToolSign(x, y, ctx, true);
-    }],
-    ['ligthMinus', 50, 250, function (x, y, ctx) {
+    }, [isPwmId]],
+    ['lightMinus', 50, 250, function (x, y, ctx) {
         drawLightIcon(x, y, .25, ctx);
         drawLightToolSign(x, y, ctx, false);
-    }],
-    ['ligthFull', 50, 350, function (x, y, ctx) {
+    }, [isPwmId]],
+    ['lightFull', 50, 350, function (x, y, ctx) {
         drawLightIcon(x, y, 1, ctx);
-    }],
-    ['ligthOff', 50, 450, function (x, y, ctx) {
+    }, [isPwmId]],
+    ['lightOff', 50, 450, function (x, y, ctx) {
         drawLightIcon(x, y, 0, ctx);
-    }],
+    }, [isPwmId]],
     ['louversUp', 50, 550, function (x, y, ctx) {
         drawLouversToolIcon(x, y, .5, 0, 'stopped', ctx);
-    }],
+    }, [isLouversId]],
     ['louversDown', 50, 650, function (x, y, ctx) {
         drawLouversToolIcon(x, y, 1, .5, 'stopped', ctx);
-    }]
+    }, [isLouversId]]
 ];
 
 
@@ -167,16 +165,12 @@ var selectedToolId = toolsCoordinates[0][0];
 
 window.onload = function () {
     try {
-        lightCoordinates.forEach(function (lc) {
-            lightCoordinateMap[lc[0]] = [lc[1], lc[2]];
-        });
-
-        louversCoordinates.forEach(function (lc) {
-            louversCoordinateMap[lc[0]] = [lc[1], lc[2]];
+        itemCoordinates.forEach(function (lc) {
+            itemCoordinateMap[lc[0]] = [lc[1], lc[2]];
         });
 
         toolsCoordinates.forEach(function (tc) {
-            toolCoordinateMap[tc[0]] = [tc[1], tc[2]];
+            toolCoordinateMap[tc[0]] = [tc[1], tc[2], tc[4]];
         });
 
 
@@ -191,8 +185,7 @@ window.onload = function () {
 
 function onTimer() {
     try {
-        updateLights();
-        updateLouvers();
+        updateItems();
     } catch (e) {
         printException(e);
     }
@@ -202,31 +195,44 @@ function computeDistance(x1, y1, x2, y2) {
     return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 }
 
-function findNearestItem(x, y, coordinates) {
+function findNearestItem(x, y, coordinates, validatorArray) {
     var resId = null;
     var resDist = -1;
     coordinates.forEach(function (lc) {
-        var dist = computeDistance(x, y, lc[1], lc[2]);
-        if (resDist < 0 || dist < resDist) {
-            resDist = dist;
-            resId = lc[0];
-        }
+        // validate item type
+        validatorArray.some(function (validator) {
+            if (validator(lc[0])) {
+                var dist = computeDistance(x, y, lc[1], lc[2]);
+                if (resDist < 0 || dist < resDist) {
+                    resDist = dist;
+                    resId = lc[0];
+                }
+                return true; // stop loop through validators
+            }
+            return false;
+        });
     });
     return resId;
 }
 
-function drawLights() {
-    lightCoordinates.forEach(function (lc) {
-        drawLight(lc[0])
-    });
+function isPwmId(id) {
+    return id.startsWith("pwm");
 }
 
-function drawAllLouvers() {
-    louversCoordinates.forEach(function (lc) {
-        drawOneLouvers(lc[0])
-    });
+function isLouversId(id) {
+    return id.startsWith("lv");
 }
 
+function drawItems() {
+    itemCoordinates.forEach(function (lc) {
+        var id = lc[0];
+        if (isPwmId(id)) {
+            drawLight(id)
+        } else if (isLouversId(id)) {
+            drawOneLouvers(id)
+        }
+    });
+}
 
 function drawMainCanvas() {
     var c = document.getElementById("mainCanvas");
@@ -238,7 +244,6 @@ function drawMainCanvas() {
 }
 function drawToolSelection() {
     toolsCoordinates.forEach(function (c) {
-        //var  = toolCoordinateMap[selectedToolId]
         var r = 35;
 
         toolsCtx.beginPath();
@@ -299,10 +304,10 @@ function drawLightIcon(x, y, power, ctx) {
 }
 
 function drawLight(id) {
-    var lightStatus = lightStatusMap[id];
+    var lightStatus = itemStatusMap[id];
     var power = lightStatus.val / lightStatus.maxVal;
 
-    var coords = lightCoordinateMap[id];
+    var coords = itemCoordinateMap[id];
     var x = coords[0];
     var y = coords[1];
 
@@ -310,23 +315,21 @@ function drawLight(id) {
 }
 
 function drawOneLouvers(id) {
-    var louversStatus = louversStatusMap[id];
+    var louversStatus = itemStatusMap[id];
     //var power = louversStatus.val / louversStatus.maxVal;
 
-    var coords = louversCoordinateMap[id];
+    var coords = itemCoordinateMap[id];
     var x = coords[0];
     var y = coords[1];
 
     drawLouversIcon(x, y, louversStatus.pos, louversStatus.off, louversStatus.act, mainCtx);
 }
 
-function parseJsonStatusResponse(request, rootName) {
+function parseJsonStatusResponse(request, rootName, map) {
     var content = JSON.parse(request.responseText);
-    var map = {};
     content[rootName].forEach(function (l) {
         map[l.id] = l;
     });
-    return map;
 }
 
 function sendAction(action) {
@@ -345,7 +348,9 @@ function sendAction(action) {
 }
 
 function onToolsClick(event) {
-    selectedToolId = findNearestItem(event.offsetX, event.offsetY, toolsCoordinates);
+    selectedToolId = findNearestItem(event.offsetX, event.offsetY, toolsCoordinates, [function () {
+        return true
+    }]);
     drawToolSelection();
 }
 
@@ -355,39 +360,48 @@ function getLightValue(lightStatus) {
     var maxVal = parseInt(lightStatus.maxVal);
     var vPerc = Math.round(val / maxVal * 100);
     switch (selectedToolId) {
-        case 'ligthToogle':
+        case 'lightToggle':
             return (vPerc == 0) ? 75 : 0;
-        case 'ligthPlus':
+        case 'lightPlus':
             return (vPerc == 0) ? toolLightPlusValue : Math.min(100, vPerc + step);
-        case 'ligthMinus':
+        case 'lightMinus':
             return (vPerc == 0) ? 1 : Math.max(0, vPerc - step);
-        case 'ligthFull' :
+        case 'lightFull' :
             return 100;
-        case 'ligthOff':
+        case 'lightOff':
             return 0;
     }
     return val;
 }
+
 function onCanvasClick(event) {
     //tmp += "['pwm', " + event.offsetX + ", " + event.offsetY + "]<br>";
     //debug(tmp);
     //return;
 
-    var lightId = findNearestItem(event.offsetX, event.offsetY, lightCoordinates);
-    var lightStatus = lightStatusMap[lightId];
+    var selectedTool = toolCoordinateMap[selectedToolId];
 
-    var value = getLightValue(lightStatus);
-    var action = '/lights/acton?id=' + lightStatus.id + "&" + "val=" + value;
+    var itemId = findNearestItem(event.offsetX, event.offsetY, itemCoordinates, selectedTool[2]);
+    var itemStatus = itemStatusMap[itemId];
 
-    sendAction(action);
+    var action;
+    if (selectedToolId.startsWith('light')) {
+        var value = getLightValue(itemStatus);
+        action = '/lights/acton?id=' + itemStatus.id + "&" + "val=" + value;
 
-    var coords = lightCoordinateMap[lightStatus.id];
+    }
+
+    if (action) {
+        sendAction(action);
+    }
+
+
+    var coords = itemCoordinateMap[itemStatus.id];
     // draw changed light as gray
     mainCtx.beginPath();
-    mainCtx.arc(coords[0], coords[1], 20, 0, 2 * Math.PI);
+    mainCtx.arc(coords[0], coords[1], 15, 0, 2 * Math.PI);
     mainCtx.fillStyle = 'gray';
     mainCtx.fill();
-
 }
 
 function printException(e) {
@@ -413,17 +427,13 @@ function updateImpl(path, code) {
 
     request.send();
 }
-function updateLights() {
+function updateItems() {
     updateImpl('/lights/status', function (request) {
-        lightStatusMap = parseJsonStatusResponse(request, 'lights');
-        drawLights();
-    });
-}
-
-function updateLouvers() {
-    updateImpl('/louvers/status', function (request) {
-        louversStatusMap = parseJsonStatusResponse(request, 'louvers');
-        drawAllLouvers();
+        parseJsonStatusResponse(request, 'lights', itemStatusMap);
+        updateImpl('/louvers/status', function (request) {
+            parseJsonStatusResponse(request, 'louvers', itemStatusMap);
+            drawItems();
+        });
     });
 }
 
