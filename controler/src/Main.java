@@ -394,6 +394,12 @@ public class Main {
         lst.addActionBinding(new ActionBinding(garazASw2.getLeftUpperButton(), new Action[]{ovladacGarazAction}, null));
         lst.addActionBinding(new ActionBinding(garazASw2.getLeftBottomButton(), new Action[]{ovladacGarazAction}, null));
 
+        configurePwmLights(lst, garazBSwL, WallSwitch.Side.LEFT, 100, garaz3PwmActor);
+        configurePwmLights(lst, garazBSwL, WallSwitch.Side.RIGHT, 80, garaz2PwmActor);
+        configurePwmLights(lst, garazBSwR, WallSwitch.Side.LEFT, 80, garaz1PwmActor);
+        lst.addActionBinding(new ActionBinding(garazBSwR.getRightUpperButton(), new Action[]{ovladacGarazAction}, null));
+        lst.addActionBinding(new ActionBinding(garazBSwR.getRightBottomButton(), new Action[]{ovladacGarazAction}, null));
+
         // Krystof + Pata
         configureLouvers(lst, krystofSwA1, WallSwitch.Side.LEFT, zaluziePata);
         configureLouvers(lst, krystofSwA1, WallSwitch.Side.RIGHT, zaluzieKrystof);
@@ -562,8 +568,9 @@ public class Main {
 
         //test wall switch application
         WallSwitch testSw = new WallSwitch("testSwA", switchTestNode50, 1);
-        TestingOnOffActor testingRightOnOffActor = new TestingOnOffActor("RightSwitchTestingActor", null, 0, 1, testSw.getRedLedIndicator(true));
-        TestingOnOffActor testingLeftOnOffActor = new TestingOnOffActor("LeftSwitchTestingActor", null, 0, 1, testSw.getGreenLedIndicator(true));
+        WallSwitch test3Sw = new WallSwitch("test3Sw", switchTestNode50, 3);
+        TestingOnOffActor testingRightOnOffActor = new TestingOnOffActor("RightSwitchTestingActor", null, 0, 1, testSw.getRedLedIndicator(true), test3Sw.getRedLedIndicator(true));
+        TestingOnOffActor testingLeftOnOffActor = new TestingOnOffActor("LeftSwitchTestingActor", null, 0, 1, testSw.getGreenLedIndicator(true), test3Sw.getGreenLedIndicator(true));
         lst.addActionBinding(new ActionBinding(testSw.getRightBottomButton(), new Action[]{new SwitchOffAction(testingRightOnOffActor)}, null));
         lst.addActionBinding(new ActionBinding(testSw.getRightUpperButton(), new Action[]{new SwitchOnAction(testingRightOnOffActor)}, null));
         lst.addActionBinding(new ActionBinding(testSw.getLeftUpperButton(), new Action[]{new SwitchOnAction(testingLeftOnOffActor)}, null));
