@@ -95,10 +95,13 @@ var toolsCoordinates = [
         drawLightIcon(x, y, 0, ctx);
     }, [isPwmId]],
     ['louversUp', 50, 550, function (x, y, ctx) {
-        drawLouversToolIcon(x, y, .5, 0, 'stopped', ctx);
+        drawLouversToolIcon(x, y, .3, 0, 'stopped', ctx);
     }, [isLouversId]],
-    ['louversDown', 50, 650, function (x, y, ctx) {
-        drawLouversToolIcon(x, y, 1, .5, 'stopped', ctx);
+    ['louversOutshine', 50, 650, function (x, y, ctx) {
+        drawLouversToolIcon(x, y, 1, 0, 'stopped', ctx);
+    }, [isLouversId]],
+    ['louversDown', 50, 750, function (x, y, ctx) {
+        drawLouversToolIcon(x, y, 1, 1, 'stopped', ctx);
     }, [isLouversId]]
 ];
 
@@ -173,7 +176,6 @@ window.onload = function () {
             toolCoordinateMap[tc[0]] = [tc[1], tc[2], tc[4]];
         });
 
-
         drawMainCanvas();
         drawToolsCanvas();
         setInterval(onTimer, 750);
@@ -216,11 +218,15 @@ function findNearestItem(x, y, coordinates, validatorArray) {
 }
 
 function isPwmId(id) {
-    return id.startsWith("pwm");
+    return startsWith(id, "pwm");
+}
+
+function startsWith(str, substr) {
+    return str.length >= substr.length && (str.substr(0, substr.length) == substr);
 }
 
 function isLouversId(id) {
-    return id.startsWith("lv");
+    return startsWith(id, "lv");
 }
 
 function drawItems() {
@@ -316,7 +322,6 @@ function drawLight(id) {
 
 function drawOneLouvers(id) {
     var louversStatus = itemStatusMap[id];
-    //var power = louversStatus.val / louversStatus.maxVal;
 
     var coords = itemCoordinateMap[id];
     var x = coords[0];
@@ -354,7 +359,7 @@ function onToolsClick(event) {
     drawToolSelection();
 }
 
-function getLightValue(lightStatus) {
+function getNewLightValue(lightStatus) {
     const step = 15;
     var val = parseInt(lightStatus.val);
     var maxVal = parseInt(lightStatus.maxVal);
@@ -374,6 +379,10 @@ function getLightValue(lightStatus) {
     return val;
 }
 
+function buildLouversActionLink(itemStatus, possiton, offset) {
+    return '/louvers/action?id=' + itemStatus.id + '&pos=' + possiton + '&off=' + offset;
+}
+
 function onCanvasClick(event) {
     //tmp += "['pwm', " + event.offsetX + ", " + event.offsetY + "]<br>";
     //debug(tmp);
@@ -385,16 +394,26 @@ function onCanvasClick(event) {
     var itemStatus = itemStatusMap[itemId];
 
     var action;
-    if (selectedToolId.startsWith('light')) {
-        var value = getLightValue(itemStatus);
-        action = '/lights/acton?id=' + itemStatus.id + "&" + "val=" + value;
-
+    if (startsWith(selectedToolId, 'light')) {
+        var value = getNewLightValue(itemStatus);
+        action = '/lights/action?id=' + itemStatus.id + "&" + "val=" + value;
+    } else if (startsWith(selectedToolId, 'louvers')) {
+        switch (selectedToolId) {
+            case 'louversUp':
+                action = buildLouversActionLink(itemStatus, 0, 0);
+                break;
+            case 'louversOutshine':
+                action = buildLouversActionLink(itemStatus, 100, 0);
+                break;
+            case 'louversDown':
+                action = buildLouversActionLink(itemStatus, 100, 100);
+                break;
+        }
     }
 
     if (action) {
         sendAction(action);
     }
-
 
     var coords = itemCoordinateMap[itemStatus.id];
     // draw changed light as gray

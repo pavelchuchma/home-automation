@@ -40,11 +40,12 @@ public class Servlet extends AbstractHandler {
     public static final String TARGET_LIGHTS = "/lights";
     public static final String TARGET_LIGHTS_STATUS = TARGET_LIGHTS + "/status";
     public static final String TARGET_LIGHTS_ACTION = TARGET_LIGHTS + "/a";
-    public static final String TARGET_LIGHTS_PARAM_ACTION = TARGET_LIGHTS + "/acton";
+    public static final String TARGET_LIGHTS_PARAM_ACTION = TARGET_LIGHTS + "/action";
     public static final String TARGET_LIGHTS_OBYVAK = "/lightsObyvak.html";
     public static final String TARGET_LOUVERS = "/louvers";
     public static final String TARGET_LOUVERS_STATUS = TARGET_LOUVERS + "/status";
     public static final String TARGET_LOUVERS_ACTION = TARGET_LOUVERS + "/a";
+    public static final String TARGET_LOUVERS_PARAM_ACTION = TARGET_LOUVERS + "/action";
     public static final String CLASS_LOUVERS_ARROW = "louversArrow";
     public static final String CLASS_LOUVERS_ARROW_ACTIVE = "louversArrow louversArrow-moving";
     private NodeInfoCollector nodeInfoCollector;
@@ -89,12 +90,25 @@ public class Servlet extends AbstractHandler {
             if (target.startsWith(TARGET_LOUVERS)) {
                 if (target.startsWith(TARGET_LOUVERS_STATUS)) {
                     writeLouversStatusJson(baseRequest, response);
+                } else if (target.startsWith(TARGET_LOUVERS_PARAM_ACTION)) {
+                    LouversController controller = getItemById(request, louversControllerMap);
+
+                    String posStr = request.getParameter("pos");
+                    String offStr = request.getParameter("off");
+                    if (posStr != null && offStr != null) {
+                        int position = Integer.parseInt(posStr);
+                        int offset = Integer.parseInt(offStr);
+                        if (position == 0) {
+                            controller.up();
+                        } else if (position == 100) {
+                            controller.outshine(offset);
+                        }
+                        sendOkResponse(baseRequest, response, "");
+                    }
                 } else {
                     int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LOUVERS_ACTION);
                     if (actionIndex != -1) {
                         processLouversAction(actionIndex);
-                        //TODO: do something
-//                louversActions[actionIndex].perform(-1);
                     }
 
                     sendOkResponse(baseRequest, response, getLouversPage());
@@ -104,17 +118,13 @@ public class Servlet extends AbstractHandler {
                 if (target.startsWith(TARGET_LIGHTS_STATUS)) {
                     writeLightsStatusJson(baseRequest, response);
                 } else if (target.startsWith(TARGET_LIGHTS_PARAM_ACTION)) {
-                    String id = request.getParameter("id");
-                    Validate.notNull(id, "no id specified");
-                    PwmActor actor = lightActors.get(id);
-                    Validate.notNull(actor, "unknown light actor name");
+                    PwmActor actor = getItemById(request, lightActorMap);
 
                     String valStr = request.getParameter("val");
                     if (valStr != null) {
                         int value = Integer.parseInt(valStr);
                         actor.setValue(value, null);
                         sendOkResponse(baseRequest, response, "");
-                        return;
                     }
                 } else {
                     int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LIGHTS_ACTION);
@@ -159,6 +169,14 @@ public class Servlet extends AbstractHandler {
         }
     }
 
+    private <T> T getItemById(HttpServletRequest request, Map<String, T> map) {
+        String id = request.getParameter("id");
+        Validate.notNull(id, "no id specified");
+        T item = map.get(id);
+        Validate.notNull(item, "unknown id");
+        return item;
+    }
+
     private void sendOkResponse(Request baseRequest, HttpServletResponse response, String body) throws IOException {
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
@@ -188,7 +206,7 @@ public class Servlet extends AbstractHandler {
         StringBuffer b = new StringBuffer();
         b.append("{ \"lights\" : [\n");
         boolean first = true;
-        for (PwmActor actor : lightActors.values()) {
+        for (PwmActor actor : lightActorMap.values()) {
             if (first) {
                 first = false;
             } else {
@@ -293,19 +311,30 @@ public class Servlet extends AbstractHandler {
     public static Action action4;
     public static Action action5;
     private static Action[] lightActions;
-    private static Map<String, PwmActor> lightActors;
+    private static Map<String, PwmActor> lightActorMap;
     public static List<PirStatus> pirStatusList;
-    public static LouversController[] louversControllers;
+
+    private static LouversController[] louversControllers;
+    public static Map<String, LouversController> louversControllerMap;
 
     public static void setLightActions(Action[] lightActions) {
         Servlet.lightActions = lightActions;
-        lightActors = new HashMap<>();
+        lightActorMap = new HashMap<>();
         for (int i = 0; i < lightActions.length; i += 4) {
             PwmActor actor = (PwmActor) lightActions[i].getActor();
-            if (lightActors.containsKey(actor.getId())) {
+            if (lightActorMap.put(actor.getId(), actor) != null) {
                 throw new RuntimeException("Id of actor '" + actor.getId() + "' is not unique");
             }
-            lightActors.put(actor.getId(), actor);
+        }
+    }
+
+    public static void setLouversControllers(LouversController[] louversControllers) {
+        Servlet.louversControllers = louversControllers;
+        louversControllerMap = new HashMap<>();
+        for (LouversController controller : louversControllers) {
+            if (louversControllerMap.put(controller.getId(), controller) != null) {
+                throw new RuntimeException("Id of controller '" + controller.getId() + "' is not unique");
+            }
         }
     }
 
