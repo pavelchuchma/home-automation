@@ -151,7 +151,7 @@ public class Main {
         WallSwitch koupelnaHoreSw2 = new WallSwitch("koupelnaHoreSw2", koupelnaHore, 2);
         WallSwitch chodbaHoreKoupelnaSw3 = new WallSwitch("chodbaHoreKoupelnaSw3", koupelnaHore, 3);
         WallSwitch zadveriDoleChodbaSw = new WallSwitch("zadveriDoleChodbaSw", zadveriDoleChodba, 1);
-        WallSwitch zadveriDoldePradelnaSw = new WallSwitch("zadveriDoldePradelnaSw", zadveriDoleChodba, 3);
+        WallSwitch zadveriDolePradelnaSw = new WallSwitch("zadveriDolePradelnaSw", zadveriDoleChodba, 3);
         WallSwitch lozniceOknoSw1 = new WallSwitch("lozniceOknoSw1", lozniceOkno, 1);
         WallSwitch lozniceOknoSw2 = new WallSwitch("lozniceOknoSw2", lozniceOkno, 2);
         WallSwitch lozniceDvereSw1 = new WallSwitch("lozniceDvereSw1", lozniceDvere, 1);
@@ -306,7 +306,7 @@ public class Main {
         PwmActor kuchyn1PwmActor = addLddLight(lightsActions, "pwmKch1", "Kuchyň 1", lddDevice5.getLdd3(), 0.7); // .72
         PwmActor obyvak05PwmActor = addLddLight(lightsActions, "pwmOb5", "Obyvák 05", lddDevice5.getLdd4(), 0.7); // .72
         PwmActor pracovnaPwmActor = addLddLight(lightsActions, "pwmPrac", "Pracovna", lddDevice5.getLdd5(), 0.6); // .6
-        PwmActor test56 = addLddLight(lightsActions, "pwmTest56", "test5.6", lddDevice5.getLdd6(), 0.1); // ?? (kuchyn stul?)
+        PwmActor terasaPwmActor = addLddLight(lightsActions, "pwmTrs", "Terasa", lddDevice5.getLdd6(), 1); // 1.08
 
         LddBoardDevice lddDevice6 = new LddBoardDevice("lddDevice6", lddActorC, 2, .7, .7, .7, .7, .7, .7);
         PwmActor jidelna1PwmActor = addLddLight(lightsActions, "pwmJid1", "Jídelna 1", lddDevice6.getLdd1(), 0.7); // .72
@@ -314,7 +314,7 @@ public class Main {
         PwmActor obyvak10PwmActor = addLddLight(lightsActions, "pwmOb10", "Obyvák 10", lddDevice6.getLdd3(), 0.7); // .72
         PwmActor obyvak01PwmActor = addLddLight(lightsActions, "pwmOb1", "Obyvák 01", lddDevice6.getLdd4(), 0.7); // .72
         PwmActor obyvak13PwmActor = addLddLight(lightsActions, "pwmOb13", "Obyvák 13", lddDevice6.getLdd5(), 0.7); // .72
-        PwmActor pradelna1PwmActor = addLddLight(lightsActions, "pwmPrd1", "Prádelna 1", lddDevice6.getLdd6(), 0.7, zadveriDoldePradelnaSw.getRedLedIndicator(false), pradelnaSw1.getRedLedIndicator(true)); // .72
+        PwmActor pradelna1PwmActor = addLddLight(lightsActions, "pwmPrd1", "Prádelna 1", lddDevice6.getLdd6(), 0.7, zadveriDolePradelnaSw.getRedLedIndicator(false), pradelnaSw1.getRedLedIndicator(true)); // .72
 
         LddBoardDevice lddDevice7 = new LddBoardDevice("lddDevice7", lddActorC, 3, .7, .7, .7, .7, .7, .7);
         PwmActor pradelna2PwmActor = addLddLight(lightsActions, "pwmPrd2", "Prádelna 2", lddDevice7.getLdd1(), 0.7); // .72
@@ -375,7 +375,7 @@ public class Main {
 
         configurePwmLights(lst, zadveriSwA2, WallSwitch.Side.LEFT, 80, garaz1PwmActor, garaz2PwmActor);
         configurePwmLights(lst, zadveriSwA2, WallSwitch.Side.RIGHT, 100, garaz3PwmActor);
-        configurePwmLights(lst, zadveriVratniceSw3, WallSwitch.Side.LEFT, 80, zadveriPwmActor);
+        configurePwmLights(lst, zadveriVratniceSw3, WallSwitch.Side.LEFT, 80, vchodHorePwmActor);
         configurePwmLights(lst, zadveriVratniceSw3, WallSwitch.Side.RIGHT, 80, zadveriPwmActor);
 
         // zadveri venku
@@ -480,7 +480,11 @@ public class Main {
         lst.addActionBinding(new ActionBinding(zadveriDoleVchodRSw.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepPravy, 1800, 100)}, null));
         lst.addActionBinding(new ActionBinding(zadveriDoleVchodRSw.getRightBottomButton(), new Action[]{new SwitchOffAction(svSklepPravy)}, null));
 
+
         //    - venku Levy
+        configurePwmLights(lst, sklepLevyLSw, WallSwitch.Side.LEFT, 40, terasaPwmActor);
+        configurePwmLights(lst, sklepLevyLSw, WallSwitch.Side.RIGHT, 40, terasaPwmActor);
+
         lst.addActionBinding(new ActionBinding(sklepLevyRSw.getLeftUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepLevy, 1800, 100)}, null));
         lst.addActionBinding(new ActionBinding(sklepLevyRSw.getLeftBottomButton(), new Action[]{new SwitchOffAction(svSklepLevy)}, null));
         lst.addActionBinding(new ActionBinding(sklepLevyRSw.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepLevy, 1800, 100)}, null));
@@ -494,11 +498,14 @@ public class Main {
 
 
         // zadveri dole
-        configurePwmLightsImpl(lst, zadveriDoldePradelnaSw, WallSwitch.Side.LEFT, 80, new PwmActor[]{pradelna1PwmActor}, new PwmActor[]{pradelna2PwmActor});
-        configurePwmLightsImpl(lst, zadveriDoldePradelnaSw, WallSwitch.Side.RIGHT, 80, new PwmActor[]{pradelna1PwmActor}, new PwmActor[]{pradelna2PwmActor});
+        configurePwmLightsImpl(lst, zadveriDolePradelnaSw, WallSwitch.Side.LEFT, 80, new PwmActor[]{pradelna1PwmActor}, new PwmActor[]{pradelna2PwmActor});
+        configurePwmLightsImpl(lst, zadveriDolePradelnaSw, WallSwitch.Side.RIGHT, 80, new PwmActor[]{pradelna1PwmActor}, new PwmActor[]{pradelna2PwmActor});
 
-        configurePwmLights(lst, zadveriDoleChodbaSw, WallSwitch.Side.RIGHT, 40, zadveriDolePwmActor);
         configurePwmLights(lst, zadveriDoleChodbaSw, WallSwitch.Side.LEFT, 40, chodbaDolePwmActor);
+        configurePwmLights(lst, zadveriDoleChodbaSw, WallSwitch.Side.RIGHT, 40, zadveriDolePwmActor);
+
+        configurePwmLights(lst, zadveriDoleVchodLSw, WallSwitch.Side.LEFT, 40, zadveriDolePwmActor);
+        configurePwmLights(lst, zadveriDoleVchodLSw, WallSwitch.Side.RIGHT, 40, terasaPwmActor);
 
         // chodba dole
         lst.addActionBinding(new ActionBinding(chodbaDoleSpajzSw3.getLeftUpperButton(), new Action[]{new SwitchOnSensorAction(svSpajza, 1800, 100, AbstractSensorAction.Priority.MEDIUM)}, null));
@@ -524,7 +531,8 @@ public class Main {
         lst.addActionBinding(new ActionBinding(bottomButton, new Action[]{
                 new SwitchOffAction(chodbaDolePwmActor), new SwitchOffAction(zadveriDolePwmActor),
                 new SwitchOffAction(pradelna1PwmActor), new SwitchOffAction(pradelna2PwmActor),
-                new SwitchOffAction(svSpajza), new SwitchOffAction(koupelnaDolePwmActor), new SwitchOffAction(koupelnaDoleZrcadlaPwmActor)
+                new SwitchOffAction(svSpajza), new SwitchOffAction(koupelnaDolePwmActor),
+                new SwitchOffAction(koupelnaDoleZrcadlaPwmActor), new SwitchOffAction(koupelnaDoleZrcadlaPwmActor),
         }, new Action[]{}));
 
 
