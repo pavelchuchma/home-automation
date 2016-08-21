@@ -19,15 +19,19 @@ public abstract class AbstractActor implements Actor {
     Object actionData;
 
     int value;
-    private Indicator[] indicators;
+    private ActorListener[] actorListeners;
 
-    public AbstractActor(String id, String label, NodePin output, int initValue, Indicator... indicators) {
+    public AbstractActor(String id, String label, NodePin output, int initValue, ActorListener... actorListeners) {
         this.id = id;
         this.label = label;
         this.output = output;
         this.initValue = initValue;
         this.value = initValue;
-        this.indicators = indicators;
+        this.actorListeners = actorListeners;
+
+        for (ActorListener lst : actorListeners) {
+            lst.notifyRegistered((IOnOffActor) this);
+        }
     }
 
     /**
@@ -38,6 +42,10 @@ public abstract class AbstractActor implements Actor {
      * @return true if pin was set
      */
     protected boolean setPinValue(NodePin nodePin, int value, int retryCount) {
+        return setPinValueImpl(nodePin, value, retryCount);
+    }
+
+    public static boolean setPinValueImpl(NodePin nodePin, int value, int retryCount) {
         if (value != 0 && value != 1) {
             throw new IllegalArgumentException(String.format("Cannot set value %d to pin %s. Pin value can be 0 or 1 only.", value, nodePin));
         }
@@ -99,13 +107,12 @@ public abstract class AbstractActor implements Actor {
      * @param actionData
      */
     @Override
-    public synchronized void setIndicatorsAndActionData(boolean invert, Object actionData) {
+    public synchronized void callListenersAndSetActionData(boolean invert, Object actionData) {
         setActionData(actionData);
 
-        if (indicators != null) {
-            for (Indicator i : indicators) {
-                int indVal = ((i.IsInverted() ^ invert) ^ value > 0) ? 1 : 0;
-                setPinValue(i.getPin(), indVal, RETRY_COUNT);
+        if (actorListeners != null) {
+            for (ActorListener i : actorListeners) {
+                i.onAction((IOnOffActor) this, invert);
             }
         }
     }
@@ -118,9 +125,9 @@ public abstract class AbstractActor implements Actor {
 
     public String toString() {
         StringBuilder val = new StringBuilder(String.format("%s(%s) %s", getClass().getSimpleName(), id, output));
-        if (indicators != null) {
-            val.append(", indicators: ");
-            for (Indicator i : indicators) {
+        if (actorListeners != null) {
+            val.append(", actorListeners: ");
+            for (ActorListener i : actorListeners) {
                 val.append(i.getPin());
                 val.append(", ");
             }

@@ -8,8 +8,8 @@ public class OnOffActor extends AbstractActor implements IOnOffActor {
 
     int onValue;
 
-    public OnOffActor(String id, String label, NodePin output, int initValue, int onValue, Indicator... indicators) {
-        super(id, label, output, initValue, indicators);
+    public OnOffActor(String id, String label, NodePin output, int initValue, int onValue, ActorListener... actorListeners) {
+        super(id, label, output, initValue, actorListeners);
         this.onValue = onValue;
     }
 
@@ -20,7 +20,7 @@ public class OnOffActor extends AbstractActor implements IOnOffActor {
 
         if (setPinValue(output, val, RETRY_COUNT)) {
             value = val;
-            setIndicatorsAndActionData(false, actionData);
+            callListenersAndSetActionData(false, actionData);
             return true;
         }
         return false;

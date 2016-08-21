@@ -5,17 +5,15 @@ public interface Actor {
 
     String getLabel();
 
-    //abstract NodePin[] getOutputPins();
-
     boolean setValue(int val, Object actionData);
 
     Object getLastActionData();
 
-    public void removeActionData();
+    void removeActionData();
 
     int getValue();
 
     void setActionData(Object actionData);
 
-    void setIndicatorsAndActionData(boolean invert, Object actionData);
+    void callListenersAndSetActionData(boolean invert, Object actionData);
 }

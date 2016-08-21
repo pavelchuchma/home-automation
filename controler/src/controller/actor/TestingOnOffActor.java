@@ -3,8 +3,8 @@ package controller.actor;
 import node.NodePin;
 
 public class TestingOnOffActor extends OnOffActor {
-    public TestingOnOffActor(String id, NodePin output, int initValue, int onValue, Indicator... indicators) {
-        super(id, "LABEL", output, initValue, onValue, indicators);
+    public TestingOnOffActor(String id, NodePin output, int initValue, int onValue, ActorListener... actorListeners) {
+        super(id, "LABEL", output, initValue, onValue, actorListeners);
     }
 
     @Override

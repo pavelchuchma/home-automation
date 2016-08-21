@@ -93,7 +93,7 @@ public class PirStatus {
         }
 
         @Override
-        public void setIndicatorsAndActionData(boolean invert, Object actionData) {
+        public void callListenersAndSetActionData(boolean invert, Object actionData) {
         }
     }
 }

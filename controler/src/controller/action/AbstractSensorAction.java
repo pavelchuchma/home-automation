@@ -1,6 +1,5 @@
 package controller.action;
 
-import controller.action.AbstractAction;
 import controller.actor.IOnOffActor;
 import org.apache.log4j.Logger;
 
@@ -92,7 +91,7 @@ public class AbstractSensorAction extends AbstractAction {
 
                 boolean invert = true;
                 while (System.currentTimeMillis() < endTime) {
-                    act.setIndicatorsAndActionData(invert, aData);
+                    act.callListenersAndSetActionData(invert, aData);
                     invert = !invert;
                     long remains = endTime - System.currentTimeMillis();
                     if (remains > 0) {

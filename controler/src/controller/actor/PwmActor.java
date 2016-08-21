@@ -21,8 +21,8 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
     int pwmValue = 0;
 
 
-    public PwmActor(String name, String label, LddBoardDevice.LddNodePin output, double maxLoad, Indicator... indicators) {
-        super(name, label, output, 0, indicators);
+    public PwmActor(String name, String label, LddBoardDevice.LddNodePin output, double maxLoad, ActorListener... actorListeners) {
+        super(name, label, output, 0, actorListeners);
         if (maxLoad < 0 || maxLoad > 1) {
             throw new IllegalArgumentException("Invalid maxLoad value: " + maxLoad);
         }
@@ -44,7 +44,7 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
 
         if (setPwmValue(output, newPwmValue, RETRY_COUNT)) {
             value = pwmPercent;
-            setIndicatorsAndActionData(true, actionData);
+            callListenersAndSetActionData(true, actionData);
             return true;
         }
         return false;
@@ -101,7 +101,7 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
                 Packet response = node.setManualPwmValue(nodePin.getPin(), value);
 
                 // ignore no-response on Barbucha - testing machine
-                if (!InetAddress.getLocalHost().getHostName().toUpperCase().equals("BARBUCHA")) {
+                if (!InetAddress.getLocalHost().getHostName().toUpperCase().equals("AGATA")) {
                     if (response == null) {
                         throw new IOException("No response.");
                     }

@@ -1,6 +1,6 @@
 package controller.device;
 
-import controller.actor.Indicator;
+import controller.actor.ActorListener;
 import node.Node;
 import node.NodePin;
 import node.Pin;
@@ -39,12 +39,12 @@ public class WallSwitch extends ConnectedDevice {
         return pins[5];
     }
 
-    public Indicator getGreenLedIndicator(final boolean isInverted) {
-        return new SwitchIndicator(getGreenLed(), isInverted);
+    public ActorListener getGreenLedIndicator(final SwitchIndicator.Mode mode) {
+        return new SwitchIndicator(getGreenLed(), mode);
     }
 
-    public Indicator getRedLedIndicator(final boolean isInverted) {
-        return new SwitchIndicator(getRedLed(), isInverted);
+    public ActorListener getRedLedIndicator(final SwitchIndicator.Mode mode) {
+        return new SwitchIndicator(getRedLed(), mode);
     }
 
     @Override
