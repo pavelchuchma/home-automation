@@ -1,14 +1,14 @@
 package controller.actor;
 
+import java.io.IOException;
+import java.net.InetAddress;
+
 import app.NodeInfoCollector;
 import controller.device.LddBoardDevice;
 import node.Node;
 import node.NodePin;
 import org.apache.log4j.Logger;
 import packet.Packet;
-
-import java.io.IOException;
-import java.net.InetAddress;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -30,6 +30,12 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
         this.maxPwmValue = (int) (MAX_PWM_VALUE * maxLoad);
     }
 
+    private static void validatePercentageValue(int val) {
+        if (val < 0 || val > 100) {
+            throw new IllegalArgumentException("Invalid PWM percentage value: " + val + "%");
+        }
+    }
+
     @Override
     public synchronized boolean setValue(int pwmPercent, Object actionData) {
         validatePercentageValue(pwmPercent);
@@ -44,7 +50,7 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
 
         if (setPwmValue(output, newPwmValue, RETRY_COUNT)) {
             value = pwmPercent;
-            callListenersAndSetActionData(true, actionData);
+            callListenersAndSetActionData(false, actionData);
             return true;
         }
         return false;
@@ -53,12 +59,6 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
     private void validatePwmValue(int val) {
         if (val < 0 || val > maxPwmValue) {
             throw new IllegalArgumentException("Invalid PWM value: " + val);
-        }
-    }
-
-    private static void validatePercentageValue(int val) {
-        if (val < 0 || val > 100) {
-            throw new IllegalArgumentException("Invalid PWM percentage value: " + val + "%");
         }
     }
 

@@ -1,12 +1,14 @@
 package controller.actor;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import app.NodeInfoCollector;
 import node.Node;
 import node.NodePin;
 import org.apache.log4j.Logger;
 import packet.Packet;
-
-import java.io.IOException;
 
 public abstract class AbstractActor implements Actor {
     protected static final int RETRY_COUNT = 5;
@@ -32,17 +34,6 @@ public abstract class AbstractActor implements Actor {
         for (ActorListener lst : actorListeners) {
             lst.notifyRegistered((IOnOffActor) this);
         }
-    }
-
-    /**
-     * Sets pin to value and waits for response
-     * @param nodePin
-     * @param value  0 or 1
-     * @param retryCount count of retries if no valid response is received
-     * @return true if pin was set
-     */
-    protected boolean setPinValue(NodePin nodePin, int value, int retryCount) {
-        return setPinValueImpl(nodePin, value, retryCount);
     }
 
     public static boolean setPinValueImpl(NodePin nodePin, int value, int retryCount) {
@@ -82,6 +73,16 @@ public abstract class AbstractActor implements Actor {
         return false;
     }
 
+    /**
+     * Sets pin to value and waits for response
+     * @param value  0 or 1
+     * @param retryCount count of retries if no valid response is received
+     * @return true if pin was set
+     */
+    protected boolean setPinValue(NodePin nodePin, int value, int retryCount) {
+        return setPinValueImpl(nodePin, value, retryCount);
+    }
+
     @Override
     public String getId() {
         return id;
@@ -104,7 +105,6 @@ public abstract class AbstractActor implements Actor {
 
     /**
      * @param invert     - used for blinking
-     * @param actionData
      */
     @Override
     public synchronized void callListenersAndSetActionData(boolean invert, Object actionData) {
@@ -126,11 +126,13 @@ public abstract class AbstractActor implements Actor {
     public String toString() {
         StringBuilder val = new StringBuilder(String.format("%s(%s) %s", getClass().getSimpleName(), id, output));
         if (actorListeners != null) {
-            val.append(", actorListeners: ");
-            for (ActorListener i : actorListeners) {
-                val.append(i.getPin());
-                val.append(", ");
+            val.append(", actorListeners: [");
+            List<String> listeners = new ArrayList<>();
+            for (ActorListener actorListener : actorListeners) {
+                listeners.add(actorListener.toString());
             }
+            val.append(String.join(", ", listeners));
+            val.append("]");
         }
         return val.toString();
     }

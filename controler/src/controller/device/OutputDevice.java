@@ -1,6 +1,5 @@
 package controller.device;
 
-import node.CpuFrequency;
 import node.Node;
 import node.NodePin;
 import node.Pin;
