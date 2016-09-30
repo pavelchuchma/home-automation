@@ -44,6 +44,7 @@ var itemCoordinates = [
     ['pwmG2', 45, 210, 0],
     ['pwmG3', 25, 270, 0],
     ['pwmTrs', 550, 595, 0],
+    ['pwmDrv', 130, 1459, 0],
 
     ['lvKuch', 510, 809, 0],
     ['lvOb1', 510, 978, 0],

@@ -314,12 +314,13 @@ public class Main {
         PwmActor kuchyn3PwmActor = addLddLight(lightsActions, "pwmKch3", "Kuchyň 3", lddDevice4.getLdd5(), 0.7); // .72
         PwmActor kuchyn4PwmActor = addLddLight(lightsActions, "pwmKch4", "Kuchyň 4", lddDevice4.getLdd6(), 0.7); // .72
 
+        SwitchIndicator drevnikSwIndicator = new SwitchIndicator(sklepLevyLSw.getGreenLed(), SwitchIndicator.Mode.SIGNAL_ANY_ON);
         LddBoardDevice lddDevice5 = new LddBoardDevice("lddDevice5", lddActorB, 2, .35, .35, 1.0, 1.0, 1.0, 1.0);
         PwmActor garaz3PwmActor = addLddLight(lightsActions, "pwmG3", "Garáž 3", lddDevice5.getLdd1(), 0.35, garazZadveriSwAIndicator, garazGarazSwAIndicator); // .36
         PwmActor koupelnaDoleZrcadlaPwmActor = addLddLight(lightsActions, "pwmKpDZrc", "Koupelna dole zrcadla", lddDevice5.getLdd2(), 0.35, prizemiVzaduKuchynSw2Indicator); // .36
         PwmActor kuchyn1PwmActor = addLddLight(lightsActions, "pwmKch1", "Kuchyň 1", lddDevice5.getLdd3(), 0.7); // .72
         PwmActor obyvak05PwmActor = addLddLight(lightsActions, "pwmOb5", "Obyvák 05", lddDevice5.getLdd4(), 0.7); // .72
-        PwmActor test55 = addLddLight(lightsActions, "pwmTest55", "test55", lddDevice5.getLdd5(), 0.1); // .6
+        PwmActor drevnikPwmActor = addLddLight(lightsActions, "pwmDrv", "Dřevník", lddDevice5.getLdd5(), 0.7, drevnikSwIndicator); // .72
         PwmActor terasaPwmActor = addLddLight(lightsActions, "pwmTrs", "Terasa", lddDevice5.getLdd6(), 1.0, prizemiVzaduKuchynSw2Indicator); // 1.08
 
         LddBoardDevice lddDevice6 = new LddBoardDevice("lddDevice6", lddActorC, 2, .7, .7, .7, .7, .7, .7);
@@ -495,7 +496,7 @@ public class Main {
 
 
         //    - venku Levy
-        configurePwmLights(lst, sklepLevyLSw, WallSwitch.Side.LEFT, 40, terasaPwmActor);
+        configurePwmLights(lst, sklepLevyLSw, WallSwitch.Side.LEFT, 80, drevnikPwmActor);
         configurePwmLights(lst, sklepLevyLSw, WallSwitch.Side.RIGHT, 40, terasaPwmActor);
 
         lst.addActionBinding(new ActionBinding(sklepLevyRSw.getLeftUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepLevy, 1800, 100)}, null));
