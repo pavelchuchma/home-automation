@@ -1,14 +1,15 @@
 package controller.controller;
 
+import java.util.function.IntSupplier;
+
 import controller.actor.IOnOffActor;
 import controller.actor.OnOffActor;
 import node.NodePin;
 import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
 
-import java.util.function.IntSupplier;
-
 public class LouversControllerImpl implements LouversController {
+    static Logger log = Logger.getLogger(LouversControllerImpl.class.getName());
     LouversPosition louversPosition;
     IOnOffActor upActor;
     IOnOffActor downActor;
@@ -16,12 +17,16 @@ public class LouversControllerImpl implements LouversController {
     String name;
     // initialization necessary due to optimized stop()
     Object actionData = new Object();
-    static Logger log = Logger.getLogger(LouversControllerImpl.class.getName());
-
-    class ExternalModificationException extends Exception {
-    }
 
     public LouversControllerImpl(String id, String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs, int maxOffsetMs) {
+        init(id, name, upActor, downActor, downPositionMs, maxOffsetMs);
+    }
+
+    public LouversControllerImpl(String id, String name, NodePin relayUp, NodePin relayDown, int downPositionMs, int maxOffsetMs) {
+
+        IOnOffActor upActor = new OnOffActor(name + " Up", "LABEL", relayUp, 0, 1);
+        IOnOffActor downActor = new OnOffActor(name + " Down", "LABEL", relayDown, 0, 1);
+
         init(id, name, upActor, downActor, downPositionMs, maxOffsetMs);
     }
 
@@ -31,14 +36,6 @@ public class LouversControllerImpl implements LouversController {
         this.upActor = upActor;
         this.downActor = downActor;
         louversPosition = new LouversPosition(downPositionMs, maxOffsetMs, (int) (downPositionMs * 0.08));
-    }
-
-    public LouversControllerImpl(String id, String name, NodePin relayUp, NodePin relayDown, int downPositionMs, int maxOffsetMs) {
-
-        IOnOffActor upActor = new OnOffActor(name + " Up", "LABEL", relayUp, 0, 1);
-        IOnOffActor downActor = new OnOffActor(name + " Down", "LABEL", relayDown, 0, 1);
-
-        init(id, name, upActor, downActor, downPositionMs, maxOffsetMs);
     }
 
     @Override
@@ -100,7 +97,7 @@ public class LouversControllerImpl implements LouversController {
                 int offset = louversPosition.getOffset();
 
                 if (position < 0 || offset < 0) {
-                    log.debug(String.format(" finding position first"));
+                    log.debug(" finding position first");
                     // position unknown, move to closer end
                     if (downPercent > 50) {
                         // move down
@@ -245,5 +242,8 @@ public class LouversControllerImpl implements LouversController {
                 throw new RuntimeException("Failed to stop actor " + actor.toString());
             }
         }
+    }
+
+    class ExternalModificationException extends Exception {
     }
 }

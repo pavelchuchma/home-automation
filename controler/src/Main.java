@@ -253,9 +253,9 @@ public class Main {
                 zaluzieSatna = new LouversControllerImpl("lvSat", "Šatna", rele8Actor3Port1.getRele3(), rele8Actor3Port1.getRele4(), 39000, 1600),
                 zaluziePracovna = new LouversControllerImpl("lvPrc", "Pracovna", rele7ZaluzieBPort3.getRele1(), rele7ZaluzieBPort3.getRele2(), 54000, 1600),
 
-                zaluzieKuchyn = new LouversControllerImpl("lvKuch", "Kuchyně", rele2ZaluzieAPort3.getRele5(), rele2ZaluzieAPort3.getRele6(), 58000, 1600),
+                zaluzieKuchyn = new LouversControllerImpl("lvKuch", "Kuchyň", rele2ZaluzieAPort3.getRele5(), rele2ZaluzieAPort3.getRele6(), 58000, 1600),
                 zaluzieObyvak1 = new LouversControllerImpl("lvOb1", "Obývák 1", rele2ZaluzieAPort3.getRele1(), rele2ZaluzieAPort3.getRele2(), 58000, 1600),
-                zaluzieObyvak2 = new LouversControllerImpl("lvOb2", "Obývák 2", rele8Actor3Port1.getRele5(), rele8Actor3Port1.getRele6(), 58000, 1600),
+                zaluzieObyvak2 = new LouversControllerImpl("lvOb2", "Obývák 2", rele8Actor3Port1.getRele5(), rele8Actor3Port1.getRele6(), 53000, 1600),
                 zaluzieObyvak3 = new LouversControllerImpl("lvOb3", "Obývák 3", rele2ZaluzieAPort3.getRele3(), rele2ZaluzieAPort3.getRele4(), 58000, 1600),
 
                 zaluzieObyvak4 = new LouversControllerImpl("lvOb4", "Obývák 4", rele4ZaluzieAPort2.getRele3(), rele4ZaluzieAPort2.getRele4(), 58000, 1600),
