@@ -1,29 +1,28 @@
 package controller.action;
 
 import controller.actor.Actor;
+import controller.controller.Activity;
 import controller.controller.LouversController;
 import org.apache.log4j.Logger;
 
 
 public class LouversActionGroup {
+    public static final int TUNING_MODE_DURATION = 5000;
+    public static final int LOUVERS_SHADOW_HOLD_TIME = 500;
+    // limit button down time to max 5s to don't panic after switch reboot or reconnect
+    public static final int MAX_BUTTON_DOWN_DURATION = 5000;
     static Logger LOGGER = Logger.getLogger(LouversActionGroup.class.getName());
 
     Action upPressed;
-    Action upReleased;
+    MuteableButtonReleaseLAction upReleased;
     Action downPressed;
-    Action downReleased;
+    MuteableButtonReleaseLAction downReleased;
     LouversController louversController;
 
-    abstract class LAction implements Action {
-        @Override
-        public Actor getActor() {
-            return null;
-        }
+    transient boolean upButtonIsDown;
+    transient boolean downButtonIsDown;
 
-        public String toString() {
-            return String.format("%s@%s(%s)", getClass().getName(), Integer.toHexString(System.identityHashCode(this)), louversController.getLabel());
-        }
-    }
+    private SecondaryMode tuningMode = new SecondaryMode(TUNING_MODE_DURATION);
 
     public LouversActionGroup(LouversController louversController) {
         this.louversController = louversController;
@@ -49,35 +48,84 @@ public class LouversActionGroup {
         return downReleased;
     }
 
-    private class DownReleased extends LAction {
+    private boolean setTuningMode() {
+        if (tuningMode.set(upButtonIsDown && downButtonIsDown)) {
+            downReleased.muteNextAction();
+            upReleased.muteNextAction();
+            return true;
+        }
+        return false;
+    }
+
+    abstract class LAction implements Action {
         @Override
-        public void perform(int buttonDownDuration) {
-            // limit to max 5s to don't panic after switch reboot or reconnect
-            if (buttonDownDuration > 500 && buttonDownDuration < 5000) {
-                louversController.outshine(0);
-            }
+        public Actor getActor() {
+            return null;
+        }
+
+        public String toString() {
+            return String.format("%s@%s(%s)", getClass().getName(), Integer.toHexString(System.identityHashCode(this)), louversController.getLabel());
         }
     }
 
-    private class UpReleased extends LAction {
+    private abstract class MuteableButtonReleaseLAction extends LAction {
+        private boolean muteNextAction;
+
+        public void muteNextAction() {
+            muteNextAction = true;
+        }
+
+        protected abstract void performImpl(int buttonDownDuration);
+
         @Override
         public void perform(int buttonDownDuration) {
+            LOGGER.debug(String.format("%s.perform(mute:%s)", this.getClass().getSimpleName(), muteNextAction));
+            if (muteNextAction) {
+                muteNextAction = false;
+            } else if (buttonDownDuration < MAX_BUTTON_DOWN_DURATION) {
+                // ignore button up after too long time
+                performImpl(buttonDownDuration);
+            }
         }
     }
 
     private class UpPressed extends LAction {
         @Override
         public void perform(int buttonUpDuration) {
-            switch (louversController.getActivity()) {
-                case movingUp:
+            upButtonIsDown = true;
+            if (setTuningMode()) {
+                // mode changed (up & down is pressed, don't do any action
+                if (!tuningMode.isActive()) {
+                    // stop movement because it was started by first button pressed
                     louversController.stop();
-                    break;
-                case movingDown:
+                }
+            }
+
+            if (tuningMode.isActive()) {
+                if (louversController.getActivity() != Activity.movingUp) {
                     louversController.up();
-                    break;
-                case stopped:
+                }
+            }
+        }
+    }
+
+    private class UpReleased extends MuteableButtonReleaseLAction {
+        @Override
+        public void perform(int previousDurationMs) {
+            upButtonIsDown = false;
+            super.perform(previousDurationMs);
+        }
+
+        @Override
+        protected void performImpl(int buttonDownDuration) {
+            if (tuningMode.isActive()) {
+                louversController.stop();
+            } else {
+                if (louversController.getActivity() == Activity.movingUp) {
+                    louversController.stop();
+                } else {
                     louversController.up();
-                    break;
+                }
             }
         }
     }
@@ -85,16 +133,45 @@ public class LouversActionGroup {
     private class DownPressed extends LAction {
         @Override
         public void perform(int buttonDownDuration) {
-            switch (louversController.getActivity()) {
-                case movingUp:
-                    louversController.blind();
-                    break;
-                case movingDown:
+            downButtonIsDown = true;
+            if (setTuningMode()) {
+                // mode changed (up & down is pressed), don't do any action
+                if (!tuningMode.isActive()) {
+                    // stop movement because it was started by first button pressed
                     louversController.stop();
-                    break;
-                case stopped:
+                }
+                return;
+            }
+
+            if (tuningMode.isActive()) {
+                if (louversController.getActivity() != Activity.movingDown) {
                     louversController.blind();
-                    break;
+                }
+            }
+        }
+    }
+
+    private class DownReleased extends MuteableButtonReleaseLAction {
+        @Override
+        public void perform(int previousDurationMs) {
+            downButtonIsDown = false;
+            super.perform(previousDurationMs);
+        }
+
+        @Override
+        protected void performImpl(int buttonDownDuration) {
+            if (tuningMode.isActive()) {
+                louversController.stop();
+            } else {
+                if (buttonDownDuration > LOUVERS_SHADOW_HOLD_TIME) {
+                    louversController.outshine(0);
+                } else {
+                    if (louversController.getActivity() == Activity.movingDown) {
+                        louversController.stop();
+                    } else {
+                        louversController.blind();
+                    }
+                }
             }
         }
     }

@@ -4,6 +4,7 @@
       <w>async</w>
       <w>buidtime</w>
       <w>coords</w>
+      <w>muteable</w>
       <w>prescaler</w>
       <w>uart</w>
     </words>

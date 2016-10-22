@@ -440,7 +440,7 @@ public class Main {
 
 
         // chodba hore - koupelna
-        configurePwmLights(lst, chodbaHoreKoupelnaSw3, WallSwitch.Side.LEFT, 80, zadveriPwmActor, vchodHorePwmActor);
+        configurePwmLights(lst, chodbaHoreKoupelnaSw3, WallSwitch.Side.LEFT, 80, zadveriPwmActor);
         configurePwmLights(lst, chodbaHoreKoupelnaSw3, WallSwitch.Side.RIGHT, 40, chodbaSchodyPwmActor, chodbaUPokojuPwmActor);
         // switch off 4 lights
 //        lst.addActionBinding(new ActionBinding(chodbaHoreKoupelnaSw3.getRightBottomButton(),
