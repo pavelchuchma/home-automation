@@ -3,6 +3,7 @@ package controller.action;
 import controller.actor.Actor;
 import controller.controller.Activity;
 import controller.controller.LouversController;
+import node.NodePin;
 import org.apache.log4j.Logger;
 
 
@@ -22,14 +23,15 @@ public class LouversActionGroup {
     transient boolean upButtonIsDown;
     transient boolean downButtonIsDown;
 
-    private SecondaryMode tuningMode = new SecondaryMode(TUNING_MODE_DURATION);
+    private SecondaryMode tuningMode;
 
-    public LouversActionGroup(LouversController louversController) {
+    public LouversActionGroup(LouversController louversController, NodePin indicatorPin) {
         this.louversController = louversController;
         upPressed = new UpPressed();
         upReleased = new UpReleased();
         downPressed = new DownPressed();
         downReleased = new DownReleased();
+        tuningMode = new SecondaryMode(TUNING_MODE_DURATION, indicatorPin);
     }
 
     public Action getUpButtonDownAction() {

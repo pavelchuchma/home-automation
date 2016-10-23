@@ -677,7 +677,7 @@ public class Main {
         Action[] downButtonDownAction = new Action[louversControllers.length];
         Action[] downButtonUpAction = new Action[louversControllers.length];
         for (int i = 0; i < louversControllers.length; i++) {
-            LouversActionGroup group = new LouversActionGroup(louversControllers[i]);
+            LouversActionGroup group = new LouversActionGroup(louversControllers[i], wallSwitch.getGreenLed());
             upButtonDownAction[i] = group.getUpButtonDownAction();
             upButtonUpAction[i] = group.getUpButtonUpAction();
             downButtonDownAction[i] = group.getDownButtonDownAction();

@@ -2,17 +2,22 @@ package controller.action;
 
 import java.util.Date;
 
+import controller.actor.AbstractActor;
+import node.NodePin;
 import org.apache.log4j.Logger;
 
 public class SecondaryMode {
     static Logger LOGGER = Logger.getLogger(LouversActionGroup.class.getName());
     // in ms
     private final int timeout;
+    NodePin indicatorPin;
+    Thread timeoutThread;
     private boolean active;
     private long lastAccessTime = 0;
 
-    public SecondaryMode(int timeout) {
+    public SecondaryMode(int timeout, NodePin indicatorPin) {
         this.timeout = timeout;
+        this.indicatorPin = indicatorPin;
     }
 
     /**
@@ -25,17 +30,50 @@ public class SecondaryMode {
             isActive();
             if (active) {
                 // second set of positive value turns state off
-                active = false;
-                lastAccessTime = 0;
-                LOGGER.debug("Deactivating SecondaryMode");
+                deactivate();
             } else {
-                active = true;
-                lastAccessTime = now();
-                LOGGER.debug("Activating SecondaryMode");
+                activate();
             }
             return true;
         }
         return false;
+    }
+
+    private synchronized void activate() {
+        active = true;
+        lastAccessTime = now();
+        setIndicatorValue(true);
+        // create guard thread for indicator
+        timeoutThread = new Thread(() -> {
+            long now;
+            while ((now = now()) < lastAccessTime + timeout) {
+                try {
+                    Thread.sleep(lastAccessTime + timeout - now);
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+            deactivate();
+        });
+        timeoutThread.start();
+        LOGGER.debug("SecondaryMode activated");
+    }
+
+    private void setIndicatorValue(boolean value) {
+        if (indicatorPin != null) {
+            int resultValue = (value) ? 0 : 1;
+            AbstractActor.setPinValueImpl(indicatorPin, resultValue, 2);
+        }
+    }
+
+    private synchronized void deactivate() {
+        active = false;
+        lastAccessTime = 0;
+        LOGGER.debug("SecondaryMode deactivated");
+        setIndicatorValue(false);
+        if (timeoutThread != null) {
+            timeoutThread.interrupt();
+        }
     }
 
     public boolean isActive() {
