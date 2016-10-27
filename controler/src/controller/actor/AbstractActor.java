@@ -32,7 +32,7 @@ public abstract class AbstractActor implements Actor {
         this.actorListeners = actorListeners;
 
         for (ActorListener lst : actorListeners) {
-            lst.notifyRegistered((IOnOffActor) this);
+            lst.addSource((IOnOffActor) this);
         }
     }
 

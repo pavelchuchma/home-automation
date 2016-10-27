@@ -1,6 +1,6 @@
 package controller.actor;
 
-public interface IOnOffActor extends Actor{
+public interface IOnOffActor extends Actor, IReadableOnOff {
     default boolean switchOn(Object actionData) {
         return switchOn(100, actionData);
     }
@@ -8,6 +8,4 @@ public interface IOnOffActor extends Actor{
     boolean switchOn(int percent, Object actionData);
 
     boolean switchOff(Object actionData);
-
-    boolean isOn();
 }

@@ -6,10 +6,9 @@ import node.NodePin;
 import node.Pin;
 
 public class WallSwitch extends ConnectedDevice {
-    public enum Side {
-        LEFT,
-        RIGHT
-    }
+
+    private SwitchIndicator redIndicator;
+    private SwitchIndicator greenIndicator;
 
     public WallSwitch(String id, Node node, int connectorPosition) {
         super(id, node, connectorPosition, new String[]{"btn1", "btn2", "btn3", "btn4", "greenLed", "redLed"});
@@ -40,11 +39,21 @@ public class WallSwitch extends ConnectedDevice {
     }
 
     public ActorListener getGreenLedIndicator(final SwitchIndicator.Mode mode) {
-        return new SwitchIndicator(getGreenLed(), mode);
+        if (greenIndicator == null) {
+            greenIndicator = new SwitchIndicator(getGreenLed(), mode);
+        } else if (greenIndicator.mode != mode) {
+            throw new IllegalArgumentException("Getting indicator in different mode than before");
+        }
+        return greenIndicator;
     }
 
     public ActorListener getRedLedIndicator(final SwitchIndicator.Mode mode) {
-        return new SwitchIndicator(getRedLed(), mode);
+        if (redIndicator == null) {
+            redIndicator = new SwitchIndicator(getRedLed(), mode);
+        } else if (redIndicator.mode != mode) {
+            throw new IllegalArgumentException("Getting indicator in different mode than before");
+        }
+        return redIndicator;
     }
 
     @Override
@@ -61,5 +70,10 @@ public class WallSwitch extends ConnectedDevice {
     public int getInitialOutputValues() {
         //TODO: initialize in accord with assigned indicators
         return createMask(new Pin[]{getGreenLed().getPin(), getRedLed().getPin()});
+    }
+
+    public enum Side {
+        LEFT,
+        RIGHT
     }
 }

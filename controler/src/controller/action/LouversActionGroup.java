@@ -1,9 +1,9 @@
 package controller.action;
 
 import controller.actor.Actor;
+import controller.actor.ActorListener;
 import controller.controller.Activity;
 import controller.controller.LouversController;
-import node.NodePin;
 import org.apache.log4j.Logger;
 
 
@@ -25,13 +25,13 @@ public class LouversActionGroup {
 
     private SecondaryMode tuningMode;
 
-    public LouversActionGroup(LouversController louversController, NodePin indicatorPin) {
+    public LouversActionGroup(LouversController louversController, ActorListener secondaryModeIndicator) {
         this.louversController = louversController;
         upPressed = new UpPressed();
         upReleased = new UpReleased();
         downPressed = new DownPressed();
         downReleased = new DownReleased();
-        tuningMode = new SecondaryMode(TUNING_MODE_DURATION, indicatorPin);
+        tuningMode = new SecondaryMode(TUNING_MODE_DURATION, secondaryModeIndicator);
     }
 
     public Action getUpButtonDownAction() {
@@ -50,13 +50,15 @@ public class LouversActionGroup {
         return downReleased;
     }
 
-    private boolean setTuningMode() {
-        if (tuningMode.set(upButtonIsDown && downButtonIsDown)) {
-            downReleased.muteNextAction();
-            upReleased.muteNextAction();
-            return true;
+    private boolean switchTuningModeState() {
+        boolean active = tuningMode.switchState();
+        downReleased.muteNextAction();
+        upReleased.muteNextAction();
+        if (!active) {
+            // stop movement because it was started by first button pressed when tuning mode was active
+            louversController.stop();
         }
-        return false;
+        return active;
     }
 
     abstract class LAction implements Action {
@@ -95,15 +97,9 @@ public class LouversActionGroup {
         @Override
         public void perform(int buttonUpDuration) {
             upButtonIsDown = true;
-            if (setTuningMode()) {
-                // mode changed (up & down is pressed, don't do any action
-                if (!tuningMode.isActive()) {
-                    // stop movement because it was started by first button pressed
-                    louversController.stop();
-                }
-            }
-
-            if (tuningMode.isActive()) {
+            if (downButtonIsDown) {
+                switchTuningModeState();
+            } else if (tuningMode.isActiveAndTouch()) {
                 if (louversController.getActivity() != Activity.movingUp) {
                     louversController.up();
                 }
@@ -120,7 +116,7 @@ public class LouversActionGroup {
 
         @Override
         protected void performImpl(int buttonDownDuration) {
-            if (tuningMode.isActive()) {
+            if (tuningMode.isActiveAndTouch()) {
                 louversController.stop();
             } else {
                 if (louversController.getActivity() == Activity.movingUp) {
@@ -136,16 +132,9 @@ public class LouversActionGroup {
         @Override
         public void perform(int buttonDownDuration) {
             downButtonIsDown = true;
-            if (setTuningMode()) {
-                // mode changed (up & down is pressed), don't do any action
-                if (!tuningMode.isActive()) {
-                    // stop movement because it was started by first button pressed
-                    louversController.stop();
-                }
-                return;
-            }
-
-            if (tuningMode.isActive()) {
+            if (upButtonIsDown) {
+                switchTuningModeState();
+            } else if (tuningMode.isActiveAndTouch()) {
                 if (louversController.getActivity() != Activity.movingDown) {
                     louversController.blind();
                 }
@@ -162,7 +151,7 @@ public class LouversActionGroup {
 
         @Override
         protected void performImpl(int buttonDownDuration) {
-            if (tuningMode.isActive()) {
+            if (tuningMode.isActiveAndTouch()) {
                 louversController.stop();
             } else {
                 if (buttonDownDuration > LOUVERS_SHADOW_HOLD_TIME) {

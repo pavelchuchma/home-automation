@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import controller.actor.AbstractActor;
 import controller.actor.ActorListener;
-import controller.actor.IOnOffActor;
+import controller.actor.IReadableOnOff;
 import node.NodePin;
 import org.apache.log4j.Logger;
 
@@ -15,7 +15,7 @@ public class SwitchIndicator implements ActorListener {
 
     NodePin pin;
     //todo: Build on Actor after removal onValue from Actor (1 must stand for ON in all cases)
-    ArrayList<IOnOffActor> actors = new ArrayList<>();
+    ArrayList<IReadableOnOff> sources = new ArrayList<>();
     private int lastSetValue = -1;
 
     public SwitchIndicator(NodePin pin, Mode mode) {
@@ -24,10 +24,10 @@ public class SwitchIndicator implements ActorListener {
     }
 
     @Override
-    public void onAction(IOnOffActor actor, boolean invert) {
+    public void onAction(IReadableOnOff source, boolean invert) {
 //        log.debug(pin + ".onAction(" + actor + ", invert: " + invert + ", mode: " + mode + ")");
-        if (!actors.contains(actor)) {
-            throw new IllegalArgumentException("Cannot call onAction() with unregistered actor");
+        if (!sources.contains(source)) {
+            throw new IllegalArgumentException("Cannot call onAction() with unregistered source");
         }
 
         boolean val = false;
@@ -42,8 +42,8 @@ public class SwitchIndicator implements ActorListener {
 
 //        log.debug("  " + pin + " val: " + val + ", lastSetValue: " + lastSetValue);
 
-        if (actors.size() == 1) {
-            // blink only if bound to single actor
+        if (sources.size() == 1) {
+            // blink only if bound to single source
             val ^= invert;
         }
         int resultValue = (val) ? 0 : 1;
@@ -56,7 +56,7 @@ public class SwitchIndicator implements ActorListener {
     }
 
     private boolean isAnyOn() {
-        for (IOnOffActor a : actors) {
+        for (IReadableOnOff a : sources) {
             if (a.isOn()) {
                 return true;
             }
@@ -65,16 +65,11 @@ public class SwitchIndicator implements ActorListener {
     }
 
     @Override
-    public NodePin getPin() {
-        return pin;
-    }
-
-    @Override
-    public void notifyRegistered(IOnOffActor actor) {
-        if (actors.contains(actor)) {
-            throw new IllegalArgumentException("Actor " + actor.toString() + " is already registered");
+    public void addSource(IReadableOnOff source) {
+        if (sources.contains(source)) {
+            throw new IllegalArgumentException("Source " + source.toString() + " is already registered");
         }
-        actors.add(actor);
+        sources.add(source);
     }
 
     public enum Mode {

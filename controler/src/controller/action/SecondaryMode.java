@@ -2,47 +2,45 @@ package controller.action;
 
 import java.util.Date;
 
-import controller.actor.AbstractActor;
-import node.NodePin;
+import controller.actor.ActorListener;
+import controller.actor.IReadableOnOff;
 import org.apache.log4j.Logger;
 
 public class SecondaryMode {
     static Logger LOGGER = Logger.getLogger(LouversActionGroup.class.getName());
     // in ms
     private final int timeout;
-    NodePin indicatorPin;
+    private final ActorListener indicator;
+    private final IReadableOnOff indicatorSource;
     Thread timeoutThread;
     private boolean active;
     private long lastAccessTime = 0;
 
-    public SecondaryMode(int timeout, NodePin indicatorPin) {
+    public SecondaryMode(int timeout, ActorListener indicator) {
         this.timeout = timeout;
-        this.indicatorPin = indicatorPin;
+        indicatorSource = () -> isActive(now());
+        this.indicator = indicator;
+        this.indicator.addSource(indicatorSource);
     }
 
     /**
-     * @param value condition value
-     * @return True if mode was changed
+     * @return Activity state after switch
      */
-    public boolean set(boolean value) {
-        if (value) {
-            // call isActive() to apply timeout if occurred
-            isActive();
-            if (active) {
-                // second set of positive value turns state off
-                deactivate();
-            } else {
-                activate();
-            }
-            return true;
+    public boolean switchState() {
+        // call isActive() to apply timeout if occurred
+        isActiveAndTouch();
+        if (active) {
+            deactivate();
+        } else {
+            activate();
         }
-        return false;
+        return active;
     }
 
     private synchronized void activate() {
         active = true;
         lastAccessTime = now();
-        setIndicatorValue(true);
+        indicator.onAction(indicatorSource, false);
         // create guard thread for indicator
         timeoutThread = new Thread(() -> {
             long now;
@@ -59,33 +57,30 @@ public class SecondaryMode {
         LOGGER.debug("SecondaryMode activated");
     }
 
-    private void setIndicatorValue(boolean value) {
-        if (indicatorPin != null) {
-            int resultValue = (value) ? 0 : 1;
-            AbstractActor.setPinValueImpl(indicatorPin, resultValue, 2);
-        }
-    }
-
     private synchronized void deactivate() {
         active = false;
         lastAccessTime = 0;
         LOGGER.debug("SecondaryMode deactivated");
-        setIndicatorValue(false);
+        indicator.onAction(indicatorSource, false);
         if (timeoutThread != null) {
             timeoutThread.interrupt();
         }
     }
 
-    public boolean isActive() {
+    public boolean isActiveAndTouch() {
         long now = now();
         LOGGER.debug("isActive(" + now + ")");
-        if (active && (lastAccessTime + timeout > now)) {
+        if (isActive(now)) {
             lastAccessTime = now;
         } else {
             active = false;
         }
         LOGGER.debug("  isActive() returns " + active);
         return active;
+    }
+
+    private boolean isActive(long now) {
+        return active && (lastAccessTime + timeout > now);
     }
 
     private long now() {
