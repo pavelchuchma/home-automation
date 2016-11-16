@@ -3,13 +3,14 @@ var toolsCtx;
 var e = '';
 
 var currentFloor = 0;
-var floorIds = ['1stFloor', '2ndFloor']
+var floorIds = ['1stFloor', '2ndFloor'];
 
 const toolBoxBackground = 'lightgray';
 const toolLightPlusValue = 66;
 
 var itemCoordinates = [
     //id, x, y, floor
+    ['pwmKuLi', 400, 650, 0],
     ['pwmKch1', 410, 759, 0],
     ['pwmKch2', 382, 708, 0],
     ['pwmKch3', 331, 733, 0],
@@ -22,7 +23,7 @@ var itemCoordinates = [
     ['pwmOb2', 337, 1303, 0],
     ['pwmOb3', 402, 1269, 0],
     ['pwmOb4', 380, 1199, 0],
-    ['pwmOb5', 427, 1112, 0],
+    //['pwmOb5', 427, 1112, 0],
     ['pwmOb6', 390, 1037, 0],
     ['pwmOb7', 260, 1340, 0],
     ['pwmOb8', 236, 1269, 0],
