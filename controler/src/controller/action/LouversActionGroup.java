@@ -84,12 +84,16 @@ public class LouversActionGroup {
         @Override
         public void perform(int buttonDownDuration) {
             LOGGER.debug(String.format("%s.perform(mute:%s)", this.getClass().getSimpleName(), muteNextAction));
+            if (buttonDownDuration < 0 || buttonDownDuration > MAX_BUTTON_DOWN_DURATION) {
+                return;
+            }
             if (muteNextAction) {
                 muteNextAction = false;
-            } else if (buttonDownDuration < MAX_BUTTON_DOWN_DURATION) {
-                // ignore button up after too long time
-                performImpl(buttonDownDuration);
+                return;
             }
+            // ignore button up after too long time
+            performImpl(buttonDownDuration);
+
         }
     }
 
