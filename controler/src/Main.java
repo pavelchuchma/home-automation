@@ -212,7 +212,7 @@ public class Main {
         SwitchListener lst = nodeInfoCollector.getSwitchListener();
 
         Action invertJidelna = new InvertAction(svJidelna);
-        lst.addActionBinding(new ActionBinding(schodyDoleR3Sw.getRightUpperButton(), new Action[]{invertJidelna}, null));
+        lst.addActionBinding(new ActionBinding(schodyDoleR3Sw.getRightUpperButton(), invertJidelna, null));
 
         // zaluzie
         RelayBoardDevice rele3ZaluzieAPort1 = new RelayBoardDevice("rele3ZaluzieAPort1", zaluzieA, 1);
@@ -286,7 +286,7 @@ public class Main {
         // PWM
         ArrayList<Action> lightsActions = new ArrayList<>();
         LddBoardDevice lddDevice1 = new LddBoardDevice("lddDevice1", lddActorA, 1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
-        PwmActor marekPwmActor = addLddLight(lightsActions, "pwmMarek", "Marek", lddDevice1.getLdd1(), 0.95, new SwitchIndicator(marekSwA1.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF)); //.96
+        PwmActor marekPwmActor = addLddLight(lightsActions, "pwmMarek", "Marek", lddDevice1.getLdd1(), 0.95, marekSwA2.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), marekSwA2.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON)); //.96
         PwmActor pataPwmActor = addLddLight(lightsActions, "pwmPata", "Paťa", lddDevice1.getLdd2(), 0.95, krystofIndicator, pataIndicator); //.96
         PwmActor krystofPwmActor = addLddLight(lightsActions, "pwmKry", "Kryštof", lddDevice1.getLdd3(), 0.95, krystofIndicator, pataIndicator); //.96
         PwmActor koupelnaPwmActor = addLddLight(lightsActions, "pwmKpH", "Koupelna", lddDevice1.getLdd4(), 1.0, schodyDoleR3Sw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON), koupelnaHoreSw1.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON), koupelnaHoreSw1.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // 1.08
@@ -318,13 +318,13 @@ public class Main {
         PwmActor obyvak11PwmActor = addLddLight(lightsActions, "pwmOb11", "Obyvák 11", lddDevice4.getLdd3(), 0.7); // .72
         PwmActor kuchyn2PwmActor = addLddLight(lightsActions, "pwmKch2", "Kuchyň 2", lddDevice4.getLdd4(), 0.7, new SwitchIndicator(kuchynSw3.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // .72
         PwmActor kuchyn3PwmActor = addLddLight(lightsActions, "pwmKch3", "Kuchyň 3", lddDevice4.getLdd5(), 0.7); // .72
-        PwmActor kuchyn4PwmActor = addLddLight(lightsActions, "pwmKch4", "Kuchyň 4", lddDevice4.getLdd6(), 0.7); // .72
+        PwmActor kuchyn1PwmActor = addLddLight(lightsActions, "pwmKch1", "Kuchyň 1", lddDevice4.getLdd6(), 0.7); // .72
 
         ActorListener drevnikSwIndicator = sklepLevyLSw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON);
         LddBoardDevice lddDevice5 = new LddBoardDevice("lddDevice5", lddActorB, 2, .35, .35, 1.0, 1.0, 1.0, 1.0);
         PwmActor garaz3PwmActor = addLddLight(lightsActions, "pwmG3", "Garáž 3", lddDevice5.getLdd1(), 0.35, garazZadveriSwAIndicator, garazGarazSwAIndicator); // .36
         PwmActor koupelnaDoleZrcadlaPwmActor = addLddLight(lightsActions, "pwmKpDZrc", "Koupelna dole zrcadla", lddDevice5.getLdd2(), 0.35, prizemiVzaduKuchynSw2Indicator); // .36
-        PwmActor kuchyn1PwmActor = addLddLight(lightsActions, "pwmKch1", "Kuchyň 1", lddDevice5.getLdd3(), 0.7); // .72
+        PwmActor pudaPwmActor = addLddLight(lightsActions, "pwmPuda", "Půda", lddDevice5.getLdd3(), 0.96); // .96
         PwmActor kuchynLinkaPwmActor = addLddLight(lightsActions, "pwmKuLi", "Kuchyňská linka", lddDevice5.getLdd4(), 1.0); // .72
 //        PwmActor obyvak05PwmActor = addLddLight(lightsActions, "pwmOb5", "Obyvák 05", lddDevice5.getLdd4(), 0.7); // .72
         PwmActor drevnikPwmActor = addLddLight(lightsActions, "pwmDrv", "Dřevník", lddDevice5.getLdd5(), 0.7, drevnikSwIndicator); // .72
@@ -358,7 +358,7 @@ public class Main {
         // koupelna
         configurePwmLights(lst, koupelnaHoreSw1, WallSwitch.Side.LEFT, 50, koupelnaZrcadlaPwmActor);
         configurePwmLights(lst, koupelnaHoreSw1, WallSwitch.Side.RIGHT, 25, koupelnaPwmActor);
-        lst.addActionBinding(new ActionBinding(schodyDoleR3Sw.getRightBottomButton(), new Action[]{new InvertAction(koupelnaPwmActor, 30)}, null));
+        lst.addActionBinding(new ActionBinding(schodyDoleR3Sw.getRightBottomButton(), new InvertAction(koupelnaPwmActor, 30), null));
 
         configureLouvers(lst, koupelnaHoreSw2, WallSwitch.Side.LEFT, zaluzieKoupelna);
         lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900, 100), new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900, 100)}, null));
@@ -377,6 +377,21 @@ public class Main {
         configureLouvers(lst, schodyDoleR2Sw, WallSwitch.Side.RIGHT, zaluzieObyvak4);
         configureLouvers(lst, schodyDoleR3Sw, WallSwitch.Side.LEFT, zaluzieObyvak5, zaluzieObyvak6);
 
+        // obyvak u schodu
+        Action[] allLightsFromKitchenToLivingRoomOff = createSwitchOffActions(kuchyn1PwmActor, kuchyn2PwmActor, kuchyn3PwmActor, /*kuchyn4PwmActor,*/ kuchyn5PwmActor,
+                jidelna1PwmActor, jidelna2PwmActor, jidelna3PwmActor, svJidelna,
+                obyvak01PwmActor, obyvak02PwmActor, obyvak03PwmActor, obyvak04PwmActor, /*obyvak05PwmActor,*/
+                obyvak06PwmActor, obyvak07PwmActor, obyvak06PwmActor, obyvak09PwmActor, obyvak10PwmActor,
+                obyvak11PwmActor, obyvak12PwmActor, obyvak13PwmActor, kuchynLinkaPwmActor);
+        lst.addActionBinding(new ActionBinding(schodyDoleL1Sw.getLeftBottomButton(),
+                allLightsFromKitchenToLivingRoomOff, null));
+
+        SwitchOnSensorAction bzucakAction = new SwitchOnSensorAction(bzucakDvere, 3, 100);
+        lst.addActionBinding(new ActionBinding(schodyDoleL1Sw.getRightUpperButton(), bzucakAction, null));
+
+        // gauc
+        lst.addActionBinding(new ActionBinding(obyvakGaucLSw.getLeftBottomButton(), allLightsFromKitchenToLivingRoomOff, null));
+
         // wc
         configurePwmLights(lst, wcSw, WallSwitch.Side.LEFT, 60, wcPwmActor);
         configurePwmLights(lst, wcSw, WallSwitch.Side.RIGHT, 60, wcPwmActor);
@@ -391,8 +406,8 @@ public class Main {
 
         SwitchOnSensorAction ovladacGarazAction = new SwitchOnSensorAction(ovladacGaraz, 1, 100);
         InvertActionWithTimer stomekAction = new InvertActionWithTimer(zasStromek, 12600);
-        lst.addActionBinding(new ActionBinding(zadveriSwA1.getRightUpperButton(), new Action[]{ovladacGarazAction}, null));
-        lst.addActionBinding(new ActionBinding(zadveriSwA1.getRightBottomButton(), new Action[]{stomekAction}, null));
+        lst.addActionBinding(new ActionBinding(zadveriSwA1.getRightUpperButton(), ovladacGarazAction, null));
+        lst.addActionBinding(new ActionBinding(zadveriSwA1.getRightBottomButton(), stomekAction, null));
 
         configurePwmLights(lst, zadveriSwA2, WallSwitch.Side.LEFT, 80, garaz1PwmActor, garaz2PwmActor);
         configurePwmLights(lst, zadveriSwA2, WallSwitch.Side.RIGHT, 100, garaz3PwmActor);
@@ -401,26 +416,26 @@ public class Main {
 
         // zadveri venku
         SwitchOnSensorAction zvonekAction = new SwitchOnSensorAction(obyvakZasLZvonek, 5, 100);
-        lst.addActionBinding(new ActionBinding(zvonekLevySw.getLeftUpperButton(), new Action[]{zvonekAction}, null));
-        lst.addActionBinding(new ActionBinding(zvonekLevySw.getRightUpperButton(), new Action[]{zvonekAction}, null));
-        lst.addActionBinding(new ActionBinding(zvonekLevySw.getLeftBottomButton(), new Action[]{zvonekAction}, null));
-        lst.addActionBinding(new ActionBinding(zvonekLevySw.getRightBottomButton(), new Action[]{zvonekAction}, null));
-        lst.addActionBinding(new ActionBinding(zvonekPravySw.getLeftUpperButton(), new Action[]{zvonekAction}, null));
-        lst.addActionBinding(new ActionBinding(zvonekPravySw.getRightUpperButton(), new Action[]{zvonekAction}, null));
-        lst.addActionBinding(new ActionBinding(zvonekPravySw.getLeftBottomButton(), new Action[]{zvonekAction}, null));
-        lst.addActionBinding(new ActionBinding(zvonekPravySw.getRightBottomButton(), new Action[]{zvonekAction}, null));
+        lst.addActionBinding(new ActionBinding(zvonekLevySw.getLeftUpperButton(), zvonekAction, null));
+        lst.addActionBinding(new ActionBinding(zvonekLevySw.getRightUpperButton(), zvonekAction, null));
+        lst.addActionBinding(new ActionBinding(zvonekLevySw.getLeftBottomButton(), zvonekAction, null));
+        lst.addActionBinding(new ActionBinding(zvonekLevySw.getRightBottomButton(), zvonekAction, null));
+        lst.addActionBinding(new ActionBinding(zvonekPravySw.getLeftUpperButton(), zvonekAction, null));
+        lst.addActionBinding(new ActionBinding(zvonekPravySw.getRightUpperButton(), zvonekAction, null));
+        lst.addActionBinding(new ActionBinding(zvonekPravySw.getLeftBottomButton(), zvonekAction, null));
+        lst.addActionBinding(new ActionBinding(zvonekPravySw.getRightBottomButton(), zvonekAction, null));
 
         // garaz
         configurePwmLights(lst, garazASw1, WallSwitch.Side.LEFT, 80, garaz1PwmActor, garaz2PwmActor);
         configurePwmLights(lst, garazASw1, WallSwitch.Side.RIGHT, 100, garaz3PwmActor);
-        lst.addActionBinding(new ActionBinding(garazASw2.getLeftUpperButton(), new Action[]{ovladacGarazAction}, null));
-        lst.addActionBinding(new ActionBinding(garazASw2.getLeftBottomButton(), new Action[]{ovladacGarazAction}, null));
+        lst.addActionBinding(new ActionBinding(garazASw2.getLeftUpperButton(), ovladacGarazAction, null));
+        lst.addActionBinding(new ActionBinding(garazASw2.getLeftBottomButton(), ovladacGarazAction, null));
 
         configurePwmLights(lst, garazBSwL, WallSwitch.Side.LEFT, 100, garaz3PwmActor);
         configurePwmLights(lst, garazBSwL, WallSwitch.Side.RIGHT, 80, garaz2PwmActor);
         configurePwmLights(lst, garazBSwR, WallSwitch.Side.LEFT, 80, garaz1PwmActor);
-        lst.addActionBinding(new ActionBinding(garazBSwR.getRightUpperButton(), new Action[]{ovladacGarazAction}, null));
-        lst.addActionBinding(new ActionBinding(garazBSwR.getRightBottomButton(), new Action[]{ovladacGarazAction}, null));
+        lst.addActionBinding(new ActionBinding(garazBSwR.getRightUpperButton(), ovladacGarazAction, null));
+        lst.addActionBinding(new ActionBinding(garazBSwR.getRightBottomButton(), ovladacGarazAction, null));
 
         // Krystof + Pata
         configureLouvers(lst, krystofSwA1, WallSwitch.Side.LEFT, zaluziePata);
@@ -497,27 +512,27 @@ public class Main {
 
         // sklepy
         //    - zadveri
-        lst.addActionBinding(new ActionBinding(zadveriDoleVchodRSw.getLeftUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepLevy, 1800, 100)}, null));
-        lst.addActionBinding(new ActionBinding(zadveriDoleVchodRSw.getLeftBottomButton(), new Action[]{new SwitchOffAction(svSklepLevy)}, null));
+        lst.addActionBinding(new ActionBinding(zadveriDoleVchodRSw.getLeftUpperButton(), new SwitchOnSensorAction(svSklepLevy, 1800, 100), null));
+        lst.addActionBinding(new ActionBinding(zadveriDoleVchodRSw.getLeftBottomButton(), new SwitchOffAction(svSklepLevy), null));
 
-        lst.addActionBinding(new ActionBinding(zadveriDoleVchodRSw.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepPravy, 1800, 100)}, null));
-        lst.addActionBinding(new ActionBinding(zadveriDoleVchodRSw.getRightBottomButton(), new Action[]{new SwitchOffAction(svSklepPravy)}, null));
+        lst.addActionBinding(new ActionBinding(zadveriDoleVchodRSw.getRightUpperButton(), new SwitchOnSensorAction(svSklepPravy, 1800, 100), null));
+        lst.addActionBinding(new ActionBinding(zadveriDoleVchodRSw.getRightBottomButton(), new SwitchOffAction(svSklepPravy), null));
 
 
         //    - venku Levy
         configurePwmLights(lst, sklepLevyLSw, WallSwitch.Side.LEFT, 80, drevnikPwmActor);
         configurePwmLights(lst, sklepLevyLSw, WallSwitch.Side.RIGHT, 40, terasaPwmActor);
 
-        lst.addActionBinding(new ActionBinding(sklepLevyRSw.getLeftUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepLevy, 1800, 100)}, null));
-        lst.addActionBinding(new ActionBinding(sklepLevyRSw.getLeftBottomButton(), new Action[]{new SwitchOffAction(svSklepLevy)}, null));
-        lst.addActionBinding(new ActionBinding(sklepLevyRSw.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepLevy, 1800, 100)}, null));
-        lst.addActionBinding(new ActionBinding(sklepLevyRSw.getRightBottomButton(), new Action[]{new SwitchOffAction(svSklepLevy)}, null));
+        lst.addActionBinding(new ActionBinding(sklepLevyRSw.getLeftUpperButton(), new SwitchOnSensorAction(svSklepLevy, 1800, 100), null));
+        lst.addActionBinding(new ActionBinding(sklepLevyRSw.getLeftBottomButton(), new SwitchOffAction(svSklepLevy), null));
+        lst.addActionBinding(new ActionBinding(sklepLevyRSw.getRightUpperButton(), new SwitchOnSensorAction(svSklepLevy, 1800, 100), null));
+        lst.addActionBinding(new ActionBinding(sklepLevyRSw.getRightBottomButton(), new SwitchOffAction(svSklepLevy), null));
 
         //    - venku pravy
-        lst.addActionBinding(new ActionBinding(sklepPravySw.getLeftUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepPravy, 1800, 100)}, null));
-        lst.addActionBinding(new ActionBinding(sklepPravySw.getLeftBottomButton(), new Action[]{new SwitchOffAction(svSklepPravy)}, null));
-        lst.addActionBinding(new ActionBinding(sklepPravySw.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(svSklepPravy, 1800, 100)}, null));
-        lst.addActionBinding(new ActionBinding(sklepPravySw.getRightBottomButton(), new Action[]{new SwitchOffAction(svSklepPravy)}, null));
+        lst.addActionBinding(new ActionBinding(sklepPravySw.getLeftUpperButton(), new SwitchOnSensorAction(svSklepPravy, 1800, 100), null));
+        lst.addActionBinding(new ActionBinding(sklepPravySw.getLeftBottomButton(), new SwitchOffAction(svSklepPravy), null));
+        lst.addActionBinding(new ActionBinding(sklepPravySw.getRightUpperButton(), new SwitchOnSensorAction(svSklepPravy, 1800, 100), null));
+        lst.addActionBinding(new ActionBinding(sklepPravySw.getRightBottomButton(), new SwitchOffAction(svSklepPravy), null));
 
 
         // zadveri dole
@@ -531,8 +546,8 @@ public class Main {
         configurePwmLights(lst, zadveriDoleVchodLSw, WallSwitch.Side.RIGHT, 40, terasaPwmActor);
 
         // chodba dole
-        lst.addActionBinding(new ActionBinding(chodbaDoleSpajzSw3.getLeftUpperButton(), new Action[]{new SwitchOnSensorAction(svSpajza, 1800, 100, AbstractSensorAction.Priority.MEDIUM)}, null));
-        lst.addActionBinding(new ActionBinding(chodbaDoleSpajzSw3.getLeftBottomButton(), new Action[]{new SwitchOffAction(svSpajza)}, null));
+        lst.addActionBinding(new ActionBinding(chodbaDoleSpajzSw3.getLeftUpperButton(), new SwitchOnSensorAction(svSpajza, 1800, 100, AbstractSensorAction.Priority.MEDIUM), null));
+        lst.addActionBinding(new ActionBinding(chodbaDoleSpajzSw3.getLeftBottomButton(), new SwitchOffAction(svSpajza), null));
         configurePwmLights(lst, chodbaDoleSpajzSw3, WallSwitch.Side.RIGHT, 40, chodbaDolePwmActor);
 
         // pradelna
@@ -551,19 +566,20 @@ public class Main {
 
         // kuchyn
         NodePin bottomButton = getBottomButton(kuchynSw1, WallSwitch.Side.LEFT);
-        lst.addActionBinding(new ActionBinding(bottomButton, new Action[]{
-                new SwitchOffAction(chodbaDolePwmActor), new SwitchOffAction(zadveriDolePwmActor),
-                new SwitchOffAction(pradelna1PwmActor), new SwitchOffAction(pradelna2PwmActor),
-                new SwitchOffAction(svSpajza), new SwitchOffAction(koupelnaDolePwmActor),
-                new SwitchOffAction(koupelnaDoleZrcadlaPwmActor), new SwitchOffAction(terasaPwmActor),
-                new SwitchOffAction(svSklepLevy), new SwitchOffAction(svSklepPravy)
-        }, new Action[]{}));
+        lst.addActionBinding(new ActionBinding(bottomButton,
+                createSwitchOffActions(
+                        chodbaDolePwmActor, zadveriDolePwmActor,
+                        pradelna1PwmActor, pradelna2PwmActor,
+                        svSpajza, koupelnaDolePwmActor,
+                        koupelnaDoleZrcadlaPwmActor, terasaPwmActor,
+                        svSklepLevy, svSklepPravy)
+                , null));
 
 
         configurePwmLights(lst, kuchynSw3, WallSwitch.Side.RIGHT, 75, kuchynLinkaPwmActor);
         configurePwmLights(lst, kuchynSw3, WallSwitch.Side.LEFT, 50, kuchyn1PwmActor, kuchyn2PwmActor, kuchyn3PwmActor);
-        configurePwmLights(lst, kuchynSw2, WallSwitch.Side.RIGHT, 80, obyvak01PwmActor, obyvak10PwmActor, obyvak13PwmActor);
-        configurePwmLights(lst, kuchynSw2, WallSwitch.Side.LEFT, 80, obyvak06PwmActor, jidelna1PwmActor);
+        configurePwmLights(lst, kuchynSw2, WallSwitch.Side.RIGHT, 50, obyvak06PwmActor, jidelna1PwmActor, kuchyn5PwmActor);
+        configurePwmLights(lst, kuchynSw2, WallSwitch.Side.LEFT, 70, obyvak01PwmActor, obyvak10PwmActor, obyvak13PwmActor);
 
 
         // PIRs
@@ -594,7 +610,7 @@ public class Main {
         setupMagneticSensor(lst, cidlaGaraz.getIn2AndActivate(), "Garaz dole", null, null);
 
 
-        Servlet.action1 = new SwitchOnSensorAction(bzucakDvere, 3, 100);
+        Servlet.action1 = bzucakAction;
         Servlet.action2 = ovladacGarazAction;
         Servlet.action3 = invertJidelna;
 
@@ -607,16 +623,24 @@ public class Main {
         WallSwitch test3Sw = new WallSwitch("test3Sw", switchTestNode50, 3);
         TestingOnOffActor testingRightOnOffActor = new TestingOnOffActor("RightSwitchTestingActor", null, 0, 1, testSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), test3Sw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
         TestingOnOffActor testingLeftOnOffActor = new TestingOnOffActor("LeftSwitchTestingActor", null, 0, 1, testSw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), test3Sw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
-        lst.addActionBinding(new ActionBinding(testSw.getRightBottomButton(), new Action[]{new SwitchOffAction(testingRightOnOffActor)}, null));
-        lst.addActionBinding(new ActionBinding(testSw.getRightUpperButton(), new Action[]{new SwitchOnAction(testingRightOnOffActor)}, null));
-        lst.addActionBinding(new ActionBinding(testSw.getLeftUpperButton(), new Action[]{new SwitchOnAction(testingLeftOnOffActor)}, null));
-        lst.addActionBinding(new ActionBinding(testSw.getLeftBottomButton(), new Action[]{new SwitchOffAction(testingLeftOnOffActor)}, null));
+        lst.addActionBinding(new ActionBinding(testSw.getRightBottomButton(), new SwitchOffAction(testingRightOnOffActor), null));
+        lst.addActionBinding(new ActionBinding(testSw.getRightUpperButton(), new SwitchOnAction(testingRightOnOffActor), null));
+        lst.addActionBinding(new ActionBinding(testSw.getLeftUpperButton(), new SwitchOnAction(testingLeftOnOffActor), null));
+        lst.addActionBinding(new ActionBinding(testSw.getLeftBottomButton(), new SwitchOffAction(testingLeftOnOffActor), null));
 
 
         Servlet.setLightActions(lightsActions.toArray(new Action[lightsActions.size()]));
         Servlet.pirStatusList = pirStatusList;
 //        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);
 //        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));
+    }
+
+    private static Action[] createSwitchOffActions(IOnOffActor... actors) {
+        Action[] actions = new Action[actors.length];
+        for (int i = 0; i < actors.length; i++) {
+            actions[i] = new SwitchOffAction(actors[i]);
+        }
+        return actions;
     }
 
     private static void setupPir(SwitchListener lst, NodePin pirPin, String name, Action activateAction, Action deactivateAction) {

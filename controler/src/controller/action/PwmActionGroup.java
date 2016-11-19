@@ -6,10 +6,9 @@ import org.apache.log4j.Logger;
 
 
 public class PwmActionGroup {
-    static Logger LOGGER = Logger.getLogger(PwmActionGroup.class.getName());
-
     public static final int STEP_DELAY = 300;
-
+    public static final int FIRST_STEP_DELAY = 600;
+    static Logger LOGGER = Logger.getLogger(PwmActionGroup.class.getName());
     int initialPwmValue;
     Action upPressed;
     Action upReleased;
@@ -41,6 +40,22 @@ public class PwmActionGroup {
         return downReleased;
     }
 
+    private AbstractAction createUpPressed(final PwmActor actor) {
+        return new UpPressed(actor);
+    }
+
+    private AbstractAction createUpReleased(final PwmActor actor) {
+        return new UpReleased(actor);
+    }
+
+    private AbstractAction createDownPressed(final PwmActor actor) {
+        return new DownPressed(actor);
+    }
+
+    private AbstractAction createDownReleased(final PwmActor actor) {
+        return new DownReleased(actor);
+    }
+
     private static class DownReleased extends AbstractAction {
         public DownReleased(PwmActor actor) {
             super(actor);
@@ -63,48 +78,6 @@ public class PwmActionGroup {
         }
     }
 
-    private class UpPressed extends AbstractAction {
-        public UpPressed(Actor actor) {
-            super(actor);
-        }
-
-        @Override
-        public void perform(int buttonUpDuration) {
-            final PwmActor actor = (PwmActor) getActor();
-            final int initialValue = actor.getValue();
-
-            if (initialValue == 0) {
-                actor.setValue(initialPwmValue, this);
-            } else {
-                actor.increasePwm(10, this);
-            }
-
-            try {
-                while (true) {
-                    //noinspection SynchronizationOnLocalVariableOrMethodParameter
-                    synchronized (actor) {
-                        actor.wait(STEP_DELAY);
-                        // modified by somebody else or is fully open
-                        if (actor.getLastActionData() != this || actor.getValue() == 100) {
-                            return;
-                        }
-                        actor.increasePwm(10, this);
-                    }
-                }
-            } catch (InterruptedException e) {
-                LOGGER.error("Unexpected: ", e);
-            }
-        }
-    }
-
-    private AbstractAction createUpPressed(final PwmActor actor) {
-        return new UpPressed(actor);
-    }
-
-    private AbstractAction createUpReleased(final PwmActor actor) {
-        return new UpReleased(actor);
-    }
-
     private static class DownPressed extends AbstractAction {
         public DownPressed(Actor actor) {
             super(actor);
@@ -123,11 +96,38 @@ public class PwmActionGroup {
         }
     }
 
-    private AbstractAction createDownPressed(final PwmActor actor) {
-        return new DownPressed(actor);
-    }
+    private class UpPressed extends AbstractAction {
+        public UpPressed(Actor actor) {
+            super(actor);
+        }
 
-    private AbstractAction createDownReleased(final PwmActor actor) {
-        return new DownReleased(actor);
+        @Override
+        public void perform(int buttonUpDuration) {
+            final PwmActor actor = (PwmActor) getActor();
+            final int initialValue = actor.getValue();
+
+            if (initialValue == 0) {
+                actor.setValue(initialPwmValue, this);
+            } else {
+                actor.increasePwm(10, this);
+            }
+
+            try {
+                //noinspection SynchronizationOnLocalVariableOrMethodParameter
+                synchronized (actor) {
+                    actor.wait(FIRST_STEP_DELAY);
+                    while (true) {
+                        // modified by somebody else or is fully open
+                        if (actor.getLastActionData() != this || actor.getValue() == 100) {
+                            return;
+                        }
+                        actor.increasePwm(10, this);
+                        actor.wait(STEP_DELAY);
+                    }
+                }
+            } catch (InterruptedException e) {
+                LOGGER.error("Unexpected: ", e);
+            }
+        }
     }
 }

@@ -1,7 +1,6 @@
 package controller;
 
 import controller.action.Action;
-import controller.actor.Actor;
 import node.NodePin;
 
 public class ActionBinding {
@@ -9,6 +8,11 @@ public class ActionBinding {
 
     Action[] buttonDownActions;
     Action[] buttonUpActions;
+
+    public ActionBinding(NodePin trigger, Action buttonDownAction, Action buttonUpAction) {
+        this(trigger, (buttonDownAction != null) ? new Action[]{buttonDownAction} : null,
+                (buttonUpAction != null) ? new Action[]{buttonUpAction} : null);
+    }
 
     public ActionBinding(NodePin trigger, Action[] buttonDownActions, Action[] buttonUpActions) {
         this.trigger = trigger;

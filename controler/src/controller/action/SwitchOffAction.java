@@ -9,6 +9,9 @@ public class SwitchOffAction extends AbstractAction {
 
     @Override
     public void perform(int previousDurationMs) {
-        ((IOnOffActor) getActor()).switchOff(null);
+        IOnOffActor actor = (IOnOffActor) getActor();
+        if (actor.isOn()) {
+            actor.switchOff(null);
+        }
     }
 }
