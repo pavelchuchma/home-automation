@@ -12,14 +12,12 @@ public interface LouversController {
     boolean isDown();
 
     /**
-     * 0 - up, 1 - down
-     * @return
+     * @return 0 - open, 1 - closed
      */
     double getPosition();
 
     /**
-     * 0 - horizontal (open), 1 - closed
-     * @return
+     * @return 0 - horizontal (open), 1 - closed
      */
     double getOffset();
 

@@ -1,5 +1,15 @@
 package servlet;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import app.NodeInfo;
 import app.NodeInfoCollector;
 import controller.PirStatus;
@@ -7,6 +17,7 @@ import controller.action.Action;
 import controller.actor.PwmActor;
 import controller.controller.Activity;
 import controller.controller.LouversController;
+import controller.controller.ValveController;
 import controller.device.ConnectedDevice;
 import controller.device.OutputDevice;
 import node.Node;
@@ -17,16 +28,6 @@ import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Servlet extends AbstractHandler {
     public static final String TARGET_SYSTEM_INFO = "/system/i";
@@ -46,12 +47,27 @@ public class Servlet extends AbstractHandler {
     public static final String TARGET_LOUVERS_STATUS = TARGET_LOUVERS + "/status";
     public static final String TARGET_LOUVERS_ACTION = TARGET_LOUVERS + "/a";
     public static final String TARGET_LOUVERS_PARAM_ACTION = TARGET_LOUVERS + "/action";
+    public static final String TARGET_VALVES = "/airvalves";
+    public static final String TARGET_VALVES_STATUS = TARGET_VALVES + "/status";
+    public static final String TARGET_VALVES_PARAM_ACTION = TARGET_VALVES + "/action";
     public static final String CLASS_LOUVERS_ARROW = "louversArrow";
     public static final String CLASS_LOUVERS_ARROW_ACTIVE = "louversArrow louversArrow-moving";
-    private NodeInfoCollector nodeInfoCollector;
+    public static Action action1;
+    public static Action action2;
+    public static Action action3;
+    public static Action action4;
+    public static Action action5;
+    public static List<PirStatus> pirStatusList;
+    public static Map<String, LouversController> louversControllerMap;
+    public static Map<String, ValveController> valveControllerMap;
     static Logger log = Logger.getLogger(Servlet.class.getName());
+    private static Action[] lightActions;
+    private static Map<String, PwmActor> lightActorMap;
+    private static LouversController[] louversControllers;
+    private static ValveController[] valveControllers;
+    private static DecimalFormat currentValueFormatter = new DecimalFormat("###.##");
+    private NodeInfoCollector nodeInfoCollector;
     private HashMap<NodeInfo, NodeTestRunner> testRunners = new HashMap<NodeInfo, NodeTestRunner>();
-
 
     public Servlet(NodeInfoCollector nodeInfoCollector) {
         this.nodeInfoCollector = nodeInfoCollector;
@@ -65,6 +81,47 @@ public class Servlet extends AbstractHandler {
             }
         }
         return -1;
+    }
+
+    public static void startServer(NodeInfoCollector nodeInfoCollector) throws Exception {
+        log.info("Starting web server");
+        Server server = new Server(80);
+        server.setHandler(new Servlet(nodeInfoCollector));
+
+        server.start();
+        log.info("Web server started");
+        server.join();
+    }
+
+    public static void setLightActions(Action[] lightActions) {
+        Servlet.lightActions = lightActions;
+        lightActorMap = new HashMap<>();
+        for (int i = 0; i < lightActions.length; i += 4) {
+            PwmActor actor = (PwmActor) lightActions[i].getActor();
+            if (lightActorMap.put(actor.getId(), actor) != null) {
+                throw new RuntimeException("Id of actor '" + actor.getId() + "' is not unique");
+            }
+        }
+    }
+
+    public static void setLouversControllers(LouversController[] louversControllers) {
+        Servlet.louversControllers = louversControllers;
+        louversControllerMap = new HashMap<>();
+        for (LouversController controller : louversControllers) {
+            if (louversControllerMap.put(controller.getId(), controller) != null) {
+                throw new RuntimeException("Id of controller '" + controller.getId() + "' is not unique");
+            }
+        }
+    }
+
+    public static void setValveControllers(ValveController[] valveControllers) {
+        Servlet.valveControllers = valveControllers;
+        valveControllerMap = new HashMap<>();
+        for (ValveController controller : valveControllers) {
+            if (valveControllerMap.put(controller.getId(), controller) != null) {
+                throw new RuntimeException("Id of controller '" + controller.getId() + "' is not unique");
+            }
+        }
     }
 
     public void handle(String target,
@@ -86,6 +143,19 @@ public class Servlet extends AbstractHandler {
         } else if (target.endsWith(".js")) {
             sendFile(target, response, "application/javascript;charset=utf-8");
             baseRequest.setHandled(true);
+        } else if (target.startsWith(TARGET_VALVES)) {
+            if (target.startsWith(TARGET_VALVES_STATUS)) {
+                writeAirValvesStatusJson(baseRequest, response);
+            } else if (target.startsWith(TARGET_VALVES_PARAM_ACTION)) {
+                ValveController controller = getItemById(request, valveControllerMap);
+
+                String posStr = request.getParameter("val");
+                if (posStr != null) {
+                    int position = Integer.parseInt(posStr);
+                    controller.setPosition(position);
+                    sendOkResponse(baseRequest, response, "");
+                }
+            }
         } else {
             if (target.startsWith(TARGET_LOUVERS)) {
                 if (target.startsWith(TARGET_LOUVERS_STATUS)) {
@@ -256,6 +326,32 @@ public class Servlet extends AbstractHandler {
         response.getWriter().println(b);
     }
 
+    private void writeAirValvesStatusJson(Request baseRequest, HttpServletResponse response) throws IOException {
+        log.debug("writeAirValvesStatusJson");
+        initJsonResponse(baseRequest, response);
+        StringBuffer b = new StringBuffer();
+        b.append("{ \"airValves\" : [\n");
+        boolean first = true;
+        for (ValveController lc : valveControllers) {
+            if (first) {
+                first = false;
+            } else {
+                b.append(",\n");
+            }
+            b.append('{');
+            appendNameValue(b, "id", lc.getId());
+            b.append(',');
+            appendNameValue(b, "name", lc.getLabel());
+            b.append(',');
+            appendNameValue(b, "pos", Double.toString(lc.getPosition()));
+            b.append(',');
+            appendNameValue(b, "act", lc.getActivity().toString());
+            b.append('}');
+        }
+        b.append("\n]}");
+        response.getWriter().println(b);
+    }
+
     private void initJsonResponse(Request baseRequest, HttpServletResponse response) {
         response.setContentType("application/json;charset=utf-8");
         response.setHeader("Access-Control-Allow-Origin", "*");
@@ -295,49 +391,6 @@ public class Servlet extends AbstractHandler {
         }
     }
 
-    public static void startServer(NodeInfoCollector nodeInfoCollector) throws Exception {
-        log.info("Starting web server");
-        Server server = new Server(80);
-        server.setHandler(new Servlet(nodeInfoCollector));
-
-        server.start();
-        log.info("Web server started");
-        server.join();
-    }
-
-    public static Action action1;
-    public static Action action2;
-    public static Action action3;
-    public static Action action4;
-    public static Action action5;
-    private static Action[] lightActions;
-    private static Map<String, PwmActor> lightActorMap;
-    public static List<PirStatus> pirStatusList;
-
-    private static LouversController[] louversControllers;
-    public static Map<String, LouversController> louversControllerMap;
-
-    public static void setLightActions(Action[] lightActions) {
-        Servlet.lightActions = lightActions;
-        lightActorMap = new HashMap<>();
-        for (int i = 0; i < lightActions.length; i += 4) {
-            PwmActor actor = (PwmActor) lightActions[i].getActor();
-            if (lightActorMap.put(actor.getId(), actor) != null) {
-                throw new RuntimeException("Id of actor '" + actor.getId() + "' is not unique");
-            }
-        }
-    }
-
-    public static void setLouversControllers(LouversController[] louversControllers) {
-        Servlet.louversControllers = louversControllers;
-        louversControllerMap = new HashMap<>();
-        for (LouversController controller : louversControllers) {
-            if (louversControllerMap.put(controller.getId(), controller) != null) {
-                throw new RuntimeException("Id of controller '" + controller.getId() + "' is not unique");
-            }
-        }
-    }
-
     private void processAction(String action) {
         if (action.startsWith("/a1") && action1 != null) {
             action1.perform(-1);
@@ -374,8 +427,6 @@ public class Servlet extends AbstractHandler {
         builder.append("</body></html>");
         return builder.toString();
     }
-
-    private static DecimalFormat currentValueFormatter = new DecimalFormat("###.##");
 
     private String getLightsPage() {
         StringBuilder builder = new StringBuilder();

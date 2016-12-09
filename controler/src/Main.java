@@ -9,10 +9,12 @@ import controller.action.AbstractSensorAction;
 import controller.action.Action;
 import controller.action.DecreasePwmAction;
 import controller.action.IncreasePwmAction;
+import controller.action.IndicatorAction;
 import controller.action.InvertAction;
 import controller.action.InvertActionWithTimer;
 import controller.action.LouversActionGroup;
 import controller.action.PwmActionGroup;
+import controller.action.SwitchAllOffWithMemory;
 import controller.action.SwitchOffAction;
 import controller.action.SwitchOffSensorAction;
 import controller.action.SwitchOnAction;
@@ -24,6 +26,8 @@ import controller.actor.PwmActor;
 import controller.actor.TestingOnOffActor;
 import controller.controller.LouversController;
 import controller.controller.LouversControllerImpl;
+import controller.controller.ValveController;
+import controller.controller.ValveControllerImpl;
 import controller.device.InputDevice;
 import controller.device.LddBoardDevice;
 import controller.device.OutputDevice;
@@ -49,7 +53,7 @@ public class Main {
             IPacketUartIO packetUartIO;
             try {
                 packetUartIO = new PacketUartIO(port, 19200);
-            } catch (PacketUartIOException e) {
+            } catch (Exception | Error e) {
                 if (System.getenv("COMPUTERNAME") != null) {
                     packetUartIO = new PacketUartIOMock();
                 } else {
@@ -205,9 +209,9 @@ public class Main {
         OnOffActor zaricKoupelnaHore2Trubice = new OnOffActor("zaricKoupelnaHore2Trubice", "Zaric koupelna 2 rubice", rele01.getRele1(), 0, 1, zaricKoupelnaHoreSw2Indicator, zaricKoupelnaHoreOknoSwIndicator);
         OnOffActor zaricKoupelnaHore1Trubice = new OnOffActor("zaricKoupelnaHore1Trubice", "Zaric koupelna 1 rubice", rele01.getRele2(), 0, 1, zaricKoupelnaHoreSw2Indicator, zaricKoupelnaHoreOknoSwIndicator);
 
-        RelayBoardDevice rele9 = new RelayBoardDevice("rele9", lddActorB, 3);
-        OnOffActor ovladacGaraz = new OnOffActor("ovladacGaraz", "Vrata garaz", rele9.getRele2(), 0, 1);
-        OnOffActor bzucakDvere = new OnOffActor("bzucakDvere", "Bzucak Dvere", rele9.getRele1(), 0, 1);
+        RelayBoardDevice rele12 = new RelayBoardDevice("rele12", lddActorB, 3);
+        OnOffActor ovladacGaraz = new OnOffActor("ovladacGaraz", "Vrata garaz", rele12.getRele2(), 0, 1);
+        OnOffActor bzucakDvere = new OnOffActor("bzucakDvere", "Bzucak Dvere", rele12.getRele1(), 0, 1);
 
         SwitchListener lst = nodeInfoCollector.getSwitchListener();
 
@@ -274,6 +278,31 @@ public class Main {
                 zaluzieVratnice1 = new LouversControllerImpl("lvVrt1", "Vrátnice 1", rele5ZaluzieBPort2.getRele1(), rele5ZaluzieBPort2.getRele2(), 29000, 1600),
                 zaluzieVratnice2 = new LouversControllerImpl("lvVrt2", "Vrátnice 2", rele5ZaluzieBPort2.getRele3(), rele5ZaluzieBPort2.getRele4(), 29000, 1600),
                 zaluzieVratnice3 = new LouversControllerImpl("lvVrt3", "Vrátnice 3", rele5ZaluzieBPort2.getRele5(), rele5ZaluzieBPort2.getRele6(), 40000, 1600),
+        };
+
+        ValveController vzduchVratnice;
+        ValveController vzduchPracovna;
+        ValveController vzduchKoupelnaDole;
+
+        ValveController vzduchJidelna;
+        ValveController vzduchKoupelna;
+        ValveController vzduchPata;
+
+        ValveController vzduchObyvak23;
+        ValveController vzduchMarek;
+        ValveController vzduchObyvak45;
+        ValveController[] valveControllers = new ValveController[]{
+                vzduchVratnice = new ValveControllerImpl("vlVrt", "Vratnice", rele11.getRele1(), rele11.getRele2(), 150000),
+                vzduchPracovna = new ValveControllerImpl("vlPrc", "Pracovna", rele11.getRele3(), rele11.getRele4(), 150000),
+                vzduchKoupelnaDole = new ValveControllerImpl("vlKoupD", "KoupelnaDole", rele11.getRele5(), rele11.getRele6(), 150000),
+
+                vzduchJidelna = new ValveControllerImpl("vlJid", "Jidelna", rele09.getRele1(), rele09.getRele2(), 150000),
+                vzduchKoupelna = new ValveControllerImpl("vlKoupH", "KoupelnaHore", rele09.getRele3(), rele09.getRele4(), 150000),
+                vzduchPata = new ValveControllerImpl("vlPata", "Pata", rele09.getRele5(), rele09.getRele6(), 150000),
+
+                vzduchObyvak23 = new ValveControllerImpl("vlObyv23", "Obyvak 2+3", rele10.getRele1(), rele10.getRele2(), 150000),
+                vzduchMarek = new ValveControllerImpl("vlMarek", "Marek", rele10.getRele3(), rele10.getRele4(), 150000),
+                vzduchObyvak45 = new ValveControllerImpl("vlObyv45", "Obyvak 4+5", rele10.getRele5(), rele10.getRele6(), 150000),
         };
 
         SwitchIndicator krystofIndicator = new SwitchIndicator(krystofSwA2.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF);
@@ -378,16 +407,20 @@ public class Main {
         configureLouvers(lst, schodyDoleR3Sw, WallSwitch.Side.LEFT, zaluzieObyvak5, zaluzieObyvak6);
 
         // obyvak u schodu
-        Action[] allLightsFromKitchenToLivingRoomOff = createSwitchOffActions(kuchyn1PwmActor, kuchyn2PwmActor, kuchyn3PwmActor, /*kuchyn4PwmActor,*/ kuchyn5PwmActor,
+        SwitchAllOffWithMemory allLightsFromKitchenToLivingRoomOff = new SwitchAllOffWithMemory(kuchyn1PwmActor, kuchyn2PwmActor, kuchyn3PwmActor, /*kuchyn4PwmActor,*/ kuchyn5PwmActor,
                 jidelna1PwmActor, jidelna2PwmActor, jidelna3PwmActor, svJidelna,
                 obyvak01PwmActor, obyvak02PwmActor, obyvak03PwmActor, obyvak04PwmActor, /*obyvak05PwmActor,*/
                 obyvak06PwmActor, obyvak07PwmActor, obyvak06PwmActor, obyvak09PwmActor, obyvak10PwmActor,
                 obyvak11PwmActor, obyvak12PwmActor, obyvak13PwmActor, kuchynLinkaPwmActor);
+
         lst.addActionBinding(new ActionBinding(schodyDoleL1Sw.getLeftBottomButton(),
                 allLightsFromKitchenToLivingRoomOff, null));
 
-        SwitchOnSensorAction bzucakAction = new SwitchOnSensorAction(bzucakDvere, 3, 100);
+        SwitchOnSensorAction bzucakAction = new SwitchOnSensorAction(bzucakDvere, 5, 100);
         lst.addActionBinding(new ActionBinding(schodyDoleL1Sw.getRightUpperButton(), bzucakAction, null));
+
+        IndicatorAction garazIndicator = new IndicatorAction(schodyDoleL2Sw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
+
 
         // gauc
         lst.addActionBinding(new ActionBinding(obyvakGaucLSw.getLeftBottomButton(), allLightsFromKitchenToLivingRoomOff, null));
@@ -567,7 +600,7 @@ public class Main {
         // kuchyn
         NodePin bottomButton = getBottomButton(kuchynSw1, WallSwitch.Side.LEFT);
         lst.addActionBinding(new ActionBinding(bottomButton,
-                createSwitchOffActions(
+                SwitchAllOffWithMemory.createSwitchOffActions(
                         chodbaDolePwmActor, zadveriDolePwmActor,
                         pradelna1PwmActor, pradelna2PwmActor,
                         svSpajza, koupelnaDolePwmActor,
@@ -586,8 +619,10 @@ public class Main {
         InputDevice pirA1Prizemi = new InputDevice("pirA1Prizemi", pirNodeA, 1);
         setupPir(lst, pirA1Prizemi.getIn1AndActivate(), "Pradelna dvere", new SwitchOnSensorAction(pradelna1PwmActor, 600, 80), new SwitchOffSensorAction(pradelna1PwmActor, 60));
         setupPir(lst, pirA1Prizemi.getIn2AndActivate(), "Pradelna pracka", new SwitchOnSensorAction(pradelna1PwmActor, 600, 80), new SwitchOffSensorAction(pradelna1PwmActor, 60));
+        //koupelna umyvadlo A1:3
         setupPir(lst, pirA1Prizemi.getIn4AndActivate(), "Vchod hore", new SwitchOnSensorAction(vchodHorePwmActor, 600, 80, 0, -15), new SwitchOffSensorAction(vchodHorePwmActor, 60));
         setupPir(lst, pirA1Prizemi.getIn5AndActivate(), "Schodiste", null, null);
+        // A6:3
 
         InputDevice pirA2Patro = new InputDevice("pirA2Patro", pirNodeA, 2);
         setupPir(lst, pirA2Patro.getIn1AndActivate(), "Chodba pred WC", null, null);
@@ -607,7 +642,7 @@ public class Main {
 
         InputDevice cidlaGaraz = new InputDevice("cidlaGaraz", garazVzadu, 3);
         setupMagneticSensor(lst, cidlaGaraz.getIn1AndActivate(), "Garaz hore", null, null);
-        setupMagneticSensor(lst, cidlaGaraz.getIn2AndActivate(), "Garaz dole", null, null);
+        setupMagneticSensor(lst, cidlaGaraz.getIn2AndActivate(), "Garaz dole", garazIndicator.getOnAction(), garazIndicator.getOffAction());
 
 
         Servlet.action1 = bzucakAction;
@@ -617,6 +652,7 @@ public class Main {
 //        Servlet.action4 = new AudioAction();
         Servlet.action5 = null;
         Servlet.setLouversControllers(louversControllers);
+        Servlet.setValveControllers(valveControllers);
 
         //test wall switch application
         WallSwitch testSw = new WallSwitch("testSwA", switchTestNode50, 1);
@@ -633,14 +669,6 @@ public class Main {
         Servlet.pirStatusList = pirStatusList;
 //        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);
 //        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));
-    }
-
-    private static Action[] createSwitchOffActions(IOnOffActor... actors) {
-        Action[] actions = new Action[actors.length];
-        for (int i = 0; i < actors.length; i++) {
-            actions[i] = new SwitchOffAction(actors[i]);
-        }
-        return actions;
     }
 
     private static void setupPir(SwitchListener lst, NodePin pirPin, String name, Action activateAction, Action deactivateAction) {

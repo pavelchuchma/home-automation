@@ -1,8 +1,12 @@
 package node;
 
+import java.io.IOException;
+import java.util.Date;
+
 import app.NodeInfoCollector;
 import app.SwitchListener;
 import controller.ActionBinding;
+import controller.action.Action;
 import controller.device.InputDevice;
 import junit.framework.Assert;
 import org.apache.log4j.Logger;
@@ -10,9 +14,6 @@ import org.junit.Test;
 import packet.Packet;
 import packet.PacketUartIO;
 import packet.PacketUartIOException;
-
-import java.io.IOException;
-import java.util.Date;
 
 public class NodeTest {
     static Logger log = Logger.getLogger(NodeTest.class.getName());
@@ -584,7 +585,7 @@ public class NodeTest {
 
         Node pirNodeA = nodeInfoCollector.createNode(7, "PirNodeA");
         InputDevice pirA1Prizemi = new InputDevice("PirA1Prizemi", pirNodeA, 3);
-        lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn5AndActivate(), null, null));
+        lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn5AndActivate(), (Action) null, null));
 
         pirNodeA.initialize();
 

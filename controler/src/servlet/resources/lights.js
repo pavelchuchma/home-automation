@@ -7,6 +7,8 @@ var floorIds = ['1stFloor', '2ndFloor'];
 
 const toolBoxBackground = 'lightgray';
 const toolLightPlusValue = 66;
+const url = 'http://10.0.0.150';
+//const url = 'http://localhost';
 
 var itemCoordinates = [
     //id, x, y, floor
@@ -72,7 +74,7 @@ var itemCoordinates = [
     ['pwmPata', 349, 830, 1],
     ['pwmMarek', 349, 1039, 1],
     ['pwmLozM', 309, 1280, 1],
-    ['pwmLozV',  431, 1280, 1],
+    ['pwmLozV', 431, 1280, 1],
     ['pwmPrac', 167, 1324, 1],
     ['pwmSat', 194, 1128, 1],
     ['pwmWc', 134, 953, 1],
@@ -89,7 +91,17 @@ var itemCoordinates = [
     ['lvPrc', 55, 1325, 1],
     ['lvSat', 55, 1085, 1],
     ['lvCh1', 55, 850, 1],
-    ['lvCh2', 55, 512, 1]
+    ['lvCh2', 55, 512, 1],
+
+    ['vlVrt', 286, 314, 1],
+    ['vlPrc', 132, 1254, 1],
+    ['vlKoupD', 172, 433, 0],
+    ['vlObyv45', 450, 1380, 0],
+    ['vlObyv23', 450, 1193, 0],
+    ['vlJid', 450, 980, 0],
+    ['vlMarek', 450, 1068, 1],
+    ['vlPata', 450, 726, 1],
+    ['vlKoupH', 450, 515, 1]
 ];
 
 var itemStatusMap = {};
@@ -139,7 +151,11 @@ var toolsCoordinates = [
     }, [isLouversId, isStairs]],
     ['louversDown', 50, 750, -1, function (x, y, ctx) {
         drawLouversToolIcon(x, y, 1, 1, 'stopped', ctx);
-    }, [isLouversId, isStairs]]
+    }, [isLouversId, isStairs]],
+    ['valveToggle', 50, 850, -1, function (x, y, ctx) {
+        drawValveIcon(x + 10, y - 5, 1, 'stopped', ctx);
+        drawValveIcon(x - 10, y + 5, 0, 'stopped', ctx);
+    }, [isValveId, isStairs]]
 ];
 
 
@@ -218,7 +234,7 @@ function drawCharacterIcon(id, text) {
 
 
     mainCtx.beginPath();
-    mainCtx.font = h - 20  + "px Arial Bold";
+    mainCtx.font = h - 20 + "px Arial Bold";
     mainCtx.fillStyle = 'black';
     mainCtx.textAlign = "center";
     mainCtx.textBaseline = 'middle';
@@ -291,6 +307,10 @@ function isPwmId(id) {
     return startsWith(id, "pwm");
 }
 
+function isValveId(id) {
+    return startsWith(id, "vl");
+}
+
 function startsWith(str, substr) {
     return str.length >= substr.length && (str.substr(0, substr.length) == substr);
 }
@@ -305,6 +325,8 @@ function drawItems() {
         if (lc[3] == currentFloor) {
             if (isPwmId(id)) {
                 drawLight(id)
+            } else if (isValveId(id)) {
+                drawValve(id)
             } else if (isLouversId(id)) {
                 drawOneLouvers(id)
             } else if (id == 'stairsUp') {
@@ -385,6 +407,79 @@ function drawLightIcon(x, y, power, ctx) {
     }
 }
 
+function getValveColor(act, pos) {
+    switch (getValveState(act, pos)) {
+        case 0:
+            return 'green';
+        case 1:
+            return 'red';
+        default:
+            return 'gray';
+    }
+}
+
+function getValveState(act, pos) {
+    switch (act) {
+        case 'stopped':
+            return (pos == -1) ? -1 : (pos == 1) ? 1 : 0;
+        case 'movingUp':
+            return 0;
+        case 'movingDown':
+            return 1;
+    }
+}
+
+function drawValveIcon(x, y, pos, act, ctx) {
+    var angle = Math.PI * pos / -2;
+    ctx.beginPath();
+    var r = 17;
+    var color = getValveColor(act, pos);
+
+    // background rectagle
+    ctx.rect(x - r + 1, y - r + 1, 2 * r - 2, 2 * r - 2);
+    ctx.strokeStyle = ctx.fillStyle = 'lightgray';
+    ctx.lineWidth = 1;
+    ctx.fill();
+    ctx.stroke();
+
+    // lines around
+    ctx.beginPath();
+    ctx.moveTo(x - r, y - r + 2);
+    ctx.lineTo(x + r, y - r + 2);
+
+    ctx.moveTo(x - r, y + r - 2);
+    ctx.lineTo(x + r, y + r - 2);
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 5;
+    ctx.stroke();
+
+    // valve core
+    if (pos != -1) {
+        ctx.beginPath();
+
+        ctx.moveTo(x, y);
+        ctx.arc(x, y, 1, 0, 2 * Math.PI);
+        ctx.lineWidth = 5;
+        ctx.stroke();
+
+        ctx.moveTo(x, y);
+        ctx.arc(x, y, r - 5, angle, angle);
+        ctx.moveTo(x, y);
+        ctx.arc(x, y, r - 5, angle + Math.PI, angle + Math.PI);
+        ctx.lineWidth = 3;
+        ctx.stroke();
+    } else {
+        ctx.beginPath();
+        ctx.font = 1.5 * r + "px Arial Bold";
+        ctx.fillStyle = color;
+        ctx.textAlign = "center";
+        ctx.textBaseline = 'middle';
+        ctx.fillText("?", x, y);
+        ctx.stroke();
+    }
+}
+
 function drawLight(id) {
     var lightStatus = itemStatusMap[id];
     var power = lightStatus.val / lightStatus.maxVal;
@@ -394,6 +489,16 @@ function drawLight(id) {
     var y = coords[1];
 
     drawLightIcon(x, y, power, mainCtx);
+}
+
+function drawValve(id) {
+    var valveStatus = itemStatusMap[id];
+
+    var coords = itemCoordinateMap[id];
+    var x = coords[0];
+    var y = coords[1];
+
+    drawValveIcon(x, y, valveStatus.pos, valveStatus.act, mainCtx);
 }
 
 function drawOneLouvers(id) {
@@ -417,9 +522,9 @@ function sendAction(action) {
     //document.getElementById('error').innerHTML = action;
     try {
         var request = new XMLHttpRequest();
-        request.open('GET', 'http://10.0.0.150' + action, true);
+        request.open('GET', url + action, true);
         request.onreadystatechange = function () {
-            request.close();
+            //request.close();
         };
         request.send();
 
@@ -461,9 +566,6 @@ function buildLouversActionLink(itemStatus, possiton, offset) {
 
 var tmp = '';
 function onCanvasClick(event) {
-    //tmp += "['pwm', " + Math.round(parseFloat(event.offsetX)) + ", " + Math.round(parseFloat(event.offsetY)) + ", 0]<br>";
-    //debug(tmp);
-    //return;
 
     var selectedTool = toolCoordinateMap[selectedToolId];
 
@@ -477,10 +579,17 @@ function onCanvasClick(event) {
         return;
     }
 
+    //tmp += "['pwm', " + Math.round(parseFloat(event.offsetX)) + ", " + Math.round(parseFloat(event.offsetY)) + ", 0]<br>";
+    //debug(tmp);
+    //return;
+
     var action;
     if (startsWith(selectedToolId, 'light')) {
         var value = getNewLightValue(itemStatus);
         action = '/lights/action?id=' + itemStatus.id + "&" + "val=" + value;
+    } else if (startsWith(selectedToolId, 'valveToggle')) {
+        var valveVal = (getValveState(itemStatus.act, itemStatus.pos) == 0) ? 100 : 0;
+        action = '/airvalves/action?id=' + itemStatus.id + "&" + "val=" + valveVal;
     } else if (startsWith(selectedToolId, 'louvers')) {
         switch (selectedToolId) {
             case 'louversUp':
@@ -514,7 +623,7 @@ function printException(e) {
 function updateImpl(path, code) {
     var request = new XMLHttpRequest();
 
-    request.open('GET', 'http://10.0.0.150' + path, true);
+    request.open('GET', url + path, true);
 
     request.onreadystatechange = function () {
         if (request.readyState == 4 && request.status == 200) {
@@ -523,7 +632,7 @@ function updateImpl(path, code) {
             } catch (e) {
                 printException(e);
             } finally {
-                request.close();
+                //request.close();
             }
         }
     };
@@ -535,7 +644,10 @@ function updateItems() {
         parseJsonStatusResponse(request, 'lights', itemStatusMap);
         updateImpl('/louvers/status', function (request) {
             parseJsonStatusResponse(request, 'louvers', itemStatusMap);
-            drawItems();
+            updateImpl('/airvalves/status', function (request) {
+                parseJsonStatusResponse(request, 'airValves', itemStatusMap);
+                drawItems();
+            });
         });
     });
 }

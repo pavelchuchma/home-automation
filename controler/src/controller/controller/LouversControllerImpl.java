@@ -9,6 +9,7 @@ import org.apache.commons.lang3.Validate;
 import org.apache.log4j.Logger;
 
 public class LouversControllerImpl implements LouversController {
+    public static final double DOWN_POSITION_RESERVE = 0.08;
     static Logger log = Logger.getLogger(LouversControllerImpl.class.getName());
     LouversPosition louversPosition;
     IOnOffActor upActor;
@@ -35,7 +36,7 @@ public class LouversControllerImpl implements LouversController {
         this.name = name;
         this.upActor = upActor;
         this.downActor = downActor;
-        louversPosition = new LouversPosition(downPositionMs, maxOffsetMs, (int) (downPositionMs * 0.08));
+        louversPosition = new LouversPosition(downPositionMs, maxOffsetMs, (int) (downPositionMs * DOWN_POSITION_RESERVE));
     }
 
     @Override
@@ -81,7 +82,7 @@ public class LouversControllerImpl implements LouversController {
         setPosition(0, 0);
     }
 
-    private void setPosition(double downPercent, double offsetPercent) {
+    void setPosition(double downPercent, double offsetPercent) {
         Validate.inclusiveBetween(0., 100., downPercent);
         Validate.inclusiveBetween(0., 100., offsetPercent);
 
