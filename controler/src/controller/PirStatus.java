@@ -6,14 +6,20 @@ import controller.actor.Actor;
 import java.util.Date;
 
 public class PirStatus {
+    String id;
     String name;
     Date lastActivate;
     boolean active;
     Actor actor = new ActorImpl();
 
-    public PirStatus(String name) {
+    public PirStatus(String id, String name) {
+        this.id = id;
         this.name = name;
         active = false;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getName() {

@@ -124,7 +124,7 @@ public class NodeInfoCollector implements Iterable<NodeInfo> {
         builder.append("<a href='" + Servlet.TARGET_LOUVERS + "'>Zaluzie...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
         builder.append("<a href='" + Servlet.TARGET_LIGHTS + "'>Svetla...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
         builder.append("<a href='" + Servlet.TARGET_SYSTEM + "'>System...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
-        builder.append("<a href='" + Servlet.TARGET_PIR_STATUS + "'>Pir Status...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
+        builder.append("<a href='" + Servlet.TARGET_PIR_STATUS_PAGE + "'>Pir Status...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
         builder.append("<a href='" + Servlet.TARGET_LIGHTS_OBYVAK + "'>Obyvak...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
 
         builder.append("<table class='nodeTable'>\n" +

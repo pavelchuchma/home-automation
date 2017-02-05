@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class Servlet extends AbstractHandler {
     public static final String TARGET_SYSTEM_TEST_ALL_OFF = "/system/testAllOff";
     public static final String TARGET_SYSTEM_TEST_END = "/system/testEnd";
     public static final String TARGET_SYSTEM = "/system";
-    public static final String TARGET_PIR_STATUS = "/pirStatus";
+    public static final String TARGET_PIR_STATUS_PAGE = "/pirStatus";
     public static final String TARGET_LIGHTS = "/lights";
     public static final String TARGET_LIGHTS_STATUS = TARGET_LIGHTS + "/status";
     public static final String TARGET_LIGHTS_ACTION = TARGET_LIGHTS + "/a";
@@ -52,6 +53,8 @@ public class Servlet extends AbstractHandler {
     public static final String TARGET_VALVES_PARAM_ACTION = TARGET_VALVES + "/action";
     public static final String CLASS_LOUVERS_ARROW = "louversArrow";
     public static final String CLASS_LOUVERS_ARROW_ACTIVE = "louversArrow louversArrow-moving";
+    public static final String TARGET_PIR = "/pir";
+    public static final String TARGET_PIR_STATUS = TARGET_PIR + "/status";
     public static Action action1;
     public static Action action2;
     public static Action action3;
@@ -143,6 +146,8 @@ public class Servlet extends AbstractHandler {
         } else if (target.endsWith(".js")) {
             sendFile(target, response, "application/javascript;charset=utf-8");
             baseRequest.setHandled(true);
+        } else if (target.startsWith(TARGET_PIR_STATUS)) {
+            writePitStatusJson(baseRequest, response);
         } else if (target.startsWith(TARGET_VALVES)) {
             if (target.startsWith(TARGET_VALVES_STATUS)) {
                 writeAirValvesStatusJson(baseRequest, response);
@@ -204,7 +209,7 @@ public class Servlet extends AbstractHandler {
 
                     sendOkResponse(baseRequest, response, getLightsPage());
                 }
-            } else if (target.startsWith(TARGET_PIR_STATUS)) {
+            } else if (target.startsWith(TARGET_PIR_STATUS_PAGE)) {
                 sendOkResponse(baseRequest, response, getPirPage());
 
             } else if (target.startsWith(TARGET_SYSTEM)) {
@@ -237,6 +242,33 @@ public class Servlet extends AbstractHandler {
                 sendOkResponse(baseRequest, response, nodeInfoCollector.getReport());
             }
         }
+    }
+
+    private void writePitStatusJson(Request baseRequest, HttpServletResponse response) throws IOException {
+        log.debug("writePitStatusJson");
+        initJsonResponse(baseRequest, response);
+        StringBuffer b = new StringBuffer();
+        b.append("{ \"pir\" : [\n");
+        boolean first = true;
+        for (PirStatus ps : pirStatusList) {
+            if (first) {
+                first = false;
+            } else {
+                b.append(",\n");
+            }
+            b.append('{');
+            appendNameValue(b, "id", ps.getId());
+            b.append(',');
+            appendNameValue(b, "name", ps.getName());
+            b.append(',');
+            appendNameValue(b, "active", (ps.isActive()) ? "1" : "0");
+            b.append(',');
+            long age = (ps.getLastActivate() != null) ? (new Date().getTime() - ps.getLastActivate().getTime()) / 1000 : -1;
+            appendNameValue(b, "age", String.valueOf(age));
+            b.append('}');
+        }
+        b.append("\n]}");
+        response.getWriter().println(b);
     }
 
     private <T> T getItemById(HttpServletRequest request, Map<String, T> map) {
@@ -463,11 +495,11 @@ public class Servlet extends AbstractHandler {
         StringBuilder builder = new StringBuilder();
 
         builder.append("<html>" +
-                "<meta http-equiv='refresh' content='1;url=" + TARGET_PIR_STATUS + "'/>" +
+                "<meta http-equiv='refresh' content='1;url=" + TARGET_PIR_STATUS_PAGE + "'/>" +
                 "<head>" +
                 "<link href='/report.css' rel='stylesheet' type='text/css'/>\n" +
                 "</head>" +
-                "<body><a href='" + TARGET_PIR_STATUS + "'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
+                "<body><a href='" + TARGET_PIR_STATUS_PAGE + "'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
 
         builder.append("<br/><br/><table class='buttonTable'>");
         for (PirStatus status : pirStatusList) {

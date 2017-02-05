@@ -15,7 +15,7 @@ var itemCoordinates = [
     ['pwmKuLi', 400, 650, 0],
     ['pwmKch1', 410, 759, 0],
     ['pwmKch2', 382, 708, 0],
-    ['pwmKch3', 331, 733, 0],
+    ['pwmKch3', 335, 731, 0],
     //['pwmKch4', 268, 686, 0],
     ['pwmKch5', 285, 808, 0],
     ["pwmJid1", 250, 880, 0],
@@ -93,7 +93,7 @@ var itemCoordinates = [
     ['lvCh1', 55, 850, 1],
     ['lvCh2', 55, 512, 1],
 
-    ['vlVrt', 286, 314, 1],
+    ['vlVrt', 450, 330, 1],
     ['vlPrc', 132, 1254, 1],
     ['vlKoupD', 172, 433, 0],
     ['vlObyv45', 450, 1380, 0],
@@ -101,7 +101,27 @@ var itemCoordinates = [
     ['vlJid', 450, 980, 0],
     ['vlMarek', 450, 1068, 1],
     ['vlPata', 450, 726, 1],
-    ['vlKoupH', 450, 515, 1]
+    ['vlKoupH', 450, 515, 1],
+
+    ['pirPrdDv', 378, 376, 0],
+    ['pirPrdPr', 378, 227, 0],
+    ['pirSch', 133, 797, 0],
+    ['pirJid', 456, 726, 0],
+    ['pirObyv', 449, 1009, 0],
+    ['pirChD', 256, 552, 0],
+    ['pirKoupD', 187, 493, 0],
+    ['pirSpa', 229, 353, 0],
+    ['pirZadD', 428, 548, 0],
+
+    ['pirVchH', 165, 48, 1],
+    ['pirChWc', 179, 794, 1],
+    ['pirCh', 179, 563, 1],
+    ['pirWc', 131, 919, 1],
+    ['pirZadHVch', 179, 232, 1],
+    ['pirZadHCh', 179, 346, 1],
+    ['pirChMa', 207, 946, 1],
+    ['mgntGH', 18, 61, 1],
+    ['mgntGD', 18, 117, 1],
 ];
 
 var itemStatusMap = {};
@@ -311,6 +331,10 @@ function isValveId(id) {
     return startsWith(id, "vl");
 }
 
+function isPirId(id) {
+    return startsWith(id, "pir") || startsWith(id, "mgnt");
+}
+
 function startsWith(str, substr) {
     return str.length >= substr.length && (str.substr(0, substr.length) == substr);
 }
@@ -327,6 +351,8 @@ function drawItems() {
                 drawLight(id)
             } else if (isValveId(id)) {
                 drawValve(id)
+            } else if (isPirId(id)) {
+                drawPir(id)
             } else if (isLouversId(id)) {
                 drawOneLouvers(id)
             } else if (id == 'stairsUp') {
@@ -480,6 +506,33 @@ function drawValveIcon(x, y, pos, act, ctx) {
     }
 }
 
+function drawPirIcon(x, y, age, ctx) {
+    ctx.strokeStyle = 'orange';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(x, y, 7, 0, 2 * Math.PI);
+    ctx.fillStyle = 'orange';
+    ctx.fill();
+    ctx.stroke();
+
+    var maxAge = 60.0;
+
+    if (age >= 0 && age < maxAge) {
+        var startAngle = (1.5 - 2 * (1 - age / maxAge)) * Math.PI;
+        var endAngle = 1.5 * Math.PI;
+
+        ctx.beginPath();
+        ctx.strokeStyle = 'red';
+        ctx.moveTo(x, y);
+        ctx.arc(x, y, 7, startAngle, endAngle);
+        ctx.lineTo(x, y);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+        ctx.stroke();
+    }
+
+}
+
 function drawLight(id) {
     var lightStatus = itemStatusMap[id];
     var power = lightStatus.val / lightStatus.maxVal;
@@ -499,6 +552,16 @@ function drawValve(id) {
     var y = coords[1];
 
     drawValveIcon(x, y, valveStatus.pos, valveStatus.act, mainCtx);
+}
+
+function drawPir(id) {
+    var pirStatus = itemStatusMap[id];
+
+    var coords = itemCoordinateMap[id];
+    var x = coords[0];
+    var y = coords[1];
+
+    drawPirIcon(x, y, pirStatus.age, mainCtx);
 }
 
 function drawOneLouvers(id) {
@@ -579,7 +642,7 @@ function onCanvasClick(event) {
         return;
     }
 
-    //tmp += "['pwm', " + Math.round(parseFloat(event.offsetX)) + ", " + Math.round(parseFloat(event.offsetY)) + ", 0]<br>";
+    //tmp += "['pwm', " + Math.round(parseFloat(event.offsetX)) + ", " + Math.round(parseFloat(event.offsetY)) + ", 0],<br>";
     //debug(tmp);
     //return;
 
@@ -646,7 +709,10 @@ function updateItems() {
             parseJsonStatusResponse(request, 'louvers', itemStatusMap);
             updateImpl('/airvalves/status', function (request) {
                 parseJsonStatusResponse(request, 'airValves', itemStatusMap);
-                drawItems();
+                updateImpl('/pir/status', function (request) {
+                    parseJsonStatusResponse(request, 'pir', itemStatusMap);
+                    drawItems();
+                });
             });
         });
     });
