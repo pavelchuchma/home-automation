@@ -24,6 +24,7 @@ import controller.actor.IOnOffActor;
 import controller.actor.OnOffActor;
 import controller.actor.PwmActor;
 import controller.actor.RadioOnOffActor;
+import controller.actor.RecuperationActor;
 import controller.actor.TestingOnOffActor;
 import controller.controller.LouversController;
 import controller.controller.LouversControllerImpl;
@@ -196,6 +197,8 @@ public class Main {
         WallSwitch kuchynSw2 = new WallSwitch("kuchynSw2", kuchyn, 2);
         WallSwitch kuchynSw3 = new WallSwitch("kuchynSw3", kuchyn, 1);
 
+        RecuperationActor recuperation = new RecuperationActor(schodyDoleL2Sw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
+
         ActorListener prizemiVzaduKuchynSw2Indicator = kuchynSw1.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON);
 
         OnOffActor svJidelna = new OnOffActor("svJidelna", "Jídelna Stul", triak1.getOut1(), 1, 0, schodyDoleR3Sw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
@@ -218,7 +221,6 @@ public class Main {
         SwitchListener lst = nodeInfoCollector.getSwitchListener();
 
         Action invertJidelna = new InvertAction(svJidelna);
-        lst.addActionBinding(new ActionBinding(schodyDoleR3Sw.getRightUpperButton(), invertJidelna, null));
 
         // zaluzie
         RelayBoardDevice rele3ZaluzieAPort1 = new RelayBoardDevice("rele3ZaluzieAPort1", zaluzieA, 1);
@@ -403,11 +405,14 @@ public class Main {
 
 
         // kuchyn + obyvak
+        lst.addActionBinding(new ActionBinding(schodyDoleL2Sw.getLeftBottomButton(), new InvertAction(recuperation), null));
+
         configureLouvers(lst, schodyDoleR1Sw, WallSwitch.Side.LEFT, zaluzieKuchyn);
         configureLouvers(lst, schodyDoleR1Sw, WallSwitch.Side.RIGHT, zaluzieObyvak1);
         configureLouvers(lst, schodyDoleR2Sw, WallSwitch.Side.LEFT, zaluzieObyvak2, zaluzieObyvak3);
         configureLouvers(lst, schodyDoleR2Sw, WallSwitch.Side.RIGHT, zaluzieObyvak4);
         configureLouvers(lst, schodyDoleR3Sw, WallSwitch.Side.LEFT, zaluzieObyvak5, zaluzieObyvak6);
+        lst.addActionBinding(new ActionBinding(schodyDoleR3Sw.getRightUpperButton(), invertJidelna, null));
 
         // obyvak u schodu
         SwitchAllOffWithMemory allLightsFromKitchenToLivingRoomOff = new SwitchAllOffWithMemory(kuchyn1PwmActor, kuchyn2PwmActor, kuchyn3PwmActor, /*kuchyn4PwmActor,*/ kuchyn5PwmActor,
@@ -422,7 +427,7 @@ public class Main {
         SwitchOnSensorAction bzucakAction = new SwitchOnSensorAction(bzucakDvere, 5, 100);
         lst.addActionBinding(new ActionBinding(schodyDoleL1Sw.getRightUpperButton(), bzucakAction, null));
 
-        IndicatorAction garazIndicator = new IndicatorAction(schodyDoleL2Sw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
+        IndicatorAction garazIndicator = new IndicatorAction(schodyDoleR1Sw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
 
 
         // gauc

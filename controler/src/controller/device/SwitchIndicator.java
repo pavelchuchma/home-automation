@@ -2,7 +2,7 @@ package controller.device;
 
 import java.util.ArrayList;
 
-import controller.actor.AbstractActor;
+import controller.actor.AbstractPinActor;
 import controller.actor.ActorListener;
 import controller.actor.IReadableOnOff;
 import node.NodePin;
@@ -49,7 +49,7 @@ public class SwitchIndicator implements ActorListener {
         int resultValue = (val) ? 0 : 1;
         if (resultValue != lastSetValue) {
 //            log.debug("  setting " + pin + " to " + resultValue);
-            if (AbstractActor.setPinValueImpl(pin, resultValue, RETRY_COUNT)) {
+            if (AbstractPinActor.setPinValueImpl(pin, resultValue, RETRY_COUNT)) {
                 lastSetValue = resultValue;
             }
         }

@@ -3,7 +3,7 @@ package controller.actor;
 import node.NodePin;
 import org.apache.log4j.Logger;
 
-public class OnOffActor extends AbstractActor implements IOnOffActor {
+public class OnOffActor extends AbstractPinActor implements IOnOffActor {
     static Logger log = Logger.getLogger(OnOffActor.class.getName());
 
     int onValue;
@@ -18,7 +18,7 @@ public class OnOffActor extends AbstractActor implements IOnOffActor {
         this.actionData = actionData;
         notifyAll();
 
-        if (setPinValue(output, val, RETRY_COUNT)) {
+        if (setPinValue(outputPin, val, RETRY_COUNT)) {
             value = val;
             callListenersAndSetActionData(false, actionData);
             return true;

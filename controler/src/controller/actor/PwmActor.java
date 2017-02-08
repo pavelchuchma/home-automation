@@ -13,7 +13,7 @@ import packet.Packet;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-public class PwmActor extends AbstractActor implements IOnOffActor {
+public class PwmActor extends AbstractPinActor implements IOnOffActor {
     public static final int MAX_PWM_VALUE = 48;
     static Logger log = Logger.getLogger(PwmActor.class.getName());
 
@@ -48,7 +48,7 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
         this.actionData = actionData;
         notifyAll();
 
-        if (setPwmValue(output, newPwmValue, RETRY_COUNT)) {
+        if (setPwmValue(outputPin, newPwmValue, RETRY_COUNT)) {
             value = pwmPercent;
             callListenersAndSetActionData(false, actionData);
             return true;
@@ -141,6 +141,6 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
     }
 
     public LddBoardDevice.LddNodePin getLddOutput() {
-        return (LddBoardDevice.LddNodePin) output;
+        return (LddBoardDevice.LddNodePin) outputPin;
     }
 }
