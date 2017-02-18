@@ -14,6 +14,7 @@ import controller.action.InvertAction;
 import controller.action.InvertActionWithTimer;
 import controller.action.LouversActionGroup;
 import controller.action.PwmActionGroup;
+import controller.action.SunCondition;
 import controller.action.SwitchAllOffWithMemory;
 import controller.action.SwitchOffAction;
 import controller.action.SwitchOffSensorAction;
@@ -628,31 +629,32 @@ public class Main {
         configurePwmLights(lst, kuchynSw2, WallSwitch.Side.RIGHT, 50, obyvak06PwmActor, jidelna1PwmActor, kuchyn5PwmActor);
         configurePwmLights(lst, kuchynSw2, WallSwitch.Side.LEFT, 70, obyvak01PwmActor, obyvak10PwmActor, obyvak13PwmActor);
 
+        SunCondition sunCondition = new SunCondition(0, -15);
 
         // PIRs
         InputDevice pirA1Prizemi = new InputDevice("pirA1Prizemi", pirNodeA, 1);
         setupPir(lst, pirA1Prizemi.getIn1AndActivate(), "pirPrdDv", "Pradelna dvere", new SwitchOnSensorAction(pradelna1PwmActor, 600, 80), new SwitchOffSensorAction(pradelna1PwmActor, 60));
         setupPir(lst, pirA1Prizemi.getIn2AndActivate(), "pirPrdPr",  "Pradelna pracka", new SwitchOnSensorAction(pradelna1PwmActor, 600, 80), new SwitchOffSensorAction(pradelna1PwmActor, 60));
         //koupelna umyvadlo A1:3
-        setupPir(lst, pirA1Prizemi.getIn4AndActivate(), "pirVchH",  "Vchod hore", new SwitchOnSensorAction(vchodHorePwmActor, 600, 80, 0, -15), new SwitchOffSensorAction(vchodHorePwmActor, 60));
+        setupPir(lst, pirA1Prizemi.getIn4AndActivate(), "pirVchH", "Vchod hore", new SwitchOnSensorAction(vchodHorePwmActor, 600, 80, sunCondition), new SwitchOffSensorAction(vchodHorePwmActor, 60));
         setupPir(lst, pirA1Prizemi.getIn5AndActivate(), "pirSch",  "Schodiste", null, null);
         // A6:3
 
         InputDevice pirA2Patro = new InputDevice("pirA2Patro", pirNodeA, 2);
         setupPir(lst, pirA2Patro.getIn1AndActivate(), "pirChWc",  "Chodba pred WC", null, null);
         setupPir(lst, pirA2Patro.getIn2AndActivate(), "pirCh",  "Chodba", null, null);
-        setupPir(lst, pirA2Patro.getIn3AndActivate(), "pirWc",  "WC", new SwitchOnSensorAction(wcPwmActor, 600, 100, 0, -15), new SwitchOffSensorAction(wcPwmActor, 60));
-        setupPir(lst, pirA2Patro.getIn5AndActivate(), "pirZadHVch",  "Zadveri hore vchod", new SwitchOnSensorAction(zadveriPwmActor, 600, 100, 0, -15), new SwitchOffSensorAction(zadveriPwmActor, 15));
-        setupPir(lst, pirA2Patro.getIn6AndActivate(), "pirZadHCh",  "Zadveri hore chodba", new SwitchOnSensorAction(zadveriPwmActor, 600, 100, 0, -15), new SwitchOffSensorAction(zadveriPwmActor, 15));
-        setupPir(lst, pirA2Patro.getIn4AndActivate(), "pirChMa",  "Chodba nad Markem", new SwitchOnSensorAction(satnaPwmActor, 600, 66, 0, -15), new SwitchOffSensorAction(satnaPwmActor, 60));
+        setupPir(lst, pirA2Patro.getIn3AndActivate(), "pirWc", "WC", new SwitchOnSensorAction(wcPwmActor, 600, 100, sunCondition), new SwitchOffSensorAction(wcPwmActor, 60));
+        setupPir(lst, pirA2Patro.getIn5AndActivate(), "pirZadHVch", "Zadveri hore vchod", new SwitchOnSensorAction(zadveriPwmActor, 600, 100, sunCondition), new SwitchOffSensorAction(zadveriPwmActor, 15));
+        setupPir(lst, pirA2Patro.getIn6AndActivate(), "pirZadHCh", "Zadveri hore chodba", new SwitchOnSensorAction(zadveriPwmActor, 600, 100, sunCondition), new SwitchOffSensorAction(zadveriPwmActor, 15));
+        setupPir(lst, pirA2Patro.getIn4AndActivate(), "pirChMa", "Chodba nad Markem", new SwitchOnSensorAction(satnaPwmActor, 600, 66, sunCondition), new SwitchOffSensorAction(satnaPwmActor, 60));
 
         InputDevice pirA3Prizemi = new InputDevice("pirA3Prizemi", pirNodeA, 3);
         setupPir(lst, pirA3Prizemi.getIn1AndActivate(), "pirJid",  "Jidelna", null, null);
         setupPir(lst, pirA3Prizemi.getIn2AndActivate(), "pirObyv",  "Obyvak", null, null);
-        setupPir(lst, pirA3Prizemi.getIn3AndActivate(), "pirChD",  "Chodba dole", new SwitchOnSensorAction(chodbaDolePwmActor, 600, 100, 0, -15), new SwitchOffSensorAction(chodbaDolePwmActor, 15));
-        setupPir(lst, pirA3Prizemi.getIn4AndActivate(), "pirKoupD",  "Koupelna dole", new SwitchOnSensorAction(koupelnaDolePwmActor, 600, 50, 0, -15), new SwitchOffSensorAction(koupelnaDolePwmActor, 60));
+        setupPir(lst, pirA3Prizemi.getIn3AndActivate(), "pirChD", "Chodba dole", new SwitchOnSensorAction(chodbaDolePwmActor, 600, 100, sunCondition), new SwitchOffSensorAction(chodbaDolePwmActor, 15));
+        setupPir(lst, pirA3Prizemi.getIn4AndActivate(), "pirKoupD", "Koupelna dole", new SwitchOnSensorAction(koupelnaDolePwmActor, 600, 50, sunCondition), new SwitchOffSensorAction(koupelnaDolePwmActor, 60));
         setupPir(lst, pirA3Prizemi.getIn5AndActivate(), "pirSpa",  "Spajza", new SwitchOnSensorAction(svSpajza, 600, 100), new SwitchOffSensorAction(svSpajza, 20));
-        setupPir(lst, pirA3Prizemi.getIn6AndActivate(), "pirZadD",  "Zadveri dole", new SwitchOnSensorAction(zadveriDolePwmActor, 600, 100, -15, -30), new SwitchOffSensorAction(zadveriDolePwmActor, 15));
+        setupPir(lst, pirA3Prizemi.getIn6AndActivate(), "pirZadD", "Zadveri dole", new SwitchOnSensorAction(zadveriDolePwmActor, 600, 100, new SunCondition(-15, -30)), new SwitchOffSensorAction(zadveriDolePwmActor, 15));
 
         InputDevice cidlaGaraz = new InputDevice("cidlaGaraz", garazVzadu, 3);
         setupMagneticSensor(lst, cidlaGaraz.getIn1AndActivate(), "mgntGH", "Garaz hore", null, null);
