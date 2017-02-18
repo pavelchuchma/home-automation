@@ -1,5 +1,11 @@
 package app;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
+
+import controller.action.Action;
 import node.MessageType;
 import node.Node;
 import org.apache.log4j.Logger;
@@ -7,11 +13,6 @@ import packet.IPacketUartIO;
 import packet.Packet;
 import packet.PacketUartIO;
 import servlet.Servlet;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
 
 public class NodeInfoCollector implements Iterable<NodeInfo> {
     public static final int MAX_HEART_BEAT_PERIOD = 10;
@@ -23,8 +24,13 @@ public class NodeInfoCollector implements Iterable<NodeInfo> {
 
     SwitchListener switchListener = new SwitchListener();
 
-    public SwitchListener getSwitchListener() {
-        return switchListener;
+    public NodeInfoCollector(final IPacketUartIO packetUartIO) {
+        if (instance != null) {
+            throw new IllegalStateException("Already created!!!");
+        }
+        instance = this;
+
+        this.packetUartIO = packetUartIO;
     }
 
     public static NodeInfoCollector getInstance() {
@@ -32,6 +38,10 @@ public class NodeInfoCollector implements Iterable<NodeInfo> {
             throw new IllegalStateException("Not created yet!");
         }
         return instance;
+    }
+
+    public SwitchListener getSwitchListener() {
+        return switchListener;
     }
 
     public void start() {
@@ -77,15 +87,6 @@ public class NodeInfoCollector implements Iterable<NodeInfo> {
         });
     }
 
-    public NodeInfoCollector(final IPacketUartIO packetUartIO) {
-        if (instance != null) {
-            throw new IllegalStateException("Already created!!!");
-        }
-        instance = this;
-
-        this.packetUartIO = packetUartIO;
-    }
-
     public synchronized void addNode(Node node) {
         log.debug(String.format("Node #%d added", node.getNodeId()));
 
@@ -117,8 +118,11 @@ public class NodeInfoCollector implements Iterable<NodeInfo> {
                 "<body>");
 
         String[] actionNames = new String[]{"Bzucak", "Garaz","Jidelna", "Zvuk"};
+        Action[] actions = new Action[]{Servlet.action1, Servlet.action1, Servlet.action2, Servlet.action3, Servlet.action4};
         for (int i = 0; i < actionNames.length; i++) {
-            builder.append(String.format("<a href='/a%d'>%s</a>&nbsp;&nbsp;&nbsp;&nbsp;", i + 1, actionNames[i]));
+            if (actions[i] != null) {
+                builder.append(String.format("<a href='/a%d'>%s</a>&nbsp;&nbsp;&nbsp;&nbsp;", i + 1, actionNames[i]));
+            }
         }
 
         builder.append("<a href='" + Servlet.TARGET_LOUVERS + "'>Zaluzie...</a>&nbsp;&nbsp;&nbsp;&nbsp;");

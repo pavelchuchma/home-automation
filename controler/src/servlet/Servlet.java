@@ -3,8 +3,12 @@ package servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,6 +17,7 @@ import java.util.Map;
 
 import app.NodeInfo;
 import app.NodeInfoCollector;
+import app.configurator.AbstractConfigurator;
 import controller.PirStatus;
 import controller.action.Action;
 import controller.actor.PwmActor;
@@ -63,6 +68,7 @@ public class Servlet extends AbstractHandler {
     public static List<PirStatus> pirStatusList;
     public static Map<String, LouversController> louversControllerMap;
     public static Map<String, ValveController> valveControllerMap;
+    public static AbstractConfigurator configurator;
     static Logger log = Logger.getLogger(Servlet.class.getName());
     private static Action[] lightActions;
     private static Map<String, PwmActor> lightActorMap;
@@ -133,114 +139,121 @@ public class Servlet extends AbstractHandler {
                        HttpServletResponse response)
             throws IOException, ServletException {
 
-        log.debug("handle: " + target);
-        if (target.endsWith(".css")) {
-            sendFile(target, response, "text/css;charset=utf-8");
-            baseRequest.setHandled(true);
-        } else if (target.endsWith(".html")) {
-            sendFile(target, response, "text/html;charset=utf-8");
-            baseRequest.setHandled(true);
-        } else if (target.endsWith(".jpg")) {
-            sendFile(target, response, "image/jpeg");
-            baseRequest.setHandled(true);
-        } else if (target.endsWith(".js")) {
-            sendFile(target, response, "application/javascript;charset=utf-8");
-            baseRequest.setHandled(true);
-        } else if (target.startsWith(TARGET_PIR_STATUS)) {
-            writePitStatusJson(baseRequest, response);
-        } else if (target.startsWith(TARGET_VALVES)) {
-            if (target.startsWith(TARGET_VALVES_STATUS)) {
-                writeAirValvesStatusJson(baseRequest, response);
-            } else if (target.startsWith(TARGET_VALVES_PARAM_ACTION)) {
-                ValveController controller = getItemById(request, valveControllerMap);
+        try {
+            log.debug("handle: " + target);
+            if (target.endsWith(".css")) {
+                sendFile(target, response, "text/css;charset=utf-8");
+                baseRequest.setHandled(true);
+            } else if (target.endsWith(".html")) {
+                sendFile(target, response, "text/html;charset=utf-8");
+                baseRequest.setHandled(true);
+            } else if (target.endsWith(".jpg")) {
+                sendFile(target, response, "image/jpeg");
+                baseRequest.setHandled(true);
+            } else if (target.endsWith(".js")) {
+                sendFile(target, response, "application/javascript;charset=utf-8");
+                baseRequest.setHandled(true);
+            } else if (target.startsWith(TARGET_PIR_STATUS)) {
+                writePitStatusJson(baseRequest, response);
+            } else if (target.startsWith(TARGET_VALVES)) {
+                if (target.startsWith(TARGET_VALVES_STATUS)) {
+                    writeAirValvesStatusJson(baseRequest, response);
+                } else if (target.startsWith(TARGET_VALVES_PARAM_ACTION)) {
+                    ValveController controller = getItemById(request, valveControllerMap);
 
-                String posStr = request.getParameter("val");
-                if (posStr != null) {
-                    int position = Integer.parseInt(posStr);
-                    controller.setPosition(position);
-                    sendOkResponse(baseRequest, response, "");
-                }
-            }
-        } else {
-            if (target.startsWith(TARGET_LOUVERS)) {
-                if (target.startsWith(TARGET_LOUVERS_STATUS)) {
-                    writeLouversStatusJson(baseRequest, response);
-                } else if (target.startsWith(TARGET_LOUVERS_PARAM_ACTION)) {
-                    LouversController controller = getItemById(request, louversControllerMap);
-
-                    String posStr = request.getParameter("pos");
-                    String offStr = request.getParameter("off");
-                    if (posStr != null && offStr != null) {
+                    String posStr = request.getParameter("val");
+                    if (posStr != null) {
                         int position = Integer.parseInt(posStr);
-                        int offset = Integer.parseInt(offStr);
-                        if (position == 0) {
-                            controller.up();
-                        } else if (position == 100) {
-                            controller.outshine(offset);
-                        }
+                        controller.setPosition(position);
                         sendOkResponse(baseRequest, response, "");
                     }
-                } else {
-                    int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LOUVERS_ACTION);
-                    if (actionIndex != -1) {
-                        processLouversAction(actionIndex);
-                    }
-
-                    sendOkResponse(baseRequest, response, getLouversPage());
                 }
-
-            } else if (target.startsWith(TARGET_LIGHTS)) {
-                if (target.startsWith(TARGET_LIGHTS_STATUS)) {
-                    writeLightsStatusJson(baseRequest, response);
-                } else if (target.startsWith(TARGET_LIGHTS_PARAM_ACTION)) {
-                    PwmActor actor = getItemById(request, lightActorMap);
-
-                    String valStr = request.getParameter("val");
-                    if (valStr != null) {
-                        int value = Integer.parseInt(valStr);
-                        actor.setValue(value, null);
-                        sendOkResponse(baseRequest, response, "");
-                    }
-                } else {
-                    int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LIGHTS_ACTION);
-                    if (actionIndex != -1) {
-                        lightActions[actionIndex].perform(-1);
-                    }
-
-                    sendOkResponse(baseRequest, response, getLightsPage());
-                }
-            } else if (target.startsWith(TARGET_PIR_STATUS_PAGE)) {
-                sendOkResponse(baseRequest, response, getPirPage());
-
-            } else if (target.startsWith(TARGET_SYSTEM)) {
-                int debugNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_INFO);
-                int resetNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_RESET);
-                int testCycleNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_CYCLE);
-                int testAllOnNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_ALL_ON);
-                int testAllOffNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_ALL_OFF);
-                int testEndNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_END);
-
-                if (resetNodeId != -1) {
-                    Node n = NodeInfoCollector.getInstance().getNode(resetNodeId);
-                    n.reset();
-                } else if (testCycleNodeId >= 0) {
-                    startNodeTest(testCycleNodeId, NodeTestRunner.Mode.cycle);
-                } else if (testAllOnNodeId >= 0) {
-                    startNodeTest(testAllOnNodeId, NodeTestRunner.Mode.fullOn);
-                } else if (testAllOffNodeId >= 0) {
-                    startNodeTest(testAllOffNodeId, NodeTestRunner.Mode.fullOff);
-                } else if (testEndNodeId >= 0) {
-                    stopNodeTest(testEndNodeId);
-                }
-
-                sendOkResponse(baseRequest, response, getSystemPage(debugNodeId));
-
             } else {
-                if (target.startsWith("/a")) {
-                    processAction(target);
+                if (target.startsWith(TARGET_LOUVERS)) {
+                    if (target.startsWith(TARGET_LOUVERS_STATUS)) {
+                        writeLouversStatusJson(baseRequest, response);
+                    } else if (target.startsWith(TARGET_LOUVERS_PARAM_ACTION)) {
+                        LouversController controller = getItemById(request, louversControllerMap);
+
+                        String posStr = request.getParameter("pos");
+                        String offStr = request.getParameter("off");
+                        if (posStr != null && offStr != null) {
+                            int position = Integer.parseInt(posStr);
+                            int offset = Integer.parseInt(offStr);
+                            if (position == 0) {
+                                controller.up();
+                            } else if (position == 100) {
+                                controller.outshine(offset);
+                            }
+                            sendOkResponse(baseRequest, response, "");
+                        }
+                    } else {
+                        int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LOUVERS_ACTION);
+                        if (actionIndex != -1) {
+                            processLouversAction(actionIndex);
+                        }
+
+                        sendOkResponse(baseRequest, response, getLouversPage());
+                    }
+
+                } else if (target.startsWith(TARGET_LIGHTS)) {
+                    if (target.startsWith(TARGET_LIGHTS_STATUS)) {
+                        writeLightsStatusJson(baseRequest, response);
+                    } else if (target.startsWith(TARGET_LIGHTS_PARAM_ACTION)) {
+                        PwmActor actor = getItemById(request, lightActorMap);
+
+                        String valStr = request.getParameter("val");
+                        if (valStr != null) {
+                            int value = Integer.parseInt(valStr);
+                            actor.setValue(value, null);
+                            sendOkResponse(baseRequest, response, "");
+                        }
+                    } else {
+                        int actionIndex = tryTargetMatchAndParseArg(target, TARGET_LIGHTS_ACTION);
+                        if (actionIndex != -1) {
+                            lightActions[actionIndex].perform(-1);
+                        }
+
+                        sendOkResponse(baseRequest, response, getLightsPage());
+                    }
+                } else if (target.startsWith(TARGET_PIR_STATUS_PAGE)) {
+                    sendOkResponse(baseRequest, response, getPirPage());
+
+                } else if (target.startsWith(TARGET_SYSTEM)) {
+                    int debugNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_INFO);
+                    int resetNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_RESET);
+                    int testCycleNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_CYCLE);
+                    int testAllOnNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_ALL_ON);
+                    int testAllOffNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_ALL_OFF);
+                    int testEndNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_END);
+
+                    if (resetNodeId != -1) {
+                        Node n = NodeInfoCollector.getInstance().getNode(resetNodeId);
+                        n.reset();
+                    } else if (testCycleNodeId >= 0) {
+                        startNodeTest(testCycleNodeId, NodeTestRunner.Mode.cycle);
+                    } else if (testAllOnNodeId >= 0) {
+                        startNodeTest(testAllOnNodeId, NodeTestRunner.Mode.fullOn);
+                    } else if (testAllOffNodeId >= 0) {
+                        startNodeTest(testAllOffNodeId, NodeTestRunner.Mode.fullOff);
+                    } else if (testEndNodeId >= 0) {
+                        stopNodeTest(testEndNodeId);
+                    }
+
+                    sendOkResponse(baseRequest, response, getSystemPage(debugNodeId));
+
+                } else {
+                    if (target.startsWith("/a")) {
+                        processAction(target);
+                    }
+                    sendOkResponse(baseRequest, response, nodeInfoCollector.getReport());
                 }
-                sendOkResponse(baseRequest, response, nodeInfoCollector.getReport());
             }
+        } catch (Exception e) {
+            log.error("failed to process '" + target + "'", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            e.printStackTrace(response.getWriter());
+            baseRequest.setHandled(true);
         }
     }
 
@@ -292,10 +305,21 @@ public class Servlet extends AbstractHandler {
 
             InputStream in = this.getClass().getResourceAsStream("/servlet/resources" + target);
             if (in != null) {
-                byte[] buff = new byte[1024];
-                int read;
-                while ((read = in.read(buff)) > 0) {
-                    response.getOutputStream().write(buff, 0, read);
+                if (target.endsWith(".html")) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        writer.write(line.replace("configuration-pi.js", configurator.getConfigurationJs()));
+                        writer.write('\n');
+                    }
+                    writer.close();
+                } else {
+                    byte[] buff = new byte[1024];
+                    int read;
+                    while ((read = in.read(buff)) > 0) {
+                        response.getOutputStream().write(buff, 0, read);
+                    }
                 }
                 return;
             }
@@ -450,11 +474,18 @@ public class Servlet extends AbstractHandler {
                 "</head>" +
                 "<body><a href='" + TARGET_LOUVERS + "'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
 
-        builder.append(getLouversTable(0, 4));
-        builder.append(getLouversTable(4, 4));
-        builder.append(getLouversTable(8, 4));
-        builder.append(getLouversTable(12, 4));
-        builder.append(getLouversTable(16, 5));
+        for (int i = 0; i < louversControllers.length; i += 4) {
+            int count = (i + 8 < louversControllers.length) ? 4 : louversControllers.length - i;
+            builder.append(getLouversTable(i, count));
+            if (count > 4) {
+                break;
+            }
+        }
+//        builder.append(getLouversTable(0, 4));
+//        builder.append(getLouversTable(4, 4));
+//        builder.append(getLouversTable(8, 4));
+//        builder.append(getLouversTable(12, 4));
+//        builder.append(getLouversTable(16, 5));
 
         builder.append("</body></html>");
         return builder.toString();
