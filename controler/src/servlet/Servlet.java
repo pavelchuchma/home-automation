@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -306,8 +307,9 @@ public class Servlet extends AbstractHandler {
             InputStream in = this.getClass().getResourceAsStream("/servlet/resources" + target);
             if (in != null) {
                 if (target.endsWith(".html")) {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream()));
+                    Charset charset = Charset.forName("utf-8");
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in, charset));
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), charset));
                     String line;
                     while ((line = reader.readLine()) != null) {
                         writer.write(line.replace("configuration-pi.js", configurator.getConfigurationJs()));
@@ -563,8 +565,8 @@ public class Servlet extends AbstractHandler {
             String testLink = "";
             if (nodeInfo.isResetSupported()) {
                 resetLink = String.format("<a href='%s%d'>reset</a>", TARGET_SYSTEM_RESET, nodeId);
-                // allow test only for devices without device assigned
-                if (isNodeTestRunning(nodeInfo) || nodeInfo.getNode().getDevices().isEmpty()) {
+                // allow test only for devices without device assigned and not on bridge
+                if (nodeId != 1 && (isNodeTestRunning(nodeInfo) || nodeInfo.getNode().getDevices().isEmpty())) {
                     testLink = String.format("<a href='%s%d'>test Cycle</a> <a href='%s%d'>All ON</a> <a href='%s%d'>all OFF</a>", TARGET_SYSTEM_TEST_CYCLE, nodeId, TARGET_SYSTEM_TEST_ALL_ON, nodeId, TARGET_SYSTEM_TEST_ALL_OFF, nodeId);
                     if (isNodeTestRunning(nodeInfo)) {
                         testLink += String.format("<td><a href='%s%d'>end test</a>", TARGET_SYSTEM_TEST_END, nodeId);

@@ -100,7 +100,7 @@ public class PwmActor extends AbstractPinActor implements IOnOffActor {
                 log.debug(String.format("Setting pwm %s to: %d", nodePin, value));
                 Packet response = node.setManualPwmValue(nodePin.getPin(), value);
 
-                // ignore no-response on Barbucha - testing machine
+                // ignore no-response on AGATA - testing machine
                 if (!InetAddress.getLocalHost().getHostName().toUpperCase().equals("AGATA")) {
                     if (response == null) {
                         throw new IOException("No response.");

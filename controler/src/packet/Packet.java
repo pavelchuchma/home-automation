@@ -1,9 +1,9 @@
 package packet;
 
+import java.util.Arrays;
+
 import controller.actor.PwmActor;
 import node.MessageType;
-
-import java.util.Arrays;
 
 public class Packet {
     public final int nodeId;
@@ -19,9 +19,8 @@ public class Packet {
         length = (data != null) ? 2 + data.length : 2;
     }
 
-
     public static Packet createMsgUartTransmitPerfTestRequest(int nodeId, int packetCount, int packetLength, int firstByte, boolean waitForFreeOutput) {
-        return new Packet(nodeId, MessageType.MSG_UartTransmitPerfTestRequest, new int[]{packetCount, packetLength, firstByte, (byte) ((waitForFreeOutput == true) ? 1 : 0)});
+        return new Packet(nodeId, MessageType.MSG_UartTransmitPerfTestRequest, new int[]{packetCount, packetLength, firstByte, (byte) ((waitForFreeOutput) ? 1 : 0)});
     }
 
     public static Packet createMsgReadRamRequest(int nodeId, int address) {
