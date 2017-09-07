@@ -27,6 +27,7 @@ public class MpdRadio {
     }
 
     public void start() {
+        log.debug("starting stream: " + radioStream.getFile());
         MPDPlayer player = mpd.getMPDPlayer();
         try {
             player.stop();
@@ -34,15 +35,18 @@ public class MpdRadio {
             playlist.clearPlaylist();
             playlist.addSong(radioStream);
             player.play();
+            log.debug("  started");
         } catch (MPDConnectionException | MPDPlayerException | MPDPlaylistException e) {
             throw new RuntimeException(e);
         }
     }
 
     public void stop() {
+        log.debug("stopping stream");
         MPDPlayer player = mpd.getMPDPlayer();
         try {
             player.stop();
+            log.debug("  stopped");
         } catch (MPDConnectionException | MPDPlayerException e) {
             throw new RuntimeException(e);
         }
@@ -51,7 +55,19 @@ public class MpdRadio {
     public boolean isPlaying() {
         MPDPlayer player = mpd.getMPDPlayer();
         try {
-            return player.getStatus() == MPDPlayer.PlayerStatus.STATUS_PLAYING;
+            MPDPlayer.PlayerStatus status = player.getStatus();
+            log.debug("getting status -> " + status);
+            return status == MPDPlayer.PlayerStatus.STATUS_PLAYING;
+        } catch (MPDException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getCurrentSong() {
+        MPDPlayer player = mpd.getMPDPlayer();
+        try {
+            MPDSong currentSong = player.getCurrentSong();
+            return (currentSong != null) ? currentSong.getFile() : "none";
         } catch (MPDException e) {
             throw new RuntimeException(e);
         }

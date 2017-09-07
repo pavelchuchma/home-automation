@@ -18,7 +18,8 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/javax.servlet.jsp.jstl.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/javax.transaction.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/SunriseSunsetLib-bin.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="N:/work/HomeAutomation/controler/lib/commons-lang3-3.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/javaMPD-1.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/commons-lang3-3.0.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 
 public class RadioOnOffActor implements IOnOffActor {
     static Logger log = Logger.getLogger(RadioOnOffActor.class.getName());
-    MpdRadio radio = null;//+new MpdRadio();
+    MpdRadio radio = new MpdRadio();
 
     @Override
     public boolean switchOn(int percent, Object actionData) {
@@ -61,6 +61,6 @@ public class RadioOnOffActor implements IOnOffActor {
 
     @Override
     public boolean isOn() {
-        return false;
+        return radio.isPlaying();
     }
 }

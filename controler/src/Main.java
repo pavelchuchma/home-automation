@@ -53,7 +53,7 @@ public class Main {
             log.error("Initialization failed", e);
             e.printStackTrace();
             System.exit(2);
-        } catch (Exception e) {
+        } catch (Exception | Error e) {
             log.error("Initialization failed", e);
             e.printStackTrace();
             System.exit(3);
