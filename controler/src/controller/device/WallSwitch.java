@@ -1,6 +1,5 @@
 package controller.device;
 
-import controller.actor.ActorListener;
 import node.Node;
 import node.NodePin;
 import node.Pin;
@@ -38,7 +37,7 @@ public class WallSwitch extends ConnectedDevice {
         return pins[5];
     }
 
-    public ActorListener getGreenLedIndicator(final SwitchIndicator.Mode mode) {
+    public SwitchIndicator getGreenLedIndicator(final SwitchIndicator.Mode mode) {
         if (greenIndicator == null) {
             greenIndicator = new SwitchIndicator(getGreenLed(), mode);
         } else if (greenIndicator.mode != mode) {
@@ -47,7 +46,7 @@ public class WallSwitch extends ConnectedDevice {
         return greenIndicator;
     }
 
-    public ActorListener getRedLedIndicator(final SwitchIndicator.Mode mode) {
+    public SwitchIndicator getRedLedIndicator(final SwitchIndicator.Mode mode) {
         if (redIndicator == null) {
             redIndicator = new SwitchIndicator(getRedLed(), mode);
         } else if (redIndicator.mode != mode) {

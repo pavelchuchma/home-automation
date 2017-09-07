@@ -58,4 +58,19 @@ public class ValveControllerImplTest extends AbstractControllerTest {
     }
 
 
+    @Test
+    public void testValveManipulationOpenClose() throws Exception {
+        ValveController vc = new ValveControllerImpl("vc", "LC", openActor, closeActor, 20000);
+
+        vc.close();
+        Assert.assertEquals(1.0, vc.getPosition());
+        Assert.assertFalse(vc.isOpen());
+        Assert.assertTrue(vc.isClosed());
+
+        vc.open();
+        Assert.assertEquals(0.0, vc.getPosition());
+        Assert.assertTrue(vc.isOpen());
+        Assert.assertFalse(vc.isClosed());
+
+    }
 }

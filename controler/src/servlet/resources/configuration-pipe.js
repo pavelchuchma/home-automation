@@ -1,5 +1,5 @@
 function getBaseUrl() {
-    return 'http://10.0.0.150';
+    return 'http://10.0.0.160';
 }
 
 function getComponents() {
@@ -7,13 +7,20 @@ function getComponents() {
         //id, x, y, floor
         ['pwmVrt1', 342, 207, 1],
         ['pwmVrt2', 436, 207, 1],
+        ['pwmVchH', 167, 97, 1],
+        ['pwmKpH', 373, 446, 1],
+        ['pwmKpHZrc', 349, 516, 1],
+        ['pwmZadH', 196, 289, 1],
 
         ['stairsUp', 127, 690, 0],
         ['stairsDown', 127, 690, 1],
 
         ['lvVrt2', 370, 50, 1],
 
-        ['vlVrt', 450, 330, 1]
+        ['vlVrt', 450, 330, 1],
+
+        ['pirZadHVch', 179, 232, 1]
+
         //
         //['pirPrdDv', 378, 376, 0],
         //['pirPrdPr', 378, 227, 0],

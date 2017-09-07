@@ -23,6 +23,7 @@ public class SwitchIndicator implements ActorListener {
         this.mode = mode;
     }
 
+
     @Override
     public void onAction(IReadableOnOff source, boolean invert) {
 //        log.debug(pin + ".onAction(" + actor + ", invert: " + invert + ", mode: " + mode + ")");

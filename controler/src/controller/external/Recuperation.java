@@ -37,7 +37,7 @@ public class Recuperation {
     private long lastUpdateTime;
 
     public Recuperation() {
-        callServer(BTN_NONE);
+        refreshStatus();
     }
 
     private static String fixJsonSyntax(String response) {
@@ -49,14 +49,19 @@ public class Recuperation {
         return response;
     }
 
+    private void refreshStatus() {
+        callServer(BTN_NONE);
+    }
+
     public Status getStatus() {
+        refreshStatus();
         return status;
     }
 
     public boolean setSpeed(int targetSpeed) {
         log.debug("Setting speed to " + targetSpeed);
         Validate.inclusiveBetween(0, 4, targetSpeed);
-        callServer(BTN_NONE);
+        refreshStatus();
         int currentSpeed = -1;
 
         for (int i = 0; i < 10; i++) {

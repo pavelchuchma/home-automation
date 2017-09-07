@@ -50,12 +50,12 @@ public class LouversPositionTest {
         Assert.assertEquals(-1, lp.getPosition());
         Assert.assertEquals(9, lp.getOffset());
 
-        Thread.sleep(5);
-        // 99 ms down
+        Thread.sleep(4);
+        // 98 ms down
         Assert.assertEquals(-1, lp.getPosition());
         Assert.assertEquals(10, lp.getOffset());
 
-        Thread.sleep(1);
+        Thread.sleep(2);
         // 100 ms down
         Assert.assertEquals(100, lp.getPosition());
         Assert.assertEquals(10, lp.getOffset());
@@ -87,62 +87,68 @@ public class LouversPositionTest {
 
 
         lp.startUp();
-        Thread.sleep(17);
-        // -9 ms
+        Thread.sleep(16);
+        // -8 ms
         Assert.assertEquals(-1, lp.getPosition());
         Assert.assertEquals(-1, lp.getOffset());
 
-        Thread.sleep(1);
-        // -10 ms
+        Thread.sleep(3);
+        // -11 ms
         Assert.assertEquals(-1, lp.getPosition());
         Assert.assertEquals(0, lp.getOffset());
 
-        Thread.sleep(89);
-        // -99 ms
+        Thread.sleep(86);
+        // -97 ms
         Assert.assertEquals(-1, lp.getPosition());
         Assert.assertEquals(0, lp.getOffset());
 
-        Thread.sleep(1);
-        // -100 ms
+        Thread.sleep(3);
+        // -101 ms
         Assert.assertEquals(0, lp.getPosition());
         Assert.assertEquals(0, lp.getOffset());
     }
 
     @Test
     public void testMovement() throws Exception {
-        LouversPosition lp = new LouversPosition(100, 10, 0);
+        LouversPosition lp = new LouversPosition(1000, 100, 0);
 
         int i = lp.startDown();
-        Assert.assertEquals(100, i);
-        Thread.sleep(120);
-        Assert.assertEquals(100, lp.getPosition());
-        Assert.assertEquals(10, lp.getOffset());
+        Assert.assertEquals(1000, i);
+        Thread.sleep(1200);
+        Assert.assertEquals(1000, lp.getPosition());
+        Assert.assertEquals(100, lp.getOffset());
         Assert.assertTrue(lp.isDown());
 
         i = lp.startUp();
-        Assert.assertEquals(100, i);
-        Thread.sleep(4);
-        Assert.assertEquals(96, lp.getPosition());
-        Assert.assertEquals(6, lp.getOffset());
+        Assert.assertEquals(1000, i);
+        Thread.sleep(40);
+        assertWithTolerance(960, lp.getPosition(), 3);
+        assertWithTolerance(60, lp.getOffset(), 1);
         Assert.assertTrue(lp.isDown());
 
-        Thread.sleep(4);
-        Assert.assertEquals(92, lp.getPosition());
-        Assert.assertEquals(2, lp.getOffset());
+        Thread.sleep(40);
+        assertWithTolerance(920, lp.getPosition(), 3);
+        assertWithTolerance(20, lp.getOffset(), 2);
         Assert.assertTrue(lp.isDown());
 
-        Thread.sleep(4);
-        Assert.assertEquals(88, lp.getPosition());
+        Thread.sleep(40);
+        assertWithTolerance(880, lp.getPosition(), 3);
         Assert.assertEquals(0, lp.getOffset());
         Assert.assertTrue(!lp.isDown());
 
         i = lp.startDown();
-        Assert.assertEquals(12, i);
-        Thread.sleep(4);
-        Assert.assertEquals(92, lp.getPosition());
-        Assert.assertEquals(4, lp.getOffset());
+        assertWithTolerance(120, i, 2);
+        Thread.sleep(40);
+        assertWithTolerance(920, lp.getPosition(), 3);
+        assertWithTolerance(40, lp.getOffset(), 2);
         Assert.assertTrue(lp.isDown());
 
         lp.stop();
+    }
+
+    private void assertWithTolerance(int expected, int position, int tolerance) {
+        String message = "expected " + expected + "(" + tolerance + ") but it was " + position;
+        Assert.assertTrue(message, expected + tolerance >= position);
+        Assert.assertTrue(message, expected - tolerance <= position);
     }
 }

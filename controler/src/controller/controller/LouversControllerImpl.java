@@ -97,8 +97,8 @@ public class LouversControllerImpl implements LouversController {
                 int position = louversPosition.getPosition();
                 int offset = louversPosition.getOffset();
 
-                if (position < 0 || offset < 0) {
-                    log.debug(" finding position first");
+                while (position < 0 || offset < 0) {
+                    log.debug(String.format(" finding position first. Current position: %d, offset: %d", position, offset));
                     // position unknown, move to closer end
                     if (downPercent > 50) {
                         // move down
@@ -107,9 +107,9 @@ public class LouversControllerImpl implements LouversController {
                         // move up
                         moveImpl(upActor, downActor, louversPosition::startUp, true, aData);
                     }
+                    position = louversPosition.getPosition();
+                    offset = louversPosition.getOffset();
                 }
-                position = louversPosition.getPosition();
-                offset = louversPosition.getOffset();
 
                 // validate position is known
                 Validate.isTrue(position >= 0);
@@ -124,7 +124,7 @@ public class LouversControllerImpl implements LouversController {
                 if (Math.abs(posMsDiff) > louversPosition.position.maxPositionMs * 0.005
                         && (downPercent != 100 || !louversPosition.isDown())) {
                     // position needs a correction
-                    moveImpl(posMsDiff, aData, needStopConflictingActor);
+                    moveImpl(posMsDiff, aData, true);
                     position = louversPosition.getPosition();
                     needStopConflictingActor = false;
                     log.debug(String.format(" After move: desiredPos: %d, currentPos: %d, diff: %d", desiredPositionMs, position, desiredPositionMs - position));
@@ -158,8 +158,6 @@ public class LouversControllerImpl implements LouversController {
 
     /**
      * @param msDiff               negative -> up, positive -> down
-     * @param aData
-     * @param stopConflictingActor
      * @throws ExternalModificationException
      */
     private void moveImpl(int msDiff, Object aData, boolean stopConflictingActor) throws ExternalModificationException {
