@@ -10,16 +10,12 @@
     <bookmark url="file://$PROJECT_DIR$/test/controller/controller/ValveControllerImplTest.java" />
     <bookmark url="file://$PROJECT_DIR$/test/controller/controller/LouversPositionTest.java" />
     <bookmark url="file://$PROJECT_DIR$/src/app/configurator/PiConfigurator.java" line="394" mnemonic="1" />
-    <bookmark url="file://$PROJECT_DIR$/src/app/configurator/PiConfigurator.java" line="608" mnemonic="2" />
+    <bookmark url="file://$PROJECT_DIR$/src/app/configurator/PiConfigurator.java" line="607" mnemonic="2" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="82455535-c405-4c4b-a371-b0bc707cb60b" name="Default" comment="- improving louvers, recuperation">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/artifacts/homeAutomation_jar.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/homeAutomation_jar.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/commons_lang3_3_0.xml" afterPath="$PROJECT_DIR$/.idea/libraries/commons_lang3_3_0.xml" />
+    <list default="true" readonly="true" id="82455535-c405-4c4b-a371-b0bc707cb60b" name="Default" comment="- fixing MPD radio">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Main.java" afterPath="$PROJECT_DIR$/src/Main.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/actor/RadioOnOffActor.java" afterPath="$PROJECT_DIR$/src/controller/actor/RadioOnOffActor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/external/MpdRadio.java" afterPath="$PROJECT_DIR$/src/controller/external/MpdRadio.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/app/configurator/PiConfigurator.java" afterPath="$PROJECT_DIR$/src/app/configurator/PiConfigurator.java" />
     </list>
     <ignored path="controler.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -235,9 +231,11 @@
       <file leaf-file-name="PiConfigurator.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/app/configurator/PiConfigurator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.33195877">
-              <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
-              <folding />
+            <state vertical-scroll-proportion="0.54226804">
+              <caret line="555" column="0" selection-start-line="555" selection-start-column="0" selection-end-line="555" selection-end-column="0" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -423,8 +421,8 @@
         <option value="$PROJECT_DIR$/src/controller/external/MpdRunner.java" />
         <option value="$PROJECT_DIR$/src/controller/external/MpdRadio.java" />
         <option value="$PROJECT_DIR$/src/controller/actor/RadioOnOffActor.java" />
-        <option value="$PROJECT_DIR$/src/app/configurator/PiConfigurator.java" />
         <option value="$PROJECT_DIR$/src/Main.java" />
+        <option value="$PROJECT_DIR$/src/app/configurator/PiConfigurator.java" />
       </list>
     </option>
   </component>
@@ -1852,13 +1850,7 @@
       <workItem from="1496434196003" duration="4668000" />
       <workItem from="1498577825042" duration="726000" />
       <workItem from="1500535786222" duration="19000" />
-      <workItem from="1504812387537" duration="5505000" />
-    </task>
-    <task id="LOCAL-00028" summary="- adding koupelnaZrcadlaPwmActor&#10;- updating sunset &amp; sunrise">
-      <created>1426449016123</created>
-      <option name="number" value="00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1426449016123</updated>
+      <workItem from="1504812387537" duration="5915000" />
     </task>
     <task id="LOCAL-00029" summary="- fixing sensors overwriting switches with timeout">
       <created>1426450943135</created>
@@ -2148,7 +2140,13 @@
       <option name="project" value="LOCAL" />
       <updated>1504813539768</updated>
     </task>
-    <option name="localTasksCounter" value="77" />
+    <task id="LOCAL-00077" summary="- fixing MPD radio">
+      <created>1504817939343</created>
+      <option name="number" value="00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1504817939343</updated>
+    </task>
+    <option name="localTasksCounter" value="78" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -2184,7 +2182,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="318237000" />
+    <option name="totallyTimeSpent" value="318647000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -2291,7 +2289,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <confirmMoveToFailedCommit value="2" />
-    <MESSAGE value="- refactoring js - merging louvers &amp; lights" />
     <MESSAGE value="- solving missing String.startsWith()&#10;- louvers on livingRoom page" />
     <MESSAGE value="- adding 2nd floor" />
     <MESSAGE value="- terasa PWM" />
@@ -2316,7 +2313,8 @@
     <MESSAGE value="- moving configuration to extra class&#10;- adding PiPe configuration" />
     <MESSAGE value="- minor changes&#10;" />
     <MESSAGE value="- improving louvers, recuperation" />
-    <option name="LAST_COMMIT_MESSAGE" value="- improving louvers, recuperation" />
+    <MESSAGE value="- fixing MPD radio" />
+    <option name="LAST_COMMIT_MESSAGE" value="- fixing MPD radio" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -2889,9 +2887,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/app/configurator/PiConfigurator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33195877">
-          <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
-          <folding />
+        <state vertical-scroll-proportion="0.54226804">
+          <caret line="555" column="0" selection-start-line="555" selection-start-column="0" selection-end-line="555" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

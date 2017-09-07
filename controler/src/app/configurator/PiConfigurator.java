@@ -551,8 +551,7 @@ public class PiConfigurator extends AbstractConfigurator {
         lst.addActionBinding(new ActionBinding(sklepLevyRSw.getRightBottomButton(), new SwitchOffAction(svSklepLevy), null));
 
         //    - venku pravy
-        lst.addActionBinding(new ActionBinding(sklepPravySw.getLeftUpperButton(), new SwitchOnSensorAction(svSklepPravy, 1800, 100), null));
-        lst.addActionBinding(new ActionBinding(sklepPravySw.getLeftBottomButton(), new SwitchOffAction(svSklepPravy), null));
+        configurePwmLights(lst, sklepPravySw, WallSwitch.Side.LEFT, 40, terasaPwmActor);
         lst.addActionBinding(new ActionBinding(sklepPravySw.getRightUpperButton(), new SwitchOnSensorAction(svSklepPravy, 1800, 100), null));
         lst.addActionBinding(new ActionBinding(sklepPravySw.getRightBottomButton(), new SwitchOffAction(svSklepPravy), null));
 
