@@ -11,23 +11,32 @@ import org.bff.javampd.exception.MPDPlayerException;
 import org.bff.javampd.exception.MPDPlaylistException;
 
 public class MpdRadio {
+    public static final String mpdServerAddress = "10.0.0.150";
     static Logger log = Logger.getLogger(MpdRadio.class.getName());
     MPDSong radioStream;
-    private MPD mpd;
+    private MPD mpdInstance;
 
     public MpdRadio() {
-        try {
-            mpd = new MPD("10.0.0.150");
-        } catch (Exception e) {
-            log.error("MPD init failed", e);
-//            throw new RuntimeException(e);
-        }
         radioStream = new MPDSong();
         radioStream.setFile("http://icecast8.play.cz/cro1-128.mp3");
     }
 
+    private MPD getMpd() {
+        if (mpdInstance == null || !mpdInstance.isConnected()) {
+            try {
+                log.debug("Initializing MPD instance");
+                mpdInstance = new MPD(mpdServerAddress);
+            } catch (Exception e) {
+                log.error("MPD init failed", e);
+                throw new RuntimeException(e);
+            }
+        }
+        return mpdInstance;
+    }
+
     public void start() {
         log.debug("starting stream: " + radioStream.getFile());
+        MPD mpd = getMpd();
         MPDPlayer player = mpd.getMPDPlayer();
         try {
             player.stop();
@@ -43,7 +52,7 @@ public class MpdRadio {
 
     public void stop() {
         log.debug("stopping stream");
-        MPDPlayer player = mpd.getMPDPlayer();
+        MPDPlayer player = getMpd().getMPDPlayer();
         try {
             player.stop();
             log.debug("  stopped");
@@ -53,7 +62,7 @@ public class MpdRadio {
     }
 
     public boolean isPlaying() {
-        MPDPlayer player = mpd.getMPDPlayer();
+        MPDPlayer player = getMpd().getMPDPlayer();
         try {
             MPDPlayer.PlayerStatus status = player.getStatus();
             log.debug("getting status -> " + status);
@@ -64,7 +73,7 @@ public class MpdRadio {
     }
 
     public String getCurrentSong() {
-        MPDPlayer player = mpd.getMPDPlayer();
+        MPDPlayer player = getMpd().getMPDPlayer();
         try {
             MPDSong currentSong = player.getCurrentSong();
             return (currentSong != null) ? currentSong.getFile() : "none";
