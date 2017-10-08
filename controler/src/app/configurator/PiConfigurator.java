@@ -76,6 +76,7 @@ public class PiConfigurator extends AbstractConfigurator {
         Node obyvakVzaduL = nodeInfoCollector.createNode(30, "ObyvakVzaduL");
         Node sklep = nodeInfoCollector.createNode(31, "Sklep");
         Node actor4 = nodeInfoCollector.createNode(32, "Actor4");
+        Node rozvadecDole = nodeInfoCollector.createNode(34, "rozvadecDole");
         Node switchTestNode50 = nodeInfoCollector.createNode(50, "SwitchTestNode50");
         Node switchTestNode41 = nodeInfoCollector.createNode(41, "SwitchTestNode41");
 
@@ -148,16 +149,17 @@ public class PiConfigurator extends AbstractConfigurator {
         WallSwitch chodbaDoleSpajzSw3 = new WallSwitch("chodbaDoleSpajzSw3", pradelna, 3);
         WallSwitch koupelnaDoleSw1 = new WallSwitch("koupelnaDoleSw1", koupelnaDole, 1);
         WallSwitch koupelnaDoleSw2 = new WallSwitch("koupelnaDoleSw2", koupelnaDole, 2);
-        WallSwitch kuchynSw1 = new WallSwitch("kuchynSw1", kuchyn, 3);
-        WallSwitch kuchynSw2 = new WallSwitch("kuchynSw2", kuchyn, 2);
-        WallSwitch kuchynSw3 = new WallSwitch("kuchynSw3", kuchyn, 1);
+        WallSwitch kuchynLSw1 = new WallSwitch("kuchynLSw1", kuchyn, 3);
+        WallSwitch kuchynLSw2 = new WallSwitch("kuchynLSw2", kuchyn, 2);
+        WallSwitch kuchynLSw3 = new WallSwitch("kuchynLSw3", kuchyn, 1);
+        WallSwitch kuchynRSw1 = new WallSwitch("kuchynRSw1", rozvadecDole, 1);
 
 //        RecuperationActor recuperation = new RecuperationActor(schodyDoleL2Sw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
         RefreshingSwitchIndicator recuIndicator = new RefreshingSwitchIndicator(schodyDoleL2Sw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), 10000);
         RecuperationActor recuperation = new RecuperationActor(recuIndicator);
         recuIndicator.startRefresh();
 
-        ActorListener prizemiVzaduKuchynSw2Indicator = kuchynSw1.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON);
+        ActorListener prizemiVzaduKuchynSw2Indicator = kuchynLSw1.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON);
 
         OnOffActor svJidelna = new OnOffActor("svJidelna", "Jídelna Stul", triak1.getOut1(), 1, 0, schodyDoleR3Sw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
         OnOffActor svSklepLevy = new OnOffActor("svSklepLevy", "Levy Sklep", triak1.getOut2(), 1, 0, prizemiVzaduKuchynSw2Indicator, sklepLevyRSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON), zadveriDoleVchodRSw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON));
@@ -310,7 +312,7 @@ public class PiConfigurator extends AbstractConfigurator {
         PwmActor garaz1PwmActor = addLddLight(lightsActions, "pwmG1", "Garáž 1", lddDevice4.getLdd1(), 0.7, garazZadveriSwAIndicator, garazGarazSwAIndicator); // .72
         PwmActor garaz2PwmActor = addLddLight(lightsActions, "pwmG2", "Garáž 2", lddDevice4.getLdd2(), 0.7, garazZadveriSwAIndicator, garazGarazSwAIndicator); // .72
         PwmActor obyvak11PwmActor = addLddLight(lightsActions, "pwmOb11", "Obyvák 11", lddDevice4.getLdd3(), 0.7); // .72
-        PwmActor kuchyn2PwmActor = addLddLight(lightsActions, "pwmKch2", "Kuchyň 2", lddDevice4.getLdd4(), 0.7, new SwitchIndicator(kuchynSw3.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // .72
+        PwmActor kuchyn2PwmActor = addLddLight(lightsActions, "pwmKch2", "Kuchyň 2", lddDevice4.getLdd4(), 0.7, new SwitchIndicator(kuchynLSw3.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // .72
         PwmActor kuchyn3PwmActor = addLddLight(lightsActions, "pwmKch3", "Kuchyň 3", lddDevice4.getLdd5(), 0.7); // .72
         PwmActor kuchyn1PwmActor = addLddLight(lightsActions, "pwmKch1", "Kuchyň 1", lddDevice4.getLdd6(), 0.7); // .72
 
@@ -588,7 +590,7 @@ public class PiConfigurator extends AbstractConfigurator {
 //        lst.addActionBinding(new ActionBinding(koupelnaDoleSw1.getLeftBottomButton(), new SwitchOnSensorAction(pisoarDole, 15, 100), null));
 
         // kuchyn
-        lst.addActionBinding(new ActionBinding(getBottomButton(kuchynSw1, WallSwitch.Side.LEFT),
+        lst.addActionBinding(new ActionBinding(getBottomButton(kuchynLSw1, WallSwitch.Side.LEFT),
                 SwitchAllOffWithMemory.createSwitchOffActions(
                         chodbaDolePwmActor, zadveriDolePwmActor,
                         pradelna1PwmActor, pradelna2PwmActor,
@@ -598,13 +600,16 @@ public class PiConfigurator extends AbstractConfigurator {
                 , null));
 
         RadioOnOffActor radioActor = new RadioOnOffActor();
-        lst.addActionBinding(new ActionBinding(getUpperButton(kuchynSw1, WallSwitch.Side.LEFT),
+        lst.addActionBinding(new ActionBinding(getUpperButton(kuchynLSw1, WallSwitch.Side.LEFT),
                 new InvertAction(radioActor, 100), null));
 
-        configurePwmLights(lst, kuchynSw3, WallSwitch.Side.RIGHT, 75, kuchynLinkaPwmActor);
-        configurePwmLights(lst, kuchynSw3, WallSwitch.Side.LEFT, 50, kuchyn1PwmActor, kuchyn2PwmActor, kuchyn3PwmActor);
-        configurePwmLights(lst, kuchynSw2, WallSwitch.Side.RIGHT, 50, obyvak06PwmActor, jidelna1PwmActor, kuchyn5PwmActor);
-        configurePwmLights(lst, kuchynSw2, WallSwitch.Side.LEFT, 70, obyvak01PwmActor, obyvak10PwmActor, obyvak13PwmActor);
+        configurePwmLights(lst, kuchynLSw3, WallSwitch.Side.RIGHT, 75, kuchynLinkaPwmActor);
+        configurePwmLights(lst, kuchynLSw3, WallSwitch.Side.LEFT, 50, kuchyn1PwmActor, kuchyn2PwmActor, kuchyn3PwmActor);
+        configurePwmLights(lst, kuchynLSw2, WallSwitch.Side.RIGHT, 50, obyvak06PwmActor, jidelna1PwmActor, kuchyn5PwmActor);
+        configurePwmLights(lst, kuchynLSw2, WallSwitch.Side.LEFT, 70, obyvak01PwmActor, obyvak10PwmActor, obyvak13PwmActor);
+
+        configurePwmLights(lst, kuchynRSw1, WallSwitch.Side.RIGHT, 75, kuchynLinkaPwmActor);
+        configurePwmLights(lst, kuchynRSw1, WallSwitch.Side.LEFT, 50, kuchyn1PwmActor, kuchyn2PwmActor, kuchyn3PwmActor);
 
         SunCondition sunCondition = new SunCondition(0, -15);
 
@@ -624,7 +629,7 @@ public class PiConfigurator extends AbstractConfigurator {
         setupPir(lst, pirA2Patro.getIn3AndActivate(), "pirWc", "WC", new SwitchOnSensorAction(wcPwmActor, 600, 100, sunCondition), new SwitchOffSensorAction(wcPwmActor, 60));
         setupPir(lst, pirA2Patro.getIn5AndActivate(), "pirZadHVch", "Zadveri hore vchod", new SwitchOnSensorAction(zadveriPwmActor, 600, 100, sunCondition), new SwitchOffSensorAction(zadveriPwmActor, 15));
         setupPir(lst, pirA2Patro.getIn6AndActivate(), "pirZadHCh", "Zadveri hore chodba", new SwitchOnSensorAction(zadveriPwmActor, 600, 100, sunCondition), new SwitchOffSensorAction(zadveriPwmActor, 15));
-        setupPir(lst, pirA2Patro.getIn4AndActivate(), "pirChMa", "Chodba nad Markem", new SwitchOnSensorAction(satnaPwmActor, 600, 66, sunCondition), new SwitchOffSensorAction(satnaPwmActor, 60));
+//        setupPir(lst, pirA2Patro.getIn4AndActivate(), "pirChMa", "Chodba nad Markem", new SwitchOnSensorAction(satnaPwmActor, 600, 66, sunCondition), new SwitchOffSensorAction(satnaPwmActor, 60));
 
         InputDevice pirA3Prizemi = new InputDevice("pirA3Prizemi", pirNodeA, 3);
         setupPir(lst, pirA3Prizemi.getIn1AndActivate(), "pirJid", "Jidelna", null, null);
