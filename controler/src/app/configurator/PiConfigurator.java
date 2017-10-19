@@ -630,6 +630,7 @@ public class PiConfigurator extends AbstractConfigurator {
         setupPir(lst, pirA2Patro.getIn5AndActivate(), "pirZadHVch", "Zadveri hore vchod", new SwitchOnSensorAction(zadveriPwmActor, 600, 100, sunCondition), new SwitchOffSensorAction(zadveriPwmActor, 15));
         setupPir(lst, pirA2Patro.getIn6AndActivate(), "pirZadHCh", "Zadveri hore chodba", new SwitchOnSensorAction(zadveriPwmActor, 600, 100, sunCondition), new SwitchOffSensorAction(zadveriPwmActor, 15));
 //        setupPir(lst, pirA2Patro.getIn4AndActivate(), "pirChMa", "Chodba nad Markem", new SwitchOnSensorAction(satnaPwmActor, 600, 66, sunCondition), new SwitchOffSensorAction(satnaPwmActor, 60));
+        setupPir(lst, pirA2Patro.getIn4AndActivate(), "pirChMa", "Chodba nad Markem", null, null);
 
         InputDevice pirA3Prizemi = new InputDevice("pirA3Prizemi", pirNodeA, 3);
         setupPir(lst, pirA3Prizemi.getIn1AndActivate(), "pirJid", "Jidelna", null, null);
