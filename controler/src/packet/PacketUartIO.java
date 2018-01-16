@@ -1,11 +1,5 @@
 package packet;
 
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.SerialPort;
-import node.MessageType;
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -16,50 +10,23 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import gnu.io.CommPortIdentifier;
+import gnu.io.NoSuchPortException;
+import gnu.io.SerialPort;
+import node.MessageType;
+import org.apache.log4j.Logger;
+
 public class PacketUartIO implements IPacketUartIO {
-    private class ResponseWrapper implements PacketReceivedListener {
-        private Packet packet;
-
-        protected ResponseWrapper(int nodeId, int responseType) {
-            addSpecificReceivedPacketListener(this, nodeId, responseType);
-        }
-
-        @Override
-        synchronized public void packetReceived(Packet packet) {
-            this.packet = packet;
-            notify();
-        }
-
-        @Override
-        public void notifyRegistered(PacketUartIO packetUartIO) {
-
-        }
-
-        synchronized public Packet waitForResponse(int timeout) {
-            try {
-                // wait for packet, if not received yet
-                if (packet == null) wait(timeout);
-            } catch (InterruptedException e) {
-                log.error("waitForResponse terminated", e);
-            }
-            return packet;
-        }
-    }
-
-
     static Logger log = Logger.getLogger(PacketUartIO.class.getName());
     static Logger msgLog = Logger.getLogger(PacketUartIO.class.getName() + ".msg");
-
     protected List<PacketReceivedListener> receivedListeners = new ArrayList<PacketReceivedListener>();
     protected ConcurrentHashMap<String, PacketReceivedListener> specificReceivedListeners = new ConcurrentHashMap<String, PacketReceivedListener>();
     protected List<PacketSentListener> sentListeners = new ArrayList<PacketSentListener>();
-
     SerialPort serialPort;
     InputStream inputStream;
     PacketSerializer packetSerializer = new PacketSerializer();
     ExecutorService threadPool = Executors.newFixedThreadPool(40);
     boolean closed = false;
-
     public PacketUartIO(String portName, int baudRate) throws PacketUartIOException {
         log.debug("Creating '" + portName + "' @" + baudRate + " bauds...");
         Enumeration portList = CommPortIdentifier.getPortIdentifiers();
@@ -78,7 +45,6 @@ public class PacketUartIO implements IPacketUartIO {
                                 SerialPort.PARITY_NONE);
                         serialPort.enableReceiveTimeout(3600000);
                         log.debug("  serial port listener started");
-                        startRead();
                         return;
                     } catch (Exception e) {
                         log.error("Cannot open serial port", e);
@@ -91,24 +57,21 @@ public class PacketUartIO implements IPacketUartIO {
         throw new PacketUartIOException(new NoSuchPortException());
     }
 
-    private void startRead() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                log.debug("Starting read com thread");
-                while (!closed) {
-                    try {
-                        Packet receivedPacket = packetSerializer.readPacket(inputStream);
-                        processPacket(receivedPacket);
-                    } catch (IOException e) {
-                        msgLog.error("receiveError", e);
-                        log.error(e);
-                        e.printStackTrace();
-                    }
+    public void start() {
+        new Thread(() -> {
+            log.debug("Starting read com thread");
+            while (!closed) {
+                try {
+                    Packet receivedPacket = packetSerializer.readPacket(inputStream);
+                    processPacket(receivedPacket);
+                } catch (IOException e) {
+                    msgLog.error("receiveError", e);
+                    log.error(e);
+                    e.printStackTrace();
                 }
-                log.debug("Ending read com thread");
             }
-        },"ComRead").start();
+            log.debug("Ending read com thread");
+        }, "ComRead").start();
     }
 
     void processPacket(final Packet packet) {
@@ -141,7 +104,6 @@ public class PacketUartIO implements IPacketUartIO {
             listener.packetReceived(packet);
         }
     }
-
 
     private void processPacketImpl(Packet packet) {
         // callbacks for nodeId + messageType
@@ -215,13 +177,41 @@ public class PacketUartIO implements IPacketUartIO {
         return response;
     }
 
-
     @Override
     public void close() {
         closed = true;
         if (serialPort != null) {
             serialPort.close();
             log.debug("Serial port listener closed");
+        }
+    }
+
+    private class ResponseWrapper implements PacketReceivedListener {
+        private Packet packet;
+
+        protected ResponseWrapper(int nodeId, int responseType) {
+            addSpecificReceivedPacketListener(this, nodeId, responseType);
+        }
+
+        @Override
+        synchronized public void packetReceived(Packet packet) {
+            this.packet = packet;
+            notify();
+        }
+
+        @Override
+        public void notifyRegistered(PacketUartIO packetUartIO) {
+
+        }
+
+        synchronized public Packet waitForResponse(int timeout) {
+            try {
+                // wait for packet, if not received yet
+                if (packet == null) wait(timeout);
+            } catch (InterruptedException e) {
+                log.error("waitForResponse terminated", e);
+            }
+            return packet;
         }
     }
 }

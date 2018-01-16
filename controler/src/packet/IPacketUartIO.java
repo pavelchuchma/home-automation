@@ -13,6 +13,7 @@ public interface IPacketUartIO {
 
     Packet send(Packet packet, int responseType, int timeout) throws IOException;
 
+    void start();
     void close();
 
     // Listener interface

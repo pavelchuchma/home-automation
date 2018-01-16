@@ -1,18 +1,6 @@
 package packet;
 
-import gnu.io.*;
-import node.MessageType;
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class PacketUartIOMock implements IPacketUartIO {
     public PacketUartIOMock() {
@@ -42,6 +30,11 @@ public class PacketUartIOMock implements IPacketUartIO {
     @Override
     public Packet send(Packet packet, int responseType, int timeout) throws IOException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void start() {
+
     }
 
     @Override

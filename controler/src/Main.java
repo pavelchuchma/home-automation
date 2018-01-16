@@ -41,6 +41,8 @@ public class Main {
             configurator.configure();
 
             nodeInfoCollector.start();
+
+            packetUartIO.start();
             System.out.println("Listening ...");
 
             Servlet.startServer(nodeInfoCollector);
