@@ -10,6 +10,7 @@ import static java.lang.String.format;
 public class PacketData {
     public static final int START_BYTE = 0x32;
     public static final int STOP_BYTE = 0x34;
+    public static final int PACKET_LENGTH = 14;
     public int[] data;
     public int[] rawData;
     public int readTime;
@@ -73,9 +74,9 @@ public class PacketData {
         return from == 0x84 || from == 0x85;
     }
 
-    private void initialize(int[] rawData, int readTime) throws IOException {
+    private void initialize(int[] rawDataIn, int readTime) throws IOException {
         this.readTime = readTime;
-        this.rawData = rawData;
+        this.rawData = rawDataIn.clone();
 
         int crc = computeCrc(rawData);
 

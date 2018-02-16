@@ -3,7 +3,6 @@ package serial.poc;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -13,11 +12,9 @@ public class HvacConnector implements IPacketSource {
     private final OutputStream outputStream;
     BlockingQueue<PacketData> packetDataQueue = new LinkedBlockingQueue<>();
     boolean closed = false;
-    int[] readBuff = new int[256];
     InputStream inputStream;
     ByteLogger byteLogger;
     ConcurrentLinkedQueue<PacketData> sendQueue = new ConcurrentLinkedQueue<>();
-    private int counter = 0;
 
     public HvacConnector(InputStream inputStream, OutputStream outputStream) throws IOException {
         this.inputStream = inputStream;
@@ -29,9 +26,9 @@ public class HvacConnector implements IPacketSource {
         sendQueue.add(p);
     }
 
-    public void sendDataImpl(PacketData p) throws IOException {
+    private void sendDataImpl(PacketData p) throws IOException {
         try {
-            Thread.sleep(30);
+            Thread.sleep(20);
             for (int c : p.rawData) {
                 outputStream.write(new byte[]{(byte) c});
                 outputStream.flush();
@@ -44,64 +41,57 @@ public class HvacConnector implements IPacketSource {
         }
     }
 
-
     public void startRead() {
         new Thread(() -> {
-            System.out.println("Starting read com thread");
-
             ReceivedChar c = null;
+            int[] buff = new int[PacketData.PACKET_LENGTH];
+
             while (!closed) {
                 try {
-                    if (c == null) {
+                    c = waitForStartChar(c);
+                    int initialReadTime = c.readTime;
+                    for (int i = 0; i < PacketData.PACKET_LENGTH - 1 && !closed; i++) {
+                        buff[i] = c.character;
                         c = readChar();
                     }
-                    while (!closed) {
-                        while (c.readTime <= MAX_PACKET_BYTE_READ_TIME) {
-                            System.out.printf("ERR: ignoring initial char %d with read time: %d%n", c.character, c.readTime);
-                            c = readChar();
-                        }
+                    buff[PacketData.PACKET_LENGTH - 1] = c.character;
 
-                        int i = 0;
-                        int initialReadTime = 0;
-                        while (!closed) {
-                            if ((c.readTime > MAX_PACKET_BYTE_READ_TIME || (i >= 14 && c.character == PacketData.START_BYTE))
-                                    && i > 0 && readBuff[i - 1] == PacketData.STOP_BYTE) {
-                                PacketData packetData = new PacketData(Arrays.copyOf(readBuff, i), initialReadTime);
-                                packetDataQueue.add(packetData);
-                                i = 0;
-                            }
-                            if (i + 1 >= readBuff.length) {
-                                System.out.println("ERR: Not enough space in readBuff");
-                                break;
-                            }
-                            if (i == 0) {
-                                initialReadTime = c.readTime;
-                            }
-                            readBuff[i++] = c.character;
+                    if (buff[PacketData.PACKET_LENGTH - 1] != PacketData.STOP_BYTE) {
+                        throw new IOException("Read packet not terminated by STOP_BYTE");
+                    }
 
-                            if (c.character == PacketData.STOP_BYTE) {
-                                if (i == 14 && !Main.isWindows()) {
-                                    if (readBuff[3] == 0xD1) {
-                                        PacketData packet = sendQueue.poll();
-                                        if (packet != null) {
-                                            sendDataImpl(packet);
-                                        }
-                                        counter++;
-                                    }
-                                }
-                                byteLogger.flush();
-                            }
-                            // read next char
-                            c = readChar();
+                    if (buff[3] == 0xD1) {
+                        PacketData packet = sendQueue.poll();
+                        if (packet != null) {
+                            sendDataImpl(packet);
                         }
                     }
+
+                    PacketData packetData = new PacketData(buff, initialReadTime);
+                    packetDataQueue.add(packetData);
+
+                    byteLogger.flush();
                 } catch (IOException e) {
                     System.out.println("EXCEPTION:" + e);
                     e.printStackTrace();
                 }
-
             }
-        }, "ComRead").start();
+        }, "HvacRead").start();
+    }
+
+    private ReceivedChar waitForStartChar(ReceivedChar c) throws IOException {
+        if (c == null || c.character == PacketData.STOP_BYTE) {
+            c = readChar();
+            if (c.character == PacketData.START_BYTE) {
+                return c;
+            }
+        }
+        // clear read cache and wait for start char
+        while (c.character != PacketData.START_BYTE || c.readTime <= MAX_PACKET_BYTE_READ_TIME) {
+            System.out.printf("ERR: ignoring initial char %02X with read time: %d%n", c.character, c.readTime);
+            c = readChar();
+        }
+        return c;
     }
 
     @Override
