@@ -7,16 +7,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import serial.poc.Packet.AbstractSetPacket;
 import serial.poc.Packet.Packet;
 import serial.poc.Packet.PacketFactory;
 import serial.poc.Packet.UnknownPacket;
 
 public class PacketPrinter implements IPacketConsumer {
-    public static final int CMD_SET = 0xA0;
-    public static final int CMD_SET_RESPONSE = 0x50;
-    public static final int CMD_GET_52 = 0x52;
-    public static final int CMD_GET_53 = 0x53;
-    public static final int CMD_GET_54 = 0x54;
     IOutputWriter outputWriter;
     FileWriter fileWriter;
 
@@ -25,9 +21,8 @@ public class PacketPrinter implements IPacketConsumer {
     Packet requestToDiff;
     Packet responseToDiff;
 
-    String note;
-    Packet lastRequestPacket;
     private Map<String, Packet> previousPackets = new HashMap<>();
+    private int count = 0;
 
     public PacketPrinter(IOutputWriter outputWriter) throws IOException {
         this.outputWriter = outputWriter;
@@ -36,6 +31,9 @@ public class PacketPrinter implements IPacketConsumer {
     }
 
     private String createKey(Packet packet) {
+        if (packet == null) {
+            return "null";
+        }
         PacketData packetData = packet.getData();
         String val = String.format("%d->%d:%d", packetData.from, packetData.to, packetData.command);
         if (packetData.isRequest() && (packetData.command == 0x70 || packetData.command == 0x71)) {
@@ -56,20 +54,34 @@ public class PacketPrinter implements IPacketConsumer {
             if (packetData == null) {
                 break;
             }
-            process(packetData);
+            process(packetData, reader);
         }
         outputWriter.close();
     }
 
-    public void process(PacketData packetData) throws IOException {
+    public void process(PacketData packetData, IPacketSource reader) throws IOException {
         fileWriter.write(packetData.toRawString() + "\n");
         fileWriter.flush();
 
         Packet packet = PacketFactory.Deserialize(packetData);
 
+
         if (packet.getTo() == 0xAD) {
             // ignore request to 'AD'
-            return;
+//            return;
+/*
+            if (count++ == 5 && reader instanceof StreamPacketSource) {
+                System.out.println("WAITING TO SEND!");
+                try {
+                    Thread.sleep(0);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("SENDING!");
+                ((StreamPacketSource)reader).sendData();
+                System.out.println("SENT!");
+            }
+*/
         }
 
         String mapKey;
@@ -86,47 +98,12 @@ public class PacketPrinter implements IPacketConsumer {
             mapKey = createKey(currentRequest, packet);
             responseToDiff = previousPackets.put(mapKey, packet);
         }
-
-//        if (packetData.isRequest()) {
-////            outputWriter.append(note);
-////            note = "";
-//            outputWriter.append("\n");
-//            currentRequest = packetData;
-//            lastRequestPacket = PacketFactory.Deserialize(packetData);
-//            mapKey = createKey(packetData);
-//        } else {
-//            if (currentRequest == null) {
-//                return;
-//            }
-//            outputWriter.append("  -->  ");
-//            mapKey = createKey(packetData, currentRequest);
-//        }
-//
-//
-////        String prevNote = note;
-//
-//        printPacketData(packetData, previousPacketData);
-//
-//        if (packetData.isRequest()) {
-//
-//        } else {
-//            outputWriter.append(note);
-//            note = "";
-//        }
-//        Packet packet = PacketFactory.Deserialize(packetData);
-//        if (packet != null){
-//            outputWriter.append("\n   " + packet.toString());
-//        }
-//
-////        System.out.println(Integer.toHexString(packet.command));
-
     }
-
 
     private void printPair() throws IOException {
         if (currentRequest == null) {
             if (currentResponse != null) {
-                throw new IllegalStateException();
+//                throw new IllegalStateException();
             }
             return;
         }
@@ -136,15 +113,13 @@ public class PacketPrinter implements IPacketConsumer {
             printPacketData(currentResponse, responseToDiff);
         }
         outputWriter.append("\n");
-//        if (note != null) {
-//            outputWriter.append("    " + note + "\n");
-//            note = "";
-//        }
 
         if (!(currentRequest instanceof UnknownPacket) || !(currentResponse instanceof UnknownPacket)) {
             printPacketInfo(currentRequest);
-            outputWriter.append("  -->  ");
-            printPacketInfo(currentResponse);
+            if (currentResponse != null) {
+                outputWriter.append("       ");
+                printPacketInfo(currentResponse);
+            }
             outputWriter.append("\n");
         }
     }
@@ -173,7 +148,7 @@ public class PacketPrinter implements IPacketConsumer {
     private void printPacketData(Packet packet, Packet previousPacket) throws IOException {
 //        printReadTime(packet.readTime);
 //        w.append(" ");
-        writeCommand(packet.getCommand());
+        writeCommand(packet);
         for (int i = 0; i < packet.getData().data.length; i++) {
             outputWriter.append(" ");
             appendDataByte(packet, i, previousPacket);
@@ -207,14 +182,14 @@ public class PacketPrinter implements IPacketConsumer {
         return (val & (1 << index)) >> index;
     }
 
-    private void writeCommand(int c) throws IOException {
+    private void writeCommand(Packet packet) throws IOException {
         String backgroundColor;
-        if (c == CMD_SET || c == CMD_SET_RESPONSE) {
+        if (packet instanceof AbstractSetPacket) {
             backgroundColor = "orange";
         } else {
             backgroundColor = "lightblue";
         }
-        outputWriter.appendColorized(String.format("%02X", c), "black", backgroundColor);
+        outputWriter.appendColorized(String.format("%02X", packet.getCommand()), "black", backgroundColor);
     }
 
 //    void printReadTime(int readTime) throws IOException {

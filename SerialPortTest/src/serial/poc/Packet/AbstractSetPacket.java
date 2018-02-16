@@ -2,7 +2,7 @@ package serial.poc.Packet;
 
 import serial.poc.PacketData;
 
-abstract class AbstractSetPacket extends AbstractPacket {
+public abstract class AbstractSetPacket extends AbstractPacket {
 
     public static final int MASK_SLEEP = 0x20;
     public static final int MASK_QUITE = 0x20;
