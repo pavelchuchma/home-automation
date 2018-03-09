@@ -4,10 +4,13 @@ import serial.poc.PacketData;
 
 public class Get52ResponsePacket extends AbstractPacket {
     public static final int MASK_TARGET_TEMP = 0x3F;
+    public static final int MASK_AIR_TEMP = 0x3F;
     public static final int MASK_FAN_SPEED = 0x07;
     public static final int MASK_MODE = 0x0F;
     public static final int MASK_MODE_AUTO = 0x20;
     public static final int MASK_ON = 0x80;
+    public static final int MASK_X = 0x02;
+    public static final int MASK_Y = 0x01;
 
     public Get52ResponsePacket(PacketData packetData) {
         super(packetData);
@@ -17,22 +20,30 @@ public class Get52ResponsePacket extends AbstractPacket {
     public int[] getUnderstandMask() {
         return new int[]{
                 MASK_TARGET_TEMP,
-                0,
-                0,
+                MASK_X | MASK_Y,
+                MASK_AIR_TEMP,
                 MASK_FAN_SPEED,
                 MASK_ON | MASK_MODE | MASK_MODE_AUTO,
                 0,
                 0,
-                0
+                MASK_AIR_TEMP // 8th byte is the same as 3th
         };
     }
 
-    FanSpeed getFanSpeed() {
+    public FanSpeed getFanSpeed() {
         int val = packetData.data[3] & MASK_FAN_SPEED;
         return AbstractSetPacket.getFanSpeedImpl(val);
     }
 
-    OperatingMode getMode() {
+    public boolean isX() {
+        return (packetData.data[1] & MASK_X) != 0;
+    }
+
+    public boolean isY() {
+        return (packetData.data[1] & MASK_Y) != 0;
+    }
+
+    public OperatingMode getMode() {
         int value = packetData.data[4] & MASK_MODE;
 
         if ((value & 0x01) != 0) {
@@ -50,7 +61,7 @@ public class Get52ResponsePacket extends AbstractPacket {
         throw new IllegalArgumentException("Unknown mode: " + packetData.data[3]);
     }
 
-    boolean isModeAuto() {
+    public boolean isModeAuto() {
         return (packetData.data[4] & MASK_MODE_AUTO) != 0;
     }
 
@@ -58,12 +69,16 @@ public class Get52ResponsePacket extends AbstractPacket {
         return (packetData.data[0] & MASK_TARGET_TEMP) + 9;
     }
 
-    boolean isOn() {
+    public int getAirTemperature() {
+        return (packetData.data[2] & MASK_AIR_TEMP) + 9;
+    }
+
+    public boolean isOn() {
         return (packetData.data[4] & MASK_ON) != 0;
     }
 
     @Override
     public String toString() {
-        return String.format("temp:%d;;;fan:%s;on:%d auto:%d mode:%s;", getTargetTemperature(), getFanSpeed(), boolAsInt(isOn()), boolAsInt(isModeAuto()), getMode());
+        return String.format("temp:%d;x:%d y:%d;airTemp:%d;fan:%s;on:%d auto:%d mode:%s;", getTargetTemperature(), boolAsInt(isX()), boolAsInt(isY()), getAirTemperature(), getFanSpeed(), boolAsInt(isOn()), boolAsInt(isModeAuto()), getMode());
     }
 }

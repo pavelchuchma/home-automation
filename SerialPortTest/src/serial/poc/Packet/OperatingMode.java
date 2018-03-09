@@ -5,5 +5,6 @@ public enum OperatingMode {
     COOL,
     FAN,
     DRY,
-    HEAT
+    HEAT,
+    NONE
 }

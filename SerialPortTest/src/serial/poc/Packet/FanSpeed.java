@@ -5,4 +5,5 @@ public enum FanSpeed {
     SPEED_1,
     SPEED_2,
     SPEED_3,
+    NONE
 }

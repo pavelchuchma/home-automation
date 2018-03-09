@@ -24,17 +24,17 @@ public class Get53ResponsePacket extends AbstractPacket {
         };
     }
 
-    public boolean isSleep() {
+    public boolean isSleepMode() {
         return (packetData.data[4] & MASK_SLEEP) != 0;
     }
 
-    OperatingMode getMode() {
+    public OperatingMode getMode() {
         int val = packetData.data[7] & MASK_MODE;
         return AbstractSetPacket.getOperatingModeImpl(val);
     }
 
     @Override
     public String toString() {
-        return String.format(";;;;sleep:%d;;;mode:%s;", boolAsInt(isSleep()), getMode());
+        return String.format(";;;;sleep:%d;;;mode:%s;", boolAsInt(isSleepMode()), getMode());
     }
 }

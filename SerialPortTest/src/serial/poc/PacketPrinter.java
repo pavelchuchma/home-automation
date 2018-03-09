@@ -9,10 +9,9 @@ import java.util.Map;
 
 import serial.poc.Packet.AbstractSetPacket;
 import serial.poc.Packet.Packet;
-import serial.poc.Packet.PacketFactory;
 import serial.poc.Packet.UnknownPacket;
 
-public class PacketPrinter implements IPacketConsumer {
+public class PacketPrinter implements IPacketProcessor {
     IOutputWriter outputWriter;
     FileWriter fileWriter;
 
@@ -26,7 +25,7 @@ public class PacketPrinter implements IPacketConsumer {
 
     public PacketPrinter(IOutputWriter outputWriter) throws IOException {
         this.outputWriter = outputWriter;
-        String now = new SimpleDateFormat("yyyyMMdd_hh-mm-ss").format(new Date());
+        String now = new SimpleDateFormat("yyyyMMdd_HH-mm-ss").format(new Date());
         fileWriter = new FileWriter("raw-" + now + ".log");
     }
 
@@ -47,42 +46,18 @@ public class PacketPrinter implements IPacketConsumer {
     }
 
     @Override
-    public void consume(IPacketSource reader) throws IOException, InterruptedException {
+    public void start() throws IOException {
         outputWriter.open();
-        while (true) {
-            PacketData packetData = reader.getPacket();
-            if (packetData == null) {
-                break;
-            }
-            process(packetData, reader);
-        }
+    }
+
+    @Override
+    public void stop() throws IOException {
         outputWriter.close();
     }
 
-    public void process(PacketData packetData, IPacketSource reader) throws IOException {
-        fileWriter.write(packetData.toRawString() + "\n");
+    public void process(Packet packet) throws IOException {
+        fileWriter.write(packet.getData().toRawString() + "\n");
         fileWriter.flush();
-
-        Packet packet = PacketFactory.Deserialize(packetData);
-
-
-        if (packet.getTo() == 0xAD) {
-            // ignore request to 'AD'
-//            return;
-/*
-            if (count++ == 5 && reader instanceof StreamPacketSource) {
-                System.out.println("WAITING TO SEND!");
-                try {
-                    Thread.sleep(0);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                System.out.println("SENDING!");
-                ((StreamPacketSource)reader).sendData();
-                System.out.println("SENT!");
-            }
-*/
-        }
 
         String mapKey;
         if (packet.isRequest()) {
@@ -102,9 +77,6 @@ public class PacketPrinter implements IPacketConsumer {
 
     private void printPair() throws IOException {
         if (currentRequest == null) {
-            if (currentResponse != null) {
-//                throw new IllegalStateException();
-            }
             return;
         }
         printPacketData(currentRequest, requestToDiff);
