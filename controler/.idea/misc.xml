@@ -10,6 +10,19 @@
   <component name="SvnBranchConfigurationManager">
     <option name="myConfigurationMap">
       <map>
+        <entry key="$PROJECT_DIR$/../SerialPortTest">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchUrls">
+                <list>
+                  <option value="file:///C:/Home/chuma/Data/BackUp/.svnRepo/branches" />
+                  <option value="file:///C:/Home/chuma/Data/BackUp/.svnRepo/tags" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="file:///C:/Home/chuma/Data/BackUp/.svnRepo/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$">
           <value>
             <SvnBranchConfiguration>
@@ -22,4 +35,3 @@
     <option name="mySupportsUserInfoFilter" value="true" />
   </component>
 </project>
-
