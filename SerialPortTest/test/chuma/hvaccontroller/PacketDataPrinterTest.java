@@ -27,7 +27,7 @@ public class PacketDataPrinterTest {
 //        PacketFileSource reader = new PacketFileSource("C:\\Home\\chuma\\work\\HomeAutomation\\SerialPortTest\\data\\20180302_10-16-12-TurnOn-InTemp\\raw-20180302_10-16-12.log");
         PacketFileSource reader = new PacketFileSource("C:\\Home\\chuma\\work\\HomeAutomation\\SerialPortTest\\data\\A0-2\\A0.messages");
 
-        IPacketProcessor processor = new PacketPrinter(new HtmlOutputWriter(new FileWriter("C:\\Home\\chuma\\work\\HomeAutomation\\SerialPortTest\\data\\A0-2\\A0.html")));
+        IPacketProcessor processor = new PacketPrinter(new HtmlOutputWriter(new FileWriter("C:\\Home\\chuma\\work\\HomeAutomation\\SerialPortTest\\data\\A0-2\\A0.html")), true);
         HvacDevice hvacDevice = new HvacDevice(null);
         PacketConsumer consumer = new PacketConsumer(Arrays.asList(processor, hvacDevice.getProcessor()));
         consumer.consume(reader);

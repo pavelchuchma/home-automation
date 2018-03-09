@@ -17,10 +17,10 @@ public class Main {
     public static void main(String[] args) {
 
         try {
-            HvacConnector connector = new HvacConnector();
+            HvacConnector connector = new HvacConnector(false);
             connector.startRead();
 
-            IPacketProcessor packetPrinter = new PacketPrinter(new ConsoleOutputWriter());
+            IPacketProcessor packetPrinter = new PacketPrinter(new ConsoleOutputWriter(), false);
             HvacDevice hvacDevice = new HvacDevice(connector);
             PacketConsumer packetConsumer = new PacketConsumer(Arrays.asList(packetPrinter, hvacDevice.getProcessor()));
 

@@ -15,9 +15,11 @@ import chuma.hvaccontroller.packet.PacketData;
 import chuma.hvaccontroller.packet.PacketType;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
+import org.apache.log4j.Logger;
 
 public class HvacConnector implements IPacketSource {
     public static final int MAX_PACKET_BYTE_READ_TIME = 10;
+    static Logger log = Logger.getLogger(HvacConnector.class.getName());
     private final OutputStream outputStream;
     BlockingQueue<PacketData> packetDataQueue = new LinkedBlockingQueue<>();
     boolean closed = false;
@@ -26,12 +28,13 @@ public class HvacConnector implements IPacketSource {
     PacketReader packetReader = new PacketReader();
     PacketSender packetSender = new PacketSender();
 
-
-    public HvacConnector() throws IOException {
+    public HvacConnector(boolean logBytes) throws IOException {
         SerialPort serialPort = openSerialPort();
         this.inputStream = serialPort.getInputStream();
         this.outputStream = serialPort.getOutputStream();
-        byteLogger = new ByteLogger();
+        if (logBytes) {
+            byteLogger = new ByteLogger();
+        }
     }
 
     static boolean isWindows() {
@@ -46,11 +49,11 @@ public class HvacConnector implements IPacketSource {
 
         while (portList.hasMoreElements()) {
             CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
-            System.out.println("Checking: " + portId.getName());
+            log.debug("Checking: " + portId.getName());
 
             if (portId.getPortType() == CommPortIdentifier.PORT_SERIAL) {
                 if (portId.getName().equals(portName)) {
-                    System.out.println("Found: " + portId.getName());
+                    log.info("Port found: " + portId.getName());
 
                     try {
                         serialPort = (SerialPort) portId.open("SimpleReadApp", 2000);
@@ -85,10 +88,12 @@ public class HvacConnector implements IPacketSource {
             for (int c : p.rawData) {
                 outputStream.write(new byte[]{(byte) c});
                 outputStream.flush();
-                byteLogger.byteSent(c);
+                if (byteLogger != null) {
+                    byteLogger.byteSent(c);
+                }
                 Thread.sleep(5);
             }
-            System.out.println("sent!!  ");
+            log.debug("packet sent");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -102,10 +107,11 @@ public class HvacConnector implements IPacketSource {
                     packetSender.notifyPacketReceived(receivedPacket);
                     packetDataQueue.add(receivedPacket);
 
-                    byteLogger.flush();
+                    if (byteLogger != null) {
+                        byteLogger.flush();
+                    }
                 } catch (IOException e) {
-                    System.out.println("EXCEPTION:" + e);
-                    e.printStackTrace();
+                    log.error("Read failure", e);
                 }
             }
         }, "HvacRead");
@@ -157,7 +163,9 @@ public class HvacConnector implements IPacketSource {
             }
             // clear read cache and wait for start char
             while (c.character != PacketData.START_BYTE || c.readTime <= MAX_PACKET_BYTE_READ_TIME) {
-                System.out.printf("ERR: ignoring initial char %02X with read time: %d%n", c.character, c.readTime);
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Ignoring initial char %02X with read time: %d%n", c.character, c.readTime));
+                }
                 c = readChar();
             }
             return c;
@@ -170,7 +178,9 @@ public class HvacConnector implements IPacketSource {
                 throw new IOException("End of stream reached");
             }
             int readTime = (int) (System.currentTimeMillis() - startTime);
-            byteLogger.logByte(readTime, b);
+            if (byteLogger != null) {
+                byteLogger.logByte(readTime, b);
+            }
             return new ReceivedChar(b, readTime);
         }
     }
@@ -191,16 +201,16 @@ public class HvacConnector implements IPacketSource {
                 if (receivedPacket.command == PacketType.CMD_SET_RESPONSE
                         && receivedPacket.from == current.to && receivedPacket.to == current.from
                         && Arrays.equals(current.data, receivedPacket.data)) {
-                    System.out.print("\nSENT PASSED!!!");
+                    log.debug("send of packet confirmed");
                     // sent, remove head of queue
                     current = null;
                 } else {
                     // sent failure
                     if (retryCount-- < 0) {
-                        System.out.print("\nSENT FAILED, discarding packet: " + current.toRawString());
+                        log.error("send failed, discarding packet: " + current.toRawString());
                         current = null;
                     } else {
-                        System.out.print("\nSENT FAILED, retrying: " + current.toRawString());
+                        log.error("send failed, retrying: " + current.toRawString());
                     }
                 }
                 packetSent = false;

@@ -8,11 +8,13 @@ import chuma.hvaccontroller.packet.Get53ResponsePacket;
 import chuma.hvaccontroller.packet.Get54ResponsePacket;
 import chuma.hvaccontroller.packet.Packet;
 import chuma.hvaccontroller.packet.SetPacketRequest;
+import org.apache.log4j.Logger;
 
 public class HvacDevice {
 
     public static final int ADDR_THIS_CONTROLLER = 0x85;
     public static final int ADDR_HVAC_DEVICE = 0x20;
+    static Logger log = Logger.getLogger(HvacDevice.class.getName());
     private final HvacConnector connector;
     private boolean running;
     private FanSpeed fanSpeed;
@@ -38,7 +40,7 @@ public class HvacDevice {
         return new IPacketProcessor() {
             @Override
             public void start() throws IOException {
-                System.out.println("Starting HvacDevice");
+                log.info("Starting HvacDevice");
             }
 
             @Override
@@ -67,8 +69,10 @@ public class HvacDevice {
                     quiteMode = get54Resp.isQuite();
                 }
 
-                if (packet.getCommand() == 0xD1) {
-                    System.out.println("State: " + HvacDevice.this.toString());
+                if (log.isDebugEnabled()) {
+                    if (packet.getCommand() == 0xD1) {
+                        log.debug("State: " + HvacDevice.this.toString());
+                    }
                 }
             }
         };
@@ -86,7 +90,9 @@ public class HvacDevice {
                 selectBoolean(quite, quiteMode)
         );
 
-        System.out.println("Sending: " + setPacketRequest);
+        if (log.isDebugEnabled()) {
+            log.debug("Sending: " + setPacketRequest);
+        }
         connector.sendData(setPacketRequest.getData());
     }
 

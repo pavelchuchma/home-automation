@@ -23,12 +23,13 @@ public class PacketPrinter implements IPacketProcessor {
     Packet responseToDiff;
 
     private Map<String, Packet> previousPackets = new HashMap<>();
-    private int count = 0;
 
-    public PacketPrinter(IOutputWriter outputWriter) throws IOException {
+    public PacketPrinter(IOutputWriter outputWriter, boolean writeRawData) throws IOException {
         this.outputWriter = outputWriter;
         String now = new SimpleDateFormat("yyyyMMdd_HH-mm-ss").format(new Date());
-        fileWriter = new FileWriter("raw-" + now + ".log");
+        if (writeRawData) {
+            fileWriter = new FileWriter("raw-" + now + ".log");
+        }
     }
 
     private String createKey(Packet packet) {
@@ -58,8 +59,10 @@ public class PacketPrinter implements IPacketProcessor {
     }
 
     public void process(Packet packet) throws IOException {
-        fileWriter.write(packet.getData().toRawString() + "\n");
-        fileWriter.flush();
+        if (fileWriter != null) {
+            fileWriter.write(packet.getData().toRawString() + "\n");
+            fileWriter.flush();
+        }
 
         String mapKey;
         if (packet.isRequest()) {
