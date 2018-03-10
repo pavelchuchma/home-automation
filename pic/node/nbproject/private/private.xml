@@ -3,6 +3,18 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/Home/chuma/work/HomeAutomation/pic/node/system.h</file>
+            <file>file:/C:/Home/chuma/work/HomeAutomation/pic/node/system.c</file>
+            <file>file:/C:/Home/chuma/work/HomeAutomation/pic/node/uart.c</file>
+            <file>file:/C:/Home/chuma/work/HomeAutomation/pic/node/configuration_bits.c</file>
+            <file>file:/C:/Home/chuma/work/HomeAutomation/pic/node/display.c</file>
+            <file>file:/C:/Home/chuma/work/HomeAutomation/pic/node/interrupts.c</file>
+            <file>file:/C:/Home/chuma/work/HomeAutomation/pic/node/main.c</file>
+            <file>file:/C:/Home/chuma/work/HomeAutomation/pic/node/Constants.h</file>
+            <file>file:/C:/Home/chuma/work/HomeAutomation/pic/node/user.c</file>
+            <file>file:/C:/Home/chuma/work/HomeAutomation/pic/node/UnitTest1.c</file>
+            <file>file:/C:/Home/chuma/work/HomeAutomation/pic/node/UnitTest1.h</file>
+        </group>
     </open-files>
 </project-private>

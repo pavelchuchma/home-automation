@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../SerialPortTest/SerialPortTest.iml" filepath="$PROJECT_DIR$/../SerialPortTest/SerialPortTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../HvacController/HvacController.iml" filepath="$PROJECT_DIR$/../HvacController/HvacController.iml" />
       <module fileurl="file://$PROJECT_DIR$/controler.iml" filepath="$PROJECT_DIR$/controler.iml" />
     </modules>
   </component>

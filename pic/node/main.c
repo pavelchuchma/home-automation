@@ -154,12 +154,12 @@ void main(void) {
                     SPBRGH1 = receivedPacket.data[0];
                     SPBRG1 = receivedPacket.data[1];
                 } else if (receivedPacket.messageType == MSG_ReadRamRequest) {
-                    // send byte from required memory possition
+                    // send byte from required memory position
                     processReadRamRequest();
                     // send response to proper destination
                     sendResponse();
                 } else if (receivedPacket.messageType == MSG_WriteRamRequest) {
-                    // write byte to required memory possition
+                    // write byte to required memory position
                     processWriteRamRequest();
 
                     // send response to proper destination
@@ -177,7 +177,7 @@ void main(void) {
                     // send response to proper destination
                     sendResponse();
                 } else if (receivedPacket.messageType == MSG_EnablePwmRequest) {
-                    // enable PWM module, change CPU frequency if necessery
+                    // enable PWM module, change CPU frequency if necessary
                     processEnablePwmRequest();
 
                     // send response to proper destination
@@ -191,7 +191,7 @@ void main(void) {
                 } else if (receivedPacket.messageType == MSG_InitializationFinished) {
                     // set new PWM value
                     appFlags.isInitialized = 1;
-                    // force to send heart beat immediatelly
+                    // force to send heart beat immediately
                     appFlags.onPingTimer = 1;
 
                 } else if (receivedPacket.messageType == MSG_OnDebug) {
@@ -212,7 +212,7 @@ void main(void) {
                     // set change CPU frequency
                     processResetRequest();
                     // do not need to wait for anything, reset will be faster and wait for message sending
-                    // can be risk of deadlock in some casess (or complicated code)
+                    // can be risk of deadlock in some cases (or complicated code)
                 } else if (receivedPacket.messageType == MSG_ReadProgramRequest) {
                     // set change CPU frequency
                     processReadProgramRequest();
@@ -275,7 +275,7 @@ void main(void) {
                     freshenDisplay();
                 } else {
                     if (switchBridgeLedOffCounter == 0) {
-                        // turn packet lenght OFF
+                        // turn packet led OFF
                         PORTBbits.RB1 = 1;
                     } else {
                         switchBridgeLedOffCounter--;
@@ -288,7 +288,7 @@ void main(void) {
                         //I'm router (have display) and new value to display is ready
                         recalculateDisplayValue();
                     } else {
-                        // turn packet lenght ON
+                        // turn packet length ON
                         PORTBbits.RB1 = 0;
                         switchBridgeLedOffCounter = 23; // approx 10 ms
                     }

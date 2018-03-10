@@ -10,7 +10,7 @@
   <component name="SvnBranchConfigurationManager">
     <option name="myConfigurationMap">
       <map>
-        <entry key="$PROJECT_DIR$/../SerialPortTest">
+        <entry key="$PROJECT_DIR$/../HvacController">
           <value>
             <SvnBranchConfiguration>
               <option name="branchUrls">
