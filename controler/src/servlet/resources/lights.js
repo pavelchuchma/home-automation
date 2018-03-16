@@ -1,5 +1,6 @@
 var mainCtx;
 var toolsCtx;
+var hvacCtx;
 var e = '';
 
 var currentFloor = 0;
@@ -166,6 +167,7 @@ window.onload = function () {
 
         drawMainCanvas();
         drawToolsCanvas();
+        drawHvacCanvas();
         setInterval(onTimer, 750);
         onTimer();
     } catch (e) {
@@ -246,6 +248,8 @@ function drawItems() {
                 drawCharacterIcon(id, '▲')
             } else if (id == 'stairsDown') {
                 drawCharacterIcon(id, '▼')
+            } else if (id == 'hvac') {
+                drawHvacScreen()
             }
         }
     });
@@ -284,6 +288,52 @@ function drawToolsCanvas() {
     });
 
     drawToolSelection();
+}
+
+function drawHvacCanvas() {
+    var c = document.getElementById("hvacCanvas");
+    hvacCtx = c.getContext("2d");
+
+    hvacCtx.rect(0, 0, 100, 150);
+    hvacCtx.fillStyle = toolBoxBackground;
+    hvacCtx.fill();
+    hvacCtx.stroke();
+}
+
+function drawHvacScreen() {
+    // clr
+    hvacCtx.rect(0, 0, 100, 150);
+    hvacCtx.fillStyle = toolBoxBackground;
+    hvacCtx.fill();
+    hvacCtx.stroke();
+
+    var hvacStatus = itemStatusMap['hvac'];
+
+
+    if (hvacStatus.on) {
+        hvacCtx.font = "bold 15px Arial";
+        hvacCtx.fontWeight = "500";
+        hvacCtx.fillStyle = 'red';
+        hvacCtx.fillText(hvacStatus.targetMode, 5, 20);
+        hvacCtx.fillText(hvacStatus.fanSpeed, 5, 40);
+        hvacCtx.fillText('Set temp: ' + hvacStatus.targetTemperature, 5, 60);
+        hvacCtx.fillText('Air temp: ' + hvacStatus.airTemperature, 5, 80);
+        hvacCtx.font = "10px Arial";
+        hvacCtx.fillText('x:' + hvacStatus.x + ' y:' + hvacStatus.y, 5, 140);
+    } else {
+        hvacCtx.fillStyle = 'black';
+        hvacCtx.font = "30px Arial";
+        hvacCtx.fillText('OFF', 15, 30);
+    }
+}
+
+function onHvacClick(event) {
+    var hvacStatus = itemStatusMap['hvac'];
+    if (hvacStatus.on) {
+        sendAction('/hvac/action?id=hvac&on=false');
+    } else {
+        sendAction('/hvac/action?id=hvac&on=true');
+    }
 }
 
 function drawLightIcon(x, y, power, ctx) {
@@ -566,6 +616,7 @@ function onCanvasClick(event) {
     mainCtx.fill();
 }
 
+
 function printException(e) {
     document.getElementById('error').innerHTML = e.message + '<br>' + e.stack.split('\n').join('<br>');
 }
@@ -598,7 +649,10 @@ function updateItems() {
                 parseJsonStatusResponse(request, 'airValves', itemStatusMap);
                 updateImpl('/pir/status', function (request) {
                     parseJsonStatusResponse(request, 'pir', itemStatusMap);
-                    drawItems();
+                    updateImpl('/hvac/status', function (request) {
+                        parseJsonStatusResponse(request, 'hvac', itemStatusMap);
+                        drawItems();
+                    });
                 });
             });
         });

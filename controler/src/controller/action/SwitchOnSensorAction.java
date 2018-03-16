@@ -3,7 +3,6 @@ package controller.action;
 import controller.actor.IOnOffActor;
 
 public class SwitchOnSensorAction extends AbstractSensorAction {
-    private final ICondition condition;
 
     public SwitchOnSensorAction(IOnOffActor actor, int timeout, int switchOnPercent) {
         this(actor, timeout, switchOnPercent, Priority.LOW, null);
@@ -18,14 +17,11 @@ public class SwitchOnSensorAction extends AbstractSensorAction {
     }
 
     public SwitchOnSensorAction(IOnOffActor actor, int timeout, int switchOnPercent, Priority priority, ICondition condition) {
-        super(actor, timeout, true, switchOnPercent, priority);
-        this.condition = condition;
+        super(actor, timeout, true, switchOnPercent, priority, condition);
     }
 
     @Override
     public void perform(int previousDurationMs) {
-        if (condition == null || condition.isTrue(previousDurationMs)) {
-            super.perform(previousDurationMs);
-        }
+        super.perform(previousDurationMs);
     }
 }

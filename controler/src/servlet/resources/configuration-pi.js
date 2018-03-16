@@ -115,6 +115,8 @@ function getComponents() {
         ['pirZadHCh', 179, 346, 1],
         ['pirChMa', 207, 946, 1],
         ['mgntGH', 18, 61, 1],
-        ['mgntGD', 18, 117, 1]
+        ['mgntGD', 18, 117, 1],
+
+        ['hvac', 0, 0, 0]
     ];
 }

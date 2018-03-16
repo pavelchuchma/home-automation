@@ -41,4 +41,8 @@ public class HvacActor extends AbstractActor implements IOnOffActor {
     public boolean isOn() {
         return hvacDevice.isRunning() && hvacDevice.getTargetMode() == OperatingMode.HEAT;
     }
+
+    public HvacDevice getHvacDevice() {
+        return hvacDevice;
+    }
 }

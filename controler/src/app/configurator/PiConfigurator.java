@@ -167,7 +167,7 @@ public class PiConfigurator extends AbstractConfigurator {
 //        RecuperationActor recuperation = new RecuperationActor(recuIndicator);
 //        recuIndicator.startRefresh();
 
-        HvacDevice hvacDevice = null; //startHvacDevice();
+        HvacDevice hvacDevice = startHvacDevice();
         HvacActor hvacActor = new HvacActor(hvacDevice, "hvac", "HVAC");
         ICondition durationInfra = new PressDurationCondition(0, 1000);
         ICondition durationHvac = new PressDurationCondition(2500, 10000);
@@ -370,7 +370,8 @@ public class PiConfigurator extends AbstractConfigurator {
         lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightUpperButton(), null, new Action[]{
                 new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900, 100, AbstractSensorAction.Priority.LOW, durationInfra),
                 new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900, 100, AbstractSensorAction.Priority.LOW, durationInfra),
-                new SwitchOnSensorAction(hvacActor, 1800, 100, AbstractSensorAction.Priority.LOW, durationHvac)}));
+                new SwitchOnSensorAction(hvacActor, 1800, 100, AbstractSensorAction.Priority.LOW, durationHvac)
+        }));
         lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightBottomButton(), null, new Action[]{
                 new SwitchOffAction(zaricKoupelnaHore1Trubice, durationInfra),
                 new SwitchOffAction(zaricKoupelnaHore2Trubice, durationInfra),
@@ -684,6 +685,10 @@ public class PiConfigurator extends AbstractConfigurator {
 
         Servlet.setLightActions(lightsActions.toArray(new Action[lightsActions.size()]));
         Servlet.pirStatusList = pirStatusList;
+        Servlet.hvacActor = hvacActor;
+        Servlet.hvacOnAction = new SwitchOnSensorAction(hvacActor, 5 * 3600, 100, AbstractSensorAction.Priority.LOW);
+        Servlet.hvacOffAction = new SwitchOffAction(hvacActor);
+
 //        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);
 //        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));
 

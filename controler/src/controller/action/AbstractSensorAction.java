@@ -4,32 +4,19 @@ import controller.actor.IOnOffActor;
 import org.apache.log4j.Logger;
 
 public class AbstractSensorAction extends AbstractAction {
-    public enum Priority {
-        LOW,
-        MEDIUM,
-        HIGH
-    }
-    static Logger log = Logger.getLogger(AbstractSensorAction.class.getName());
-
     public static final int BLINK_DELAY = 600;
     public static final int MAX_BLINK_DURATION = 10000;
+    static Logger log = Logger.getLogger(AbstractSensorAction.class.getName());
     private final int switchOnPercent;
     private final Priority priority;
-
-    static class ActionData {
-        private final Priority priority;
-
-        ActionData(Priority priority) {
-            this.priority = priority;
-        }
-    }
-
+    private final ICondition condition;
     int timeout;
     boolean canSwitchOn;
 
-    protected AbstractSensorAction(IOnOffActor actor, int timeout, boolean canSwitchOn, int switchOnPercent, Priority priority) {
+    protected AbstractSensorAction(IOnOffActor actor, int timeout, boolean canSwitchOn, int switchOnPercent, Priority priority, ICondition condition) {
         super(actor);
         this.priority = priority;
+        this.condition = condition;
         this.timeout = timeout * 1000;
         this.canSwitchOn = canSwitchOn;
         this.switchOnPercent = switchOnPercent;
@@ -44,13 +31,17 @@ public class AbstractSensorAction extends AbstractAction {
 
     @Override
     public void perform(int previousDurationMs) {
-        // run body in extra thread because it can be blocking
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                performImpl();
+        if (condition != null) {
+            if (condition.isTrue(previousDurationMs)) {
+                log.debug("doing action - condition " + condition + " is true");
+            } else {
+                log.debug("no action - condition " + condition + " is false");
+                return;
             }
-        }).start();
+        }
+
+        // run body in extra thread because it can be blocking
+        new Thread(this::performImpl).start();
     }
 
     private void performImpl() {
@@ -108,6 +99,20 @@ public class AbstractSensorAction extends AbstractAction {
             }
         } catch (Exception e) {
             log.error("perform() method failed2", e);
+        }
+    }
+
+    public enum Priority {
+        LOW,
+        MEDIUM,
+        HIGH
+    }
+
+    static class ActionData {
+        private final Priority priority;
+
+        ActionData(Priority priority) {
+            this.priority = priority;
         }
     }
 }

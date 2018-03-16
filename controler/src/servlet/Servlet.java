@@ -21,6 +21,7 @@ import app.NodeInfoCollector;
 import app.configurator.AbstractConfigurator;
 import controller.PirStatus;
 import controller.action.Action;
+import controller.actor.HvacActor;
 import controller.actor.PwmActor;
 import controller.controller.Activity;
 import controller.controller.LouversController;
@@ -50,6 +51,9 @@ public class Servlet extends AbstractHandler {
     public static final String TARGET_LIGHTS_ACTION = TARGET_LIGHTS + "/a";
     public static final String TARGET_LIGHTS_PARAM_ACTION = TARGET_LIGHTS + "/action";
     public static final String TARGET_LIGHTS_OBYVAK = "/lightsObyvak.html";
+    public static final String TARGET_HVAC = "/hvac";
+    public static final String TARGET_HVAC_STATUS = TARGET_HVAC + "/status";
+    public static final String TARGET_HVAC_ACTION = TARGET_HVAC + "/action";
     public static final String TARGET_LOUVERS = "/louvers";
     public static final String TARGET_LOUVERS_STATUS = TARGET_LOUVERS + "/status";
     public static final String TARGET_LOUVERS_ACTION = TARGET_LOUVERS + "/a";
@@ -70,6 +74,9 @@ public class Servlet extends AbstractHandler {
     public static Map<String, LouversController> louversControllerMap;
     public static Map<String, ValveController> valveControllerMap;
     public static AbstractConfigurator configurator;
+    public static HvacActor hvacActor;
+    public static Action hvacOnAction;
+    public static Action hvacOffAction;
     static Logger log = Logger.getLogger(Servlet.class.getName());
     private static Action[] lightActions;
     private static Map<String, PwmActor> lightActorMap;
@@ -242,6 +249,18 @@ public class Servlet extends AbstractHandler {
                     }
 
                     sendOkResponse(baseRequest, response, getSystemPage(debugNodeId));
+                } else if (target.startsWith(TARGET_HVAC_STATUS)) {
+                    writeHvacStatusJson(baseRequest, response);
+                } else if (target.startsWith(TARGET_HVAC_ACTION)) {
+                    if ("hvac".equals(request.getParameter("id"))) {
+                        if ("true".equals(request.getParameter("on"))) {
+                            hvacOnAction.perform(0);
+                        } else {
+                            hvacOffAction.perform(0);
+                        }
+                    }
+
+                    sendOkResponse(baseRequest, response, getLouversPage());
 
                 } else {
                     if (target.startsWith("/a")) {
@@ -256,6 +275,15 @@ public class Servlet extends AbstractHandler {
             e.printStackTrace(response.getWriter());
             baseRequest.setHandled(true);
         }
+    }
+
+    private void writeHvacStatusJson(Request baseRequest, HttpServletResponse response) throws IOException {
+        initJsonResponse(baseRequest, response);
+        StringBuffer b = new StringBuffer();
+        b.append("{ \"hvac\" : [\n");
+        b.append(HvacJsonSerializer.serialize(hvacActor.getHvacDevice()));
+        b.append("\n]}");
+        response.getWriter().println(b);
     }
 
     private void writePitStatusJson(Request baseRequest, HttpServletResponse response) throws IOException {
