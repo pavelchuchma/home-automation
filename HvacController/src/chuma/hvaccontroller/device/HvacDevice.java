@@ -1,12 +1,18 @@
 package chuma.hvaccontroller.device;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import chuma.hvaccontroller.IPacketProcessor;
+import chuma.hvaccontroller.IPacketSource;
 import chuma.hvaccontroller.packet.Get52ResponsePacket;
 import chuma.hvaccontroller.packet.Get53ResponsePacket;
 import chuma.hvaccontroller.packet.Get54ResponsePacket;
 import chuma.hvaccontroller.packet.Packet;
+import chuma.hvaccontroller.packet.PacketData;
+import chuma.hvaccontroller.packet.PacketFactory;
 import chuma.hvaccontroller.packet.SetPacketRequest;
 import org.apache.log4j.Logger;
 
@@ -15,7 +21,9 @@ public class HvacDevice {
     public static final int ADDR_THIS_CONTROLLER = 0x85;
     public static final int ADDR_HVAC_DEVICE = 0x20;
     static Logger log = Logger.getLogger(HvacDevice.class.getName());
-    private final HvacConnector connector;
+    private final Collection<IPacketProcessor> processors;
+    private IPacketSource connector;
+    // HVAC state
     private boolean running;
     private FanSpeed fanSpeed;
     private OperatingMode currentMode;
@@ -28,12 +36,55 @@ public class HvacDevice {
     private boolean x;
     private boolean y;
 
-    public HvacDevice(HvacConnector connector) {
-        this.connector = connector;
+    public HvacDevice(String portName, boolean logBytes, IPacketProcessor additionalProcessors[]) {
+        this(new HvacConnector(portName, logBytes), additionalProcessors);
+    }
+
+    public HvacDevice(IPacketSource packetSource, IPacketProcessor additionalProcessors[]) {
+        connector = packetSource;
+        this.processors = new ArrayList<>();
+        processors.add(getProcessor());
+        if (additionalProcessors != null) {
+            Collections.addAll(processors, additionalProcessors);
+        }
     }
 
     private static boolean selectBoolean(Boolean input, boolean current) {
         return (input != null) ? input : current;
+    }
+
+    public void start() throws IOException {
+        log.debug("Starting HvacDevice");
+
+        for (IPacketProcessor proc : processors) {
+            proc.start();
+        }
+
+        new Thread(() -> {
+            while (true) {
+                PacketData packetData = connector.getPacket();
+                if (packetData == null) {
+                    break;
+                }
+                Packet packet = PacketFactory.Deserialize(packetData);
+                for (IPacketProcessor proc : processors) {
+                    try {
+                        proc.process(packet);
+                    } catch (IOException e) {
+                        log.error("Failed to process packet: " + packet, e);
+                    }
+                }
+            }
+            for (IPacketProcessor proc : processors) {
+                try {
+                    proc.stop();
+                } catch (IOException e) {
+                    log.error("Failed to stop processor", e);
+                }
+            }
+        }, "HvacProcessor").start();
+
+        connector.startRead();
     }
 
     public IPacketProcessor getProcessor() {
@@ -96,6 +147,49 @@ public class HvacDevice {
         connector.sendData(setPacketRequest.getData());
     }
 
+    public boolean isRunning() {
+        return running;
+    }
+
+    public FanSpeed getFanSpeed() {
+        return fanSpeed;
+    }
+
+    public OperatingMode getCurrentMode() {
+        return currentMode;
+    }
+
+    public OperatingMode getTargetMode() {
+        return targetMode;
+    }
+
+    public boolean isAutoMode() {
+        return autoMode;
+    }
+
+    public boolean isQuiteMode() {
+        return quiteMode;
+    }
+
+    public boolean isSleepMode() {
+        return sleepMode;
+    }
+
+    public int getTargetTemperature() {
+        return targetTemperature;
+    }
+
+    public int getAirTemperature() {
+        return airTemperature;
+    }
+
+    public boolean isX() {
+        return x;
+    }
+
+    public boolean isY() {
+        return y;
+    }
 
     private int boolAsInt(boolean b) {
         return (b) ? 1 : 0;

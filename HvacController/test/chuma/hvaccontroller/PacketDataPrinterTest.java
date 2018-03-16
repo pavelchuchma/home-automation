@@ -2,13 +2,11 @@ package chuma.hvaccontroller;
 
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.util.Arrays;
 
 import chuma.hvaccontroller.debug.HtmlOutputWriter;
 import chuma.hvaccontroller.debug.PacketFileSource;
 import chuma.hvaccontroller.debug.PacketPrinter;
 import chuma.hvaccontroller.device.HvacDevice;
-import chuma.hvaccontroller.packet.PacketConsumer;
 import org.junit.Test;
 
 public class PacketDataPrinterTest {
@@ -25,12 +23,13 @@ public class PacketDataPrinterTest {
 //        PacketFileSource reader = new PacketFileSource("C:\\Home\\chuma\\work\\HomeAutomation\\SerialPortTest\\data\\20180302_07-44-51-defrostEndAtEnd-5\\raw-20180302_07-44-51-defrostEndAtEnd-5.log");
 //        PacketFileSource reader = new PacketFileSource("C:\\Home\\chuma\\work\\HomeAutomation\\SerialPortTest\\data\\20180302_12-39-37-TurnOn Maybe with pause at beginning (maybe defrost)\\raw-20180302_12-39-37.f1");
 //        PacketFileSource reader = new PacketFileSource("C:\\Home\\chuma\\work\\HomeAutomation\\SerialPortTest\\data\\20180302_10-16-12-TurnOn-InTemp\\raw-20180302_10-16-12.log");
-        PacketFileSource reader = new PacketFileSource("C:\\Home\\chuma\\work\\HomeAutomation\\SerialPortTest\\data\\A0-2\\A0.messages");
+        PacketFileSource reader = new PacketFileSource("C:\\Home\\chuma\\work\\HomeAutomation\\HvacController\\data\\raw-20171113_10-15-08.log");
 
-        IPacketProcessor processor = new PacketPrinter(new HtmlOutputWriter(new FileWriter("C:\\Home\\chuma\\work\\HomeAutomation\\SerialPortTest\\data\\A0-2\\A0.html")), true);
-        HvacDevice hvacDevice = new HvacDevice(null);
-        PacketConsumer consumer = new PacketConsumer(Arrays.asList(processor, hvacDevice.getProcessor()));
-        consumer.consume(reader);
+        IPacketProcessor printer = new PacketPrinter(new HtmlOutputWriter(new FileWriter("C:\\Home\\chuma\\work\\HomeAutomation\\HvacController\\data\\A0-2\\A0.html")), true);
+        HvacDevice hvacDevice = new HvacDevice(reader, new IPacketProcessor[]{printer});
+        hvacDevice.start();
+
+        Thread.sleep(2000);
     }
 
     @Test

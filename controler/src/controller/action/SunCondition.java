@@ -19,7 +19,7 @@ public class SunCondition implements ICondition {
     }
 
     @Override
-    public boolean isTrue() {
+    public boolean isTrue(int previousDurationMs) {
         GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         int minutesToday = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE);
         if (minutesToday > sunCalculator.getSunriseMinutes() - disabledBeforeSunRiseMinutes && minutesToday < sunCalculator.getSunsetMinutes() + enabledAfterSunsetMinutes) {

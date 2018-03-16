@@ -1,15 +1,19 @@
 package app.configurator;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import app.NodeInfoCollector;
 import app.SwitchListener;
+import chuma.hvaccontroller.device.HvacDevice;
 import controller.ActionBinding;
 import controller.action.AbstractSensorAction;
 import controller.action.Action;
+import controller.action.ICondition;
 import controller.action.IndicatorAction;
 import controller.action.InvertAction;
 import controller.action.InvertActionWithTimer;
+import controller.action.PressDurationCondition;
 import controller.action.SunCondition;
 import controller.action.SwitchAllOffWithMemory;
 import controller.action.SwitchOffAction;
@@ -17,6 +21,7 @@ import controller.action.SwitchOffSensorAction;
 import controller.action.SwitchOnAction;
 import controller.action.SwitchOnSensorAction;
 import controller.actor.ActorListener;
+import controller.actor.HvacActor;
 import controller.actor.OnOffActor;
 import controller.actor.PwmActor;
 import controller.actor.RadioOnOffActor;
@@ -33,9 +38,12 @@ import controller.device.RelayBoardDevice;
 import controller.device.SwitchIndicator;
 import controller.device.WallSwitch;
 import node.Node;
+import org.apache.log4j.Logger;
 import servlet.Servlet;
 
 public class PiConfigurator extends AbstractConfigurator {
+
+    static Logger log = Logger.getLogger(PiConfigurator.class.getName());
 
     public PiConfigurator(NodeInfoCollector nodeInfoCollector) {
         super(nodeInfoCollector);
@@ -159,6 +167,11 @@ public class PiConfigurator extends AbstractConfigurator {
 //        RecuperationActor recuperation = new RecuperationActor(recuIndicator);
 //        recuIndicator.startRefresh();
 
+        HvacDevice hvacDevice = null; //startHvacDevice();
+        HvacActor hvacActor = new HvacActor(hvacDevice, "hvac", "HVAC");
+        ICondition durationInfra = new PressDurationCondition(0, 1000);
+        ICondition durationHvac = new PressDurationCondition(2500, 10000);
+
         ActorListener prizemiVzaduKuchynSw2Indicator = kuchynLSw1.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON);
         ActorListener schodyDoleJidelnaSw3Indicator = schodyDoleR3Sw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF);
 
@@ -191,7 +204,6 @@ public class PiConfigurator extends AbstractConfigurator {
         RelayBoardDevice rele7ZaluzieBPort3 = new RelayBoardDevice("rele7ZaluzieBPort3", zaluzieB, 3);
 
         RelayBoardDevice rele8Actor3Port1 = new RelayBoardDevice("rele8Actor3Port1", actor3, 2);
-
 
         LouversController zaluzieKrystof;
         LouversController zaluziePata;
@@ -355,8 +367,15 @@ public class PiConfigurator extends AbstractConfigurator {
         configurePwmLights(lst, koupelnaHoreSw1, WallSwitch.Side.RIGHT, 25, koupelnaPwmActor);
 
         configureLouvers(lst, koupelnaHoreSw2, WallSwitch.Side.LEFT, zaluzieKoupelna);
-        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightUpperButton(), new Action[]{new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900, 100), new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900, 100)}, null));
-        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightBottomButton(), new Action[]{new SwitchOffAction(zaricKoupelnaHore1Trubice), new SwitchOffAction(zaricKoupelnaHore2Trubice)}, null));
+        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightUpperButton(), null, new Action[]{
+                new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900, 100, AbstractSensorAction.Priority.LOW, durationInfra),
+                new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900, 100, AbstractSensorAction.Priority.LOW, durationInfra),
+                new SwitchOnSensorAction(hvacActor, 1800, 100, AbstractSensorAction.Priority.LOW, durationHvac)}));
+        lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightBottomButton(), null, new Action[]{
+                new SwitchOffAction(zaricKoupelnaHore1Trubice, durationInfra),
+                new SwitchOffAction(zaricKoupelnaHore2Trubice, durationInfra),
+                new SwitchOffAction(hvacActor, durationHvac)
+        }));
 
         // koupelna u okna
         configureLouvers(lst, koupelnaHoreOknoSw, WallSwitch.Side.LEFT, zaluzieKoupelna);
@@ -668,6 +687,17 @@ public class PiConfigurator extends AbstractConfigurator {
 //        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);
 //        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));
 
+    }
+
+    private HvacDevice startHvacDevice() {
+        HvacDevice hvacDevice = new HvacDevice("/dev/ttyUSB0", false, null);
+        try {
+            hvacDevice.start();
+        } catch (IOException e) {
+            log.error("Faild to start HVAC Device", e);
+            return null;
+        }
+        return hvacDevice;
     }
 
     @Override

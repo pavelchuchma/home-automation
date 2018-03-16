@@ -1,5 +1,5 @@
 package controller.action;
 
 public interface ICondition {
-    boolean isTrue();
+    boolean isTrue(int previousDurationMs);
 }

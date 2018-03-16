@@ -24,7 +24,7 @@ public class SwitchOnSensorAction extends AbstractSensorAction {
 
     @Override
     public void perform(int previousDurationMs) {
-        if (condition == null || condition.isTrue()) {
+        if (condition == null || condition.isTrue(previousDurationMs)) {
             super.perform(previousDurationMs);
         }
     }

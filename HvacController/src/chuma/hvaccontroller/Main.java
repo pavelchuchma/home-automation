@@ -1,14 +1,10 @@
 package chuma.hvaccontroller;
 
-import java.util.Arrays;
-
 import chuma.hvaccontroller.debug.ConsoleOutputWriter;
 import chuma.hvaccontroller.debug.PacketPrinter;
 import chuma.hvaccontroller.device.FanSpeed;
-import chuma.hvaccontroller.device.HvacConnector;
 import chuma.hvaccontroller.device.HvacDevice;
 import chuma.hvaccontroller.device.OperatingMode;
-import chuma.hvaccontroller.packet.PacketConsumer;
 
 
 public class Main {
@@ -17,24 +13,27 @@ public class Main {
     public static void main(String[] args) {
 
         try {
-            HvacConnector connector = new HvacConnector(false);
-            connector.startRead();
-
             IPacketProcessor packetPrinter = new PacketPrinter(new ConsoleOutputWriter(), false);
-            HvacDevice hvacDevice = new HvacDevice(connector);
-            PacketConsumer packetConsumer = new PacketConsumer(Arrays.asList(packetPrinter, hvacDevice.getProcessor()));
+            String portName = isWindows() ? "COM5" : "/dev/ttyUSB0";
+
+            HvacDevice hvacDevice = new HvacDevice(portName, true, new IPacketProcessor[]{packetPrinter});
 
             String cmd = (args.length > 0) ? args[0] : "test";
             new Thread(() -> {
-                schedule(connector, hvacDevice, cmd);
+                schedule(hvacDevice, cmd);
             }).start();
-            packetConsumer.consume(connector);
+
+            hvacDevice.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void schedule(HvacConnector connector, HvacDevice device, String cmd) {
+    static boolean isWindows() {
+        return System.getenv("COMPUTERNAME") != null;
+    }
+
+    private static void schedule(HvacDevice device, String cmd) {
         try {
             switch (cmd) {
                 case "test":

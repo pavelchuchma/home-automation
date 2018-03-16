@@ -20,30 +20,23 @@ import org.apache.log4j.Logger;
 public class HvacConnector implements IPacketSource {
     public static final int MAX_PACKET_BYTE_READ_TIME = 10;
     static Logger log = Logger.getLogger(HvacConnector.class.getName());
-    private final OutputStream outputStream;
+    private final String portName;
+    private final boolean logBytes;
     BlockingQueue<PacketData> packetDataQueue = new LinkedBlockingQueue<>();
     boolean closed = false;
-    InputStream inputStream;
     ByteLogger byteLogger;
     PacketReader packetReader = new PacketReader();
     PacketSender packetSender = new PacketSender();
+    private InputStream inputStream;
+    private OutputStream outputStream;
 
-    public HvacConnector(boolean logBytes) throws IOException {
-        SerialPort serialPort = openSerialPort();
-        this.inputStream = serialPort.getInputStream();
-        this.outputStream = serialPort.getOutputStream();
-        if (logBytes) {
-            byteLogger = new ByteLogger();
-        }
-    }
-
-    static boolean isWindows() {
-        return System.getenv("COMPUTERNAME") != null;
+    public HvacConnector(String portName, boolean logBytes) {
+        this.portName = portName;
+        this.logBytes = logBytes;
     }
 
     private SerialPort openSerialPort() throws IOException {
         Enumeration portList = CommPortIdentifier.getPortIdentifiers();
-        String portName = isWindows() ? "COM5" : "/dev/ttyUSB0";
         SerialPort serialPort;
         int baudRate = 2400;
 
@@ -99,7 +92,14 @@ public class HvacConnector implements IPacketSource {
         }
     }
 
-    public void startRead() {
+    public void startRead() throws IOException {
+        SerialPort serialPort = openSerialPort();
+        this.inputStream = serialPort.getInputStream();
+        this.outputStream = serialPort.getOutputStream();
+        if (logBytes) {
+            byteLogger = new ByteLogger();
+        }
+
         Thread thread = new Thread(() -> {
             while (!closed) {
                 try {
@@ -114,14 +114,18 @@ public class HvacConnector implements IPacketSource {
                     log.error("Read failure", e);
                 }
             }
-        }, "HvacRead");
+        }, "HvacListener");
         thread.setPriority(Thread.MAX_PRIORITY);
         thread.start();
     }
 
     @Override
-    public PacketData getPacket() throws InterruptedException {
-        return packetDataQueue.take();
+    public PacketData getPacket() {
+        try {
+            return packetDataQueue.take();
+        } catch (InterruptedException e) {
+            return null;
+        }
     }
 
     static class ReceivedChar {
