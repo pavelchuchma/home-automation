@@ -1,5 +1,7 @@
 package controller.actor;
 
+import java.util.Calendar;
+
 import chuma.hvaccontroller.device.FanSpeed;
 import chuma.hvaccontroller.device.HvacDevice;
 import chuma.hvaccontroller.device.OperatingMode;
@@ -27,7 +29,12 @@ public class HvacActor extends AbstractActor implements IOnOffActor {
         if (hvacDevice == null) {
             return false;
         }
-        hvacDevice.set(val == 1, OperatingMode.HEAT, FanSpeed.SPEED_1, 23, false, false);
+        int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
+        if (currentMonth >= 6 && currentMonth <= 9) {
+            hvacDevice.set(val == 1, OperatingMode.COOL, FanSpeed.SPEED_1, 25, false, false);
+        } else {
+            hvacDevice.set(val == 1, OperatingMode.HEAT, FanSpeed.SPEED_1, 23, false, false);
+        }
         callListenersAndSetActionData(false, actionData);
         return true;
     }
@@ -39,7 +46,7 @@ public class HvacActor extends AbstractActor implements IOnOffActor {
 
     @Override
     public boolean isOn() {
-        return hvacDevice.isRunning() && hvacDevice.getTargetMode() == OperatingMode.HEAT;
+        return hvacDevice.isRunning();
     }
 
     public HvacDevice getHvacDevice() {
