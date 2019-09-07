@@ -22,9 +22,11 @@ import controller.device.LddBoardDevice;
 import controller.device.SwitchIndicator;
 import controller.device.WallSwitch;
 import node.NodePin;
+import org.apache.log4j.Logger;
 import servlet.Servlet;
 
 public abstract class AbstractConfigurator {
+    static Logger log = Logger.getLogger(AbstractConfigurator.class.getName());
     protected NodeInfoCollector nodeInfoCollector;
     protected List<PirStatus> pirStatusList = new ArrayList<>();
 
@@ -67,6 +69,7 @@ public abstract class AbstractConfigurator {
     }
 
     static PwmActor addLddLight(ArrayList<Action> lightsActions, String id, String label, LddBoardDevice.LddNodePin pin, double maxLoad, ActorListener... actorListeners) {
+        log.debug(String.format("Adding LDD Light: %s, %s, %s, %s, %s, %s", pin.getDeviceName(), pin.getPin().getPinIndex(), id, label, pin.getMaxLddCurrent(), maxLoad));
         PwmActor pwmActor = new PwmActor(id, label, pin, maxLoad / pin.getMaxLddCurrent(), actorListeners);
         lightsActions.add(new SwitchOnAction(pwmActor));
         lightsActions.add(new IncreasePwmAction(pwmActor));

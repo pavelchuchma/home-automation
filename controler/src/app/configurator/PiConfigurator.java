@@ -315,8 +315,9 @@ public class PiConfigurator extends AbstractConfigurator {
         PwmActor obyvak03PwmActor = addLddLight(lightsActions, "pwmOb3", "Obyvák 03", lddDevice2.getLdd5(), 0.7); // .72
         PwmActor wcPwmActor = addLddLight(lightsActions, "pwmWc", "WC", lddDevice2.getLdd6(), 0.24, new SwitchIndicator(wcSw.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF));
 
-        LddBoardDevice lddDevice3 = new LddBoardDevice("lddDevice3", lddActorA, 3, .35, .35, .35, .35, .7, .7);
+        LddBoardDevice lddDevice3 = new LddBoardDevice("lddDevice3", lddActorA, 3, .7, .35, .35, .35, .7, .7);
 //        PwmActor loznice2PwmActor = addLddLight(lightsActions, "pwmLozM", "Ložnice malé", lddDevice3.getLdd1(), 0.35, lozniceDvereSw2Indicator, lozniceOknoSw2Indicator, lozniceZedSw2Indicator); // .36
+        PwmActor obyvak07PwmActor = addLddLight(lightsActions, "pwmOb7", "Obyvák 07", lddDevice3.getLdd1(), 0.7); // .72
         PwmActor satnaPwmActor = addLddLight(lightsActions, "pwmSat", "Šatna", lddDevice3.getLdd2(), 0.35, new SwitchIndicator(chodbaALSw.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF), new SwitchIndicator(satnaSw3.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF)); //0.48
         PwmActor zadveriPwmActor = addLddLight(lightsActions, "pwmZadH", "Zádveří", lddDevice3.getLdd3(), 0.35, new SwitchIndicator(zadveriSwA1.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // 0.48
         PwmActor koupelnaZrcadlaPwmActor = addLddLight(lightsActions, "pwmKpHZrc", "Koupena zrcadla", lddDevice3.getLdd4(), 0.35); // .36
@@ -405,7 +406,7 @@ public class PiConfigurator extends AbstractConfigurator {
         SwitchAllOffWithMemory allLightsFromKitchenToLivingRoomOff = new SwitchAllOffWithMemory(kuchyn1PwmActor, kuchyn2PwmActor, kuchyn3PwmActor, /*kuchyn4PwmActor,*/ kuchyn5PwmActor,
                 jidelna1PwmActor, jidelna2PwmActor, jidelna3PwmActor, jidelnaStulPwmActor,
                 obyvak01PwmActor, obyvak02PwmActor, obyvak03PwmActor, obyvak04PwmActor, /*obyvak05PwmActor,*/
-                obyvak06PwmActor, /*obyvak07PwmActor,*/ obyvak08PwmActor, obyvak09PwmActor, obyvak10PwmActor,
+                obyvak06PwmActor, obyvak07PwmActor, obyvak08PwmActor, obyvak09PwmActor, obyvak10PwmActor,
                 obyvak11PwmActor, obyvak12PwmActor, obyvak13PwmActor, kuchynLinkaPwmActor);
 
         lst.addActionBinding(new ActionBinding(schodyDoleL1Sw.getLeftBottomButton(),
