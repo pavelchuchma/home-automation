@@ -579,9 +579,9 @@ function onCanvasClick(event) {
         return;
     }
 
-    //tmp += "['pwm', " + Math.round(parseFloat(event.offsetX)) + ", " + Math.round(parseFloat(event.offsetY)) + ", 0],<br>";
-    //debug(tmp);
-    //return;
+    // tmp += "['pwm', " + Math.round(parseFloat(event.offsetX)) + ", " + Math.round(parseFloat(event.offsetY)) + ", 0],<br>";
+    // debug(tmp);
+    // return;
 
     var action;
     if (startsWith(selectedToolId, 'light')) {

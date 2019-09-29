@@ -1,4 +1,4 @@
-package controller.action;
+package controller.action.condition;
 
 public class PressDurationCondition implements ICondition {
     int minDurationMs;

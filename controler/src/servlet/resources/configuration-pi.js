@@ -42,6 +42,8 @@ function getComponents() {
         ['pwmG3', 25, 270, 1],
         ['pwmTrs', 550, 595, 0],
         ['pwmDrv', 130, 1459, 0],
+        ['pwmSchd', 57, 760, 0],
+
 
         ['lvKuch', 510, 809, 0],
         ['lvOb1', 510, 978, 0],
@@ -69,7 +71,7 @@ function getComponents() {
         ['pwmMarek', 349, 1039, 1],
         //['pwmLozM', 309, 1280, 1],
         ['pwmLozV', 431, 1280, 1],
-        ['pwmPrac', 167, 1324, 1],
+        // ['pwmPrac', 167, 1324, 1],
         ['pwmSat', 194, 1128, 1],
         ['pwmWc', 134, 953, 1],
 

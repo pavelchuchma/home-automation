@@ -1,5 +1,6 @@
 package controller.action;
 
+import controller.action.condition.ICondition;
 import controller.actor.IOnOffActor;
 import org.apache.log4j.Logger;
 

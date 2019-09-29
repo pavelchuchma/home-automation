@@ -1,5 +1,6 @@
 package controller.action;
 
+import controller.action.condition.ICondition;
 import controller.actor.IOnOffActor;
 
 public class SwitchOffAction extends AbstractAction {

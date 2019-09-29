@@ -9,19 +9,21 @@ import chuma.hvaccontroller.device.HvacDevice;
 import controller.ActionBinding;
 import controller.action.AbstractSensorAction;
 import controller.action.Action;
-import controller.action.ICondition;
 import controller.action.IndicatorAction;
 import controller.action.InvertAction;
 import controller.action.InvertActionWithTimer;
-import controller.action.PressDurationCondition;
-import controller.action.SunCondition;
 import controller.action.SwitchAllOffWithMemory;
 import controller.action.SwitchOffAction;
 import controller.action.SwitchOffSensorAction;
 import controller.action.SwitchOnAction;
 import controller.action.SwitchOnSensorAction;
+import controller.action.condition.DarkCondition;
+import controller.action.condition.ICondition;
+import controller.action.condition.PressDurationCondition;
+import controller.action.condition.SunCondition;
 import controller.actor.ActorListener;
 import controller.actor.HvacActor;
+import controller.actor.IOnOffActor;
 import controller.actor.OnOffActor;
 import controller.actor.PwmActor;
 import controller.actor.RadioOnOffActor;
@@ -362,7 +364,8 @@ public class PiConfigurator extends AbstractConfigurator {
         PwmActor obyvak12PwmActor = addLddLight(lightsActions, "pwmOb12", "Obyvák 12", lddDevice7.getLdd6(), 0.7); // .72
 
         LddBoardDevice lddDevice8 = new LddBoardDevice("lddDevice8", lddActorC, 1, .6, .6, .5, .5, .5, .5);
-        PwmActor pracovnaPwmActor = addLddLight(lightsActions, "pwmPrac", "Pracovna", lddDevice8.getLdd1(), 0.6); // .6
+//        PwmActor pracovnaPwmActor = addLddLight(lightsActions, "pwmPrac", "Pracovna", lddDevice8.getLdd1(), 0.6); // .6
+        PwmActor schodyPwmActor = addLddLight(lightsActions, "pwmSchd", "Schody", lddDevice8.getLdd1(), 0.35); // .6
         PwmActor koupelnaDolePwmActor = addLddLight(lightsActions, "pwmKpD", "Koupelna dole", lddDevice8.getLdd2(), 0.6, prizemiVzaduKuchynSw2Indicator, new SwitchIndicator(koupelnaDoleSw2.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF), koupelnaDoleSw2.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON)); // .60
         PwmActor vratnice2PwmActor = addLddLight(lightsActions, "pwmVrt2", "Vrátnice 2", lddDevice8.getLdd3(), 0.48); //.48
         PwmActor chodbaDolePwmActor = addLddLight(lightsActions, "pwmChoD", "Chodba dole", lddDevice8.getLdd4(), 0.48, prizemiVzaduKuchynSw2Indicator); //.48
@@ -557,7 +560,7 @@ public class PiConfigurator extends AbstractConfigurator {
 
         //pracovna
         configureLouvers(lst, pracovnaSw2, WallSwitch.Side.LEFT, zaluziePracovna);
-        configurePwmLights(lst, pracovnaSw2, WallSwitch.Side.RIGHT, 30, pracovnaPwmActor);
+//        configurePwmLights(lst, pracovnaSw2, WallSwitch.Side.RIGHT, 30, pracovnaPwmActor);
 
         // vratnice
 
@@ -646,6 +649,10 @@ public class PiConfigurator extends AbstractConfigurator {
         configurePwmLights(lst, kuchynRSw1, WallSwitch.Side.LEFT, 50, kuchyn1PwmActor, kuchyn2PwmActor, kuchyn3PwmActor);
 
         SunCondition sunCondition = new SunCondition(0, -15);
+        DarkCondition corridorDarkCondition = new DarkCondition(sunCondition, new IOnOffActor[]{chodbaUPokojuPwmActor, chodbaUPokojuPwmActor, obyvak01PwmActor, obyvak02PwmActor, obyvak03PwmActor,
+                obyvak04PwmActor, /*obyvak05PwmActor,*/ obyvak06PwmActor, obyvak07PwmActor, obyvak08PwmActor, obyvak09PwmActor, obyvak10PwmActor, obyvak11PwmActor, obyvak12PwmActor,
+                obyvak13PwmActor, jidelna1PwmActor, jidelna2PwmActor, jidelna3PwmActor,
+                vchodHorePwmActor});
 
         // PIRs
         InputDevice pirA1Prizemi = new InputDevice("pirA1Prizemi", pirNodeA, 1);
@@ -653,13 +660,13 @@ public class PiConfigurator extends AbstractConfigurator {
         setupPir(lst, pirA1Prizemi.getIn2AndActivate(), "pirPrdPr", "Pradelna pracka", new SwitchOnSensorAction(pradelna1PwmActor, 600, 80), new SwitchOffSensorAction(pradelna1PwmActor, 60));
         setupMagneticSensor(lst, pirA1Prizemi.getIn3AndActivate(), "pisD", "Pisoar Dole", new SwitchOnSensorAction(pisoarDole, 3, 100), new SwitchOnSensorAction(pisoarDole, 7, 100));
         setupPir(lst, pirA1Prizemi.getIn4AndActivate(), "pirVchH", "Vchod hore", new SwitchOnSensorAction(vchodHorePwmActor, 600, 80, sunCondition), new SwitchOffSensorAction(vchodHorePwmActor, 60));
-        setupPir(lst, pirA1Prizemi.getIn5AndActivate(), "pirSch", "Schodiste", null, null);
+        setupPir(lst, pirA1Prizemi.getIn5AndActivate(), "pirSch", "Schodiste", new SwitchOnSensorAction(schodyPwmActor, 600, 15, corridorDarkCondition), new SwitchOffSensorAction(schodyPwmActor, 30));
         setupMagneticSensor(lst, pirA1Prizemi.getIn6AndActivate(), "pisH", "Pisoar Hore", new SwitchOnSensorAction(pisoarHore, 3, 100), new SwitchOnSensorAction(pisoarHore, 7, 100));
         // A6:3 "zadveri venku - spinac puda"
 
         InputDevice pirA2Patro = new InputDevice("pirA2Patro", pirNodeA, 2);
-        setupPir(lst, pirA2Patro.getIn1AndActivate(), "pirChWc", "Chodba pred WC", null, null);
-        setupPir(lst, pirA2Patro.getIn2AndActivate(), "pirCh", "Chodba", null, null);
+        setupPir(lst, pirA2Patro.getIn1AndActivate(), "pirChWc", "Chodba pred WC", new SwitchOnSensorAction(schodyPwmActor, 600, 15, corridorDarkCondition), new SwitchOffSensorAction(schodyPwmActor, 30));
+        setupPir(lst, pirA2Patro.getIn2AndActivate(), "pirCh", "Chodba", new SwitchOnSensorAction(schodyPwmActor, 600, 15, corridorDarkCondition), new SwitchOffSensorAction(schodyPwmActor, 30));
         setupPir(lst, pirA2Patro.getIn3AndActivate(), "pirWc", "WC", new SwitchOnSensorAction(wcPwmActor, 600, 100, sunCondition), new SwitchOffSensorAction(wcPwmActor, 60));
         setupPir(lst, pirA2Patro.getIn5AndActivate(), "pirZadHVch", "Zadveri hore vchod", new SwitchOnSensorAction(zadveriPwmActor, 600, 100, sunCondition), new SwitchOffSensorAction(zadveriPwmActor, 15));
         setupPir(lst, pirA2Patro.getIn6AndActivate(), "pirZadHCh", "Zadveri hore chodba", new SwitchOnSensorAction(zadveriPwmActor, 600, 100, sunCondition), new SwitchOffSensorAction(zadveriPwmActor, 15));
