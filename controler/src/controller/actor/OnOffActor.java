@@ -15,9 +15,6 @@ public class OnOffActor extends AbstractPinActor implements IOnOffActor {
 
     @Override
     public synchronized boolean setValue(int val, Object actionData) {
-        this.actionData = actionData;
-        notifyAll();
-
         if (setPinValue(outputPin, val, RETRY_COUNT)) {
             value = val;
             callListenersAndSetActionData(false, actionData);
