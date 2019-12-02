@@ -194,7 +194,7 @@ public class PiConfigurator extends AbstractConfigurator {
         OnOffActor zaricKoupelnaHore1Trubice = new OnOffActor("zaricKoupelnaHore1Trubice", "Zaric koupelna 1 rubice", rele01.getRele2(), 0, 1, zaricKoupelnaHoreSw2Indicator, zaricKoupelnaHoreOknoSwIndicator);
         OnOffActor obyvakZasLZvonek = new OnOffActor("obyvakZasL", "ObyvakZasLZvonek", rele01.getRele3(), 0, 1, zvonekPravySw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), zvonekLevySw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
 
-        RelayBoardDevice rele12 = new RelayBoardDevice("rele12", lddActorB, 3);
+        RelayBoardDevice rele12 = new RelayBoardDevice("rele12", rozvadecDole, 2);
         OnOffActor ovladacGaraz = new OnOffActor("ovladacGaraz", "Vrata garaz", rele12.getRele2(), 0, 1);
         OnOffActor bzucakDvere = new OnOffActor("bzucakDvere", "Bzucak Dvere", rele12.getRele1(), 0, 1);
 
@@ -372,6 +372,7 @@ public class PiConfigurator extends AbstractConfigurator {
         PwmActor zadveriDolePwmActor = addLddLight(lightsActions, "pwmZadD", "Zádveří dole", lddDevice8.getLdd5(), 0.48, prizemiVzaduKuchynSw2Indicator, zadveriDoleChodbaSw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON), zadveriDoleChodbaSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // .48
         PwmActor vchodHorePwmActor = addLddLight(lightsActions, "pwmVchH", "Vchod hore", lddDevice8.getLdd6(), 0.48); // .48
 
+        LddBoardDevice lddDevice9 = new LddBoardDevice("lddDevice9", lddActorB, 3, 1.5, 1.5, 1.5, 1, .7, .7);
 
         // koupelna
         configurePwmLights(lst, koupelnaHoreSw1, WallSwitch.Side.LEFT, 50, koupelnaZrcadlaPwmActor);
