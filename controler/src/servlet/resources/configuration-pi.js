@@ -120,6 +120,8 @@ function getComponents() {
         ['mgntGH', 18, 61, 1],
         ['mgntGD', 18, 117, 1],
 
+        ['mgntCrpd', 438, 376, 0],
+
         ['hvac', 0, 0, 0]
     ];
 }
