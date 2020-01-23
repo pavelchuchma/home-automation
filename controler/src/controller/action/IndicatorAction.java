@@ -4,17 +4,20 @@ import controller.actor.Actor;
 import controller.actor.ActorListener;
 import controller.actor.IReadableOnOff;
 
-public class IndicatorAction {
+public class IndicatorAction implements IReadableOnOff {
     private final ActorListener indicator;
     private boolean isOn;
-    private IReadableOnOff source = () -> isOn;
 
     private Action onAction = new ActionImpl(true);
     private Action offAction = new ActionImpl(false);
 
+    public IndicatorAction() {
+        indicator = null;
+    }
+
     public IndicatorAction(ActorListener indicator) {
         this.indicator = indicator;
-        indicator.addSource(source);
+        indicator.addSource(this);
     }
 
     public Action getOnAction() {
@@ -23,6 +26,11 @@ public class IndicatorAction {
 
     public Action getOffAction() {
         return offAction;
+    }
+
+    @Override
+    public boolean isOn() {
+        return isOn;
     }
 
     private class ActionImpl implements Action {
@@ -35,7 +43,9 @@ public class IndicatorAction {
         @Override
         public void perform(int previousDurationMs) {
             isOn = value;
-            indicator.onAction(source, false);
+            if (indicator != null) {
+                indicator.onAction(IndicatorAction.this, false);
+            }
         }
 
         @Override

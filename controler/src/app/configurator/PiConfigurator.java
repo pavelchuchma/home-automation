@@ -687,6 +687,9 @@ public class PiConfigurator extends AbstractConfigurator {
         setupMagneticSensor(lst, cidlaGaraz.getIn1AndActivate(), "mgntGH", "Garaz hore", null, null);
         setupMagneticSensor(lst, cidlaGaraz.getIn2AndActivate(), "mgntGD", "Garaz dole", garazIndicator.getOnAction(), garazIndicator.getOffAction());
 
+        IndicatorAction cerpadloIndicator = new IndicatorAction();
+        InputDevice cidlaRozvadec = new InputDevice("cidlaRozvadec", rozvadecDole, 3);
+        setupMagneticSensor(lst, cidlaRozvadec.getIn1AndActivate(), "mgntCrpd", "Cerpadlo", cerpadloIndicator.getOnAction(), cerpadloIndicator.getOffAction());
 
         Servlet.action1 = bzucakAction;
         Servlet.action2 = ovladacGarazAction;
