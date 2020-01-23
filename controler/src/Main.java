@@ -2,6 +2,7 @@ import java.net.InetAddress;
 
 import app.NodeInfoCollector;
 import app.configurator.AbstractConfigurator;
+import app.configurator.MartinConfigurator;
 import app.configurator.PiConfigurator;
 import app.configurator.PiPeConfigurator;
 import org.apache.log4j.Logger;
@@ -34,6 +35,8 @@ public class Main {
             AbstractConfigurator configurator;
             if (hostName.equalsIgnoreCase("raspberrypi") || hostName.equalsIgnoreCase("Agata")) {
                 configurator = new PiConfigurator(nodeInfoCollector);
+            } else if (hostName.equalsIgnoreCase("martinpi")) {
+                configurator = new MartinConfigurator(nodeInfoCollector);
             } else {
                 configurator = new PiPeConfigurator(nodeInfoCollector);
             }
