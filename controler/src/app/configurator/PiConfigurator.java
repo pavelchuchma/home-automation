@@ -17,6 +17,7 @@ import controller.action.SwitchOffAction;
 import controller.action.SwitchOffSensorAction;
 import controller.action.SwitchOnAction;
 import controller.action.SwitchOnSensorAction;
+import controller.action.WaterPumpMonitor;
 import controller.action.condition.DarkCondition;
 import controller.action.condition.ICondition;
 import controller.action.condition.PressDurationCondition;
@@ -687,9 +688,9 @@ public class PiConfigurator extends AbstractConfigurator {
         setupMagneticSensor(lst, cidlaGaraz.getIn1AndActivate(), "mgntGH", "Garaz hore", null, null);
         setupMagneticSensor(lst, cidlaGaraz.getIn2AndActivate(), "mgntGD", "Garaz dole", garazIndicator.getOnAction(), garazIndicator.getOffAction());
 
-        IndicatorAction cerpadloIndicator = new IndicatorAction();
+        WaterPumpMonitor waterPumpMonitor = new WaterPumpMonitor();
         InputDevice cidlaRozvadec = new InputDevice("cidlaRozvadec", rozvadecDole, 3);
-        setupMagneticSensor(lst, cidlaRozvadec.getIn1AndActivate(), "mgntCrpd", "Cerpadlo", cerpadloIndicator.getOnAction(), cerpadloIndicator.getOffAction());
+        setupMagneticSensor(lst, cidlaRozvadec.getIn1AndActivate(), "mgntCrpd", "Cerpadlo", waterPumpMonitor.getOnAction(), waterPumpMonitor.getOffAction());
 
         Servlet.action1 = bzucakAction;
         Servlet.action2 = ovladacGarazAction;
@@ -715,6 +716,7 @@ public class PiConfigurator extends AbstractConfigurator {
         Servlet.hvacActor = hvacActor;
         Servlet.hvacOnAction = new SwitchOnSensorAction(hvacActor, 5 * 3600, 100, AbstractSensorAction.Priority.LOW);
         Servlet.hvacOffAction = new SwitchOffAction(hvacActor);
+        Servlet.waterPumpMonitor = waterPumpMonitor;
 
 //        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);
 //        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));

@@ -168,6 +168,7 @@ window.onload = function () {
         drawMainCanvas();
         drawToolsCanvas();
         drawHvacCanvas();
+        drawPumpCanvas();
         setInterval(onTimer, 750);
         onTimer();
     } catch (e) {
@@ -253,6 +254,7 @@ function drawItems() {
             }
         }
     });
+    drawPumpScreen();
 }
 
 function drawMainCanvas() {
@@ -334,6 +336,34 @@ function onHvacClick(event) {
     } else {
         sendAction('/hvac/action?id=hvac&on=true');
     }
+}
+
+function drawPumpCanvas() {
+    var c = document.getElementById("pumpCanvas");
+    pumpCtx = c.getContext("2d");
+
+    pumpCtx.rect(0, 0, 100, 50);
+    pumpCtx.fillStyle = toolBoxBackground;
+    pumpCtx.fill();
+    pumpCtx.stroke();
+}
+
+function drawPumpScreen() {
+    // clr
+    pumpCtx.rect(0, 0, 100, 150);
+    pumpCtx.fillStyle = toolBoxBackground;
+    pumpCtx.fill();
+    pumpCtx.stroke();
+
+    var pumpStatus = itemStatusMap['wpmp'];
+    pumpCtx.fillStyle = 'black';
+    pumpCtx.font = "12px Arial";
+    pumpCtx.fillText('Cykly: ' + pumpStatus.lastPeriodRecCount + '/' + pumpStatus.recCount, 5, 20);
+    var lastRecordDuration = -1;
+    if (pumpStatus.lastRecords.length > 0) {
+        lastRecordDuration = pumpStatus.lastRecords[pumpStatus.lastRecords.length - 1].duration;
+    }
+    pumpCtx.fillText('Posledni: ' + Math.round(lastRecordDuration / 10.0) / 100.0 + ' s', 5, 35);
 }
 
 function drawLightIcon(x, y, power, ctx) {
@@ -640,6 +670,7 @@ function updateImpl(path, code) {
 
     request.send();
 }
+
 function updateItems() {
     updateImpl('/lights/status', function (request) {
         parseJsonStatusResponse(request, 'lights', itemStatusMap);
@@ -651,7 +682,10 @@ function updateItems() {
                     parseJsonStatusResponse(request, 'pir', itemStatusMap);
                     updateImpl('/hvac/status', function (request) {
                         parseJsonStatusResponse(request, 'hvac', itemStatusMap);
-                        drawItems();
+                        updateImpl('/wpump/status', function (request) {
+                            parseJsonStatusResponse(request, 'wpmp', itemStatusMap);
+                            drawItems();
+                        });
                     });
                 });
             });

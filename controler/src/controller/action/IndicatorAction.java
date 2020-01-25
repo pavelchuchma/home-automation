@@ -1,6 +1,5 @@
 package controller.action;
 
-import controller.actor.Actor;
 import controller.actor.ActorListener;
 import controller.actor.IReadableOnOff;
 
@@ -10,10 +9,6 @@ public class IndicatorAction implements IReadableOnOff {
 
     private Action onAction = new ActionImpl(true);
     private Action offAction = new ActionImpl(false);
-
-    public IndicatorAction() {
-        indicator = null;
-    }
 
     public IndicatorAction(ActorListener indicator) {
         this.indicator = indicator;
@@ -33,7 +28,7 @@ public class IndicatorAction implements IReadableOnOff {
         return isOn;
     }
 
-    private class ActionImpl implements Action {
+    private class ActionImpl extends AbstractActionWithoutActor {
         private final boolean value;
 
         private ActionImpl(boolean value) {
@@ -46,11 +41,6 @@ public class IndicatorAction implements IReadableOnOff {
             if (indicator != null) {
                 indicator.onAction(IndicatorAction.this, false);
             }
-        }
-
-        @Override
-        public Actor getActor() {
-            return null;
         }
     }
 

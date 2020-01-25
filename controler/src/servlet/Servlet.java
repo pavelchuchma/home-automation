@@ -21,6 +21,7 @@ import app.NodeInfoCollector;
 import app.configurator.AbstractConfigurator;
 import controller.PirStatus;
 import controller.action.Action;
+import controller.action.WaterPumpMonitor;
 import controller.actor.HvacActor;
 import controller.actor.PwmActor;
 import controller.controller.Activity;
@@ -54,6 +55,8 @@ public class Servlet extends AbstractHandler {
     public static final String TARGET_HVAC = "/hvac";
     public static final String TARGET_HVAC_STATUS = TARGET_HVAC + "/status";
     public static final String TARGET_HVAC_ACTION = TARGET_HVAC + "/action";
+    public static final String TARGET_WPUMP = "/wpump";
+    public static final String TARGET_WPUMP_STATUS = TARGET_WPUMP + "/status";
     public static final String TARGET_LOUVERS = "/louvers";
     public static final String TARGET_LOUVERS_STATUS = TARGET_LOUVERS + "/status";
     public static final String TARGET_LOUVERS_ACTION = TARGET_LOUVERS + "/a";
@@ -77,6 +80,7 @@ public class Servlet extends AbstractHandler {
     public static HvacActor hvacActor;
     public static Action hvacOnAction;
     public static Action hvacOffAction;
+    public static WaterPumpMonitor waterPumpMonitor;
     static Logger log = Logger.getLogger(Servlet.class.getName());
     private static Action[] lightActions;
     private static Map<String, PwmActor> lightActorMap;
@@ -262,6 +266,8 @@ public class Servlet extends AbstractHandler {
 
                     sendOkResponse(baseRequest, response, getLouversPage());
 
+                } else if (target.startsWith(TARGET_WPUMP_STATUS)) {
+                    writeWaterPumpStatusJson(baseRequest, response);
                 } else {
                     if (target.startsWith("/a")) {
                         processAction(target);
@@ -282,6 +288,15 @@ public class Servlet extends AbstractHandler {
         StringBuffer b = new StringBuffer();
         b.append("{ \"hvac\" : [\n");
         b.append(HvacJsonSerializer.serialize(hvacActor.getHvacDevice()));
+        b.append("\n]}");
+        response.getWriter().println(b);
+    }
+
+    private void writeWaterPumpStatusJson(Request baseRequest, HttpServletResponse response) throws IOException {
+        initJsonResponse(baseRequest, response);
+        StringBuffer b = new StringBuffer();
+        b.append("{ \"wpmp\" : [\n");
+        b.append(WaterPumpJsonSerializer.serialize(waterPumpMonitor, 20, 24));
         b.append("\n]}");
         response.getWriter().println(b);
     }

@@ -2,7 +2,7 @@ package servlet;
 
 import chuma.hvaccontroller.device.HvacDevice;
 
-public class HvacJsonSerializer {
+public class HvacJsonSerializer extends AbstractJsonSerializer {
     public static String serialize(HvacDevice hvacDevice) {
         StringBuffer b = new StringBuffer("{");
         appendNameValue(b, "id", "hvac");
@@ -33,15 +33,4 @@ public class HvacJsonSerializer {
         return b.toString();
     }
 
-    protected static void appendNameValue(StringBuffer b, String name, String value) {
-        b.append("\"").append(name).append("\":\"").append(value).append("\"");
-    }
-
-    protected static void appendNameValue(StringBuffer b, String name, boolean value) {
-        b.append("\"").append(name).append("\":").append(Boolean.toString(value));
-    }
-
-    protected static void appendNameValue(StringBuffer b, String name, int value) {
-        b.append("\"").append(name).append("\":").append(Integer.toString(value));
-    }
 }
