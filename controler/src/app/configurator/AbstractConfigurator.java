@@ -22,6 +22,7 @@ import controller.device.LddBoardDevice;
 import controller.device.SwitchIndicator;
 import controller.device.WallSwitch;
 import node.NodePin;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import servlet.Servlet;
 
@@ -64,10 +65,6 @@ public abstract class AbstractConfigurator {
         lst.addActionBinding(new ActionBinding(bottomButton, toArray(downButtonUpActions), toArray(downButtonDownActions)));
     }
 
-    private static Action[] toArray(List<Action> list) {
-        return list.toArray(new Action[list.size()]);
-    }
-
     static PwmActor addLddLight(ArrayList<Action> lightsActions, String id, String label, LddBoardDevice.LddNodePin pin, double maxLoad, ActorListener... actorListeners) {
         log.debug(String.format("Adding LDD Light: %s, %s, %s, %s, %s, %s", pin.getDeviceName(), pin.getPin().getPinIndex(), id, label, pin.getMaxLddCurrent(), maxLoad));
         PwmActor pwmActor = new PwmActor(id, label, pin, maxLoad / pin.getMaxLddCurrent(), actorListeners);
@@ -105,26 +102,42 @@ public abstract class AbstractConfigurator {
         return (side == WallSwitch.Side.LEFT) ? wallSwitch.getLeftUpperButton() : wallSwitch.getRightUpperButton();
     }
 
+    private static Action[] toArray(Action a) {
+        return (a != null) ? new Action[]{a} : null;
+    }
+
+    private static Action[] toArray(List<Action> list) {
+        return list.toArray(new Action[list.size()]);
+    }
+
     public abstract void configure();
 
     public abstract String getConfigurationJs();
 
+    protected void setupPir(SwitchListener lst, NodePin pirPin, String id, String name, Action[] activateActions, Action[] deactivateActions) {
+        setupSensor(lst, pirPin, id, name, activateActions, deactivateActions, true);
+    }
+
     protected void setupPir(SwitchListener lst, NodePin pirPin, String id, String name, Action activateAction, Action deactivateAction) {
-        setupSensor(lst, pirPin, id, name, activateAction, deactivateAction, true);
+        setupPir(lst, pirPin, id, name, toArray(activateAction), toArray(deactivateAction));
+    }
+
+    protected void setupMagneticSensor(SwitchListener lst, NodePin pirPin, String id, String name, Action[] activateActions, Action[] deactivateActions) {
+        setupSensor(lst, pirPin, id, name, activateActions, deactivateActions, false);
     }
 
     protected void setupMagneticSensor(SwitchListener lst, NodePin pirPin, String id, String name, Action activateAction, Action deactivateAction) {
-        setupSensor(lst, pirPin, id, name, activateAction, deactivateAction, false);
+        setupMagneticSensor(lst, pirPin, id, name, toArray(activateAction), toArray(deactivateAction));
     }
 
-    private void setupSensor(SwitchListener lst, NodePin pirPin, String id, String name, Action activateAction, Action deactivateAction, boolean logicalOneIsActivate) {
+    private void setupSensor(SwitchListener lst, NodePin pirPin, String id, String name, Action[] activateActions, Action[] deactivateActions, boolean logicalOneIsActivate) {
         PirStatus status = new PirStatus(id, name);
-        Action[] activateActions = (activateAction != null) ? new Action[]{activateAction, status.getActivateAction()} : new Action[]{status.getActivateAction()};
-        Action[] deactivateActions = (deactivateAction != null) ? new Action[]{deactivateAction, status.getDeactivateAction()} : new Action[]{status.getDeactivateAction()};
+        Action[] activateActionArray = ArrayUtils.addAll(activateActions, status.getActivateAction());
+        Action[] deactivateActionArray = ArrayUtils.addAll(deactivateActions, status.getDeactivateAction());
         if (logicalOneIsActivate) {
-            lst.addActionBinding(new ActionBinding(pirPin, deactivateActions, activateActions));
+            lst.addActionBinding(new ActionBinding(pirPin, deactivateActionArray, activateActionArray));
         } else {
-            lst.addActionBinding(new ActionBinding(pirPin, activateActions, deactivateActions));
+            lst.addActionBinding(new ActionBinding(pirPin, activateActionArray, deactivateActionArray));
         }
         pirStatusList.add(status);
     }

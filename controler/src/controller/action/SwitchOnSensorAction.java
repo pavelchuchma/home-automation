@@ -5,6 +5,10 @@ import controller.actor.IOnOffActor;
 
 public class SwitchOnSensorAction extends AbstractSensorAction {
 
+    public SwitchOnSensorAction(IOnOffActor actor, int timeout) {
+        this(actor, timeout, 100, Priority.LOW, null);
+    }
+
     public SwitchOnSensorAction(IOnOffActor actor, int timeout, int switchOnPercent) {
         this(actor, timeout, switchOnPercent, Priority.LOW, null);
     }
