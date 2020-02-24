@@ -1,2 +1,1 @@
-sudo /etc/init.d/homeAutomation restart
-sleep 3
+sudo /etc/init.d/homeAutomation restartsleep 3

@@ -1,0 +1,6 @@
+.vs
+.idea
+
+# Following "global" directories can lead to problems...
+[Bb]in
+[Oo]bj
