@@ -1,5 +1,5 @@
 .vs
-.idea
+workspace.xml
 
 # Following "global" directories can lead to problems...
 [Bb]in
