@@ -209,7 +209,7 @@ void can_readPacket() {
     ECANCONbits.EWIN = 0b00010000 | CANCON;
     unsigned char *rxCon = can_getBufferConReg(CANCON & 0b00000111);
 
-    if (RXB0DLC & 0b00001111 <= 6) {
+    if ((RXB0DLC & 0b00001111) > 6) {
         canReceiveLongMsgCount++;
     } else if (!(*rxCon & 0b10000000)) {
         // no RXFUL in selected buffer

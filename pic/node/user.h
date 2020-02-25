@@ -10,16 +10,16 @@
 
 /* User level functions prototypes (i.e. InitApp) go here */
 
-void InitApp();         /* I/O and Peripheral Initialization */
+void InitApp(void);         /* I/O and Peripheral Initialization */
 void setupUart(char highByte, char lowByte);
 void setupCanBus(char baudRatePrescaller);
-void processReadRamRequest();
-void processWriteRamRequest();
-void processGetBuildTimeRequest();
-void processEnablePwmRequest();
-void processSetPwmValue();
-void processSetFrequencyRequest();
-void processSetManualPwmValueRequest();
-void doManualPwm();
-void processResetRequest();
-void processReadProgramRequest();
+void processReadRamRequest(void);
+void processWriteRamRequest(void);
+void processGetBuildTimeRequest(void);
+void processEnablePwmRequest(void);
+void processSetPwmValue(void);
+void processSetFrequencyRequest(void);
+void processSetManualPwmValueRequest(void);
+void doManualPwm(void);
+void processResetRequest(void);
+void processReadProgramRequest(void);

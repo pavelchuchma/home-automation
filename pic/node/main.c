@@ -318,6 +318,6 @@ void main(void) {
 #endif
 }
 
-// put NOP at the end, therwise MPSIM returs PC overflow
-asm ("org 0xFFFE");
-asm ("nop");
+// put NOP at the end, otherwise MPSIM returns PC overflow
+//asm ("org 0xFFFE");
+//asm ("nop");

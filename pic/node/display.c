@@ -8,7 +8,7 @@
 
 #include "system.h"
 
-char digitToBCD(char digit) @ 0xE0
+char digitToBCD(char digit)
 {
     WREG = digit * 2;
     asm ("addwf PCL, F");
@@ -38,8 +38,8 @@ char digitToBCD(char digit) @ 0xE0
     return 0;
 }
 
-void recalculateDisplayValue() {
-    unsigned short long num = displayValue;
+void recalculateDisplayValue(void) {
+    __int24 num = displayValue;
 
     char tmp = 0; // count 100 000s
     while (num > 99999) {
@@ -48,21 +48,21 @@ void recalculateDisplayValue() {
     }
     displaySegments[5] = digitToBCD(tmp);
 
-    char tmp = 0; // count 10 000s
+    tmp = 0; // count 10 000s
     while (num > 9999) {
         num -= 10000;
         tmp++;
     }
     displaySegments[4] = digitToBCD(tmp);
 
-    char tmp = 0; // count 1000s
+    tmp = 0; // count 1000s
     while (num > 999) {
         num -= 1000;
         tmp++;
     }
     displaySegments[3] = digitToBCD(tmp);
 
-    char tmp = 0; // count 100s
+    tmp = 0; // count 100s
     while (num > 99) {
         num -= 100;
         tmp++;

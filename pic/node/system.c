@@ -32,8 +32,8 @@ volatile PortConfig portConfig = {
 
 volatile char heartBeatCounter;
 volatile unsigned short heartBeatPeriod;
-volatile unsigned short long displayValue;
-volatile unsigned short long displayValueOld;
+volatile __uint24 displayValue;
+volatile __uint24 displayValueOld;
 volatile char displaySegments[6];
 
 volatile char canReceiveLongMsgCount;
@@ -47,7 +47,7 @@ volatile char checkInput;
 /**
  * Returs CPU Frequecny in MHz
  */
-char getCpuFrequency() {
+char getCpuFrequency(void) {
     if ((OSCCON & 0b01110000) == 0b01110000) return 16;
     if ((OSCCON & 0b01110000) == 0b01100000) return 8;
     if ((OSCCON & 0b01110000) == 0b01010000) return 4;
@@ -179,7 +179,7 @@ void checkInputChange() {
         if (maskToSend) {
             // set bitmask of chaned bits
             outPacket.data[0] = maskToSend;
-            portConfig.oldValues[port] = portConfig.oldValues[port] & (maskToSend ^ 0xFF) | (portValue & maskToSend);
+            portConfig.oldValues[port] = (portConfig.oldValues[port] & (maskToSend ^ 0xFF)) | (portValue & maskToSend);
             // set new values of port (+ clear bits outside event mask)
             outPacket.data[1] = portConfig.oldValues[port] & portConfig.eventMask[port];
             outPacket.messageType = MSG_OnPortAPinChange + port;

@@ -29,7 +29,7 @@
 volatile static unsigned short timerEventPrescaler = 0;
 
 #if defined(__XC) || defined(HI_TECH_C)
-void interrupt high_isr(void)
+void __interrupt(high_priority) high_isr(void)
 #elif defined (__18CXX)
 #pragma code high_isr=0x08
 #pragma interrupt high_isr
@@ -94,7 +94,7 @@ void high_isr(void)
 
 /* Low-priority interrupt routine */
 #if defined(__XC) || defined(HI_TECH_C)
-void low_priority interrupt low_isr(void)
+void __interrupt(low_priority) low_isr(void)
 #elif defined (__18CXX)
 #pragma code low_isr=0x18
 #pragma interruptlow low_isr

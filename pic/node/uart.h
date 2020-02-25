@@ -37,12 +37,12 @@ extern volatile PacketBuffer sendPacketBuffer;
 #define isUartSendBufferFree() (sendPacketBuffer.dataLength == 0)
 
 char uart_sendPacket(Packet *source);
-void uart_readPacket();
+void uart_readPacket(void);
 void uart_putReceiveQueue(char c);
-char uart_popReceiveQueue();
+char uart_popReceiveQueue(void);
 
 char can_sendPacket(Packet *source);
-void can_readPacket();
+void can_readPacket(void);
 
 #endif	/* UART_H */
 

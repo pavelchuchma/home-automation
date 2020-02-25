@@ -82,8 +82,8 @@ extern char nodeId;
 extern volatile AppFlags appFlags;
 extern volatile char heartBeatCounter;
 extern volatile unsigned short heartBeatPeriod;
-extern volatile unsigned short long displayValue;
-extern volatile unsigned short long displayValueOld;
+extern volatile __uint24 displayValue;
+extern volatile __uint24 displayValueOld;
 extern volatile char displaySegments[6];
 
 extern volatile char canReceiveLongMsgCount;
@@ -100,13 +100,13 @@ extern volatile char checkInput;
 #define MAPPED_TXREQ	FILHIT3
 
 
-void recalculateDisplayValue();
+void recalculateDisplayValue(void);
 void configureOscillator(char freqMHz); /* Handles clock switching/osc initialization */
-void ecanSend();
-void checkUartErrors();
+void ecanSend(void);
+void checkUartErrors(void);
 
-void processSetPort();
-void checkInputChange();
-char getCpuFrequency();
+void processSetPort(void);
+void checkInputChange(void);
+char getCpuFrequency(void);
 
 #endif
