@@ -1,5 +1,8 @@
 .vs
 workspace.xml
+nbproject\private
+build
+dist
 
 # Following "global" directories can lead to problems...
 [Bb]in

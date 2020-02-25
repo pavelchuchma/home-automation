@@ -6,13 +6,13 @@
 
 # Macros
 TOP=`pwd`
-CND_CONF=PIC18F2680_C18
+CND_CONF=PIC18F26K80
 CND_DISTDIR=dist
 TMPDIR=build/${CND_CONF}/${IMAGE_TYPE}/tmp-packaging
 TMPDIRNAME=tmp-packaging
-OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/Test01.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-OUTPUT_BASENAME=Test01.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
-PACKAGE_TOP_DIR=test01/
+OUTPUT_PATH=dist/${CND_CONF}/${IMAGE_TYPE}/node.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+OUTPUT_BASENAME=node.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
+PACKAGE_TOP_DIR=node/
 
 # Functions
 function checkReturnCode
@@ -57,15 +57,15 @@ mkdir -p ${TMPDIR}
 
 # Copy files and create directories and links
 cd "${TOP}"
-makeDirectory ${TMPDIR}/test01/bin
+makeDirectory ${TMPDIR}/node/bin
 copyFileToTmpDir "${OUTPUT_PATH}" "${TMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}" 0755
 
 
 # Generate tar file
 cd "${TOP}"
-rm -f ${CND_DISTDIR}/${CND_CONF}/package/test01.tar
+rm -f ${CND_DISTDIR}/${CND_CONF}/package/node.tar
 cd ${TMPDIR}
-tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/test01.tar *
+tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/package/node.tar *
 checkReturnCode
 
 # Cleanup
