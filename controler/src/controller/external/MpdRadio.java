@@ -11,7 +11,7 @@ import org.bff.javampd.exception.MPDPlayerException;
 import org.bff.javampd.exception.MPDPlaylistException;
 
 public class MpdRadio {
-    public static final String mpdServerAddress = "10.0.0.150";
+    public static final String mpdServerAddress = "10.10.0.150";
     static Logger log = Logger.getLogger(MpdRadio.class.getName());
     MPDSong radioStream;
     private MPD mpdInstance;
