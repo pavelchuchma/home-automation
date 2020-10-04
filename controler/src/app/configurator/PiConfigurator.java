@@ -70,7 +70,7 @@ public class PiConfigurator extends AbstractConfigurator {
         Node zaluzieA = nodeInfoCollector.createNode(13, "ZaluzieA");
         Node marek = nodeInfoCollector.createNode(14, "Marek");
         Node patrik = nodeInfoCollector.createNode(15, "Patrik");
-        Node chodbaA = nodeInfoCollector.createNode(16, "ChodbaA");
+        Node chodbaVzadu = nodeInfoCollector.createNode(16, "ChodbaVzadu");
         Node zadveriDoleVchod = nodeInfoCollector.createNode(17, "ZadveriDoleUVchodu");
         Node pracovna = nodeInfoCollector.createNode(18, "Pracovna");
         Node lddActorA = nodeInfoCollector.createNode(19, "LDD-ActorA");
@@ -87,14 +87,19 @@ public class PiConfigurator extends AbstractConfigurator {
         Node obyvakVzaduL = nodeInfoCollector.createNode(30, "ObyvakVzaduL");
         Node sklep = nodeInfoCollector.createNode(31, "Sklep");
         Node actor4 = nodeInfoCollector.createNode(32, "Actor4");
-        Node rozvadecDole = nodeInfoCollector.createNode(34, "rozvadecDole");
+        Node rozvadecDole = nodeInfoCollector.createNode(34, "RozvadecDole");
         Node lozniceZed = nodeInfoCollector.createNode(35, "LozniceZed");
+        Node chodbaOkno = nodeInfoCollector.createNode(39, "ChodbaOkno");
         Node switchTestNode50 = nodeInfoCollector.createNode(50, "SwitchTestNode50");
         Node switchTestNode41 = nodeInfoCollector.createNode(41, "SwitchTestNode41");
 
-        WallSwitch chodbaALSw = new WallSwitch("chodbaALSw", chodbaA, 1);
-        WallSwitch chodbaARSw = new WallSwitch("chodbaARSw", chodbaA, 2);
-        WallSwitch wcSw = new WallSwitch("wcSw", chodbaA, 3);
+        WallSwitch chodbaOkno1Sw = new WallSwitch("chodbaOkno1Sw", chodbaOkno, 1);
+        WallSwitch chodbaOkno2Sw = new WallSwitch("chodbaOkno2Sw", chodbaOkno, 2);
+        WallSwitch chodbaOkno3Sw = new WallSwitch("chodbaOkno3Sw", chodbaOkno, 3);
+
+        WallSwitch chodbaVzaduLSw = new WallSwitch("chodbaVzaduLSw", chodbaVzadu, 1);
+        WallSwitch chodbaVzaduRSw = new WallSwitch("chodbaVzaduRSw", chodbaVzadu, 2);
+        WallSwitch wcSw = new WallSwitch("wcSw", chodbaVzadu, 3);
 
         WallSwitch schodyDoleL1Sw = new WallSwitch("schodyDoleL1Sw", schodyDoleL, 1);
         WallSwitch schodyDoleL2Sw = new WallSwitch("schodyDoleL2Sw", schodyDoleL, 2);
@@ -193,7 +198,7 @@ public class PiConfigurator extends AbstractConfigurator {
         OnOffActor zaricKoupelnaHore2Trubice = new OnOffActor("zaricKoupelnaHore2Trubice", "Zaric koupelna 2 rubice", rele01.getRele1(), 0, 1, zaricKoupelnaHoreSw2Indicator, zaricKoupelnaHoreOknoSwIndicator);
         OnOffActor zaricKoupelnaHore1Trubice = new OnOffActor("zaricKoupelnaHore1Trubice", "Zaric koupelna 1 rubice", rele01.getRele2(), 0, 1, zaricKoupelnaHoreSw2Indicator, zaricKoupelnaHoreOknoSwIndicator);
         OnOffActor obyvakZasLZvonek = new OnOffActor("obyvakZasL", "ObyvakZasLZvonek", rele01.getRele3(), 0, 1, zvonekPravySw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), zvonekLevySw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
-        OnOffActor cerpadloStudna = new OnOffActor("cerpadloStd", "Cerpadlo studna", rele01.getRele4(), 0, 1);
+        //OnOffActor cerpadloStudna = new OnOffActor("cerpadloStd", "Cerpadlo studna", rele01.getRele4(), 0, 1);
 
         RelayBoardDevice rele12 = new RelayBoardDevice("rele12", rozvadecDole, 2);
         OnOffActor ovladacGaraz = new OnOffActor("ovladacGaraz", "Vrata garaz", rele12.getRele2(), 0, 1);
@@ -314,7 +319,7 @@ public class PiConfigurator extends AbstractConfigurator {
         PwmActor pradelna1PwmActor = addLddLight(lightsActions, "pwmPrd1", "Prádelna 1", lddDevice2.getLdd2(), 0.7, prizemiVzaduKuchynSw2Indicator, pradelnaOnIndicator, pradelnaOffIndicator); //  1.05
 //        PwmActor obyvak09PwmActor = addLddLight(lightsActions, "pwmOb9", "Obyvák 09", lddDevice2.getLdd2(), 0.7); // .72
         PwmActor obyvak08PwmActor = addLddLight(lightsActions, "pwmOb8", "Obyvák 08", lddDevice2.getLdd3(), 0.7); // .72
-        PwmActor satnaPwmActor = addLddLight(lightsActions, "pwmSat", "Šatna", lddDevice2.getLdd4(), 0.48, new SwitchIndicator(chodbaALSw.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF), new SwitchIndicator(satnaSw3.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF)); //0.48
+        PwmActor satnaPwmActor = addLddLight(lightsActions, "pwmSat", "Šatna", lddDevice2.getLdd4(), 0.48, new SwitchIndicator(chodbaVzaduLSw.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF), new SwitchIndicator(satnaSw3.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF)); //0.48
         PwmActor obyvak03PwmActor = addLddLight(lightsActions, "pwmOb3", "Obyvák 03", lddDevice2.getLdd5(), 0.7); // .72
         PwmActor wcPwmActor = addLddLight(lightsActions, "pwmWc", "WC", lddDevice2.getLdd6(), 0.24, new SwitchIndicator(wcSw.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF));
 
@@ -378,6 +383,25 @@ public class PiConfigurator extends AbstractConfigurator {
         PwmActor garaz3PwmActor = addLddLight(lightsActions, "pwmG3", "Garáž 3", lddDevice9.getLdd5(), 0.6, garazZadveriSwAIndicator, garazGarazSwAIndicator); // .6
         PwmActor drevnikPwmActor = addLddLight(lightsActions, "pwmDrv", "Dřevník", lddDevice9.getLdd6(), 0.7, drevnikSwIndicator); // .72
 
+        //groups
+        IOnOffActor[] svetlaDoleVzadu = {chodbaDolePwmActor, zadveriDolePwmActor,
+                pradelna1PwmActor, pradelna2PwmActor, pradelna3PwmActor,
+                spajzPwmActor, koupelnaDolePwmActor,
+                koupelnaDoleZrcadlaPwmActor, terasaPwmActor,
+                svSklepLevy, svSklepPravy, drevnikPwmActor};
+
+        IOnOffActor[] svetlaDole = {kuchyn1PwmActor, kuchyn2PwmActor, kuchyn3PwmActor, kuchyn4PwmActor, kuchyn5PwmActor,
+                jidelna1PwmActor, jidelna2PwmActor, jidelna3PwmActor, jidelnaStulPwmActor,
+                obyvak01PwmActor, obyvak02PwmActor, obyvak03PwmActor, obyvak04PwmActor, obyvak05PwmActor,
+                obyvak06PwmActor, obyvak07PwmActor, obyvak08PwmActor, /*obyvak09PwmActor,*/ obyvak10PwmActor,
+                obyvak11PwmActor, obyvak12PwmActor, obyvak13PwmActor, kuchynLinkaPwmActor};
+
+        IOnOffActor[] svetlaHoreVenku = {garaz1PwmActor, garaz2PwmActor, garaz3PwmActor, vchodHorePwmActor, pudaPwmActor,
+                zadveriPwmActor};
+        IOnOffActor[] svetlaHore = {vratnice1PwmActor, vratnice2PwmActor, koupelnaPwmActor, koupelnaZrcadlaPwmActor,
+                chodbaUPokojuPwmActor, chodbaSchodyPwmActor, schodyPwmActor, wcPwmActor, satnaPwmActor,
+                krystofPwmActor, pataPwmActor, marekPwmActor, loznice1PwmActor, loznice2PwmActor, pracovnaPwmActor};
+
         // koupelna
         configurePwmLights(lst, koupelnaHoreSw1, WallSwitch.Side.LEFT, 50, koupelnaZrcadlaPwmActor);
         configurePwmLights(lst, koupelnaHoreSw1, WallSwitch.Side.RIGHT, 25, koupelnaPwmActor);
@@ -414,12 +438,7 @@ public class PiConfigurator extends AbstractConfigurator {
         configurePwmLights(lst, schodyDoleR3Sw, WallSwitch.Side.RIGHT, 66, jidelnaStulPwmActor);
 
         // obyvak u schodu
-        SwitchAllOffWithMemory allLightsFromKitchenToLivingRoomOff = new SwitchAllOffWithMemory(kuchyn1PwmActor, kuchyn2PwmActor, kuchyn3PwmActor, kuchyn4PwmActor, kuchyn5PwmActor,
-                jidelna1PwmActor, jidelna2PwmActor, jidelna3PwmActor, jidelnaStulPwmActor,
-                obyvak01PwmActor, obyvak02PwmActor, obyvak03PwmActor, obyvak04PwmActor, obyvak05PwmActor,
-                obyvak06PwmActor, obyvak07PwmActor, obyvak08PwmActor, /*obyvak09PwmActor,*/ obyvak10PwmActor,
-                obyvak11PwmActor, obyvak12PwmActor, obyvak13PwmActor, kuchynLinkaPwmActor);
-
+        SwitchAllOffWithMemory allLightsFromKitchenToLivingRoomOff = new SwitchAllOffWithMemory(svetlaDole);
         lst.addActionBinding(new ActionBinding(schodyDoleL1Sw.getLeftBottomButton(),
                 allLightsFromKitchenToLivingRoomOff, null));
 
@@ -544,10 +563,25 @@ public class PiConfigurator extends AbstractConfigurator {
         configurePwmLights(lst, chodbaHorePatrikSw3, WallSwitch.Side.RIGHT, 80, satnaPwmActor);
 
         // chodba hore - u satny
-        configurePwmLights(lst, chodbaALSw, WallSwitch.Side.LEFT, 80, satnaPwmActor);
-        configurePwmLights(lst, chodbaALSw, WallSwitch.Side.RIGHT, 40, chodbaUPokojuPwmActor, chodbaSchodyPwmActor);
-        configureLouvers(lst, chodbaARSw, WallSwitch.Side.LEFT, zaluzieSatna);
-        configureLouvers(lst, chodbaARSw, WallSwitch.Side.RIGHT, zaluzieChodba2, zaluzieChodba1);
+        configurePwmLights(lst, chodbaVzaduLSw, WallSwitch.Side.LEFT, 80, satnaPwmActor);
+        configurePwmLights(lst, chodbaVzaduLSw, WallSwitch.Side.RIGHT, 40, chodbaUPokojuPwmActor, chodbaSchodyPwmActor);
+        configureLouvers(lst, chodbaVzaduRSw, WallSwitch.Side.LEFT, zaluzieSatna);
+        configureLouvers(lst, chodbaVzaduRSw, WallSwitch.Side.RIGHT, zaluzieChodba2, zaluzieChodba1);
+
+        // chodba hore - u okna
+        configureLouvers(lst, chodbaOkno1Sw, WallSwitch.Side.LEFT, zaluzieChodba1);
+        configureLouvers(lst, chodbaOkno1Sw, WallSwitch.Side.RIGHT, zaluzieChodba2);
+        configurePwmLights(lst, chodbaOkno2Sw, WallSwitch.Side.LEFT, 40, chodbaUPokojuPwmActor, chodbaSchodyPwmActor);
+        configurePwmLights(lst, chodbaOkno2Sw, WallSwitch.Side.RIGHT, 15, schodyPwmActor);
+
+        lst.addActionBinding(new ActionBinding(chodbaOkno3Sw.getLeftBottomButton(),
+                allLightsFromKitchenToLivingRoomOff, null));
+        lst.addActionBinding(new ActionBinding(chodbaOkno3Sw.getRightBottomButton(),
+                SwitchAllOffWithMemory.createSwitchOffActions(svetlaDoleVzadu), null));
+        lst.addActionBinding(new ActionBinding(chodbaOkno3Sw.getLeftUpperButton(),
+                SwitchAllOffWithMemory.createSwitchOffActions(svetlaHore), null));
+        lst.addActionBinding(new ActionBinding(chodbaOkno3Sw.getRightUpperButton(),
+                SwitchAllOffWithMemory.createSwitchOffActions(svetlaHoreVenku), null));
 
         // loznice
         configureLouvers(lst, lozniceOknoSw1, WallSwitch.Side.LEFT, zaluzieLoznice1);
@@ -635,13 +669,7 @@ public class PiConfigurator extends AbstractConfigurator {
 
         // kuchyn
         lst.addActionBinding(new ActionBinding(getBottomButton(kuchynLSw1, WallSwitch.Side.LEFT),
-                SwitchAllOffWithMemory.createSwitchOffActions(
-                        chodbaDolePwmActor, zadveriDolePwmActor,
-                        pradelna1PwmActor, pradelna2PwmActor, pradelna3PwmActor,
-                        spajzPwmActor, koupelnaDolePwmActor,
-                        koupelnaDoleZrcadlaPwmActor, terasaPwmActor,
-                        svSklepLevy, svSklepPravy)
-                , null));
+                SwitchAllOffWithMemory.createSwitchOffActions(svetlaDoleVzadu), null));
 
         RadioOnOffActor radioActor = new RadioOnOffActor();
         lst.addActionBinding(new ActionBinding(getUpperButton(kuchynLSw1, WallSwitch.Side.LEFT),
@@ -666,12 +694,12 @@ public class PiConfigurator extends AbstractConfigurator {
         setupPir(lst, pirA1Prizemi.getIn1AndActivate(), "pirPrdDv", "Pradelna dvere", new SwitchOnSensorAction(pradelna1PwmActor, 600, 80), new SwitchOffSensorAction(pradelna1PwmActor, 60));
         setupPir(lst, pirA1Prizemi.getIn2AndActivate(), "pirPrdPr", "Pradelna pracka", new SwitchOnSensorAction(pradelna1PwmActor, 600, 80), new SwitchOffSensorAction(pradelna1PwmActor, 60));
         setupMagneticSensor(lst, pirA1Prizemi.getIn3AndActivate(), "pisD", "Pisoar Dole",
-                new Action[]{new SwitchOnSensorAction(pisoarDole, 3), new SwitchOnSensorAction(cerpadloStudna, 120)},
+                new Action[]{new SwitchOnSensorAction(pisoarDole, 3)/*, new SwitchOnSensorAction(cerpadloStudna, 120)*/},
                 new Action[]{new SwitchOnSensorAction(pisoarDole, 7)});
         setupPir(lst, pirA1Prizemi.getIn4AndActivate(), "pirVchH", "Vchod hore", new SwitchOnSensorAction(vchodHorePwmActor, 600, 80, sunCondition), new SwitchOffSensorAction(vchodHorePwmActor, 60));
         setupPir(lst, pirA1Prizemi.getIn5AndActivate(), "pirSch", "Schodiste", new SwitchOnSensorAction(schodyPwmActor, 600, 15, corridorDarkCondition), new SwitchOffSensorAction(schodyPwmActor, 30));
         setupMagneticSensor(lst, pirA1Prizemi.getIn6AndActivate(), "pisH", "Pisoar Hore",
-                new Action[]{new SwitchOnSensorAction(pisoarHore, 3), new SwitchOnSensorAction(cerpadloStudna, 120)},
+                new Action[]{new SwitchOnSensorAction(pisoarHore, 3)/*, new SwitchOnSensorAction(cerpadloStudna, 120)*/},
                 new Action[]{new SwitchOnSensorAction(pisoarHore, 7)});
         // A6:3 "zadveri venku - spinac puda"
 
@@ -679,7 +707,7 @@ public class PiConfigurator extends AbstractConfigurator {
         setupPir(lst, pirA2Patro.getIn1AndActivate(), "pirChWc", "Chodba pred WC", new SwitchOnSensorAction(schodyPwmActor, 600, 15, corridorDarkCondition), new SwitchOffSensorAction(schodyPwmActor, 30));
         setupPir(lst, pirA2Patro.getIn2AndActivate(), "pirCh", "Chodba", new SwitchOnSensorAction(schodyPwmActor, 600, 15, corridorDarkCondition), new SwitchOffSensorAction(schodyPwmActor, 30));
         setupPir(lst, pirA2Patro.getIn3AndActivate(), "pirWc", "WC",
-                new Action[]{new SwitchOnSensorAction(wcPwmActor, 600, 100, sunCondition), new SwitchOnSensorAction(cerpadloStudna, 120)},
+                new Action[]{new SwitchOnSensorAction(wcPwmActor, 600, 100, sunCondition)/*, new SwitchOnSensorAction(cerpadloStudna, 120)*/},
                 new Action[]{new SwitchOffSensorAction(wcPwmActor, 60)});
         setupPir(lst, pirA2Patro.getIn5AndActivate(), "pirZadHVch", "Zadveri hore vchod", new SwitchOnSensorAction(zadveriPwmActor, 600, 100, sunCondition), new SwitchOffSensorAction(zadveriPwmActor, 15));
         setupPir(lst, pirA2Patro.getIn6AndActivate(), "pirZadHCh", "Zadveri hore chodba", new SwitchOnSensorAction(zadveriPwmActor, 600, 100, sunCondition), new SwitchOffSensorAction(zadveriPwmActor, 15));
