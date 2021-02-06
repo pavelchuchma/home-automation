@@ -1,5 +1,5 @@
 function getBaseUrl() {
-    return 'http://10.10.0.150';
+    return 'http://192.168.68.150';
 }
 
 function getComponents() {
