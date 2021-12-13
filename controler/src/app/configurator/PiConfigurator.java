@@ -1,11 +1,7 @@
 package app.configurator;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
 import app.NodeInfoCollector;
 import app.SwitchListener;
-import chuma.hvaccontroller.device.HvacDevice;
 import controller.ActionBinding;
 import controller.action.AbstractSensorAction;
 import controller.action.Action;
@@ -42,7 +38,11 @@ import controller.device.SwitchIndicator;
 import controller.device.WallSwitch;
 import node.Node;
 import org.apache.log4j.Logger;
+import org.chuma.hvaccontroller.device.HvacDevice;
 import servlet.Servlet;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class PiConfigurator extends AbstractConfigurator {
 
@@ -761,11 +761,11 @@ public class PiConfigurator extends AbstractConfigurator {
     }
 
     private HvacDevice startHvacDevice() {
-        HvacDevice hvacDevice = new HvacDevice("/dev/ttyUSB0", false, null);
+        HvacDevice hvacDevice = new HvacDevice("/dev/ttyUSB0", 0x85, 0x20, null);
         try {
             hvacDevice.start();
         } catch (IOException e) {
-            log.error("Faild to start HVAC Device", e);
+            log.error("Failed to start HVAC Device", e);
             return null;
         }
         return hvacDevice;

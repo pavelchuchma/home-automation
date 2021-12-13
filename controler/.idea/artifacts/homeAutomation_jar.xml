@@ -20,7 +20,8 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/SunriseSunsetLib-bin.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/javaMPD-1.3.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/commons-lang3-3.0.jar" path-in-jar="/" />
-      <element id="module-output" name="HvacController" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../hvac-controller/hvac-controller/build/libs/hvac-controller-0.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/RXTXcomm.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

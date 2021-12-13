@@ -1,9 +1,11 @@
 package controller.controller;
 
+import org.junit.Test;
+
 import java.util.Iterator;
 
-import junit.framework.Assert;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class LouversControllerImplTest extends AbstractControllerTest {
     Actor upActor = new Actor("UP");
@@ -15,12 +17,12 @@ public class LouversControllerImplTest extends AbstractControllerTest {
 
         lc.up();
 
-        Assert.assertEquals(3, actions.size());
+        assertEquals(3, actions.size());
         Iterator<ActionItem> iterator = actions.iterator();
-        Assert.assertEquals(new ActionItem(downActor, "off", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(upActor, "on", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(upActor, "off", 100 + up100Reserve, 2), iterator.next());
-        Assert.assertTrue(!iterator.hasNext());
+        assertEquals(new ActionItem(downActor, "off", 0), iterator.next());
+        assertEquals(new ActionItem(upActor, "on", 0), iterator.next());
+        assertEquals(new ActionItem(upActor, "off", 100 + up100Reserve, 2), iterator.next());
+        assertTrue(!iterator.hasNext());
     }
 
     @Test
@@ -30,10 +32,10 @@ public class LouversControllerImplTest extends AbstractControllerTest {
         lc.blind();
 
         Iterator<ActionItem> iterator = actions.iterator();
-        Assert.assertEquals(new ActionItem(upActor, "off", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(downActor, "on", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(downActor, "off", 100, 2), iterator.next());
-        Assert.assertTrue(!iterator.hasNext());
+        assertEquals(new ActionItem(upActor, "off", 0), iterator.next());
+        assertEquals(new ActionItem(downActor, "on", 0), iterator.next());
+        assertEquals(new ActionItem(downActor, "off", 100, 2), iterator.next());
+        assertTrue(!iterator.hasNext());
     }
 
     @Test
@@ -47,31 +49,31 @@ public class LouversControllerImplTest extends AbstractControllerTest {
         lc.outshine(0);
         int pos = lc.louversPosition.getPosition();
         int offset = lc.louversPosition.getOffset();
-        Assert.assertTrue("pos: " + pos, pos >= 891 && pos <= 905);
-        Assert.assertEquals(0, offset);
+        assertTrue("pos: " + pos, pos >= 891 && pos <= 905);
+        assertEquals(0, offset);
 
         lc.outshine(50);
         pos = lc.louversPosition.getPosition();
         offset = lc.louversPosition.getOffset();
-        Assert.assertTrue("pos: " + pos, pos >= 941 && pos <= 955);
-        Assert.assertTrue("offset: " + offset, offset >= 41 && offset <= 59);
+        assertTrue("pos: " + pos, pos >= 941 && pos <= 955);
+        assertTrue("offset: " + offset, offset >= 41 && offset <= 59);
 
         lc.outshine(70);
         pos = lc.louversPosition.getPosition();
         offset = lc.louversPosition.getOffset();
-        Assert.assertTrue("pos: " + pos, pos >= 961 && pos <= 975);
-        Assert.assertTrue("offset: " + offset, offset >= 61 && offset <= 79);
+        assertTrue("pos: " + pos, pos >= 961 && pos <= 975);
+        assertTrue("offset: " + offset, offset >= 61 && offset <= 79);
 
         lc.outshine(30);
         pos = lc.louversPosition.getPosition();
         offset = lc.louversPosition.getOffset();
-        Assert.assertTrue("pos: " + pos, pos >= 921 && pos <= 935);
-        Assert.assertTrue("offset: " + offset, offset >= 21 && offset <= 39);
+        assertTrue("pos: " + pos, pos >= 921 && pos <= 935);
+        assertTrue("offset: " + offset, offset >= 21 && offset <= 39);
 
         Iterator<ActionItem> iterator = actions.iterator();
-        Assert.assertEquals(new ActionItem(downActor, "off", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(upActor, "on", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(upActor, "off", 100, 5), iterator.next());
+        assertEquals(new ActionItem(downActor, "off", 0), iterator.next());
+        assertEquals(new ActionItem(upActor, "on", 0), iterator.next());
+        assertEquals(new ActionItem(upActor, "off", 100, 5), iterator.next());
 
 
 //        Assert.assertTrue(!iterator.hasNext());
@@ -96,28 +98,28 @@ public class LouversControllerImplTest extends AbstractControllerTest {
         thread.join();
 
         long duration = System.currentTimeMillis() - start;
-        Assert.assertTrue("duration: " + duration, duration >= 1040 && duration <= 1100);
+        assertTrue("duration: " + duration, duration >= 1040 && duration <= 1100);
 
         int pos = lc.louversPosition.getPosition();
-        Assert.assertTrue("pos: " + pos, pos >= 930 && pos <= 950);
+        assertTrue("pos: " + pos, pos >= 930 && pos <= 950);
         int offset = lc.louversPosition.getOffset();
-        Assert.assertTrue("offset: " + offset, offset >= 31 && offset <= 48);
+        assertTrue("offset: " + offset, offset >= 31 && offset <= 48);
 
 
         Iterator<ActionItem> iterator = actions.iterator();
         // blind()
-        Assert.assertEquals(new ActionItem(upActor, "off", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(downActor, "on", 0), iterator.next());
+        assertEquals(new ActionItem(upActor, "off", 0), iterator.next());
+        assertEquals(new ActionItem(downActor, "on", 0), iterator.next());
         // outshine(20%)
-        Assert.assertEquals(new ActionItem(upActor, "off", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(downActor, "on", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(downActor, "off", 700, 15), iterator.next()); //remaining (1000-300)
+        assertEquals(new ActionItem(upActor, "off", 0), iterator.next());
+        assertEquals(new ActionItem(downActor, "on", 0), iterator.next());
+        assertEquals(new ActionItem(downActor, "off", 700, 15), iterator.next()); //remaining (1000-300)
 //        Assert.assertEquals(new ActionItem(downActor, "off", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(upActor, "on", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(upActor, "off", 60, 10), iterator.next());
+        assertEquals(new ActionItem(upActor, "on", 0), iterator.next());
+        assertEquals(new ActionItem(upActor, "off", 60, 10), iterator.next());
 
 
-        Assert.assertTrue(!iterator.hasNext());
+        assertTrue(!iterator.hasNext());
     }
 
     @Test
@@ -134,23 +136,23 @@ public class LouversControllerImplTest extends AbstractControllerTest {
         long start = System.currentTimeMillis();
         lc.blind();
         long duration = System.currentTimeMillis() - start;
-        Assert.assertTrue("duration: " + duration, duration >= 300 && duration < 310);
+        assertTrue("duration: " + duration, duration >= 300 && duration < 310);
 
         Iterator<ActionItem> iterator = actions.iterator();
 
-        Assert.assertEquals(new ActionItem(downActor, "off", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(upActor, "on", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(upActor, "off", 1000 + up1000Reserve, 5), iterator.next());
+        assertEquals(new ActionItem(downActor, "off", 0), iterator.next());
+        assertEquals(new ActionItem(upActor, "on", 0), iterator.next());
+        assertEquals(new ActionItem(upActor, "off", 1000 + up1000Reserve, 5), iterator.next());
 
 
-        Assert.assertEquals(new ActionItem(upActor, "off", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(downActor, "on", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(downActor, "off", 300, 10), iterator.next());
-        Assert.assertTrue(!iterator.hasNext());
+        assertEquals(new ActionItem(upActor, "off", 0), iterator.next());
+        assertEquals(new ActionItem(downActor, "on", 0), iterator.next());
+        assertEquals(new ActionItem(downActor, "off", 300, 10), iterator.next());
+        assertTrue(!iterator.hasNext());
 
         int pos = lc.louversPosition.getPosition();
-        Assert.assertTrue("pos: " + pos, pos >= 297 && pos < 310);
-        Assert.assertEquals(100, lc.louversPosition.getOffset());
+        assertTrue("pos: " + pos, pos >= 297 && pos < 310);
+        assertEquals(100, lc.louversPosition.getOffset());
     }
 
     @Test
@@ -168,30 +170,30 @@ public class LouversControllerImplTest extends AbstractControllerTest {
         long start = System.currentTimeMillis();
         lc.blind();
         long duration = System.currentTimeMillis() - start;
-        Assert.assertTrue("duration: " + duration, duration >= 300 && duration < 310);
+        assertTrue("duration: " + duration, duration >= 300 && duration < 310);
 
         thread.join();
         Iterator<ActionItem> iterator = actions.iterator();
 
         // up()
-        Assert.assertEquals(new ActionItem(downActor, "off", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(upActor, "on", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(upActor, "off", 1000 + up1000Reserve, 5), iterator.next()); // 100 ms + 5 ms upReserve
+        assertEquals(new ActionItem(downActor, "off", 0), iterator.next());
+        assertEquals(new ActionItem(upActor, "on", 0), iterator.next());
+        assertEquals(new ActionItem(upActor, "off", 1000 + up1000Reserve, 5), iterator.next()); // 100 ms + 5 ms upReserve
 
         // down()
-        Assert.assertEquals(new ActionItem(upActor, "off", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(downActor, "on", 0), iterator.next());
+        assertEquals(new ActionItem(upActor, "off", 0), iterator.next());
+        assertEquals(new ActionItem(downActor, "on", 0), iterator.next());
 
         // up() from another thread after 30 ms
-        Assert.assertEquals(new ActionItem(downActor, "off", 300, 5), iterator.next());
-        Assert.assertEquals(new ActionItem(upActor, "on", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(upActor, "off", 300 + up1000Reserve, 5), iterator.next()); //30 ms of position + 5 ms upReserve
+        assertEquals(new ActionItem(downActor, "off", 300, 5), iterator.next());
+        assertEquals(new ActionItem(upActor, "on", 0), iterator.next());
+        assertEquals(new ActionItem(upActor, "off", 300 + up1000Reserve, 5), iterator.next()); //30 ms of position + 5 ms upReserve
 
 
-        Assert.assertTrue(!iterator.hasNext());
+        assertTrue(!iterator.hasNext());
 
-        Assert.assertEquals(0, lc.louversPosition.getPosition());
-        Assert.assertEquals(0, lc.louversPosition.getOffset());
+        assertEquals(0, lc.louversPosition.getPosition());
+        assertEquals(0, lc.louversPosition.getOffset());
     }
 
     @Test
@@ -211,26 +213,26 @@ public class LouversControllerImplTest extends AbstractControllerTest {
         lc.blind();
         thread.join();
         long duration = System.currentTimeMillis() - start;
-        Assert.assertTrue("duration: " + duration, duration >= 300 && duration < 330);
+        assertTrue("duration: " + duration, duration >= 300 && duration < 330);
 
         Iterator<ActionItem> iterator = actions.iterator();
 
         // up()
-        Assert.assertEquals(new ActionItem(downActor, "off", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(upActor, "on", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(upActor, "off", 1000 + up1000Reserve, 5), iterator.next());
+        assertEquals(new ActionItem(downActor, "off", 0), iterator.next());
+        assertEquals(new ActionItem(upActor, "on", 0), iterator.next());
+        assertEquals(new ActionItem(upActor, "off", 1000 + up1000Reserve, 5), iterator.next());
 
         // down()
-        Assert.assertEquals(new ActionItem(upActor, "off", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(downActor, "on", 0), iterator.next());
+        assertEquals(new ActionItem(upActor, "off", 0), iterator.next());
+        assertEquals(new ActionItem(downActor, "on", 0), iterator.next());
 
         // up() from another thread after 30 ms
-        Assert.assertEquals(new ActionItem(downActor, "off", 300, 10), iterator.next());
+        assertEquals(new ActionItem(downActor, "off", 300, 10), iterator.next());
         // broken downActor, no more actions
-        Assert.assertTrue(!iterator.hasNext());
+        assertTrue(!iterator.hasNext());
 
-        Assert.assertEquals(-1, lc.louversPosition.getPosition());
-        Assert.assertEquals(-1, lc.louversPosition.getOffset());
+        assertEquals(-1, lc.louversPosition.getPosition());
+        assertEquals(-1, lc.louversPosition.getOffset());
     }
 
     private void waitNoException(int millis) {

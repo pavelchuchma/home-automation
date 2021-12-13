@@ -4,12 +4,6 @@
       <root url="jar://$PROJECT_DIR$/lib/RXTXcomm.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://$PROJECT_DIR$/../lib-src/rxtx-2.2pre2.zip!/rxtx-2.2pre2/CNI" />
-      <root url="jar://$PROJECT_DIR$/../lib-src/rxtx-2.2pre2.zip!/rxtx-2.2pre2/contrib" />
-      <root url="jar://$PROJECT_DIR$/../lib-src/rxtx-2.2pre2.zip!/rxtx-2.2pre2/contrib/MAcOSX/RXTXInstaller/Sources" />
-      <root url="jar://$PROJECT_DIR$/../lib-src/rxtx-2.2pre2.zip!/rxtx-2.2pre2/src" />
-      <root url="jar://$PROJECT_DIR$/../lib-src/rxtx-2.2pre2.zip!/rxtx-2.2pre2/tests" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>

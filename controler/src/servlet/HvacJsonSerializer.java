@@ -1,6 +1,6 @@
 package servlet;
 
-import chuma.hvaccontroller.device.HvacDevice;
+import org.chuma.hvaccontroller.device.HvacDevice;
 
 public class HvacJsonSerializer extends AbstractJsonSerializer {
     public static String serialize(HvacDevice hvacDevice) {
@@ -21,13 +21,17 @@ public class HvacJsonSerializer extends AbstractJsonSerializer {
         b.append(',');
         appendNameValue(b, "sleepMode", hvacDevice.isSleepMode());
         b.append(',');
+        appendNameValue(b, "defrost", hvacDevice.isDefrost());
+        b.append(',');
         appendNameValue(b, "targetTemperature", hvacDevice.getTargetTemperature());
         b.append(',');
         appendNameValue(b, "airTemperature", hvacDevice.getAirTemperature());
         b.append(',');
-        appendNameValue(b, "x", hvacDevice.isX());
+        appendNameValue(b, "air2Temperature", hvacDevice.getAir2Temperature());
         b.append(',');
-        appendNameValue(b, "y", hvacDevice.isY());
+        appendNameValue(b, "roomTemperature", hvacDevice.getRoomTemperature());
+        b.append(',');
+        appendNameValue(b, "unitTemperature", hvacDevice.getUnitTemperature());
         b.append('}');
 
         return b.toString();

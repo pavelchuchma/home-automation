@@ -1,5 +1,11 @@
 package packet;
 
+import gnu.io.CommPortIdentifier;
+import gnu.io.NoSuchPortException;
+import gnu.io.SerialPort;
+import node.MessageType;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -10,25 +16,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.SerialPort;
-import node.MessageType;
-import org.apache.log4j.Logger;
-
 public class PacketUartIO implements IPacketUartIO {
     static Logger log = Logger.getLogger(PacketUartIO.class.getName());
     static Logger msgLog = Logger.getLogger(PacketUartIO.class.getName() + ".msg");
-    protected List<PacketReceivedListener> receivedListeners = new ArrayList<PacketReceivedListener>();
-    protected ConcurrentHashMap<String, PacketReceivedListener> specificReceivedListeners = new ConcurrentHashMap<String, PacketReceivedListener>();
-    protected List<PacketSentListener> sentListeners = new ArrayList<PacketSentListener>();
+    protected List<PacketReceivedListener> receivedListeners = new ArrayList<>();
+    protected ConcurrentHashMap<String, PacketReceivedListener> specificReceivedListeners = new ConcurrentHashMap<>();
+    protected List<PacketSentListener> sentListeners = new ArrayList<>();
     SerialPort serialPort;
     InputStream inputStream;
     PacketSerializer packetSerializer = new PacketSerializer();
     ExecutorService threadPool = Executors.newFixedThreadPool(40);
     boolean closed = false;
+
     public PacketUartIO(String portName, int baudRate) throws PacketUartIOException {
         log.debug("Creating '" + portName + "' @" + baudRate + " bauds...");
+        //noinspection rawtypes
         Enumeration portList = CommPortIdentifier.getPortIdentifiers();
 
         while (portList.hasMoreElements()) {
@@ -83,12 +85,7 @@ public class PacketUartIO implements IPacketUartIO {
 
         // process each packet in new thread
         // todo: replace threads by producer/consumer pattern
-        threadPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                processPacketImpl(packet);
-            }
-        });
+        threadPool.execute(() -> processPacketImpl(packet));
     }
 
     private void processPacketByListener(Packet packet, PacketReceivedListener listener, String listenerType) {
@@ -126,8 +123,7 @@ public class PacketUartIO implements IPacketUartIO {
     public void addReceivedPacketListener(PacketReceivedListener listener) {
         log.debug("addReceivedPacketListener: " + listener);
         // create a new copy to be thread safe
-        List<PacketReceivedListener> tmp = new ArrayList<PacketReceivedListener>();
-        tmp.addAll(receivedListeners);
+        List<PacketReceivedListener> tmp = new ArrayList<>(receivedListeners);
         tmp.add(listener);
 
         receivedListeners = tmp;

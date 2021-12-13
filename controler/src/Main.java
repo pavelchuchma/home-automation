@@ -1,5 +1,3 @@
-import java.net.InetAddress;
-
 import app.NodeInfoCollector;
 import app.configurator.AbstractConfigurator;
 import app.configurator.MartinConfigurator;
@@ -11,6 +9,8 @@ import packet.PacketUartIO;
 import packet.PacketUartIOException;
 import packet.PacketUartIOMock;
 import servlet.Servlet;
+
+import java.net.InetAddress;
 
 public class Main {
     static Logger log = Logger.getLogger(Main.class.getName());
@@ -33,7 +33,7 @@ public class Main {
 
             String hostName = InetAddress.getLocalHost().getHostName();
             AbstractConfigurator configurator;
-            if (hostName.equalsIgnoreCase("raspberrypi") || hostName.equalsIgnoreCase("Agata")) {
+            if (hostName.equalsIgnoreCase("raspberrypi") || hostName.equalsIgnoreCase("pchuchma")) {
                 configurator = new PiConfigurator(nodeInfoCollector);
             } else if (hostName.equalsIgnoreCase("martinpi")) {
                 configurator = new MartinConfigurator(nodeInfoCollector);

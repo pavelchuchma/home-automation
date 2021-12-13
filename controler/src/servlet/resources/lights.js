@@ -319,9 +319,12 @@ function drawHvacScreen() {
         hvacCtx.fillText(hvacStatus.targetMode, 5, 20);
         hvacCtx.fillText(hvacStatus.fanSpeed, 5, 40);
         hvacCtx.fillText('Set temp: ' + hvacStatus.targetTemperature, 5, 60);
-        hvacCtx.fillText('Air temp: ' + hvacStatus.airTemperature, 5, 80);
         hvacCtx.font = "10px Arial";
-        hvacCtx.fillText('x:' + hvacStatus.x + ' y:' + hvacStatus.y, 5, 140);
+        hvacCtx.fillText('Air temp: ' + hvacStatus.airTemperature, 5, 80);
+        hvacCtx.fillText('Air2 temp: ' + hvacStatus.air2Temperature, 5, 95);
+        hvacCtx.fillText('Room temp: ' + hvacStatus.roomTemperature, 5, 110);
+        hvacCtx.fillText('Unit temp: ' + hvacStatus.unitTemperature, 5, 125);
+        hvacCtx.fillText('Defrost: ' + hvacStatus.defrost, 5, 140);
     } else {
         hvacCtx.fillStyle = 'black';
         hvacCtx.font = "30px Arial";
