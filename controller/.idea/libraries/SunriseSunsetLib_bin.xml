@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="SunriseSunsetLib-bin">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/SunriseSunsetLib-bin.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

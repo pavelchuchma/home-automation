@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link href='./lights.css' rel='stylesheet' type='text/css'/>
+    <script src="configuration-pi.js"></script>
+    <script src="lights.js"></script>
+</head>
+<body>
+
+<p id="error"></p>
+
+<img hidden="1" id="1stFloor" src="1stFloor.jpg" width="588" height="1500"/>
+<img hidden="1" id="2ndFloor" src="2ndFloor.jpg" width="588" height="1500"/>
+
+<table>
+    <tr>
+        <td>
+            <canvas id="mainCanvas" width="588" height="1500" onclick="onCanvasClick(event)">
+                Your browser does not support the HTML5 canvas tag.
+            </canvas>
+        </td>
+        <td>
+            <table>
+                <tr>
+                    <td>
+                        <canvas id="toolsCanvas" width="100" height="900" onclick="onToolsClick(event)">
+                            Your browser does not support the HTML5 canvas tag.
+                        </canvas>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <canvas id="hvacCanvas" width="100" height="150" onclick="onHvacClick(event)">
+                            Your browser does not support the HTML5 canvas tag.
+                        </canvas>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <canvas id="pumpCanvas" width="100" height="50" onclick="onPumpClick(event)">
+                            Your browser does not support the HTML5 canvas tag.
+                        </canvas>
+                    </td>
+                </tr>
+            </table>
+        </td>
+</table>
+</body>
+</html>
