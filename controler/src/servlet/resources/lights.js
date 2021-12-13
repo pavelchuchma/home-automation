@@ -311,20 +311,23 @@ function drawHvacScreen() {
 
     var hvacStatus = itemStatusMap['hvac'];
 
-
     if (hvacStatus.on) {
         hvacCtx.font = "bold 15px Arial";
         hvacCtx.fontWeight = "500";
         hvacCtx.fillStyle = 'red';
         hvacCtx.fillText(hvacStatus.targetMode, 5, 20);
         hvacCtx.fillText(hvacStatus.fanSpeed, 5, 40);
-        hvacCtx.fillText('Set temp: ' + hvacStatus.targetTemperature, 5, 60);
-        hvacCtx.font = "10px Arial";
-        hvacCtx.fillText('Air temp: ' + hvacStatus.airTemperature, 5, 80);
-        hvacCtx.fillText('Air2 temp: ' + hvacStatus.air2Temperature, 5, 95);
-        hvacCtx.fillText('Room temp: ' + hvacStatus.roomTemperature, 5, 110);
-        hvacCtx.fillText('Unit temp: ' + hvacStatus.unitTemperature, 5, 125);
-        hvacCtx.fillText('Defrost: ' + hvacStatus.defrost, 5, 140);
+        hvacCtx.fillText('Tgt temp: ' + hvacStatus.targetTemperature, 5, 60);
+        hvacCtx.font = "13px Arial";
+        let y = 70;
+        let step = 17;
+        hvacCtx.fillText('Air temp: ' + hvacStatus.airTemperature + '/' + hvacStatus.air2Temperature, 5, y += step);
+        hvacCtx.fillText('Room temp: ' + hvacStatus.roomTemperature, 5, y += step);
+        hvacCtx.fillText('Unit temp: ' + hvacStatus.unitTemperature, 5, y += step);
+        if (hvacStatus.defrost) {
+            hvacCtx.font = "bold 15px Arial";
+            hvacCtx.fillText('Defrost!', 5, y += step + 5);
+        }
     } else {
         hvacCtx.fillStyle = 'black';
         hvacCtx.font = "30px Arial";
