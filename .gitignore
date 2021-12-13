@@ -1,8 +1,9 @@
 .vs
 workspace.xml
-nbproject\private
+pic/node/nbproject/private
 build
 dist
+controller/out
 
 # Following "global" directories can lead to problems...
 [Bb]in
