@@ -1,14 +1,14 @@
 package app;
 
-import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
-
 import controller.ActionBinding;
 import controller.action.Action;
 import node.Node;
 import node.Pin;
 import nodeImpl.AbstractNodeListener;
 import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SwitchListener extends AbstractNodeListener {
     static Logger log = Logger.getLogger(SwitchListener.class.getName());
