@@ -31,24 +31,24 @@
         </layout>
     </appender>
 
-    <category name="packet.PacketUartIO.msg" additivity="false">
+    <category name="org.chuma.homecontroller.nodes.packet.PacketUartIO.msg" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="messagesFile"/>
         <appender-ref ref="applicationLog"/>
     </category>
 
 
-    <category name="packet.PacketUartIO" additivity="false">
+    <category name="org.chuma.homecontroller.nodes.packet.PacketUartIO" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="applicationLog"/>
     </category>
 
-    <category name="app.SwitchListener" additivity="false">
+    <category name="org.chuma.homecontroller.app.SwitchListener" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="applicationLog"/>
     </category>
 
-    <category name="packet.PacketSerializer" additivity="false">
+    <category name="org.chuma.homecontroller.nodes.packet.PacketSerializer" additivity="false">
         <level value="DEBUG"/>
         <appender-ref ref="applicationLog"/>
     </category>
