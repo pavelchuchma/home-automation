@@ -1,0 +1,53 @@
+plugins {
+    // Apply the java Plugin to add support for Java.
+    id 'java'
+}
+
+repositories {
+    // Use Maven Central for resolving dependencies.
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url 'https://repo.opennms.org/maven2'
+    }
+}
+
+configurations {
+    winRxtx { transitive = false }
+}
+
+dependencies {
+    constraints {
+        // Define dependency versions as constraints
+        def rxtxVersion = '2.2pre2'
+        implementation "org.rxtx:rxtx:$rxtxVersion"
+        winRxtx "org.rxtx:rxtx:$rxtxVersion"
+
+        def log4jVersion = '2.16.0'
+        implementation "org.apache.logging.log4j:log4j-core:$log4jVersion"
+        implementation "org.apache.logging.log4j:log4j-1.2-api:$log4jVersion"
+
+        implementation group: 'com.luckycatlabs', name: 'SunriseSunsetCalculator', version: '1.2'
+        implementation group: 'net.thejavashop', name: 'javampd', version: '5.0.3'
+        implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+        implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.1.6.v20160112'
+
+        implementation 'org.chuma.hvac-controller:hvac-controller:0.2.0-SNAPSHOT'
+    }
+
+    testImplementation 'junit:junit:4.13.2'
+}
+
+tasks.named('test') {
+    // Use JUnit Platform for unit tests.
+    useJUnitPlatform()
+}
+
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}

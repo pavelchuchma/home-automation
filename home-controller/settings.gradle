@@ -8,4 +8,4 @@
  */
 
 rootProject.name = 'home-controller'
-include('app', 'list', 'utilities')
+include('core', 'extensions', 'app')
