@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.controller.device;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.actor.AbstractPinActor;
 import org.chuma.homecontroller.controller.actor.ActorListener;
 import org.chuma.homecontroller.controller.actor.IReadableOnOff;
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 
 public class SwitchIndicator implements ActorListener {
     private static final int RETRY_COUNT = 2;
-    static Logger log = Logger.getLogger(SwitchIndicator.class.getName());
+    static Logger log = LoggerFactory.getLogger(SwitchIndicator.class.getName());
     Mode mode;
 
     NodePin pin;

@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.controller.actor;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
 import org.chuma.homecontroller.nodes.node.Node;
 import org.chuma.homecontroller.nodes.node.NodePin;
@@ -10,7 +11,7 @@ import java.io.IOException;
 
 public abstract class AbstractPinActor extends AbstractActor {
     protected static final int RETRY_COUNT = 5;
-    static Logger log = Logger.getLogger(AbstractPinActor.class.getName());
+    static Logger log = LoggerFactory.getLogger(AbstractPinActor.class.getName());
 
     NodePin outputPin;
     int initValue;

@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.app.configurator;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.app.action.condition.SunCondition;
 import org.chuma.homecontroller.app.servlet.Servlet;
 import org.chuma.homecontroller.controller.ActionBinding;
@@ -46,7 +47,7 @@ import java.util.ArrayList;
 
 public class PiConfigurator extends AbstractConfigurator {
 
-    static Logger log = Logger.getLogger(PiConfigurator.class.getName());
+    static Logger log = LoggerFactory.getLogger(PiConfigurator.class.getName());
 
     public PiConfigurator(NodeInfoCollector nodeInfoCollector) {
         super(nodeInfoCollector);

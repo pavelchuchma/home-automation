@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.controller.action;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.actor.Actor;
 import org.chuma.homecontroller.controller.actor.PwmActor;
 
@@ -8,7 +9,7 @@ import org.chuma.homecontroller.controller.actor.PwmActor;
 public class PwmActionGroup {
     public static final int STEP_DELAY = 300;
     public static final int FIRST_STEP_DELAY = 600;
-    static Logger LOGGER = Logger.getLogger(PwmActionGroup.class.getName());
+    static Logger log = LoggerFactory.getLogger(PwmActionGroup.class.getName());
     int initialPwmValue;
     Action upPressed;
     Action upReleased;
@@ -126,7 +127,7 @@ public class PwmActionGroup {
                     }
                 }
             } catch (InterruptedException e) {
-                LOGGER.error("Unexpected: ", e);
+                log.error("Unexpected: ", e);
             }
         }
     }

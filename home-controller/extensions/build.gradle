@@ -15,10 +15,9 @@ plugins {
 dependencies {
     implementation project(':core')
 
-    implementation 'org.apache.logging.log4j:log4j-core'
-    implementation 'org.apache.logging.log4j:log4j-1.2-api'
+    implementation 'ch.qos.logback:logback-classic'
 
     implementation 'org.chuma.hvac-controller:hvac-controller'
-    implementation group: 'net.thejavashop', name: 'javampd'
-    implementation group: 'org.apache.commons', name: 'commons-lang3'
+    implementation 'net.thejavashop:javampd'
+    implementation 'org.apache.commons:commons-lang3'
 }

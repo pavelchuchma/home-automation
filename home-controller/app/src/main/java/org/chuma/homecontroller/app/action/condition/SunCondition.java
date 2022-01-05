@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.app.action.condition;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.app.SunCalculator;
 import org.chuma.homecontroller.controller.action.condition.ICondition;
 
@@ -9,7 +10,7 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 public class SunCondition implements ICondition {
-    static Logger log = Logger.getLogger(SunCondition.class.getName());
+    static Logger log = LoggerFactory.getLogger(SunCondition.class.getName());
     protected int disabledBeforeSunRiseMinutes;
     protected int enabledAfterSunsetMinutes;
     SunCalculator sunCalculator = SunCalculator.getInstance();

@@ -1,11 +1,12 @@
 package org.chuma.homecontroller.controller.controller;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
 import org.chuma.homecontroller.nodes.node.NodePin;
 
 public class ValveControllerImpl implements ValveController {
-    static Logger log = Logger.getLogger(ValveControllerImpl.class.getName());
+    static Logger log = LoggerFactory.getLogger(ValveControllerImpl.class.getName());
     private LouversControllerImpl impl;
 
     public ValveControllerImpl(String id, String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs) {

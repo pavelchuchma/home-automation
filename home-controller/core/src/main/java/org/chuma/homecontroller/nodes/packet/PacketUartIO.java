@@ -3,7 +3,8 @@ package org.chuma.homecontroller.nodes.packet;
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
 import gnu.io.SerialPort;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.nodes.node.MessageType;
 
 import java.io.IOException;
@@ -17,8 +18,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class PacketUartIO implements IPacketUartIO {
-    static Logger log = Logger.getLogger(PacketUartIO.class.getName());
-    static Logger msgLog = Logger.getLogger(PacketUartIO.class.getName() + ".msg");
+    static Logger log = LoggerFactory.getLogger(PacketUartIO.class.getName());
+    static Logger msgLog = LoggerFactory.getLogger(PacketUartIO.class.getName() + ".msg");
     protected List<PacketReceivedListener> receivedListeners = new ArrayList<>();
     protected ConcurrentHashMap<String, PacketReceivedListener> specificReceivedListeners = new ConcurrentHashMap<>();
     protected List<PacketSentListener> sentListeners = new ArrayList<>();
@@ -68,7 +69,7 @@ public class PacketUartIO implements IPacketUartIO {
                     processPacket(receivedPacket);
                 } catch (IOException e) {
                     msgLog.error("receiveError", e);
-                    log.error(e);
+                    log.error("receiveError", e);
                     e.printStackTrace();
                 }
             }

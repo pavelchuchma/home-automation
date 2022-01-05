@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.controller.nodeinfo;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.nodes.node.AbstractNodeListener;
@@ -11,7 +12,7 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SwitchListener extends AbstractNodeListener {
-    static Logger log = Logger.getLogger(SwitchListener.class.getName());
+    static Logger log = LoggerFactory.getLogger(SwitchListener.class.getName());
     ConcurrentHashMap<String, ActionBinding> switchMap = new ConcurrentHashMap<String, ActionBinding>();
 
     public static String createNodePinKey(int nodeId, Pin pin) {

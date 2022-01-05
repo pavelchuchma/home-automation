@@ -1,10 +1,11 @@
 package org.chuma.homecontroller.controller.device;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.actor.IReadableOnOff;
 
 public class RefreshingSwitchIndicator extends SwitchIndicator {
-    static Logger log = Logger.getLogger(SwitchIndicator.class.getName());
+    static Logger log = LoggerFactory.getLogger(SwitchIndicator.class.getName());
     Thread refreshThread;
 
     public RefreshingSwitchIndicator(SwitchIndicator baseIndicator, int periodMs) {

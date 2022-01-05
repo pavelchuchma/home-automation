@@ -1,13 +1,14 @@
 package org.chuma.homecontroller.controller.action.condition;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
 import org.chuma.homecontroller.controller.actor.IReadableOnOff;
 
 import java.util.Arrays;
 
 public class DarkCondition implements ICondition {
-    static Logger log = Logger.getLogger(DarkCondition.class.getName());
+    static Logger log = LoggerFactory.getLogger(DarkCondition.class.getName());
     ICondition precondition;
     IOnOffActor[] actors;
 

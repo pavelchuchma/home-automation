@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.controller.action;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.actor.Actor;
 import org.chuma.homecontroller.controller.actor.ActorListener;
 import org.chuma.homecontroller.controller.controller.Activity;
@@ -12,7 +13,7 @@ public class LouversActionGroup {
     public static final int LOUVERS_SHADOW_HOLD_TIME = 500;
     // limit button down time to max 5s to don't panic after switch reboot or reconnect
     public static final int MAX_BUTTON_DOWN_DURATION = 5000;
-    static Logger LOGGER = Logger.getLogger(LouversActionGroup.class.getName());
+    static Logger log = LoggerFactory.getLogger(LouversActionGroup.class.getName());
 
     Action upPressed;
     MuteableButtonReleaseLAction upReleased;
@@ -83,7 +84,7 @@ public class LouversActionGroup {
 
         @Override
         public void perform(int buttonDownDuration) {
-            LOGGER.debug(String.format("%s.perform(mute:%s)", this.getClass().getSimpleName(), muteNextAction));
+            log.debug(String.format("%s.perform(mute:%s)", this.getClass().getSimpleName(), muteNextAction));
             if (buttonDownDuration < 0 || buttonDownDuration > MAX_BUTTON_DOWN_DURATION) {
                 return;
             }

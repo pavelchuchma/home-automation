@@ -1,13 +1,14 @@
 package org.chuma.homecontroller.nodes.packet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.nodes.node.MessageType;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class PacketUartIOTest {
     Packet onTimer1 = new Packet(10, MessageType.MSG_OnHeartBeat, new int[]{123});
-    static Logger log = Logger.getLogger(PacketUartIOTest.class.getName());
+    static Logger log = LoggerFactory.getLogger(PacketUartIOTest.class.getName());
 
     @Test
     public void testCreation() throws Exception {

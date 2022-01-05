@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.nodes.node;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.device.ConnectedDevice;
 import org.chuma.homecontroller.nodes.packet.IPacketUartIO;
 import org.chuma.homecontroller.nodes.packet.Packet;
@@ -18,7 +19,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     public static final int HEART_BEAT_PERIOD = 60;
     public static final int SET_PORT_TIMEOUT = 100;
     public static final int GET_BUILD_TIME_TIMEOUT = 500;
-    static Logger log = Logger.getLogger(Node.class.getName());
+    static Logger log = LoggerFactory.getLogger(Node.class.getName());
     private static Object initializationLock = new Object();
 
     public interface Listener {
@@ -168,7 +169,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
             try {
                 val = readMemory(addresses[i]);
             } catch (IOException e) {
-                log.error(e);
+                log.error("err", e);
             }
             if (val < 0) res = false;
             log.info(String.format("#%d: %s", nodeId, registerToString(addresses[i], val)));

@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.nodes.packet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PacketSerializer {
-    static Logger log = Logger.getLogger(PacketSerializer.class.getName());
-    static Logger msgLog = Logger.getLogger(PacketUartIO.class.getName() + ".msg");
+    static Logger log = LoggerFactory.getLogger(PacketSerializer.class.getName());
+    static Logger msgLog = LoggerFactory.getLogger(PacketUartIO.class.getName() + ".msg");
 
     List<Integer> buff = new ArrayList<Integer>();
 

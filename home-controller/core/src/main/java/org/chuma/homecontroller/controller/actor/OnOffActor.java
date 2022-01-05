@@ -1,10 +1,11 @@
 package org.chuma.homecontroller.controller.actor;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.nodes.node.NodePin;
 
 public class OnOffActor extends AbstractPinActor implements IOnOffActor {
-    static Logger log = Logger.getLogger(OnOffActor.class.getName());
+    static Logger log = LoggerFactory.getLogger(OnOffActor.class.getName());
 
     int onValue;
 

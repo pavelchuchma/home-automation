@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.extensions.external;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.bff.javampd.MPD;
 import org.bff.javampd.Player;
 import org.bff.javampd.Playlist;
@@ -11,7 +12,7 @@ import org.bff.javampd.objects.MPDSong;
 
 public class MpdRadio {
     public static final String mpdServerAddress = "192.168.68.150";
-    static Logger log = Logger.getLogger(MpdRadio.class.getName());
+    static Logger log = LoggerFactory.getLogger(MpdRadio.class.getName());
     MPDSong radioStream;
     private MPD mpdInstance;
 

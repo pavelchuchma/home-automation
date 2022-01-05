@@ -1,7 +1,8 @@
 package org.chuma.homecontroller.app.configurator;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
 import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
 import org.chuma.homecontroller.app.servlet.Servlet;
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractConfigurator {
-    static Logger log = Logger.getLogger(AbstractConfigurator.class.getName());
+    static Logger log = LoggerFactory.getLogger(AbstractConfigurator.class.getName());
     protected NodeInfoCollector nodeInfoCollector;
     protected List<PirStatus> pirStatusList = new ArrayList<>();
 

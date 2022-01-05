@@ -1,7 +1,8 @@
 package org.chuma.homecontroller.app.servlet;
 
 import org.apache.commons.lang3.Validate;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.app.configurator.AbstractConfigurator;
 import org.chuma.homecontroller.controller.PirStatus;
 import org.chuma.homecontroller.controller.action.Action;
@@ -84,7 +85,7 @@ public class Servlet extends AbstractHandler {
     public static Action hvacOnAction;
     public static Action hvacOffAction;
     public static WaterPumpMonitor waterPumpMonitor;
-    static Logger log = Logger.getLogger(Servlet.class.getName());
+    static Logger log = LoggerFactory.getLogger(Servlet.class.getName());
     private static Action[] lightActions;
     private static Map<String, PwmActor> lightActorMap;
     private static LouversController[] louversControllers;

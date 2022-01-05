@@ -1,0 +1,69 @@
+<configuration>
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>ZZZ %d{"yyyy-MM-dd'T'HH:mm:ss,SSSXXX", Europe/Prague} [%thread] %p %c{1} [%t] %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="applicationLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>out/app.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>out/app-%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
+            <totalSizeCap>2GB</totalSizeCap>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{"yyyy-MM-dd'T'HH:mm:ss,SSSXXX", Europe/Prague} [%t] %-5p [%c{1}] %m%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="messagesFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>out/messages.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>out/messages-%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
+            <totalSizeCap>2GB</totalSizeCap>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{"yyyy-MM-dd'T'HH:mm:ss,SSSXXX", Europe/Prague} [%t] %-5p [%c{1}] %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.chuma.homecontroller.nodes.packet.PacketUartIO.msg" level="DEBUG" additivity="false">
+        <appender-ref ref="messagesFile"/>
+        <appender-ref ref="applicationLog"/>
+    </logger>
+
+    <logger name="org.chuma.homecontroller.nodes.packet.PacketUartIO" level="DEBUG" additivity="false">
+        <appender-ref ref="applicationLog"/>
+    </logger>
+
+    <logger name="org.chuma.homecontroller.controller.nodeinfo.SwitchListener" level="DEBUG" additivity="false">
+        <appender-ref ref="applicationLog"/>
+    </logger>
+
+    <logger name="org.chuma.homecontroller.nodes.packet.PacketSerializer" level="DEBUG" additivity="false">
+        <appender-ref ref="applicationLog"/>
+    </logger>
+
+    <logger name="org.chuma.hvaccontroller.device.HvacConnector" level="DEBUG" additivity="false">
+        <appender-ref ref="applicationLog"/>
+    </logger>
+
+    <logger name="controller" level="DEBUG" additivity="false">
+        <appender-ref ref="applicationLog"/>
+    </logger>
+
+    <logger name="app" level="DEBUG" additivity="false">
+        <appender-ref ref="applicationLog"/>
+    </logger>
+
+    <logger name="servlet" level="DEBUG" additivity="false">
+        <appender-ref ref="applicationLog"/>
+    </logger>
+
+    <root level="info">
+        <appender-ref ref="applicationLog" additivity="false"/>
+    </root>
+</configuration>

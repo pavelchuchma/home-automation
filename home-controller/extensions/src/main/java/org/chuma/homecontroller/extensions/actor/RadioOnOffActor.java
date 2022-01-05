@@ -1,11 +1,12 @@
 package org.chuma.homecontroller.extensions.actor;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
 import org.chuma.homecontroller.extensions.external.MpdRadio;
 
 public class RadioOnOffActor implements IOnOffActor {
-    static Logger log = Logger.getLogger(RadioOnOffActor.class.getName());
+    static Logger log = LoggerFactory.getLogger(RadioOnOffActor.class.getName());
     MpdRadio radio = new MpdRadio();
 
     @Override

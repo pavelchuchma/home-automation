@@ -1,13 +1,14 @@
 package org.chuma.homecontroller.controller.action;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.action.condition.ICondition;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
 
 public class AbstractSensorAction extends AbstractAction {
     public static final int BLINK_DELAY = 600;
     public static final int MAX_BLINK_DURATION = 10000;
-    static Logger log = Logger.getLogger(AbstractSensorAction.class.getName());
+    static Logger log = LoggerFactory.getLogger(AbstractSensorAction.class.getName());
     private final int switchOnPercent;
     private final Priority priority;
     private final ICondition condition;

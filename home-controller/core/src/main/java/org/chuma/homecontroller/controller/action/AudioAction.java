@@ -1,7 +1,8 @@
 package org.chuma.homecontroller.controller.action;
 
-import org.apache.log4j.Logger;
 import org.chuma.homecontroller.controller.actor.Actor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -18,7 +19,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 public class AudioAction implements Action {
-    static Logger log = Logger.getLogger(AudioAction.class.getName());
+    static Logger log = LoggerFactory.getLogger(AudioAction.class.getName());
 
     public AudioAction() {
         log.info("Initializing audio");

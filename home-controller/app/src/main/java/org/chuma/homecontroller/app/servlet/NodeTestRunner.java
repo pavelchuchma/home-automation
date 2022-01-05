@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.app.servlet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
 import org.chuma.homecontroller.controller.device.ConnectedDevice;
 import org.chuma.homecontroller.controller.device.OutputDevice;
@@ -15,7 +16,7 @@ import java.util.List;
 public class NodeTestRunner extends Thread {
     private NodeInfo nodeInfo;
     private Node node;
-    static Logger log = Logger.getLogger(NodeTestRunner.class.getName());
+    static Logger log = LoggerFactory.getLogger(NodeTestRunner.class.getName());
     Mode mode = Mode.cycle;
     boolean modeApplied = false;
     List<ConnectedDevice> oldDevices;

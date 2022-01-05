@@ -1,13 +1,14 @@
 package org.chuma.homecontroller.controller.action;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.actor.ActorListener;
 import org.chuma.homecontroller.controller.actor.IReadableOnOff;
 
 import java.util.Date;
 
 public class SecondaryMode {
-    static Logger LOGGER = Logger.getLogger(LouversActionGroup.class.getName());
+    static Logger log = LoggerFactory.getLogger(LouversActionGroup.class.getName());
     // in ms
     private final int timeout;
     private final ActorListener indicator;
@@ -54,13 +55,13 @@ public class SecondaryMode {
             deactivate();
         });
         timeoutThread.start();
-        LOGGER.debug("SecondaryMode activated");
+        log.debug("SecondaryMode activated");
     }
 
     private synchronized void deactivate() {
         active = false;
         lastAccessTime = 0;
-        LOGGER.debug("SecondaryMode deactivated");
+        log.debug("SecondaryMode deactivated");
         indicator.onAction(indicatorSource, false);
         if (timeoutThread != null) {
             timeoutThread.interrupt();
@@ -69,13 +70,13 @@ public class SecondaryMode {
 
     public boolean isActiveAndTouch() {
         long now = now();
-        LOGGER.debug("isActive(" + now + ")");
+        log.debug("isActive(" + now + ")");
         if (isActive(now)) {
             lastAccessTime = now;
         } else {
             active = false;
         }
-        LOGGER.debug("  isActive() returns " + active);
+        log.debug("  isActive() returns " + active);
         return active;
     }
 

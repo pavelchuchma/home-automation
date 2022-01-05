@@ -2,14 +2,15 @@ package org.chuma.homecontroller.app;
 
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 import com.luckycatlabs.sunrisesunset.dto.Location;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
 public class SunCalculator {
-    static Logger log = Logger.getLogger(SunCalculator.class.getName());
+    static Logger log = LoggerFactory.getLogger(SunCalculator.class.getName());
 
     private SunriseSunsetCalculator calculator;
     private TimeZone timeZone;

@@ -1,7 +1,8 @@
 package org.chuma.homecontroller.nodes.node;
 
-import junit.framework.Assert;
-import org.apache.log4j.Logger;
+import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.device.InputDevice;
@@ -16,7 +17,7 @@ import java.io.IOException;
 import java.util.Date;
 
 public class NodeTest {
-    static Logger log = Logger.getLogger(NodeTest.class.getName());
+    static Logger log = LoggerFactory.getLogger(NodeTest.class.getName());
 
     @Test
     public void testReadRam() throws Exception {
@@ -123,7 +124,7 @@ public class NodeTest {
         int delay = 100;
 
         Node node = new Node(1, packetUartIO);
-        log.info(node.echo(1));
+        log.info(String.valueOf(node.echo(1)));
     }
 
     @Test
@@ -137,7 +138,7 @@ public class NodeTest {
 
         boolean res = true;
         for (int i = 0; ; i++) {
-            log.info(i);
+            log.info(String.valueOf(i));
             //res = node.readMemory(node.Pic.PORTA);
 //            res = node.echo(3);
 //            Thread.sleep(10000);
@@ -308,7 +309,7 @@ public class NodeTest {
                             break;
                     }
                 } catch (Exception e) {
-                    log.error(e);
+                    log.error("err", e);
                 }
             }
 
@@ -325,7 +326,7 @@ public class NodeTest {
                             break;
                     }
                 } catch (Exception e) {
-                    log.error(e);
+                    log.error("err", e);
                 }
             }
 
@@ -469,7 +470,7 @@ public class NodeTest {
                             break;
                     }
                 } catch (Exception e) {
-                    log.error(e);
+                    log.error("err", e);
                 }
             }
 
@@ -486,7 +487,7 @@ public class NodeTest {
                             break;
                     }
                 } catch (Exception e) {
-                    log.error(e);
+                    log.error("err", e);
                 }
             }
 
@@ -542,7 +543,7 @@ public class NodeTest {
 
 
     @Test
-    public void testPinGetters() throws Exception {
+    public void testPinGetters() {
         Assert.assertEquals('A', Pin.pinA0.getPort());
         Assert.assertEquals('B', Pin.pinB7.getPort());
         Assert.assertEquals('C', Pin.pinC3.getPort());

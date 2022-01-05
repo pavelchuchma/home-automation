@@ -1,7 +1,8 @@
 package org.chuma.homecontroller.controller.controller;
 
 import org.apache.commons.lang3.Validate;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
 import org.chuma.homecontroller.controller.actor.OnOffActor;
 import org.chuma.homecontroller.nodes.node.NodePin;
@@ -10,7 +11,7 @@ import java.util.function.IntSupplier;
 
 public class LouversControllerImpl implements LouversController {
     public static final double DOWN_POSITION_RESERVE = 0.08;
-    static Logger log = Logger.getLogger(LouversControllerImpl.class.getName());
+    static Logger log = LoggerFactory.getLogger(LouversControllerImpl.class.getName());
     LouversPosition louversPosition;
     IOnOffActor upActor;
     IOnOffActor downActor;

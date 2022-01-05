@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.controller.nodeinfo;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.nodes.node.MessageType;
 import org.chuma.homecontroller.nodes.node.Node;
 import org.chuma.homecontroller.nodes.packet.IPacketUartIO;
@@ -12,7 +13,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 public class NodeInfoCollector implements Iterable<NodeInfo> {
-    static Logger log = Logger.getLogger(NodeInfoCollector.class.getName());
+    static Logger log = LoggerFactory.getLogger(NodeInfoCollector.class.getName());
     static NodeInfoCollector instance;
 
     IPacketUartIO packetUartIO;

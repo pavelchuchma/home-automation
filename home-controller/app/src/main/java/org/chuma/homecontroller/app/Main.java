@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.app;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
 import org.chuma.homecontroller.app.configurator.AbstractConfigurator;
 import org.chuma.homecontroller.app.configurator.MartinConfigurator;
@@ -15,7 +16,7 @@ import org.chuma.homecontroller.nodes.packet.PacketUartIOMock;
 import java.net.InetAddress;
 
 public class Main {
-    static Logger log = Logger.getLogger(Main.class.getName());
+    static Logger log = LoggerFactory.getLogger(Main.class.getName());
 
     public static void main(String[] args) {
         try {

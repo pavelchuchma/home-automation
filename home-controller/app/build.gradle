@@ -10,8 +10,7 @@ dependencies {
     implementation project(':core')
     implementation project(':extensions')
 
-    implementation 'org.apache.logging.log4j:log4j-core'
-    implementation 'org.apache.logging.log4j:log4j-1.2-api'
+    implementation 'ch.qos.logback:logback-classic'
     implementation group: 'com.luckycatlabs', name: 'SunriseSunsetCalculator'
     implementation group: 'org.eclipse.jetty', name: 'jetty-server'
     implementation group: 'org.apache.commons', name: 'commons-lang3'
@@ -24,6 +23,10 @@ application {
     // Define the main class for the application.
     mainClass = 'org.chuma.homecontroller.app.Main'
     applicationName = "home-controller"
+}
+
+run {
+    systemProperty "java.library.path", "build/native"
 }
 
 startScripts {
@@ -41,4 +44,17 @@ distZip {
             fileName = "rxtxSerial.dll"
         }
     }
+}
+
+
+task copyRxtxSerial(type: Sync) {
+    from configurations.winRxtx
+    rename { String fileName ->
+        fileName = "rxtxSerial.dll"
+    }
+    into "build/native/"
+}
+
+compileJava {
+    dependsOn copyRxtxSerial
 }
