@@ -1,5 +1,5 @@
 #TODO
-* [ ] try https://search.maven.org/artifact/dev.prokop.rxtx/rxtx/2.2.2/jar
+* [ ] refactor modules
 * [ ] deactivate PIR sfter manual switch off
 * [ ] Alexa support
 * [ ] Lights in basement and bathroom heater on web app

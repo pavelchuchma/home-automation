@@ -7,7 +7,11 @@ import org.chuma.homecontroller.extensions.external.MpdRadio;
 
 public class RadioOnOffActor implements IOnOffActor {
     static Logger log = LoggerFactory.getLogger(RadioOnOffActor.class.getName());
-    MpdRadio radio = new MpdRadio();
+    MpdRadio radio;
+
+    public RadioOnOffActor(String serverAddress, String file) {
+        this.radio = new MpdRadio(serverAddress, file);
+    }
 
     @Override
     public boolean switchOn(int percent, Object actionData) {

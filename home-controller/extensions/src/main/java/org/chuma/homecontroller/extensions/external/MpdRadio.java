@@ -11,14 +11,15 @@ import org.bff.javampd.exception.MPDPlaylistException;
 import org.bff.javampd.objects.MPDSong;
 
 public class MpdRadio {
-    public static final String mpdServerAddress = "192.168.68.150";
     static Logger log = LoggerFactory.getLogger(MpdRadio.class.getName());
+    public final String mpdServerAddress;
     MPDSong radioStream;
     private MPD mpdInstance;
 
-    public MpdRadio() {
+    public MpdRadio(String mpdServerAddress, String file) {
         radioStream = new MPDSong();
-        radioStream.setFile("http://icecast8.play.cz/cro1-128.mp3");
+        radioStream.setFile(file);
+        this.mpdServerAddress = mpdServerAddress;
     }
 
     private MPD getMpd() {

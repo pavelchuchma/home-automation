@@ -672,7 +672,7 @@ public class PiConfigurator extends AbstractConfigurator {
         lst.addActionBinding(new ActionBinding(getBottomButton(kuchynLSw1, WallSwitch.Side.LEFT),
                 SwitchAllOffWithMemory.createSwitchOffActions(svetlaDoleVzadu), null));
 
-        RadioOnOffActor radioActor = new RadioOnOffActor();
+        RadioOnOffActor radioActor = new RadioOnOffActor("192.168.68.150", "http://icecast8.play.cz/cro1-128.mp3");
         lst.addActionBinding(new ActionBinding(getUpperButton(kuchynLSw1, WallSwitch.Side.LEFT),
                 new InvertAction(radioActor), null));
 
