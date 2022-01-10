@@ -108,13 +108,8 @@ public class AbstractControllerTest {
         }
 
         @Override
-        public Object getLastActionData() {
+        public Object getActionData() {
             return actionData;
-        }
-
-        @Override
-        public void removeActionData() {
-            actionData = null;
         }
 
         @Override
@@ -128,7 +123,7 @@ public class AbstractControllerTest {
         }
 
         @Override
-        public void callListenersAndSetActionData(boolean invert, Object actionData) {
+        public void callListenersAndSetActionData(Object actionData) {
         }
 
         @Override

@@ -7,7 +7,7 @@ import org.chuma.homecontroller.controller.actor.IOnOffActor;
 
 public class AbstractSensorAction extends AbstractAction {
     public static final int BLINK_DELAY = 600;
-    public static final int MAX_BLINK_DURATION = 10000;
+    public static final int MAX_BLINK_DURATION = 10_000;
     static Logger log = LoggerFactory.getLogger(AbstractSensorAction.class.getName());
     private final int switchOnPercent;
     private final Priority priority;
@@ -25,7 +25,7 @@ public class AbstractSensorAction extends AbstractAction {
     }
 
     private  boolean canOverwriteState(IOnOffActor act) {
-        Object actionData = act.getLastActionData();
+        Object actionData = act.getActionData();
         return actionData != null
                 && actionData.getClass() == ActionData.class
                 && ((ActionData)actionData).priority.ordinal() <= priority.ordinal();
@@ -77,20 +77,18 @@ public class AbstractSensorAction extends AbstractAction {
                     act.wait(timeout - MAX_BLINK_DURATION);
                     log.debug("Woken up");
                 }
-                if (act.getLastActionData() != aData) {
+                if (act.getActionData() != aData) {
                     log.debug("action data modified by other thread, leaving action");
                     return;
                 }
 
-                boolean invert = true;
                 while (System.currentTimeMillis() < endTime) {
-                    act.callListenersAndSetActionData(invert, aData);
-                    invert = !invert;
+                    act.callListenersAndSetActionData(aData);
                     long remains = endTime - System.currentTimeMillis();
                     if (remains > 0) {
                         act.wait((remains < BLINK_DELAY) ? remains : BLINK_DELAY);
                     }
-                    if (act.getLastActionData() != aData) {
+                    if (act.getActionData() != aData) {
                         // there was some external modification
                         return;
                     }
@@ -100,7 +98,7 @@ public class AbstractSensorAction extends AbstractAction {
                 act.switchOff(null);
             }
         } catch (Exception e) {
-            log.error("perform() method failed2", e);
+            log.error("perform() method failed", e);
         }
     }
 

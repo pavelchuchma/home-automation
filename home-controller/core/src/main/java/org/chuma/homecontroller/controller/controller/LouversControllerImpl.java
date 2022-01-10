@@ -181,7 +181,7 @@ public class LouversControllerImpl implements LouversController {
             }
         } else {
             // not stopping, but verify last modification was done by me
-            if (conflictingActor.getLastActionData() != aData) {
+            if (conflictingActor.getActionData() != aData) {
                 throw new ExternalModificationException();
             }
             Validate.isTrue(!conflictingActor.isOn());
@@ -202,7 +202,7 @@ public class LouversControllerImpl implements LouversController {
     private void wait(IOnOffActor actor, Object aData, int ms) throws ExternalModificationException {
         try {
             this.wait(ms);
-            if (actionData != aData || actor.getLastActionData() != aData) {
+            if (actionData != aData || actor.getActionData() != aData) {
                 log.debug("Modified by another thread, exiting");
                 throw new ExternalModificationException();
             }
@@ -237,7 +237,7 @@ public class LouversControllerImpl implements LouversController {
     }
 
     private void stopActorIfNecessary(IOnOffActor actor, Object stopData) {
-        if (actor.getLastActionData() != actionData || actor.isOn()) {
+        if (actor.getActionData() != actionData || actor.isOn()) {
             if (!actor.switchOff(stopData)) {
                 throw new RuntimeException("Failed to stop actor " + actor.toString());
             }

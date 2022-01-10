@@ -81,12 +81,8 @@ public class PirStatus {
         }
 
         @Override
-        public Object getLastActionData() {
+        public Object getActionData() {
             return null;
-        }
-
-        @Override
-        public void removeActionData() {
         }
 
         @Override
@@ -99,7 +95,7 @@ public class PirStatus {
         }
 
         @Override
-        public void callListenersAndSetActionData(boolean invert, Object actionData) {
+        public void callListenersAndSetActionData(Object actionData) {
         }
     }
 }

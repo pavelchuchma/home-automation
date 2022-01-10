@@ -13,11 +13,12 @@ public class SwitchIndicator implements ActorListener {
     private static final int RETRY_COUNT = 2;
     static Logger log = LoggerFactory.getLogger(SwitchIndicator.class.getName());
     Mode mode;
-
     NodePin pin;
     //todo: Build on Actor after removal onValue from Actor (1 must stand for ON in all cases)
     ArrayList<IReadableOnOff> sources = new ArrayList<>();
     private int lastSetValue = -1;
+    Object lastActionData;
+    boolean blinkInvertState;
 
     public SwitchIndicator(NodePin pin, Mode mode) {
         this.pin = pin;
@@ -26,7 +27,7 @@ public class SwitchIndicator implements ActorListener {
 
 
     @Override
-    public void onAction(IReadableOnOff source, boolean invert) {
+    public void onAction(IReadableOnOff source, Object actionData) {
 //        log.debug(pin + ".onAction(" + actor + ", invert: " + invert + ", mode: " + mode + ")");
         if (!sources.contains(source)) {
             throw new IllegalArgumentException("Cannot call onAction() with unregistered source");
@@ -43,10 +44,17 @@ public class SwitchIndicator implements ActorListener {
         }
 
 //        log.debug("  " + pin + " val: " + val + ", lastSetValue: " + lastSetValue);
-
-        if (sources.size() == 1) {
+        if (actionData != null && sources.size() == 1) {
+            if (actionData == lastActionData) {
+                // continue existing action, just negate blinking
+                blinkInvertState = !blinkInvertState;
+            } else {
+                // new action
+                lastActionData = actionData;
+                blinkInvertState = true;
+            }
             // blink only if bound to single source
-            val ^= invert;
+            val ^= blinkInvertState;
         }
         int resultValue = (val) ? 0 : 1;
         if (resultValue != lastSetValue) {

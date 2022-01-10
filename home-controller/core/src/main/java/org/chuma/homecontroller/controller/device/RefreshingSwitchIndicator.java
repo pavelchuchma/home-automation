@@ -30,7 +30,7 @@ public class RefreshingSwitchIndicator extends SwitchIndicator {
 
     private void refresh() {
         for (IReadableOnOff source : sources) {
-            onAction(source, false);
+            onAction(source, null);
         }
     }
 }

@@ -48,7 +48,7 @@ public class PwmActor extends AbstractPinActor implements IOnOffActor {
 
         if (setPwmValue(outputPin, newPwmValue, RETRY_COUNT)) {
             value = pwmPercent;
-            callListenersAndSetActionData(false, actionData);
+            callListenersAndSetActionData(actionData);
             return true;
         }
         return false;

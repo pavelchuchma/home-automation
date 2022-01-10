@@ -10,7 +10,7 @@ import org.chuma.hvaccontroller.device.OperatingMode;
 import java.util.Calendar;
 
 public class HvacActor extends AbstractActor implements IOnOffActor {
-    private HvacDevice hvacDevice;
+    private final HvacDevice hvacDevice;
 
     public HvacActor(HvacDevice hvacDevice, String id, String label, ActorListener... actorListeners) {
         super(id, label, actorListeners);
@@ -38,7 +38,7 @@ public class HvacActor extends AbstractActor implements IOnOffActor {
         } else {
             hvacDevice.set(val == 1, OperatingMode.HEAT, FanSpeed.SPEED_1, 23, false, false);
         }
-        callListenersAndSetActionData(false, actionData);
+        callListenersAndSetActionData(actionData);
         return true;
     }
 

@@ -39,7 +39,7 @@ public class IndicatorAction implements IReadableOnOff {
         public void perform(int previousDurationMs) {
             isOn = value;
             if (indicator != null) {
-                indicator.onAction(IndicatorAction.this, false);
+                indicator.onAction(IndicatorAction.this, null);
             }
         }
     }

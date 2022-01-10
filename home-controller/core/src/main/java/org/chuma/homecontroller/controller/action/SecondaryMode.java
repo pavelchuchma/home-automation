@@ -41,7 +41,7 @@ public class SecondaryMode {
     private synchronized void activate() {
         active = true;
         lastAccessTime = now();
-        indicator.onAction(indicatorSource, false);
+        indicator.onAction(indicatorSource, null);
         // create guard thread for indicator
         timeoutThread = new Thread(() -> {
             long now;
@@ -62,7 +62,7 @@ public class SecondaryMode {
         active = false;
         lastAccessTime = 0;
         log.debug("SecondaryMode deactivated");
-        indicator.onAction(indicatorSource, false);
+        indicator.onAction(indicatorSource, null);
         if (timeoutThread != null) {
             timeoutThread.interrupt();
         }

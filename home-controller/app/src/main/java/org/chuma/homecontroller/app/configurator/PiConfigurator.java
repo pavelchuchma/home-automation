@@ -199,7 +199,6 @@ public class PiConfigurator extends AbstractConfigurator {
         OnOffActor zaricKoupelnaHore2Trubice = new OnOffActor("zaricKoupelnaHore2Trubice", "Zaric koupelna 2 rubice", rele01.getRele1(), 0, 1, zaricKoupelnaHoreSw2Indicator, zaricKoupelnaHoreOknoSwIndicator);
         OnOffActor zaricKoupelnaHore1Trubice = new OnOffActor("zaricKoupelnaHore1Trubice", "Zaric koupelna 1 rubice", rele01.getRele2(), 0, 1, zaricKoupelnaHoreSw2Indicator, zaricKoupelnaHoreOknoSwIndicator);
         OnOffActor obyvakZasLZvonek = new OnOffActor("obyvakZasL", "ObyvakZasLZvonek", rele01.getRele3(), 0, 1, zvonekPravySw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), zvonekLevySw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
-        //OnOffActor cerpadloStudna = new OnOffActor("cerpadloStd", "Cerpadlo studna", rele01.getRele4(), 0, 1);
 
         RelayBoardDevice rele12 = new RelayBoardDevice("rele12", rozvadecDole, 2);
         OnOffActor ovladacGaraz = new OnOffActor("ovladacGaraz", "Vrata garaz", rele12.getRele2(), 0, 1);
@@ -695,12 +694,12 @@ public class PiConfigurator extends AbstractConfigurator {
         setupPir(lst, pirA1Prizemi.getIn1AndActivate(), "pirPrdDv", "Pradelna dvere", new SwitchOnSensorAction(pradelna1PwmActor, 600, 80), new SwitchOffSensorAction(pradelna1PwmActor, 60));
         setupPir(lst, pirA1Prizemi.getIn2AndActivate(), "pirPrdPr", "Pradelna pracka", new SwitchOnSensorAction(pradelna1PwmActor, 600, 80), new SwitchOffSensorAction(pradelna1PwmActor, 60));
         setupMagneticSensor(lst, pirA1Prizemi.getIn3AndActivate(), "pisD", "Pisoar Dole",
-                new Action[]{new SwitchOnSensorAction(pisoarDole, 3)/*, new SwitchOnSensorAction(cerpadloStudna, 120)*/},
+                new Action[]{new SwitchOnSensorAction(pisoarDole, 3)},
                 new Action[]{new SwitchOnSensorAction(pisoarDole, 7)});
         setupPir(lst, pirA1Prizemi.getIn4AndActivate(), "pirVchH", "Vchod hore", new SwitchOnSensorAction(vchodHorePwmActor, 600, 80, sunCondition), new SwitchOffSensorAction(vchodHorePwmActor, 60));
         setupPir(lst, pirA1Prizemi.getIn5AndActivate(), "pirSch", "Schodiste", new SwitchOnSensorAction(schodyPwmActor, 600, 15, corridorDarkCondition), new SwitchOffSensorAction(schodyPwmActor, 30));
         setupMagneticSensor(lst, pirA1Prizemi.getIn6AndActivate(), "pisH", "Pisoar Hore",
-                new Action[]{new SwitchOnSensorAction(pisoarHore, 3)/*, new SwitchOnSensorAction(cerpadloStudna, 120)*/},
+                new Action[]{new SwitchOnSensorAction(pisoarHore, 3)},
                 new Action[]{new SwitchOnSensorAction(pisoarHore, 7)});
         // A6:3 "zadveri venku - spinac puda"
 
@@ -708,7 +707,7 @@ public class PiConfigurator extends AbstractConfigurator {
         setupPir(lst, pirA2Patro.getIn1AndActivate(), "pirChWc", "Chodba pred WC", new SwitchOnSensorAction(schodyPwmActor, 600, 15, corridorDarkCondition), new SwitchOffSensorAction(schodyPwmActor, 30));
         setupPir(lst, pirA2Patro.getIn2AndActivate(), "pirCh", "Chodba", new SwitchOnSensorAction(schodyPwmActor, 600, 15, corridorDarkCondition), new SwitchOffSensorAction(schodyPwmActor, 30));
         setupPir(lst, pirA2Patro.getIn3AndActivate(), "pirWc", "WC",
-                new Action[]{new SwitchOnSensorAction(wcPwmActor, 600, 100, sunCondition)/*, new SwitchOnSensorAction(cerpadloStudna, 120)*/},
+                new Action[]{new SwitchOnSensorAction(wcPwmActor, 600, 100, sunCondition)},
                 new Action[]{new SwitchOffSensorAction(wcPwmActor, 60)});
         setupPir(lst, pirA2Patro.getIn5AndActivate(), "pirZadHVch", "Zadveri hore vchod", new SwitchOnSensorAction(zadveriPwmActor, 600, 100, sunCondition), new SwitchOffSensorAction(zadveriPwmActor, 15));
         setupPir(lst, pirA2Patro.getIn6AndActivate(), "pirZadHCh", "Zadveri hore chodba", new SwitchOnSensorAction(zadveriPwmActor, 600, 100, sunCondition), new SwitchOffSensorAction(zadveriPwmActor, 15));

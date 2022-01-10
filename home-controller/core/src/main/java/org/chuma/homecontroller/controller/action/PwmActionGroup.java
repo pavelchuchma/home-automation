@@ -64,7 +64,7 @@ public class PwmActionGroup {
 
         @Override
         public void perform(int buttonDownDuration) {
-            getActor().removeActionData();
+            getActor().setActionData(null);
         }
     }
 
@@ -75,7 +75,7 @@ public class PwmActionGroup {
 
         @Override
         public void perform(int buttonDownDuration) {
-            getActor().removeActionData();
+            getActor().setActionData(null);
         }
     }
 
@@ -119,7 +119,7 @@ public class PwmActionGroup {
                     actor.wait(FIRST_STEP_DELAY);
                     while (true) {
                         // modified by somebody else or is fully open
-                        if (actor.getLastActionData() != this || actor.getValue() == 100) {
+                        if (actor.getActionData() != this || actor.getValue() == 100) {
                             return;
                         }
                         actor.increasePwm(10, this);

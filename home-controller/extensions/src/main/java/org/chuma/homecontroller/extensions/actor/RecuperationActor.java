@@ -25,7 +25,7 @@ public class RecuperationActor extends AbstractActor implements IOnOffActor {
     @Override
     public boolean setValue(int val, Object actionData) {
         if (recuperation.setSpeed((val == 0) ? 0 : 2)) {
-            callListenersAndSetActionData(false, actionData);
+            callListenersAndSetActionData(actionData);
             return true;
         }
         return false;

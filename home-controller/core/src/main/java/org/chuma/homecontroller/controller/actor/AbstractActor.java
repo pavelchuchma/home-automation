@@ -30,20 +30,17 @@ public abstract class AbstractActor implements Actor, IReadableOnOff {
     }
 
     @Override
-    public Object getLastActionData() {
+    public Object getActionData() {
         return actionData;
     }
 
-    /**
-     * @param invert - used for blinking
-     */
     @Override
-    public synchronized void callListenersAndSetActionData(boolean invert, Object actionData) {
+    public synchronized void callListenersAndSetActionData(Object actionData) {
         setActionData(actionData);
 
         if (actorListeners != null) {
             for (ActorListener listener : actorListeners) {
-                listener.onAction(this, invert);
+                listener.onAction(this, actionData);
             }
         }
     }
@@ -52,11 +49,6 @@ public abstract class AbstractActor implements Actor, IReadableOnOff {
     public synchronized void setActionData(Object actionData) {
         this.actionData = actionData;
         notifyAll();
-    }
-
-    @Override
-    public synchronized void removeActionData() {
-        setActionData(null);
     }
 
     public String toString() {
