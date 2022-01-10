@@ -166,6 +166,9 @@ public class Servlet extends AbstractHandler {
             } else if (target.endsWith(".jpg")) {
                 sendFile(target, response, "image/jpeg");
                 baseRequest.setHandled(true);
+            } else if (target.endsWith(".png")) {
+                sendFile(target, response, "image/png");
+                baseRequest.setHandled(true);
             } else if (target.endsWith(".js")) {
                 sendFile(target, response, "application/javascript;charset=utf-8");
                 baseRequest.setHandled(true);
@@ -292,9 +295,7 @@ public class Servlet extends AbstractHandler {
 
         builder.append("<html>" +
                 "<meta http-equiv='refresh' content='1;url=/'/>" +
-                "<head>" +
-                "<link href='report.css' rel='stylesheet' type='text/css'/>\n" +
-                "</head>" +
+                getHtmlHead() +
                 "<body>");
 
         String[] actionNames = new String[]{"Bzucak", "Garaz", "Jidelna", "Zvuk"};
@@ -340,6 +341,13 @@ public class Servlet extends AbstractHandler {
         builder.append("</table>");
         builder.append("</body></html>");
         return builder.toString();
+    }
+
+    private static String getHtmlHead() {
+        return "<head>" +
+                "<link rel='icon' type='image/png' href='favicon.png'>" +
+                "<link href='report.css' rel='stylesheet' type='text/css'/>" +
+                "</head>";
     }
 
 
@@ -574,9 +582,7 @@ public class Servlet extends AbstractHandler {
         StringBuilder builder = new StringBuilder();
 
         builder.append("<html>" +
-                "<head>" +
-                "<link href='/report.css' rel='stylesheet' type='text/css'/>\n" +
-                "</head>" +
+                getHtmlHead() +
                 "<body><a href='" + TARGET_LOUVERS + "'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
 
         for (int i = 0; i < louversControllers.length; i += 4) {
@@ -600,9 +606,7 @@ public class Servlet extends AbstractHandler {
         StringBuilder builder = new StringBuilder();
 
         builder.append("<html>" +
-                "<head>" +
-                "<link href='/report.css' rel='stylesheet' type='text/css'/>\n" +
-                "</head>" +
+                getHtmlHead() +
                 "<body><a href='" + TARGET_LIGHTS + "'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
 
         builder.append("<br/><br/><table class='buttonTable'>");
@@ -632,9 +636,7 @@ public class Servlet extends AbstractHandler {
 
         builder.append("<html>" +
                 "<meta http-equiv='refresh' content='1;url=" + TARGET_PIR_STATUS_PAGE + "'/>" +
-                "<head>" +
-                "<link href='/report.css' rel='stylesheet' type='text/css'/>\n" +
-                "</head>" +
+                getHtmlHead() +
                 "<body><a href='" + TARGET_PIR_STATUS_PAGE + "'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
 
         builder.append("<br/><br/><table class='buttonTable'>");
@@ -654,9 +656,7 @@ public class Servlet extends AbstractHandler {
     private String getSystemPage(int debugNodeId) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>" +
-                "<head>" +
-                "<link href='/report.css' rel='stylesheet' type='text/css'/>\n" +
-                "</head>" +
+                getHtmlHead() +
                 "<body><a href='" + TARGET_SYSTEM + "'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
 
         builder.append("<br/><br/><table class='systemTable'><tr>");
