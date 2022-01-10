@@ -33,8 +33,9 @@ startScripts {
     doLast {
         // add rxtxSerial.dll to windows lib path
         // it is expected that rxtx is already installed on linux
-        windowsScript.text = windowsScript.text.replace('set DEFAULT_JVM_OPTS=', 'set DEFAULT_JVM_OPTS="-Djava.library.path=%APP_HOME%\\lib"')
-        unixScript.text = unixScript.text.replace('DEFAULT_JVM_OPTS=""', 'DEFAULT_JVM_OPTS="-Djava.library.path=/usr/lib/jni"')
+        var debugOption='-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=6070'
+        windowsScript.text = windowsScript.text.replace('set DEFAULT_JVM_OPTS=', "set DEFAULT_JVM_OPTS=\"-Djava.library.path=%APP_HOME%\\lib ${debugOption}\"")
+        unixScript.text = unixScript.text.replace('DEFAULT_JVM_OPTS=""', "DEFAULT_JVM_OPTS=\"-Djava.library.path=/usr/lib/jni ${debugOption}\"")
     }
 }
 
