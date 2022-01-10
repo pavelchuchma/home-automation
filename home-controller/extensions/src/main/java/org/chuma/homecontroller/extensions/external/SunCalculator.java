@@ -1,4 +1,4 @@
-package org.chuma.homecontroller.app;
+package org.chuma.homecontroller.extensions.external;
 
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 import com.luckycatlabs.sunrisesunset.dto.Location;

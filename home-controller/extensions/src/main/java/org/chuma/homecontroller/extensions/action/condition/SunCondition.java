@@ -1,14 +1,17 @@
-package org.chuma.homecontroller.app.action.condition;
+package org.chuma.homecontroller.extensions.action.condition;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.chuma.homecontroller.app.SunCalculator;
+import org.chuma.homecontroller.extensions.external.SunCalculator;
 import org.chuma.homecontroller.controller.action.condition.ICondition;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+/**
+ * Is true if the sun is sleeping (with specified tolerance)
+ */
 public class SunCondition implements ICondition {
     static Logger log = LoggerFactory.getLogger(SunCondition.class.getName());
     protected int disabledBeforeSunRiseMinutes;
@@ -26,7 +29,7 @@ public class SunCondition implements ICondition {
         int minutesToday = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE);
         if (minutesToday > sunCalculator.getSunriseMinutes() - disabledBeforeSunRiseMinutes && minutesToday < sunCalculator.getSunsetMinutes() + enabledAfterSunsetMinutes) {
             // sun should be shining enough :-)
-            log.info("Sun is shining instead of me. Ignoring switch on action!");
+            log.trace("Sun is shining instead of me. Ignoring switch on action!");
             return false;
         }
         return true;

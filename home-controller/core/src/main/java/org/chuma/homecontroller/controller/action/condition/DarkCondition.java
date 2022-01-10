@@ -7,6 +7,9 @@ import org.chuma.homecontroller.controller.actor.IReadableOnOff;
 
 import java.util.Arrays;
 
+/**
+ * Is true if all registered actors are off
+ */
 public class DarkCondition implements ICondition {
     static Logger log = LoggerFactory.getLogger(DarkCondition.class.getName());
     ICondition precondition;

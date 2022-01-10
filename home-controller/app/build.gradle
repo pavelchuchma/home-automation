@@ -11,7 +11,6 @@ dependencies {
     implementation project(':extensions')
 
     implementation 'ch.qos.logback:logback-classic'
-    implementation group: 'com.luckycatlabs', name: 'SunriseSunsetCalculator'
     implementation group: 'org.eclipse.jetty', name: 'jetty-server'
     implementation group: 'org.apache.commons', name: 'commons-lang3'
     implementation 'org.chuma.hvac-controller:hvac-controller'

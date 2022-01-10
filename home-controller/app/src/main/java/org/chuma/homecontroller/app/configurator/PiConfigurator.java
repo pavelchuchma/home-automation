@@ -2,7 +2,7 @@ package org.chuma.homecontroller.app.configurator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.chuma.homecontroller.app.action.condition.SunCondition;
+import org.chuma.homecontroller.extensions.action.condition.SunCondition;
 import org.chuma.homecontroller.app.servlet.Servlet;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.AbstractSensorAction;

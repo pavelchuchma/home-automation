@@ -1,12 +1,13 @@
-package org.chuma.homecontroller.app;
+package org.chuma.homecontroller.extensions.external;
 
+import junit.framework.TestCase;
 import org.junit.Test;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-public class SunCalculatorTest {
+public class SunCalculatorTest extends TestCase {
     @Test
     public void test() throws Exception {
         SunCalculator c = SunCalculator.getInstance();

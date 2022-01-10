@@ -1,5 +1,8 @@
 package org.chuma.homecontroller.controller.action.condition;
 
+/**
+ * Is true if 'previousDurationMs' is in specified range
+ */
 public class PressDurationCondition implements ICondition {
     int minDurationMs;
     int maxDurationMs;
