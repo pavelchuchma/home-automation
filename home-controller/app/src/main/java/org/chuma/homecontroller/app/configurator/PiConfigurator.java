@@ -182,8 +182,8 @@ public class PiConfigurator extends AbstractConfigurator {
 
         HvacDevice hvacDevice = startHvacDevice();
         HvacActor hvacActor = new HvacActor(hvacDevice, "hvac", "HVAC");
-        ICondition durationInfra = new PressDurationCondition(0, 1000);
-        ICondition durationHvac = new PressDurationCondition(2500, 10000);
+        ICondition durationInfra = new PressDurationCondition(0, 1_000);
+        ICondition durationHvac = new PressDurationCondition(2_500, 10_000);
 
         ActorListener prizemiVzaduKuchynSw2Indicator = kuchynLSw1.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON);
         ActorListener schodyDoleJidelnaSw3Indicator = schodyDoleR3Sw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF);

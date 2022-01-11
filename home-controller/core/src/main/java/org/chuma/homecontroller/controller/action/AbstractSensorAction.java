@@ -24,11 +24,9 @@ public class AbstractSensorAction extends AbstractAction {
         this.switchOnPercent = switchOnPercent;
     }
 
-    private  boolean canOverwriteState(IOnOffActor act) {
-        Object actionData = act.getActionData();
-        return actionData != null
-                && actionData.getClass() == ActionData.class
-                && ((ActionData)actionData).priority.ordinal() <= priority.ordinal();
+    private boolean canOverwriteState(IOnOffActor act) {
+        return act.getActionData() instanceof ActionData
+                && ((ActionData) act.getActionData()).priority.ordinal() <= priority.ordinal();
     }
 
     @Override

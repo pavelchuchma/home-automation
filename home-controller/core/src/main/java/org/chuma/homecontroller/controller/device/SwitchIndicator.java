@@ -14,7 +14,6 @@ public class SwitchIndicator implements ActorListener {
     static Logger log = LoggerFactory.getLogger(SwitchIndicator.class.getName());
     Mode mode;
     NodePin pin;
-    //todo: Build on Actor after removal onValue from Actor (1 must stand for ON in all cases)
     ArrayList<IReadableOnOff> sources = new ArrayList<>();
     private int lastSetValue = -1;
     Object lastActionData;
@@ -34,13 +33,10 @@ public class SwitchIndicator implements ActorListener {
         }
 
         boolean val = false;
-        switch (mode) {
-            case SIGNAL_ALL_OFF:
-                val = !isAnyOn();
-                break;
-            case SIGNAL_ANY_ON:
-                val = isAnyOn();
-                break;
+        if (mode == Mode.SIGNAL_ALL_OFF) {
+            val = !isAnyOn();
+        } else if (mode == Mode.SIGNAL_ANY_ON) {
+            val = isAnyOn();
         }
 
 //        log.debug("  " + pin + " val: " + val + ", lastSetValue: " + lastSetValue);
@@ -83,7 +79,7 @@ public class SwitchIndicator implements ActorListener {
     }
 
     public enum Mode {
-        SIGNAL_ANY_ON, // false
-        SIGNAL_ALL_OFF // true
+        SIGNAL_ANY_ON,
+        SIGNAL_ALL_OFF
     }
 }
