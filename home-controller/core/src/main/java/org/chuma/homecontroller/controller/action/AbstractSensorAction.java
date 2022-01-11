@@ -1,5 +1,6 @@
 package org.chuma.homecontroller.controller.action;
 
+import org.chuma.homecontroller.controller.action.condition.SensorDimCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.action.condition.ICondition;
@@ -81,6 +82,7 @@ public class AbstractSensorAction extends AbstractAction {
                 }
 
                 while (System.currentTimeMillis() < endTime) {
+                    aData.incrementCount();
                     act.callListenersAndSetActionData(aData);
                     long remains = endTime - System.currentTimeMillis();
                     if (remains > 0) {
@@ -106,11 +108,21 @@ public class AbstractSensorAction extends AbstractAction {
         HIGH
     }
 
-    static class ActionData {
+    static class ActionData implements SensorDimCounter {
         private final Priority priority;
+        private int count = 0;
 
         ActionData(Priority priority) {
             this.priority = priority;
+        }
+
+        @Override
+        public int getCount() {
+            return count;
+        }
+
+        void incrementCount() {
+            count++;
         }
     }
 }

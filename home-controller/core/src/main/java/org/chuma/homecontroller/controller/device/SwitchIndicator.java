@@ -1,5 +1,6 @@
 package org.chuma.homecontroller.controller.device;
 
+import org.chuma.homecontroller.controller.action.condition.SensorDimCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.actor.AbstractPinActor;
@@ -16,8 +17,6 @@ public class SwitchIndicator implements ActorListener {
     NodePin pin;
     ArrayList<IReadableOnOff> sources = new ArrayList<>();
     private int lastSetValue = -1;
-    Object lastActionData;
-    boolean blinkInvertState;
 
     public SwitchIndicator(NodePin pin, Mode mode) {
         this.pin = pin;
@@ -40,17 +39,8 @@ public class SwitchIndicator implements ActorListener {
         }
 
 //        log.debug("  " + pin + " val: " + val + ", lastSetValue: " + lastSetValue);
-        if (actionData != null && sources.size() == 1) {
-            if (actionData == lastActionData) {
-                // continue existing action, just negate blinking
-                blinkInvertState = !blinkInvertState;
-            } else {
-                // new action
-                lastActionData = actionData;
-                blinkInvertState = true;
-            }
-            // blink only if bound to single source
-            val ^= blinkInvertState;
+        if (actionData instanceof SensorDimCounter && sources.size() == 1) {
+            val ^= (((SensorDimCounter)actionData).getCount() % 2 == 1);
         }
         int resultValue = (val) ? 0 : 1;
         if (resultValue != lastSetValue) {
