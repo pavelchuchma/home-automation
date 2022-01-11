@@ -9,4 +9,5 @@
 * [ ] refactor hvac control on web (more fan speeds, combine with valve control)
 * [ ] face recognition
 #BUGS
+* [ ] Broken stylesheets on http://pi/lights, louvers
 * [ ] frozen web after 5+ louvers are moving...
