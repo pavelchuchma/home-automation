@@ -1,11 +1,12 @@
 package org.chuma.homecontroller.nodes.packet;
 
-import org.chuma.homecontroller.controller.actor.PwmActor;
 import org.chuma.homecontroller.nodes.node.MessageType;
 
 import java.util.Arrays;
 
 public class Packet {
+    public static final int MAX_PWM_VALUE = 48;
+
     public final int nodeId;
     public final int messageType;
     public final int[] data;
@@ -77,7 +78,7 @@ public class Packet {
         int portNum = port - 'A';
         if (port < 'A' || port > 'C') throw new IllegalArgumentException("Invalid port value");
         if (pin < 0 || pin > 7) throw new IllegalArgumentException("Invalid pin value");
-        if (value < 0 || value > PwmActor.MAX_PWM_VALUE) throw new IllegalArgumentException("Invalid pwm value");
+        if (value < 0 || value > MAX_PWM_VALUE) throw new IllegalArgumentException("Invalid pwm value");
         return new Packet(nodeId, MessageType.MSG_SetManualPwmValueRequest, new int[]{portNum + (pin << 4), value});
     }
 

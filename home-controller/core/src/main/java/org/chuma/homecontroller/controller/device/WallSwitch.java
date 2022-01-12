@@ -4,7 +4,7 @@ import org.chuma.homecontroller.nodes.node.Node;
 import org.chuma.homecontroller.nodes.node.NodePin;
 import org.chuma.homecontroller.nodes.node.Pin;
 
-public class WallSwitch extends ConnectedDevice {
+public class WallSwitch extends AbstractConnectedDevice {
 
     private SwitchIndicator redIndicator;
     private SwitchIndicator greenIndicator;

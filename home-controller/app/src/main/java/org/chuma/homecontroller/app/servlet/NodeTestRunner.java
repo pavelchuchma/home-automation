@@ -1,12 +1,12 @@
 package org.chuma.homecontroller.app.servlet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
-import org.chuma.homecontroller.controller.device.ConnectedDevice;
 import org.chuma.homecontroller.controller.device.OutputDevice;
+import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
+import org.chuma.homecontroller.nodes.node.ConnectedDevice;
 import org.chuma.homecontroller.nodes.node.Node;
 import org.chuma.homecontroller.nodes.node.Pin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,32 +14,25 @@ import java.util.Date;
 import java.util.List;
 
 public class NodeTestRunner extends Thread {
-    private NodeInfo nodeInfo;
-    private Node node;
     static Logger log = LoggerFactory.getLogger(NodeTestRunner.class.getName());
     Mode mode = Mode.cycle;
     boolean modeApplied = false;
     List<ConnectedDevice> oldDevices;
-
-    public enum Mode {
-        cycle,
-        fullOn,
-        fullOff,
-        endTest
-    }
+    private NodeInfo nodeInfo;
+    private Node node;
 
     public NodeTestRunner(NodeInfo nodeInfo) {
         this.nodeInfo = nodeInfo;
         this.node = nodeInfo.getNode();
     }
 
+    public Mode getMode() {
+        return mode;
+    }
+
     public void setMode(Mode mode) {
         this.mode = mode;
         modeApplied = false;
-    }
-
-    public Mode getMode() {
-        return mode;
     }
 
     public void run() {
@@ -84,7 +77,6 @@ public class NodeTestRunner extends Thread {
             }
         } catch (InterruptedException e) {
             log.error("TEST NODE Interrupted", e);
-            return;
         } catch (IOException e) {
             log.error("TEST NODE FAILED", e);
         } finally {
@@ -115,14 +107,14 @@ public class NodeTestRunner extends Thread {
         for (int i = 0; i < 3; i++) {
             devPins[i] = getOutputDevicePins(devs[i]);
         }
-        List<Pin> res = new ArrayList<Pin>(18);
+        List<Pin> res = new ArrayList<>(18);
         for (int i = 0; i < 6; i++) {
             for (Pin[] pins : devPins) {
                 res.add(pins[i]);
             }
         }
 
-        return res.toArray(new Pin[res.size()]);
+        return res.toArray(new Pin[0]);
     }
 
     Pin[] getOutputDevicePins(OutputDevice dev) {
@@ -134,5 +126,12 @@ public class NodeTestRunner extends Thread {
                 dev.getOut4().getPin(),
                 dev.getOut6().getPin()
         };
+    }
+
+    public enum Mode {
+        cycle,
+        fullOn,
+        fullOff,
+        endTest
     }
 }

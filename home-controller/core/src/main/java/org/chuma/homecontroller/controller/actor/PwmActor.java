@@ -13,9 +13,9 @@ import java.net.InetAddress;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static org.chuma.homecontroller.nodes.packet.Packet.MAX_PWM_VALUE;
 
 public class PwmActor extends AbstractPinActor implements IOnOffActor {
-    public static final int MAX_PWM_VALUE = 48;
     static Logger log = LoggerFactory.getLogger(PwmActor.class.getName());
 
     int maxPwmValue;

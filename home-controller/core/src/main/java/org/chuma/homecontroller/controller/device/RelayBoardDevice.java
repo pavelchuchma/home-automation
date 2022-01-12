@@ -4,7 +4,7 @@ import org.chuma.homecontroller.nodes.node.Node;
 import org.chuma.homecontroller.nodes.node.NodePin;
 import org.chuma.homecontroller.nodes.node.Pin;
 
-public class RelayBoardDevice extends ConnectedDevice {
+public class RelayBoardDevice extends AbstractConnectedDevice {
 
     private static final String[] PIN_NAMES = new String[]{"relay3", "relay4", "relay1", "relay5", "relay2", "relay6"};
 

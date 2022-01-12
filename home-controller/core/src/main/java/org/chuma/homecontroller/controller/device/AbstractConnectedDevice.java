@@ -5,10 +5,10 @@ import org.chuma.homecontroller.nodes.node.Node;
 import org.chuma.homecontroller.nodes.node.NodePin;
 import org.chuma.homecontroller.nodes.node.Pin;
 
-public abstract class ConnectedDevice {
+public abstract class AbstractConnectedDevice implements org.chuma.homecontroller.nodes.node.ConnectedDevice {
     NodePin[] pins = new NodePin[6];
     CpuFrequency requiredCpuFrequency;
-    int connectorPosition;
+    int connectorNumber;
     private final String id;
     final static Pin[][] layout = {
             {Pin.pinA5, Pin.pinA3, Pin.pinA2, Pin.pinA0, Pin.pinB4, Pin.pinB5},
@@ -21,24 +21,25 @@ public abstract class ConnectedDevice {
         return String.format("%s(%s)", getClass().getSimpleName(), id);
     }
 
-    public ConnectedDevice(String id, Node node, int connectorPosition, String[] names) {
-        this(id, node, connectorPosition, names, CpuFrequency.unknown);
+    public AbstractConnectedDevice(String id, Node node, int connectorNumber, String[] names) {
+        this(id, node, connectorNumber, names, CpuFrequency.unknown);
     }
 
-    public int getConnectorPosition() {
-        return connectorPosition;
+    @Override
+    public int getConnectorNumber() {
+        return connectorNumber;
     }
 
-    public ConnectedDevice(String id, Node node, int connectorPosition, String[] names, CpuFrequency requiredCpuFrequency) {
+    public AbstractConnectedDevice(String id, Node node, int connectorNumber, String[] names, CpuFrequency requiredCpuFrequency) {
         if (names.length != 6) {
             throw new IllegalArgumentException(String.format("Invalid names length: %d", names.length));
         }
 
         for (int i = 0; i < 6; i++) {
-            pins[i] = new NodePin(String.format("%s:%d.%s", id, connectorPosition, names[i]), node.getNodeId(), getPin(connectorPosition, i + 1));
+            pins[i] = new NodePin(String.format("%s:%d.%s", id, connectorNumber, names[i]), node.getNodeId(), getPin(connectorNumber, i + 1));
         }
 
-        this.connectorPosition = connectorPosition;
+        this.connectorNumber = connectorNumber;
         this.id = id;
         this.requiredCpuFrequency = requiredCpuFrequency;
 
@@ -46,20 +47,20 @@ public abstract class ConnectedDevice {
     }
 
     /**
-     * @param connectorPosition 1-3
-     * @param connectorPin      1-6
-     * @return
+     * @param connectorNumber 1-3
+     * @param connectorPin    1-6
+     * @return Pin instance according to input coordinates
      */
-    public static Pin getPin(int connectorPosition, int connectorPin) {
-        if (connectorPosition < 1 || connectorPosition > 3) {
-            throw new IllegalArgumentException(String.format("Invalid connector position: %d. It must be 1..3", connectorPosition));
+    public static Pin getPin(int connectorNumber, int connectorPin) {
+        if (connectorNumber < 1 || connectorNumber > 3) {
+            throw new IllegalArgumentException(String.format("Invalid connector #%d. It must be 1..3", connectorNumber));
         }
 
         if (connectorPin < 1 || connectorPin > 6) {
-            throw new IllegalArgumentException(String.format("Invalid connector pin#: %d. It must be 1..6", connectorPin));
+            throw new IllegalArgumentException(String.format("Invalid connector pin#%d. It must be 1..6", connectorPin));
         }
 
-        return layout[connectorPosition - 1][connectorPin - 1];
+        return layout[connectorNumber - 1][connectorPin - 1];
     }
 
     protected int createMask(Pin[] pins) {
@@ -73,10 +74,4 @@ public abstract class ConnectedDevice {
     public CpuFrequency getRequiredCpuFrequency() {
         return requiredCpuFrequency;
     }
-
-    abstract public int getEventMask();
-
-    abstract public int getOutputMasks();
-
-    abstract public int getInitialOutputValues();
 }

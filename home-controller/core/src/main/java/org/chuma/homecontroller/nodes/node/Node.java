@@ -1,11 +1,10 @@
 package org.chuma.homecontroller.nodes.node;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.chuma.homecontroller.controller.device.ConnectedDevice;
 import org.chuma.homecontroller.nodes.packet.IPacketUartIO;
 import org.chuma.homecontroller.nodes.packet.Packet;
 import org.chuma.homecontroller.nodes.packet.PacketUartIO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,43 +18,14 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     public static final int HEART_BEAT_PERIOD = 60;
     public static final int SET_PORT_TIMEOUT = 100;
     public static final int GET_BUILD_TIME_TIMEOUT = 500;
+    private static final Object typeInitializationLock = new Object();
     static Logger log = LoggerFactory.getLogger(Node.class.getName());
-    private static Object initializationLock = new Object();
-
-    public interface Listener {
-        void onButtonDown(Node node, Pin pin, int upTime);
-
-        void onButtonUp(Node node, Pin pin, int downTime);
-
-        void onReboot(Node node, int pingCounter, int rconValue) throws IOException, IllegalArgumentException;
-    }
-
-
+    protected List<Listener> listeners = new ArrayList<>();
+    protected long[] downTimes = new long[32];
     int nodeId;
     String name;
     IPacketUartIO packetUartIO;
-    List<ConnectedDevice> devices = new ArrayList<ConnectedDevice>(3);
-
-    protected List<Listener> listeners = new ArrayList<Listener>();
-    protected long[] downTimes = new long[32];
-
-    public void addListener(Listener listener) {
-        log.debug("addListener: " + listener);
-        listeners.add(listener);
-    }
-
-    public void addDevice(ConnectedDevice device) {
-        for (ConnectedDevice d : devices) {
-            if (d.getConnectorPosition() == device.getConnectorPosition()) {
-                throw  new IllegalArgumentException(String.format("Cannot add device %s on connector position %d because" +
-                        " it is already used by %s", device, device.getConnectorPosition(), d.toString()));
-            }
-        }
-        devices.add(device);
-    }
-
-
-
+    List<ConnectedDevice> devices = new ArrayList<>(3);
     public Node(int nodeId, IPacketUartIO packetUartIO) {
         this(nodeId, "unknown" + nodeId, packetUartIO);
     }
@@ -65,18 +35,6 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         this.name = name;
         this.packetUartIO = packetUartIO;
         packetUartIO.addSpecificReceivedPacketListener(this, nodeId, -1);
-    }
-
-    public String toString() {
-        return String.format("Node%d[%s]", nodeId, name);
-    }
-
-    public int getNodeId() {
-        return nodeId;
-    }
-
-    public String getName() {
-        return name;
     }
 
     private static String asBinary(int i) {
@@ -92,13 +50,41 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return Pic.toString(address) + "=" + value + " (" + asBinary(value) + ")";
     }
 
+    public void addListener(Listener listener) {
+        log.debug("addListener: " + listener);
+        listeners.add(listener);
+    }
+
+    public void addDevice(ConnectedDevice device) {
+        for (ConnectedDevice d : devices) {
+            if (d.getConnectorNumber() == device.getConnectorNumber()) {
+                throw new IllegalArgumentException(String.format("Cannot add device %s on connector position %d because" +
+                        " it is already used by %s", device, device.getConnectorNumber(), d));
+            }
+        }
+        devices.add(device);
+    }
+
+    public String toString() {
+        return String.format("Node%d[%s]", nodeId, name);
+    }
+
+    public int getNodeId() {
+        return nodeId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @SuppressWarnings("SameParameterValue")
     synchronized int echo(int dataLength) throws IOException {
         log.debug("echo (" + dataLength + ")");
         Packet req = Packet.createMsgEchoRequest(nodeId, dataLength);
         Packet response = packetUartIO.send(req, MessageType.MSG_EchoResponse, 300);
         if (response == null) return -1;
 
-        log.debug("  < " + response.toString());
+        log.debug("  < " + response);
         return 0;
     }
 
@@ -112,6 +98,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return response.data[0];
     }
 
+    @SuppressWarnings("unused")
     synchronized int writeMemory(int address, int mask, int value) throws IOException {
         log.debug("writeMemory: " + Pic.toString(address) + "(&" + Integer.toBinaryString(mask) + ")=" + value);
         Packet req = Packet.createMsgWriteRamRequest(nodeId, address, mask, value);
@@ -138,6 +125,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return (char) ((response != null) ? response.data[1] : 0);
     }
 
+    @SuppressWarnings("SameParameterValue")
     void setPortValueNoWait(char port, int valueMask, int value) throws IOException, IllegalArgumentException {
         log.debug("setPortValueNoWait");
         packetUartIO.send(Packet.createMsgSetPort(nodeId, port, valueMask, value, -1, -1));
@@ -164,15 +152,15 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
     public boolean dumpMemory(int[] addresses) {
         boolean res = true;
-        for (int i = 0; i < addresses.length; i++) {
+        for (int address : addresses) {
             int val = -1;
             try {
-                val = readMemory(addresses[i]);
+                val = readMemory(address);
             } catch (IOException e) {
                 log.error("err", e);
             }
             if (val < 0) res = false;
-            log.info(String.format("#%d: %s", nodeId, registerToString(addresses[i], val)));
+            log.info(String.format("#%d: %s", nodeId, registerToString(address, val)));
         }
         return res;
     }
@@ -287,9 +275,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     }
 
     public List<ConnectedDevice> getDevices() {
-        List<ConnectedDevice> out = new ArrayList<ConnectedDevice>();
-        out.addAll(devices);
-        return out;
+        return new ArrayList<>(devices);
     }
 
     public void removeDevices() {
@@ -297,7 +283,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     }
 
     public void initialize() {
-        log.info(String.format("Initialization of node: %s started", toString()));
+        log.info(String.format("Initialization of node: %s started", this));
 
         int commonOutputMask = 0;
         int commonEventMask = 0;
@@ -317,16 +303,16 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
         for (int attempt = 0; attempt < 20; attempt++) {
             if (doInitialization(commonOutputMask, commonEventMask, commonInitialOutputValues, reqFrequency)) {
-                log.info(String.format("Initialization of node: %s succeeded", toString()));
+                log.info(String.format("Initialization of node: %s succeeded", this));
                 return;
             }
         }
-        log.error(String.format("Initialization of node: %s FAILED", toString()));
+        log.error(String.format("Initialization of node: %s FAILED", this));
         //todo: reboot device and try it again in case of failure!
     }
 
     private boolean doInitialization(int commonOutputMask, int commonEventMask, int commonInitialOutputValues, CpuFrequency reqFrequency) {
-        synchronized (initializationLock) {
+        synchronized (typeInitializationLock) {
             try {
                 setHeartBeatPeriod(HEART_BEAT_PERIOD);
 
@@ -345,7 +331,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
                         }
                         if (setPortValue((char) ('A' + port), valueMask, value, eventMask, trisMask) == null) {
                             //todo: validate response value. Existence of response need not be enough
-                            log.error(String.format("Setting of port %c of node %s failed", (char) ('A' + port), toString()));
+                            log.error(String.format("Setting of port %c of node %s failed", (char) ('A' + port), this));
                             return false;
                         }
                     }
@@ -353,7 +339,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
                 if (reqFrequency != CpuFrequency.unknown) {
                     if (!setFrequency(reqFrequency)) {
-                        log.error(String.format("Setting frequency of node %s failed", toString()));
+                        log.error(String.format("Setting frequency of node %s failed", this));
                         return false;
                     }
                 }
@@ -382,5 +368,13 @@ public class Node implements PacketUartIO.PacketReceivedListener {
             return Arrays.copyOf(response.data, response.data.length);
         }
         return null;
+    }
+
+    public interface Listener {
+        void onButtonDown(Node node, Pin pin, int upTime);
+
+        void onButtonUp(Node node, Pin pin, int downTime);
+
+        void onReboot(Node node, int pingCounter, int rconValue) throws IOException, IllegalArgumentException;
     }
 }

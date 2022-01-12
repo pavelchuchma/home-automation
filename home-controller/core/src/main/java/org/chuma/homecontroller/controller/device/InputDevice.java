@@ -4,7 +4,7 @@ import org.chuma.homecontroller.nodes.node.Node;
 import org.chuma.homecontroller.nodes.node.NodePin;
 import org.chuma.homecontroller.nodes.node.Pin;
 
-public class InputDevice extends ConnectedDevice {
+public class InputDevice extends AbstractConnectedDevice {
     private int eventMask;
 
     public InputDevice(String id, Node node, int connectorPosition) {

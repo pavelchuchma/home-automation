@@ -1,6 +1,7 @@
 #TODO
 * [x] Remove boolean invert in callListenersAndSetActionData()
 * [ ] refactor modules
+* [ ] water pump report
 * [ ] deactivate PIR after manual switch off
 * [ ] Alexa support
 * [ ] Lights in basement and bathroom heater on web app

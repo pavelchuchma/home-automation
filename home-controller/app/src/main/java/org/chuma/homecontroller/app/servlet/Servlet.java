@@ -10,7 +10,7 @@ import org.chuma.homecontroller.controller.actor.PwmActor;
 import org.chuma.homecontroller.controller.controller.Activity;
 import org.chuma.homecontroller.controller.controller.LouversController;
 import org.chuma.homecontroller.controller.controller.ValveController;
-import org.chuma.homecontroller.controller.device.ConnectedDevice;
+import org.chuma.homecontroller.controller.device.AbstractConnectedDevice;
 import org.chuma.homecontroller.controller.device.OutputDevice;
 import org.chuma.homecontroller.controller.nodeinfo.LogMessage;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
@@ -767,7 +767,7 @@ public class Servlet extends AbstractHandler {
     }
 
     private void appendConnPinDetail(StringBuilder builder, int trisValues[], int portValues[], int connId, int pinId) {
-        Pin pin = ConnectedDevice.getPin(connId, pinId);
+        Pin pin = AbstractConnectedDevice.getPin(connId, pinId);
         builder.append(String.format("<td class='nodeInfoConnectorTable'>%s %d-%d",
                 pin.toString().substring(3),
                 applyBitMaskTo01(trisValues[pin.getPortIndex()], pin.getBitMask()),

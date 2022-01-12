@@ -7,7 +7,7 @@ import org.chuma.homecontroller.nodes.node.Pin;
 
 import static java.lang.Math.round;
 
-public class LddBoardDevice extends ConnectedDevice {
+public class LddBoardDevice extends AbstractConnectedDevice {
     public static class LddNodePin extends NodePin {
         double maxLddCurrent;
 

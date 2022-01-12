@@ -30,7 +30,6 @@ import org.chuma.homecontroller.controller.controller.ValveControllerImpl;
 import org.chuma.homecontroller.controller.device.InputDevice;
 import org.chuma.homecontroller.controller.device.LddBoardDevice;
 import org.chuma.homecontroller.controller.device.OutputDevice;
-import org.chuma.homecontroller.controller.device.RefreshingSwitchIndicator;
 import org.chuma.homecontroller.controller.device.RelayBoardDevice;
 import org.chuma.homecontroller.controller.device.SwitchIndicator;
 import org.chuma.homecontroller.controller.device.WallSwitch;
@@ -174,11 +173,6 @@ public class PiConfigurator extends AbstractConfigurator {
         WallSwitch kuchynLSw2 = new WallSwitch("kuchynLSw2", kuchyn, 2);
         WallSwitch kuchynLSw3 = new WallSwitch("kuchynLSw3", kuchyn, 1);
         WallSwitch kuchynRSw1 = new WallSwitch("kuchynRSw1", rozvadecDole, 1);
-
-//        RecuperationActor recuperation = new RecuperationActor(schodyDoleL2Sw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
-        RefreshingSwitchIndicator recuIndicator = new RefreshingSwitchIndicator(schodyDoleL2Sw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), 10000);
-//        RecuperationActor recuperation = new RecuperationActor(recuIndicator);
-//        recuIndicator.startRefresh();
 
         HvacDevice hvacDevice = startHvacDevice();
         HvacActor hvacActor = new HvacActor(hvacDevice, "hvac", "HVAC");
