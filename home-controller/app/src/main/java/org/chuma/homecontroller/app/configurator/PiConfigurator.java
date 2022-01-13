@@ -38,7 +38,7 @@ import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
 import org.chuma.homecontroller.extensions.actor.HvacActor;
 import org.chuma.homecontroller.extensions.actor.RadioOnOffActor;
 import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
-import org.chuma.homecontroller.nodes.node.Node;
+import org.chuma.homecontroller.base.node.Node;
 import org.chuma.hvaccontroller.device.HvacDevice;
 
 import java.io.IOException;

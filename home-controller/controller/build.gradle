@@ -13,12 +13,11 @@ plugins {
 
 
 dependencies {
-    implementation project(':controller')
+    api project(':base')
 
+    implementation 'org.rxtx:rxtx'
     implementation 'ch.qos.logback:logback-classic'
 
-    implementation 'org.chuma.hvac-controller:hvac-controller'
     implementation 'net.thejavashop:javampd'
     implementation 'org.apache.commons:commons-lang3'
-    implementation 'com.luckycatlabs:SunriseSunsetCalculator'
 }

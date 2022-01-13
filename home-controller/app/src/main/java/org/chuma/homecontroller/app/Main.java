@@ -8,10 +8,10 @@ import org.chuma.homecontroller.app.configurator.MartinConfigurator;
 import org.chuma.homecontroller.app.configurator.PiConfigurator;
 import org.chuma.homecontroller.app.configurator.PiPeConfigurator;
 import org.chuma.homecontroller.app.servlet.Servlet;
-import org.chuma.homecontroller.nodes.packet.IPacketUartIO;
-import org.chuma.homecontroller.nodes.packet.PacketUartIO;
-import org.chuma.homecontroller.nodes.packet.PacketUartIOException;
-import org.chuma.homecontroller.nodes.packet.PacketUartIOMock;
+import org.chuma.homecontroller.base.packet.IPacketUartIO;
+import org.chuma.homecontroller.base.packet.PacketUartIO;
+import org.chuma.homecontroller.base.packet.PacketUartIOException;
+import org.chuma.homecontroller.base.packet.PacketUartIOMock;
 
 import java.net.InetAddress;
 

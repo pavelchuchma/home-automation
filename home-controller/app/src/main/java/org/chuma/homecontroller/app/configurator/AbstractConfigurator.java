@@ -22,7 +22,7 @@ import org.chuma.homecontroller.controller.controller.LouversController;
 import org.chuma.homecontroller.controller.device.LddBoardDevice;
 import org.chuma.homecontroller.controller.device.SwitchIndicator;
 import org.chuma.homecontroller.controller.device.WallSwitch;
-import org.chuma.homecontroller.nodes.node.NodePin;
+import org.chuma.homecontroller.base.node.NodePin;
 
 import java.util.ArrayList;
 import java.util.List;

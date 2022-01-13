@@ -2,9 +2,9 @@ package org.chuma.homecontroller.app.servlet;
 
 import org.chuma.homecontroller.controller.device.OutputDevice;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
-import org.chuma.homecontroller.nodes.node.ConnectedDevice;
-import org.chuma.homecontroller.nodes.node.Node;
-import org.chuma.homecontroller.nodes.node.Pin;
+import org.chuma.homecontroller.base.node.ConnectedDevice;
+import org.chuma.homecontroller.base.node.Node;
+import org.chuma.homecontroller.base.node.Pin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

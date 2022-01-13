@@ -9,7 +9,7 @@ import org.chuma.homecontroller.controller.controller.LouversControllerImpl;
 import org.chuma.homecontroller.controller.controller.ValveController;
 import org.chuma.homecontroller.controller.device.RelayBoardDevice;
 import org.chuma.homecontroller.controller.device.WallSwitch;
-import org.chuma.homecontroller.nodes.node.Node;
+import org.chuma.homecontroller.base.node.Node;
 
 import java.util.ArrayList;
 

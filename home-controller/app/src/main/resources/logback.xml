@@ -30,12 +30,12 @@
         </encoder>
     </appender>
 
-    <logger name="org.chuma.homecontroller.nodes.packet.PacketUartIO.msg" level="DEBUG" additivity="false">
+    <logger name="org.chuma.homecontroller.base.packet.PacketUartIO.msg" level="DEBUG" additivity="false">
         <appender-ref ref="messagesFile"/>
         <appender-ref ref="applicationLog"/>
     </logger>
 
-    <logger name="org.chuma.homecontroller.nodes.packet.PacketUartIO" level="DEBUG" additivity="false">
+    <logger name="org.chuma.homecontroller.base.packet.PacketUartIO" level="DEBUG" additivity="false">
         <appender-ref ref="applicationLog"/>
     </logger>
 
@@ -43,7 +43,7 @@
         <appender-ref ref="applicationLog"/>
     </logger>
 
-    <logger name="org.chuma.homecontroller.nodes.packet.PacketSerializer" level="DEBUG" additivity="false">
+    <logger name="org.chuma.homecontroller.base.packet.PacketSerializer" level="DEBUG" additivity="false">
         <appender-ref ref="applicationLog"/>
     </logger>
 

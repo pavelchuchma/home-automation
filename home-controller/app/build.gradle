@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    implementation project(':core')
+    implementation project(':controller')
     implementation project(':extensions')
 
     implementation 'ch.qos.logback:logback-classic'
