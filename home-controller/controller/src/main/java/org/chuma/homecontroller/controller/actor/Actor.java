@@ -15,7 +15,7 @@ public interface Actor {
     String getLabel();
 
     /**
-     * @param val target value
+     * @param val        target value
      * @param actionData Optional action specific data. Each {@link Actor} instance holds one actionData instance
      *                   usable by following actons
      * @return true on success

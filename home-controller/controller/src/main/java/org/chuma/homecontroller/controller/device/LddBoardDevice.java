@@ -31,12 +31,12 @@ public class LddBoardDevice extends AbstractConnectedDevice {
                           double ldd3Current, double ldd4Current, double ldd5Current, double ldd6Current) {
         super(id, node, connectorPosition, PIN_NAMES, CpuFrequency.sixteenMHz);
 
-         pins[5] = new LddNodePin(pins[5], ldd1Current);
-         pins[4] = new LddNodePin(pins[4], ldd2Current);
-         pins[3] = new LddNodePin(pins[3], ldd3Current);
-         pins[2] = new LddNodePin(pins[2], ldd4Current);
-         pins[1] = new LddNodePin(pins[1], ldd5Current);
-         pins[0] = new LddNodePin(pins[0], ldd6Current);
+        pins[5] = new LddNodePin(pins[5], ldd1Current);
+        pins[4] = new LddNodePin(pins[4], ldd2Current);
+        pins[3] = new LddNodePin(pins[3], ldd3Current);
+        pins[2] = new LddNodePin(pins[2], ldd4Current);
+        pins[1] = new LddNodePin(pins[1], ldd5Current);
+        pins[0] = new LddNodePin(pins[0], ldd6Current);
     }
 
     public LddNodePin getLdd1() {

@@ -265,6 +265,7 @@ function drawMainCanvas() {
 
     //document.getElementById('error').innerHTML = 'LOADED!';
 }
+
 function drawToolSelection() {
     toolsCoordinates.forEach(function (c) {
         var r = 35;
@@ -276,6 +277,7 @@ function drawToolSelection() {
         toolsCtx.stroke();
     });
 }
+
 function drawToolsCanvas() {
     var c = document.getElementById("toolsCanvas");
     toolsCtx = c.getContext("2d");
@@ -601,6 +603,7 @@ function buildLouversActionLink(itemStatus, possiton, offset) {
 }
 
 var tmp = '';
+
 function onCanvasClick(event) {
 
     var selectedTool = toolCoordinateMap[selectedToolId];

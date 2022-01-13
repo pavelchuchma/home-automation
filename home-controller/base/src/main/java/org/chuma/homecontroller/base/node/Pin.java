@@ -45,10 +45,9 @@ public enum Pin {
     }
 
     /**
-     *
      * @return 0-3 (A-D)
      */
-    public int getPortIndex () {
+    public int getPortIndex() {
         return (index / 8);
     }
 
@@ -72,6 +71,7 @@ public enum Pin {
 
     /**
      * Tries to parse values like: A0, b3, ...
+     *
      * @param s
      * @return
      */

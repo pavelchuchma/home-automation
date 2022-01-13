@@ -54,7 +54,7 @@ public class SunCalculator {
         return sunsetMinutes;
     }
 
-    public static  synchronized SunCalculator getInstance() {
+    public static synchronized SunCalculator getInstance() {
         if (instance == null) {
             instance = new SunCalculator();
         }

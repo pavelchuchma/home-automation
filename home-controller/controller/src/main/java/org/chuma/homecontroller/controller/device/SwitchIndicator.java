@@ -41,7 +41,7 @@ public class SwitchIndicator implements ActorListener {
 
 //        log.debug("  " + pin + " val: " + val + ", lastSetValue: " + lastSetValue);
         if (actionData instanceof SensorDimCounter && sources.size() == 1) {
-            val ^= (((SensorDimCounter)actionData).getCount() % 2 == 1);
+            val ^= (((SensorDimCounter) actionData).getCount() % 2 == 1);
         }
         int resultValue = (val) ? 0 : 1;
         if (resultValue != lastSetValue) {

@@ -8,6 +8,7 @@ import org.chuma.homecontroller.controller.actor.Actor;
 public interface Action {
     /**
      * Perform the action
+     *
      * @param previousDurationMs time since previous related action. For example: OnButtonUp gets duration of button down phase.
      */
     void perform(int previousDurationMs);

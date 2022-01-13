@@ -159,7 +159,7 @@ public class LouversControllerImpl implements LouversController {
     }
 
     /**
-     * @param msDiff               negative -> up, positive -> down
+     * @param msDiff negative -> up, positive -> down
      * @throws ExternalModificationException
      */
     private void moveImpl(int msDiff, Object aData, boolean stopConflictingActor) throws ExternalModificationException {

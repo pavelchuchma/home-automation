@@ -21,7 +21,7 @@ public class InvertAction extends AbstractAction {
         IOnOffActor onOffActor = (IOnOffActor) actor;
         if (onOffActor.isOn()) {
             onOffActor.switchOff(null);
-        }   else {
+        } else {
             onOffActor.switchOn(switchOnPercent, null);
         }
     }

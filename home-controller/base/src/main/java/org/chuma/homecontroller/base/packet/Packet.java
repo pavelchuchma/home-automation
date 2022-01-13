@@ -83,7 +83,7 @@ public class Packet {
     }
 
     public static Packet createMsgSetFrequency(int nodeId, int cpuFrequency) {
-        return new Packet(nodeId, MessageType.MSG_SetFrequencyRequest, new int[]{cpuFrequency & 0xFF, (cpuFrequency-1) & 0xFF});
+        return new Packet(nodeId, MessageType.MSG_SetFrequencyRequest, new int[]{cpuFrequency & 0xFF, (cpuFrequency - 1) & 0xFF});
     }
 
     public static Packet createMsgReset(int nodeId) {

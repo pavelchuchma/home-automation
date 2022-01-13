@@ -19,9 +19,9 @@ public class PacketSerializerTest {
             (byte) 153, (byte) 161, (byte) 228, (byte) 128, (byte) 144, (byte) 223, (byte) 135, (byte) 145, (byte) 222, 100 // #4 too long, bad CRC
     };
 
-    Packet exp1 = new Packet(10,200,new int[]{127, 128, 255});
-    Packet exp2 = new Packet(25,33,new int[]{100});
-    Packet exp3 = new Packet(25,33,new int[]{100,101, 130, 255, 125});
+    Packet exp1 = new Packet(10, 200, new int[]{127, 128, 255});
+    Packet exp2 = new Packet(25, 33, new int[]{100});
+    Packet exp3 = new Packet(25, 33, new int[]{100, 101, 130, 255, 125});
 
     @Test
     public void testReadPacket() throws Exception {
@@ -87,5 +87,5 @@ public class PacketSerializerTest {
 
         byte[] writtenBytes = os.toByteArray();
         Assert.assertArrayEquals(Arrays.copyOfRange(inputData, 0, 21), writtenBytes);
-   }
+    }
 }

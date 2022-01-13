@@ -27,6 +27,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     String name;
     IPacketUartIO packetUartIO;
     List<ConnectedDevice> devices = new ArrayList<>(3);
+
     public Node(int nodeId, IPacketUartIO packetUartIO) {
         this(nodeId, "unknown" + nodeId, packetUartIO);
     }
