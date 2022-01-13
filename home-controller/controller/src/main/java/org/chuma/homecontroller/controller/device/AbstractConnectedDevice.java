@@ -6,28 +6,18 @@ import org.chuma.homecontroller.base.node.NodePin;
 import org.chuma.homecontroller.base.node.Pin;
 
 public abstract class AbstractConnectedDevice implements org.chuma.homecontroller.base.node.ConnectedDevice {
-    NodePin[] pins = new NodePin[6];
-    CpuFrequency requiredCpuFrequency;
-    int connectorNumber;
-    private final String id;
     final static Pin[][] layout = {
             {Pin.pinA5, Pin.pinA3, Pin.pinA2, Pin.pinA0, Pin.pinB4, Pin.pinB5},
             {Pin.pinC3, Pin.pinC1, Pin.pinC0, Pin.pinA6, Pin.pinC2, Pin.pinA7},
             {Pin.pinB0, Pin.pinB1, Pin.pinC5, Pin.pinC4, Pin.pinC6, Pin.pinC7}
     };
-
-    @Override
-    public String toString() {
-        return String.format("%s(%s)", getClass().getSimpleName(), id);
-    }
+    private final String id;
+    NodePin[] pins = new NodePin[6];
+    CpuFrequency requiredCpuFrequency;
+    int connectorNumber;
 
     public AbstractConnectedDevice(String id, Node node, int connectorNumber, String[] names) {
         this(id, node, connectorNumber, names, CpuFrequency.unknown);
-    }
-
-    @Override
-    public int getConnectorNumber() {
-        return connectorNumber;
     }
 
     public AbstractConnectedDevice(String id, Node node, int connectorNumber, String[] names, CpuFrequency requiredCpuFrequency) {
@@ -61,6 +51,16 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
         }
 
         return layout[connectorNumber - 1][connectorPin - 1];
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s(%s)", getClass().getSimpleName(), id);
+    }
+
+    @Override
+    public int getConnectorNumber() {
+        return connectorNumber;
     }
 
     protected int createMask(Pin[] pins) {

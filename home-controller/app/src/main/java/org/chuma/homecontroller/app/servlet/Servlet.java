@@ -150,6 +150,66 @@ public class Servlet extends AbstractHandler {
         }
     }
 
+    private static String getNodeInfoReport(NodeInfoCollector collector) {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("<html>" +
+                "<meta http-equiv='refresh' content='1;url=/'/>" +
+                getHtmlHead() +
+                "<body>");
+
+        String[] actionNames = new String[]{"Bzucak", "Garaz", "Jidelna", "Zvuk"};
+        Action[] actions = new Action[]{Servlet.action1, Servlet.action1, Servlet.action2, Servlet.action3, Servlet.action4};
+        for (int i = 0; i < actionNames.length; i++) {
+            if (actions[i] != null) {
+                builder.append(String.format("<a href='/a%d'>%s</a>&nbsp;&nbsp;&nbsp;&nbsp;", i + 1, actionNames[i]));
+            }
+        }
+
+        builder.append("<a href='" + Servlet.TARGET_LOUVERS + "'>Zaluzie...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
+        builder.append("<a href='" + Servlet.TARGET_LIGHTS + "'>Svetla...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
+        builder.append("<a href='" + Servlet.TARGET_SYSTEM + "'>System...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
+        builder.append("<a href='" + Servlet.TARGET_PIR_STATUS_PAGE + "'>Pir Status...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
+        builder.append("<a href='" + Servlet.TARGET_LIGHTS_OBYVAK + "'>Obyvak...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
+
+        builder.append("<table class='nodeTable'>\n" +
+                "<tr><th class=''>Node #<th class=''>Last Ping Time<th class=''>Boot Time<th class=''>Build Time<th class=''>MessageLog");
+
+        for (NodeInfo info : collector.getNodeInfoArray()) {
+            if (info != null) {
+                String lastPingClass = "errorValue";
+                String lastPingString = "-";
+                long lastPing;
+                if (info.getLastPingTime() != null) {
+                    lastPing = (new Date().getTime() - info.getLastPingTime().getTime()) / 1000;
+                    if (lastPing <= Node.HEART_BEAT_PERIOD) lastPingClass = "fineValue";
+                    lastPingString = lastPing + " s";
+                }
+                builder.append(String.format("<tr><td>%d-%s<td class='%s'>%s<td>%s<td>%s<td class='messageLog'>",
+                        info.getNode().getNodeId(), info.getNode().getName(), lastPingClass, lastPingString,
+                        info.getBuildTime(), info.getBuildTime()));
+
+                for (LogMessage m : info.getMessageLog()) {
+                    builder.append(String.format("<div class='%s'>%s%s</div>",
+                            (m.received) ? "receivedMessage" : "sentMessage",
+                            MessageType.toString(m.packet.messageType),
+                            (m.packet.data != null) ? Arrays.toString(m.packet.data) : ""));
+                }
+                builder.append("\n");
+            }
+        }
+        builder.append("</table>");
+        builder.append("</body></html>");
+        return builder.toString();
+    }
+
+    private static String getHtmlHead() {
+        return "<head>" +
+                "<link rel='icon' type='image/png' href='favicon.png'>" +
+                "<link href='report.css' rel='stylesheet' type='text/css'/>" +
+                "</head>";
+    }
+
     public void handle(String target,
                        Request baseRequest,
                        HttpServletRequest request,
@@ -290,67 +350,6 @@ public class Servlet extends AbstractHandler {
             baseRequest.setHandled(true);
         }
     }
-
-    private static String getNodeInfoReport(NodeInfoCollector collector) {
-        StringBuilder builder = new StringBuilder();
-
-        builder.append("<html>" +
-                "<meta http-equiv='refresh' content='1;url=/'/>" +
-                getHtmlHead() +
-                "<body>");
-
-        String[] actionNames = new String[]{"Bzucak", "Garaz", "Jidelna", "Zvuk"};
-        Action[] actions = new Action[]{Servlet.action1, Servlet.action1, Servlet.action2, Servlet.action3, Servlet.action4};
-        for (int i = 0; i < actionNames.length; i++) {
-            if (actions[i] != null) {
-                builder.append(String.format("<a href='/a%d'>%s</a>&nbsp;&nbsp;&nbsp;&nbsp;", i + 1, actionNames[i]));
-            }
-        }
-
-        builder.append("<a href='" + Servlet.TARGET_LOUVERS + "'>Zaluzie...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
-        builder.append("<a href='" + Servlet.TARGET_LIGHTS + "'>Svetla...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
-        builder.append("<a href='" + Servlet.TARGET_SYSTEM + "'>System...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
-        builder.append("<a href='" + Servlet.TARGET_PIR_STATUS_PAGE + "'>Pir Status...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
-        builder.append("<a href='" + Servlet.TARGET_LIGHTS_OBYVAK + "'>Obyvak...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
-
-        builder.append("<table class='nodeTable'>\n" +
-                "<tr><th class=''>Node #<th class=''>Last Ping Time<th class=''>Boot Time<th class=''>Build Time<th class=''>MessageLog");
-
-        for (NodeInfo info : collector.getNodeInfoArray()) {
-            if (info != null) {
-                String lastPingClass = "errorValue";
-                String lastPingString = "-";
-                long lastPing;
-                if (info.getLastPingTime() != null) {
-                    lastPing = (new Date().getTime() - info.getLastPingTime().getTime()) / 1000;
-                    if (lastPing <= Node.HEART_BEAT_PERIOD) lastPingClass = "fineValue";
-                    lastPingString = lastPing + " s";
-                }
-                builder.append(String.format("<tr><td>%d-%s<td class='%s'>%s<td>%s<td>%s<td class='messageLog'>",
-                        info.getNode().getNodeId(), info.getNode().getName(), lastPingClass, lastPingString,
-                        info.getBuildTime(), info.getBuildTime()));
-
-                for (LogMessage m : info.getMessageLog()) {
-                    builder.append(String.format("<div class='%s'>%s%s</div>",
-                            (m.received) ? "receivedMessage" : "sentMessage",
-                            MessageType.toString(m.packet.messageType),
-                            (m.packet.data != null) ? Arrays.toString(m.packet.data) : ""));
-                }
-                builder.append("\n");
-            }
-        }
-        builder.append("</table>");
-        builder.append("</body></html>");
-        return builder.toString();
-    }
-
-    private static String getHtmlHead() {
-        return "<head>" +
-                "<link rel='icon' type='image/png' href='favicon.png'>" +
-                "<link href='report.css' rel='stylesheet' type='text/css'/>" +
-                "</head>";
-    }
-
 
     private void writeHvacStatusJson(Request baseRequest, HttpServletResponse response) throws IOException {
         initJsonResponse(baseRequest, response);

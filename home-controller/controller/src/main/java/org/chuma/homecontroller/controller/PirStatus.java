@@ -86,12 +86,12 @@ public class PirStatus {
         }
 
         @Override
-        public int getValue() {
-            return 0;
+        public void setActionData(Object actionData) {
         }
 
         @Override
-        public void setActionData(Object actionData) {
+        public int getValue() {
+            return 0;
         }
 
         @Override

@@ -11,19 +11,25 @@ import org.slf4j.LoggerFactory;
 
 public class SunCalculator {
     static Logger log = LoggerFactory.getLogger(SunCalculator.class.getName());
-
+    private static SunCalculator instance;
     private SunriseSunsetCalculator calculator;
     private TimeZone timeZone;
     private int sunriseMinutes;
     private int sunsetMinutes;
     private Date lastComputeDate;
-    private static SunCalculator instance;
 
     private SunCalculator() {
         timeZone = TimeZone.getTimeZone("UTC");
         lastComputeDate = new Date(0);
         calculator = getSunriseSunsetCalculator();
         compute();
+    }
+
+    public static synchronized SunCalculator getInstance() {
+        if (instance == null) {
+            instance = new SunCalculator();
+        }
+        return instance;
     }
 
     private SunriseSunsetCalculator getSunriseSunsetCalculator() {
@@ -52,12 +58,5 @@ public class SunCalculator {
     public int getSunsetMinutes() {
         compute();
         return sunsetMinutes;
-    }
-
-    public static synchronized SunCalculator getInstance() {
-        if (instance == null) {
-            instance = new SunCalculator();
-        }
-        return instance;
     }
 }

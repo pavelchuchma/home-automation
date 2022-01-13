@@ -34,12 +34,12 @@ public class NodeInfo {
         return bootTime;
     }
 
-    public Date getLastPingTime() {
-        return lastPingTime;
-    }
-
     public void setBootTime(Date bootTime) {
         this.bootTime = bootTime;
+    }
+
+    public Date getLastPingTime() {
+        return lastPingTime;
     }
 
     public void setLastPingTime(Date lastPingTime) {

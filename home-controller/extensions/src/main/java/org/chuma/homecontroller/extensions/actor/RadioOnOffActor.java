@@ -47,13 +47,13 @@ public class RadioOnOffActor implements IOnOffActor {
     }
 
     @Override
-    public int getValue() {
-        return (radio.isPlaying() ? 1 : 0);
+    public void setActionData(Object actionData) {
+
     }
 
     @Override
-    public void setActionData(Object actionData) {
-
+    public int getValue() {
+        return (radio.isPlaying() ? 1 : 0);
     }
 
     @Override

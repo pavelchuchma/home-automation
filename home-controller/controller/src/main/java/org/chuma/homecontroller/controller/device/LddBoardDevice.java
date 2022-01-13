@@ -8,23 +8,6 @@ import org.chuma.homecontroller.base.node.NodePin;
 import org.chuma.homecontroller.base.node.Pin;
 
 public class LddBoardDevice extends AbstractConnectedDevice {
-    public static class LddNodePin extends NodePin {
-        double maxLddCurrent;
-
-        private LddNodePin(NodePin nodePin, double maxLddCurrent) {
-            super(nodePin.getId(), nodePin.getNodeId(), nodePin.getPin());
-            this.maxLddCurrent = maxLddCurrent;
-        }
-
-        public double getMaxLddCurrent() {
-            return maxLddCurrent;
-        }
-
-        public String getDeviceName() {
-            return String.format("LDD-%d on %s", round(maxLddCurrent * 1000), toString());
-        }
-    }
-
     private static final String[] PIN_NAMES = new String[]{"ldd6", "ldd5", "ldd4", "ldd3", "ldd2", "ldd1"};
 
     public LddBoardDevice(String id, Node node, int connectorPosition, double ldd1Current, double ldd2Current,
@@ -76,5 +59,22 @@ public class LddBoardDevice extends AbstractConnectedDevice {
     @Override
     public int getInitialOutputValues() {
         return 0;
+    }
+
+    public static class LddNodePin extends NodePin {
+        double maxLddCurrent;
+
+        private LddNodePin(NodePin nodePin, double maxLddCurrent) {
+            super(nodePin.getId(), nodePin.getNodeId(), nodePin.getPin());
+            this.maxLddCurrent = maxLddCurrent;
+        }
+
+        public double getMaxLddCurrent() {
+            return maxLddCurrent;
+        }
+
+        public String getDeviceName() {
+            return String.format("LDD-%d on %s", round(maxLddCurrent * 1000), toString());
+        }
     }
 }

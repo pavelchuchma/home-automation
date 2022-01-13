@@ -25,15 +25,15 @@ public interface Actor {
     int getValue();
 
     /**
+     * @return The last stored action data.
+     */
+    Object getActionData();
+
+    /**
      * Allows storing action's data to the actor instance.
      * Usually keeps a signature of an action who set the last actor value.
      */
     void setActionData(Object actionData);
-
-    /**
-     * @return The last stored action data.
-     */
-    Object getActionData();
 
     /**
      * Sets action data and calls all action listeners with actionData in a synchronized block.

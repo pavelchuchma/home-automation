@@ -2,7 +2,7 @@
 <html>
 <head>
     <link href='lights.css' rel='stylesheet' type='text/css'/>
-    <link rel="icon" type="image/png" href="favicon.png">
+    <link href="favicon.png" rel="icon" type="image/png">
     <script src="configuration-pi.js"></script>
     <script src="lights.js"></script>
 </head>
@@ -10,13 +10,13 @@
 
 <p id="error"></p>
 
-<img hidden="1" id="1stFloor" src="1stFloor.jpg" width="588" height="1500"/>
-<img hidden="1" id="2ndFloor" src="2ndFloor.jpg" width="588" height="1500"/>
+<img height="1500" hidden="1" id="1stFloor" src="1stFloor.jpg" width="588"/>
+<img height="1500" hidden="1" id="2ndFloor" src="2ndFloor.jpg" width="588"/>
 
 <table>
     <tr>
         <td>
-            <canvas id="mainCanvas" width="588" height="1500" onclick="onCanvasClick(event)">
+            <canvas height="1500" id="mainCanvas" onclick="onCanvasClick(event)" width="588">
                 Your browser does not support the HTML5 canvas tag.
             </canvas>
         </td>
@@ -24,21 +24,21 @@
             <table>
                 <tr>
                     <td>
-                        <canvas id="toolsCanvas" width="100" height="900" onclick="onToolsClick(event)">
+                        <canvas height="900" id="toolsCanvas" onclick="onToolsClick(event)" width="100">
                             Your browser does not support the HTML5 canvas tag.
                         </canvas>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <canvas id="hvacCanvas" width="100" height="150" onclick="onHvacClick(event)">
+                        <canvas height="150" id="hvacCanvas" onclick="onHvacClick(event)" width="100">
                             Your browser does not support the HTML5 canvas tag.
                         </canvas>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <canvas id="pumpCanvas" width="100" height="50" onclick="onPumpClick(event)">
+                        <canvas height="50" id="pumpCanvas" onclick="onPumpClick(event)" width="100">
                             Your browser does not support the HTML5 canvas tag.
                         </canvas>
                     </td>

@@ -52,11 +52,11 @@ public class AbstractControllerTest {
     }
 
     public class Actor implements IOnOffActor {
+        private final String id;
         boolean active = false;
         Object actionData;
         long switchOnTime;
         boolean broken = false;
-        private final String id;
 
         public Actor(String id) {
             this.id = id;
@@ -113,13 +113,13 @@ public class AbstractControllerTest {
         }
 
         @Override
-        public int getValue() {
-            throw new UnsupportedOperationException();
+        public void setActionData(Object actionData) {
+            this.actionData = actionData;
         }
 
         @Override
-        public void setActionData(Object actionData) {
-            this.actionData = actionData;
+        public int getValue() {
+            throw new UnsupportedOperationException();
         }
 
         @Override

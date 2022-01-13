@@ -35,6 +35,12 @@ public abstract class AbstractActor implements Actor, IReadableOnOff {
     }
 
     @Override
+    public synchronized void setActionData(Object actionData) {
+        this.actionData = actionData;
+        notifyAll();
+    }
+
+    @Override
     public synchronized void callListenersAndSetActionData(Object actionData) {
         setActionData(actionData);
 
@@ -43,12 +49,6 @@ public abstract class AbstractActor implements Actor, IReadableOnOff {
                 listener.onAction(this, actionData);
             }
         }
-    }
-
-    @Override
-    public synchronized void setActionData(Object actionData) {
-        this.actionData = actionData;
-        notifyAll();
     }
 
     public String toString() {
