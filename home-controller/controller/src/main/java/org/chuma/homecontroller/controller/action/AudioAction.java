@@ -1,9 +1,5 @@
 package org.chuma.homecontroller.controller.action;
 
-import org.chuma.homecontroller.controller.actor.Actor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -17,6 +13,11 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.chuma.homecontroller.controller.actor.Actor;
 
 public class AudioAction implements Action {
     static Logger log = LoggerFactory.getLogger(AudioAction.class.getName());

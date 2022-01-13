@@ -1,20 +1,21 @@
 package org.chuma.homecontroller.base.node;
 
+import java.io.IOException;
+import java.util.Date;
+
 import org.junit.Assert;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.chuma.homecontroller.base.packet.Packet;
+import org.chuma.homecontroller.base.packet.PacketUartIO;
+import org.chuma.homecontroller.base.packet.PacketUartIOException;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.device.InputDevice;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
 import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
-import org.chuma.homecontroller.base.packet.Packet;
-import org.chuma.homecontroller.base.packet.PacketUartIO;
-import org.chuma.homecontroller.base.packet.PacketUartIOException;
-import org.junit.Test;
-
-import java.io.IOException;
-import java.util.Date;
 
 public class NodeTest {
     static Logger log = LoggerFactory.getLogger(NodeTest.class.getName());

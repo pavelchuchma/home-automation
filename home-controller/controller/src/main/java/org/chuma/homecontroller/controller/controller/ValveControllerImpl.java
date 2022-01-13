@@ -2,8 +2,9 @@ package org.chuma.homecontroller.controller.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.chuma.homecontroller.controller.actor.IOnOffActor;
+
 import org.chuma.homecontroller.base.node.NodePin;
+import org.chuma.homecontroller.controller.actor.IOnOffActor;
 
 public class ValveControllerImpl implements ValveController {
     static Logger log = LoggerFactory.getLogger(ValveControllerImpl.class.getName());

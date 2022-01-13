@@ -1,13 +1,13 @@
 package org.chuma.homecontroller.extensions.actor;
 
+import java.util.Calendar;
+
 import org.chuma.homecontroller.controller.actor.AbstractActor;
 import org.chuma.homecontroller.controller.actor.ActorListener;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
 import org.chuma.hvaccontroller.device.FanSpeed;
 import org.chuma.hvaccontroller.device.HvacDevice;
 import org.chuma.hvaccontroller.device.OperatingMode;
-
-import java.util.Calendar;
 
 public class HvacActor extends AbstractActor implements IOnOffActor {
     private final HvacDevice hvacDevice;

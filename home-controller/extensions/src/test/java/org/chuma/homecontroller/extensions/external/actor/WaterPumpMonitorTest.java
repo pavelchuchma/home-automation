@@ -1,9 +1,10 @@
 package org.chuma.homecontroller.extensions.external.actor;
 
-import org.chuma.homecontroller.controller.action.Action;
-import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
 import org.junit.Assert;
 import org.junit.Test;
+
+import org.chuma.homecontroller.controller.action.Action;
+import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
 //import org.chuma.homecontroller.app.servlet.WaterPumpJsonSerializer;
 
 public class WaterPumpMonitorTest {

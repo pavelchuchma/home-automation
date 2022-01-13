@@ -1,10 +1,10 @@
 package org.chuma.homecontroller.controller.controller;
 
-import org.chuma.homecontroller.controller.actor.IOnOffActor;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import org.chuma.homecontroller.controller.actor.IOnOffActor;
 
 public class AbstractControllerTest {
     List<ActionItem> actions = new ArrayList<>();

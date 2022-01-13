@@ -1,8 +1,8 @@
 package org.chuma.homecontroller.controller.nodeinfo;
 
-import org.chuma.homecontroller.base.packet.Packet;
-
 import java.util.Date;
+
+import org.chuma.homecontroller.base.packet.Packet;
 
 public class LogMessage {
     public final boolean received;

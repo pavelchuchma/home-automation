@@ -1,13 +1,13 @@
 package org.chuma.homecontroller.base.packet;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 public class PacketSerializerTest {
 

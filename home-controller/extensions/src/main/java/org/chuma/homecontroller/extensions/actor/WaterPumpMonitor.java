@@ -1,11 +1,11 @@
 package org.chuma.homecontroller.extensions.actor;
 
+import java.util.ArrayList;
+import java.util.Date;
+
 import org.chuma.homecontroller.controller.action.AbstractActionWithoutActor;
 import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.actor.IReadableOnOff;
-
-import java.util.ArrayList;
-import java.util.Date;
 
 public class WaterPumpMonitor implements IReadableOnOff {
     private final ArrayList<Record> records = new ArrayList<>();

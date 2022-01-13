@@ -1,19 +1,19 @@
 package org.chuma.homecontroller.controller.actor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.chuma.homecontroller.controller.device.LddBoardDevice;
-import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
-import org.chuma.homecontroller.base.node.Node;
-import org.chuma.homecontroller.base.node.NodePin;
-import org.chuma.homecontroller.base.packet.Packet;
-
 import java.io.IOException;
 import java.net.InetAddress;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static org.chuma.homecontroller.base.packet.Packet.MAX_PWM_VALUE;
+
+import org.chuma.homecontroller.base.node.Node;
+import org.chuma.homecontroller.base.node.NodePin;
+import org.chuma.homecontroller.base.packet.Packet;
+import org.chuma.homecontroller.controller.device.LddBoardDevice;
+import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
 
 public class PwmActor extends AbstractPinActor implements IOnOffActor {
     static Logger log = LoggerFactory.getLogger(PwmActor.class.getName());

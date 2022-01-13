@@ -1,7 +1,7 @@
 package org.chuma.homecontroller.controller;
 
-import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.base.node.NodePin;
+import org.chuma.homecontroller.controller.action.Action;
 
 public class ActionBinding {
     NodePin trigger;

@@ -1,12 +1,5 @@
 package org.chuma.homecontroller.base.packet;
 
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.SerialPort;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.chuma.homecontroller.base.node.MessageType;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -16,6 +9,14 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import gnu.io.CommPortIdentifier;
+import gnu.io.NoSuchPortException;
+import gnu.io.SerialPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.chuma.homecontroller.base.node.MessageType;
 
 public class PacketUartIO implements IPacketUartIO {
     static Logger log = LoggerFactory.getLogger(PacketUartIO.class.getName());

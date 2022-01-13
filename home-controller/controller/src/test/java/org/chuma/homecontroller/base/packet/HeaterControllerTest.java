@@ -1,11 +1,11 @@
 package org.chuma.homecontroller.base.packet;
 
+import java.io.InputStream;
+import java.util.Enumeration;
+
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 import org.junit.Test;
-
-import java.io.InputStream;
-import java.util.Enumeration;
 
 public class HeaterControllerTest {
     @Test

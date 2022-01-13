@@ -1,13 +1,14 @@
 package org.chuma.homecontroller.controller.actor;
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
+
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.NodePin;
 import org.chuma.homecontroller.base.packet.Packet;
-
-import java.io.IOException;
+import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
 
 public abstract class AbstractPinActor extends AbstractActor {
     protected static final int RETRY_COUNT = 5;

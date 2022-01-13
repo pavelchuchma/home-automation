@@ -1,14 +1,15 @@
 package org.chuma.homecontroller.controller.device;
 
-import org.chuma.homecontroller.controller.action.condition.SensorDimCounter;
+import java.util.ArrayList;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.chuma.homecontroller.base.node.NodePin;
+import org.chuma.homecontroller.controller.action.condition.SensorDimCounter;
 import org.chuma.homecontroller.controller.actor.AbstractPinActor;
 import org.chuma.homecontroller.controller.actor.ActorListener;
 import org.chuma.homecontroller.controller.actor.IReadableOnOff;
-import org.chuma.homecontroller.base.node.NodePin;
-
-import java.util.ArrayList;
 
 public class SwitchIndicator implements ActorListener {
     private static final int RETRY_COUNT = 2;

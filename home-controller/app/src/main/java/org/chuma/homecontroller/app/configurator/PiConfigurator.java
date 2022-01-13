@@ -1,9 +1,13 @@
 package org.chuma.homecontroller.app.configurator;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.chuma.homecontroller.extensions.action.condition.SunCondition;
+
 import org.chuma.homecontroller.app.servlet.Servlet;
+import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.AbstractSensorAction;
 import org.chuma.homecontroller.controller.action.Action;
@@ -35,14 +39,11 @@ import org.chuma.homecontroller.controller.device.SwitchIndicator;
 import org.chuma.homecontroller.controller.device.WallSwitch;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
 import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
+import org.chuma.homecontroller.extensions.action.condition.SunCondition;
 import org.chuma.homecontroller.extensions.actor.HvacActor;
 import org.chuma.homecontroller.extensions.actor.RadioOnOffActor;
 import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
-import org.chuma.homecontroller.base.node.Node;
 import org.chuma.hvaccontroller.device.HvacDevice;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 public class PiConfigurator extends AbstractConfigurator {
 

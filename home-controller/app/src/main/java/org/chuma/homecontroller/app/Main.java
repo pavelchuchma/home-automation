@@ -1,8 +1,10 @@
 package org.chuma.homecontroller.app;
 
+import java.net.InetAddress;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
+
 import org.chuma.homecontroller.app.configurator.AbstractConfigurator;
 import org.chuma.homecontroller.app.configurator.MartinConfigurator;
 import org.chuma.homecontroller.app.configurator.PiConfigurator;
@@ -12,8 +14,7 @@ import org.chuma.homecontroller.base.packet.IPacketUartIO;
 import org.chuma.homecontroller.base.packet.PacketUartIO;
 import org.chuma.homecontroller.base.packet.PacketUartIOException;
 import org.chuma.homecontroller.base.packet.PacketUartIOMock;
-
-import java.net.InetAddress;
+import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
 
 public class Main {
     static Logger log = LoggerFactory.getLogger(Main.class.getName());

@@ -1,11 +1,12 @@
 package org.chuma.homecontroller.controller.action;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.chuma.homecontroller.controller.actor.ActorListener;
 import org.chuma.homecontroller.controller.actor.IReadableOnOff;
-
-import java.util.Date;
 
 public class SecondaryMode {
     static Logger log = LoggerFactory.getLogger(LouversActionGroup.class.getName());

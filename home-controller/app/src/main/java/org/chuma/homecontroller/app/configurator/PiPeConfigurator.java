@@ -1,8 +1,9 @@
 package org.chuma.homecontroller.app.configurator;
 
-import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
-import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
+import java.util.ArrayList;
+
 import org.chuma.homecontroller.app.servlet.Servlet;
+import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.action.SwitchOffAction;
@@ -19,9 +20,8 @@ import org.chuma.homecontroller.controller.device.LddBoardDevice;
 import org.chuma.homecontroller.controller.device.RelayBoardDevice;
 import org.chuma.homecontroller.controller.device.SwitchIndicator;
 import org.chuma.homecontroller.controller.device.WallSwitch;
-import org.chuma.homecontroller.base.node.Node;
-
-import java.util.ArrayList;
+import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
+import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
 
 public class PiPeConfigurator extends AbstractConfigurator {
 

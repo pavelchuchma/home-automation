@@ -1,12 +1,12 @@
 package org.chuma.homecontroller.controller.nodeinfo;
 
-import org.chuma.homecontroller.base.node.Node;
-import org.chuma.homecontroller.base.packet.Packet;
-
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import org.chuma.homecontroller.base.node.Node;
+import org.chuma.homecontroller.base.packet.Packet;
 
 public class NodeInfo {
     private static final Date resetSupportedSince = new GregorianCalendar(2014, 7, 1).getTime();

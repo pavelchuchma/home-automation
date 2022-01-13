@@ -1,9 +1,9 @@
 package org.chuma.homecontroller.controller.controller;
 
+import java.util.Iterator;
+
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.Iterator;
 
 public class ValveControllerImplTest extends AbstractControllerTest {
     Actor openActor = new Actor("OPEN");

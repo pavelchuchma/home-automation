@@ -1,9 +1,9 @@
 package org.chuma.homecontroller.controller;
 
+import java.util.Date;
+
 import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.actor.Actor;
-
-import java.util.Date;
 
 public class PirStatus {
     String id;

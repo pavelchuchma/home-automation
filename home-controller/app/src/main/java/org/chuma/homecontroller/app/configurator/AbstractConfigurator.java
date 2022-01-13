@@ -1,11 +1,14 @@
 package org.chuma.homecontroller.app.configurator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
-import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
+
 import org.chuma.homecontroller.app.servlet.Servlet;
+import org.chuma.homecontroller.base.node.NodePin;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.PirStatus;
 import org.chuma.homecontroller.controller.action.Action;
@@ -22,10 +25,8 @@ import org.chuma.homecontroller.controller.controller.LouversController;
 import org.chuma.homecontroller.controller.device.LddBoardDevice;
 import org.chuma.homecontroller.controller.device.SwitchIndicator;
 import org.chuma.homecontroller.controller.device.WallSwitch;
-import org.chuma.homecontroller.base.node.NodePin;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
+import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
 
 public abstract class AbstractConfigurator {
     static Logger log = LoggerFactory.getLogger(AbstractConfigurator.class.getName());

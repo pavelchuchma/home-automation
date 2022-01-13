@@ -1,15 +1,16 @@
 package org.chuma.homecontroller.controller.nodeinfo;
 
+import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.chuma.homecontroller.controller.ActionBinding;
-import org.chuma.homecontroller.controller.action.Action;
+
 import org.chuma.homecontroller.base.node.AbstractNodeListener;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.Pin;
-
-import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
+import org.chuma.homecontroller.controller.ActionBinding;
+import org.chuma.homecontroller.controller.action.Action;
 
 public class SwitchListener extends AbstractNodeListener {
     static Logger log = LoggerFactory.getLogger(SwitchListener.class.getName());

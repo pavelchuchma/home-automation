@@ -1,10 +1,11 @@
 package org.chuma.homecontroller.base.packet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.chuma.homecontroller.base.node.MessageType;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.chuma.homecontroller.base.node.MessageType;
 
 public class PacketUartIOTest {
     Packet onTimer1 = new Packet(10, MessageType.MSG_OnHeartBeat, new int[]{123});

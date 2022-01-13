@@ -1,13 +1,13 @@
 package org.chuma.homecontroller.extensions.external;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 import com.luckycatlabs.sunrisesunset.dto.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 
 public class SunCalculator {
     static Logger log = LoggerFactory.getLogger(SunCalculator.class.getName());

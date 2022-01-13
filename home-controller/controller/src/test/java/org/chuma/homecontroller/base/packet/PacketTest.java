@@ -1,7 +1,8 @@
 package org.chuma.homecontroller.base.packet;
 
-import org.chuma.homecontroller.base.node.MessageType;
 import org.junit.Test;
+
+import org.chuma.homecontroller.base.node.MessageType;
 
 public class PacketTest {
     @Test

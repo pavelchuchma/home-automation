@@ -1,8 +1,8 @@
 package org.chuma.homecontroller.base.packet;
 
-import org.chuma.homecontroller.base.node.MessageType;
-
 import java.util.Arrays;
+
+import org.chuma.homecontroller.base.node.MessageType;
 
 public class Packet {
     public static final int MAX_PWM_VALUE = 48;

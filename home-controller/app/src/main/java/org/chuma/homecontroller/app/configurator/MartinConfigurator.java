@@ -1,17 +1,17 @@
 package org.chuma.homecontroller.app.configurator;
 
-import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
-import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
+import java.util.ArrayList;
+
 import org.chuma.homecontroller.app.servlet.Servlet;
+import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.controller.LouversController;
 import org.chuma.homecontroller.controller.controller.LouversControllerImpl;
 import org.chuma.homecontroller.controller.controller.ValveController;
 import org.chuma.homecontroller.controller.device.RelayBoardDevice;
 import org.chuma.homecontroller.controller.device.WallSwitch;
-import org.chuma.homecontroller.base.node.Node;
-
-import java.util.ArrayList;
+import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
+import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
 
 public class MartinConfigurator extends AbstractConfigurator {
 

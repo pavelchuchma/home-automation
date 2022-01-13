@@ -1,13 +1,14 @@
 package org.chuma.homecontroller.extensions.action.condition;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.chuma.homecontroller.extensions.external.SunCalculator;
-import org.chuma.homecontroller.controller.action.condition.ICondition;
-
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.chuma.homecontroller.controller.action.condition.ICondition;
+import org.chuma.homecontroller.extensions.external.SunCalculator;
 
 /**
  * Is true if the sun is sleeping (with specified tolerance)

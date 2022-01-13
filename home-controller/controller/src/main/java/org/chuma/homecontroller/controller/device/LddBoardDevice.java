@@ -1,11 +1,11 @@
 package org.chuma.homecontroller.controller.device;
 
+import static java.lang.Math.round;
+
 import org.chuma.homecontroller.base.node.CpuFrequency;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.NodePin;
 import org.chuma.homecontroller.base.node.Pin;
-
-import static java.lang.Math.round;
 
 public class LddBoardDevice extends AbstractConnectedDevice {
     public static class LddNodePin extends NodePin {

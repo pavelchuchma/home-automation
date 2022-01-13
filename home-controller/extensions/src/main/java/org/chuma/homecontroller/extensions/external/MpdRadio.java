@@ -1,7 +1,5 @@
 package org.chuma.homecontroller.extensions.external;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.bff.javampd.MPD;
 import org.bff.javampd.Player;
 import org.bff.javampd.Playlist;
@@ -9,6 +7,8 @@ import org.bff.javampd.exception.MPDException;
 import org.bff.javampd.exception.MPDPlayerException;
 import org.bff.javampd.exception.MPDPlaylistException;
 import org.bff.javampd.objects.MPDSong;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MpdRadio {
     static Logger log = LoggerFactory.getLogger(MpdRadio.class.getName());
