@@ -198,6 +198,7 @@ public class PiConfigurator extends AbstractConfigurator {
         RelayBoardDevice rele12 = new RelayBoardDevice("rele12", rozvadecDole, 2);
         OnOffActor ovladacGaraz = new OnOffActor("ovladacGaraz", "Vrata garaz", rele12.getRele2(), 0, 1);
         OnOffActor bzucakDvere = new OnOffActor("bzucakDvere", "Bzucak Dvere", rele12.getRele1(), 0, 1);
+        OnOffActor malyStromek = new OnOffActor("malyStromek", "Stromek pred dvermi", rele12.getRele3(), 0, 1);
 
         SwitchListener lst = nodeInfoCollector.getSwitchListener();
 
@@ -442,7 +443,8 @@ public class PiConfigurator extends AbstractConfigurator {
         lst.addActionBinding(new ActionBinding(schodyDoleL1Sw.getRightUpperButton(), bzucakAction, null));
 
         Action stromekAction = new InvertActionWithTimer(zasStromek, 4 * 3600);
-        lst.addActionBinding(new ActionBinding(schodyDoleL1Sw.getRightBottomButton(), stromekAction, null));
+        Action malyStromekAction = new InvertActionWithTimer(malyStromek, 4 * 3600);
+        lst.addActionBinding(new ActionBinding(schodyDoleL1Sw.getRightBottomButton(), new Action[]{stromekAction, malyStromekAction}, null));
 
         IndicatorAction garazIndicator = new IndicatorAction(schodyDoleR1Sw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
 
