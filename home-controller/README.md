@@ -1,7 +1,9 @@
 #TODO
 * [x] Remove boolean invert in callListenersAndSetActionData()
 * [x] refactor modules
+* [ ] refactor IOnOfActor.switchOn percent parameter from int to double
 * [ ] refactor web config
+* [ ] NodeInfoCollector: Convert node list to int->NodeInfo map
 * [ ] **BUG:** Broken stylesheets on http://pi/lights, louvers
 * [ ] **BUG:** frozen web after 5+ louvers are moving...
 * [ ] water pump report

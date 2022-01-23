@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.chuma.homecontroller.app.servlet.Servlet;
+import org.chuma.homecontroller.app.servlet.ServletAction;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.AbstractSensorAction;
@@ -726,11 +727,10 @@ public class PiConfigurator extends AbstractConfigurator {
         InputDevice cidlaRozvadec = new InputDevice("cidlaRozvadec", rozvadecDole, 3);
         setupMagneticSensor(lst, cidlaRozvadec.getIn1AndActivate(), "mgntCrpd", "Cerpadlo", waterPumpMonitor.getOnAction(), waterPumpMonitor.getOffAction());
 
-        Servlet.action1 = bzucakAction;
-        Servlet.action2 = ovladacGarazAction;
+        Servlet.rootActions.add(new ServletAction("Bzučák", bzucakAction));
+        Servlet.rootActions.add(new ServletAction("Garáž", ovladacGarazAction));
 
-//        Servlet.action4 = new AudioAction();
-        Servlet.action5 = null;
+
         Servlet.setLouversControllers(louversControllers);
         Servlet.setValveControllers(valveControllers);
 
@@ -748,8 +748,6 @@ public class PiConfigurator extends AbstractConfigurator {
         Servlet.setLightActions(lightsActions.toArray(new Action[lightsActions.size()]));
         Servlet.pirStatusList = pirStatusList;
         Servlet.hvacActor = hvacActor;
-        Servlet.hvacOnAction = new SwitchOnSensorAction(hvacActor, 5 * 3600);
-        Servlet.hvacOffAction = new SwitchOffAction(hvacActor);
         Servlet.waterPumpMonitor = waterPumpMonitor;
 
 //        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);

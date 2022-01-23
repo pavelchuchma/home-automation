@@ -16,11 +16,11 @@ import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
 
 public class NodeTestRunner extends Thread {
     static Logger log = LoggerFactory.getLogger(NodeTestRunner.class.getName());
+    private final NodeInfo nodeInfo;
+    private final Node node;
     Mode mode = Mode.cycle;
     boolean modeApplied = false;
     List<ConnectedDevice> oldDevices;
-    private NodeInfo nodeInfo;
-    private Node node;
 
     public NodeTestRunner(NodeInfo nodeInfo) {
         this.nodeInfo = nodeInfo;

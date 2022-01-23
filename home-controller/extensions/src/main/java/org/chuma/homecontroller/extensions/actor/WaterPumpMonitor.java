@@ -23,7 +23,7 @@ public class WaterPumpMonitor implements IReadableOnOff {
             isOn = false;
             if (previousDurationMs > 0) {
                 synchronized (records) {
-                    records.add(new Record(new Date(System.currentTimeMillis() - previousDurationMs), previousDurationMs));
+                    records.add(new Record(new Date(System.currentTimeMillis() - previousDurationMs), previousDurationMs/1000.0));
                 }
             }
         }
@@ -77,11 +77,11 @@ public class WaterPumpMonitor implements IReadableOnOff {
 
     public static class Record {
         public Date time;
-        public int durationMs;
+        public double duration;
 
-        public Record(Date time, int durationMs) {
+        public Record(Date time, double duration) {
             this.time = time;
-            this.durationMs = durationMs;
+            this.duration = duration;
         }
     }
 }

@@ -340,9 +340,9 @@ function drawHvacScreen() {
 function onHvacClick(event) {
     var hvacStatus = itemStatusMap['hvac'];
     if (hvacStatus.on) {
-        sendAction('/hvac/action?id=hvac&on=false');
+        sendAction('/rest/hvac/action?id=hvac&on=false');
     } else {
-        sendAction('/hvac/action?id=hvac&on=true');
+        sendAction('/rest/hvac/action?id=hvac&on=true');
     }
 }
 
@@ -599,7 +599,7 @@ function getNewLightValue(lightStatus) {
 }
 
 function buildLouversActionLink(itemStatus, possiton, offset) {
-    return '/louvers/action?id=' + itemStatus.id + '&pos=' + possiton + '&off=' + offset;
+    return '/rest/louvers/action?id=' + itemStatus.id + '&pos=' + possiton + '&off=' + offset;
 }
 
 var tmp = '';
@@ -625,10 +625,10 @@ function onCanvasClick(event) {
     var action;
     if (startsWith(selectedToolId, 'light')) {
         var value = getNewLightValue(itemStatus);
-        action = '/lights/action?id=' + itemStatus.id + "&" + "val=" + value;
+        action = '/rest/pwmLights/action?id=' + itemStatus.id + "&" + "val=" + value;
     } else if (startsWith(selectedToolId, 'valveToggle')) {
         var valveVal = (getValveState(itemStatus.act, itemStatus.pos) == 0) ? 100 : 0;
-        action = '/airvalves/action?id=' + itemStatus.id + "&" + "val=" + valveVal;
+        action = '/rest/airValves/action?id=' + itemStatus.id + "&" + "val=" + valveVal;
     } else if (startsWith(selectedToolId, 'louvers')) {
         switch (selectedToolId) {
             case 'louversUp':
@@ -681,18 +681,18 @@ function updateImpl(path, code) {
 }
 
 function updateItems() {
-    updateImpl('/lights/status', function (request) {
-        parseJsonStatusResponse(request, 'lights', itemStatusMap);
-        updateImpl('/louvers/status', function (request) {
+    updateImpl('/rest/pwmLights/status', function (request) {
+        parseJsonStatusResponse(request, 'pwmLights', itemStatusMap);
+        updateImpl('/rest/louvers/status', function (request) {
             parseJsonStatusResponse(request, 'louvers', itemStatusMap);
-            updateImpl('/airvalves/status', function (request) {
+            updateImpl('/rest/airValves/status', function (request) {
                 parseJsonStatusResponse(request, 'airValves', itemStatusMap);
-                updateImpl('/pir/status', function (request) {
+                updateImpl('/rest/pir/status', function (request) {
                     parseJsonStatusResponse(request, 'pir', itemStatusMap);
-                    updateImpl('/hvac/status', function (request) {
+                    updateImpl('/rest/hvac/status', function (request) {
                         parseJsonStatusResponse(request, 'hvac', itemStatusMap);
-                        updateImpl('/wpump/status', function (request) {
-                            parseJsonStatusResponse(request, 'wpmp', itemStatusMap);
+                        updateImpl('/rest/wpump/status', function (request) {
+                            parseJsonStatusResponse(request, 'wpump', itemStatusMap);
                             drawItems();
                         });
                     });
