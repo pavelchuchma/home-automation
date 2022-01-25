@@ -3,7 +3,6 @@ package org.chuma.homecontroller.app.servlet.pages;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 
 import org.eclipse.jetty.server.Request;
 
@@ -15,12 +14,10 @@ public class LouversPage extends AbstractPage {
     public static final String CLASS_LOUVERS_ARROW_ACTIVE = "louversArrow louversArrow-moving";
     public static final String TARGET_LOUVERS = "/louvers";
     final LouversController[] louversControllers;
-    final Map<String, LouversController> louversControllerMap;
 
-    public LouversPage(LouversController[] louversControllers, Map<String, LouversController> louversControllerMap) {
+    public LouversPage(LouversController[] louversControllers) {
         super(TARGET_LOUVERS, "Žaluzie", "Žaluzie", "favicon.png");
         this.louversControllers = louversControllers;
-        this.louversControllerMap = louversControllerMap;
     }
 
     public String getBody() {

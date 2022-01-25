@@ -5,10 +5,8 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.NodePin;
 import org.chuma.homecontroller.base.packet.Packet;
-import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
 
 public abstract class AbstractPinActor extends AbstractActor {
     protected static final int RETRY_COUNT = 5;
@@ -30,21 +28,15 @@ public abstract class AbstractPinActor extends AbstractActor {
             throw new IllegalArgumentException(String.format("Cannot set value %d to pin %s. Pin value can be 0 or 1 only.", value, nodePin));
         }
 
-        NodeInfoCollector nodeInfoCollector = NodeInfoCollector.getInstance();
-        Node node = nodeInfoCollector.getNode(nodePin.getNodeId());
-        if (node == null) {
-            throw new IllegalStateException(String.format("Node #%d not found in repository.", nodePin.getNodeId()));
-        }
-
         for (int i = 0; i < retryCount; i++) {
             try {
                 log.debug(String.format("Setting pin %s to: %d", nodePin, value));
-                Packet response = node.setPinValue(nodePin.getPin(), value);
+                Packet response = nodePin.getNode().setPinValue(nodePin.getPin(), value);
                 if (response == null) {
                     throw new IOException("No response.");
                 }
                 if (response.data == null || response.data.length != 2) {
-                    throw new IOException(String.format("Unexpected response length %s", response.toString()));
+                    throw new IOException(String.format("Unexpected response length %s", response));
                 }
 
                 // verify value in response
@@ -56,7 +48,7 @@ public abstract class AbstractPinActor extends AbstractActor {
                 return true;
 
             } catch (IOException e) {
-                log.error(String.format("SetPin %s failed.", nodePin.toString()), e);
+                log.error(String.format("SetPin %s failed.", nodePin), e);
             }
         }
         return false;

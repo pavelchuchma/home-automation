@@ -14,19 +14,19 @@ import org.chuma.homecontroller.controller.action.Action;
 
 public class SwitchListener extends AbstractNodeListener {
     static Logger log = LoggerFactory.getLogger(SwitchListener.class.getName());
-    ConcurrentHashMap<String, ActionBinding> switchMap = new ConcurrentHashMap<String, ActionBinding>();
+    ConcurrentHashMap<String, ActionBinding> switchMap = new ConcurrentHashMap<>();
 
     public static String createNodePinKey(int nodeId, Pin pin) {
         return String.format("%d:%s", nodeId, pin);
     }
 
     public void addActionBinding(ActionBinding binding) {
-        String key = createNodePinKey(binding.getTrigger().getNodeId(), binding.getTrigger().getPin());
+        String key = createNodePinKey(binding.getTrigger().getNode().getNodeId(), binding.getTrigger().getPin());
         ActionBinding existingMapping = switchMap.put(key, binding);
         if (existingMapping != null) {
-            throw new IllegalArgumentException("Node #" + binding.getTrigger().getNodeId() + ":" + binding.getTrigger().getPin().name() + " already bound");
+            throw new IllegalArgumentException("Node #" + binding.getTrigger().getNode().getNodeId() + ":" + binding.getTrigger().getPin().name() + " already bound");
         }
-        log.info(String.format("ActionBinding '%s' added", binding.toString()));
+        log.info(String.format("ActionBinding '%s' added", binding));
         if (binding.getButtonDownActions() != null) {
             log.info(" buttonDown");
             for (Action a : binding.getButtonDownActions()) {

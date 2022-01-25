@@ -52,7 +52,7 @@ public class Main {
             packetUartIO.start();
             System.out.println("Listening ...");
 
-            Servlet.startServer(nodeInfoCollector);
+            Servlet.startServer(configurator.getServlet());
 
         } catch (PacketUartIOException e) {
             log.error("Initialization failed", e);

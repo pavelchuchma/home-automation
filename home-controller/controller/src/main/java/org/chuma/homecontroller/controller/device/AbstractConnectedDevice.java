@@ -26,7 +26,7 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
         }
 
         for (int i = 0; i < 6; i++) {
-            pins[i] = new NodePin(String.format("%s:%d.%s", id, connectorNumber, names[i]), node.getNodeId(), getPin(connectorNumber, i + 1));
+            pins[i] = new NodePin(String.format("%s:%d.%s", id, connectorNumber, names[i]), node, getPin(connectorNumber, i + 1));
         }
 
         this.connectorNumber = connectorNumber;

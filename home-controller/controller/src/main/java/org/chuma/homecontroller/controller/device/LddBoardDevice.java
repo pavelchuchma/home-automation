@@ -65,7 +65,7 @@ public class LddBoardDevice extends AbstractConnectedDevice {
         double maxLddCurrent;
 
         private LddNodePin(NodePin nodePin, double maxLddCurrent) {
-            super(nodePin.getId(), nodePin.getNodeId(), nodePin.getPin());
+            super(nodePin.getId(), nodePin.getNode(), nodePin.getPin());
             this.maxLddCurrent = maxLddCurrent;
         }
 

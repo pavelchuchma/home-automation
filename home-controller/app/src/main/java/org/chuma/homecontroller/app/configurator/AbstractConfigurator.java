@@ -2,6 +2,8 @@ package org.chuma.homecontroller.app.configurator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -32,10 +34,10 @@ public abstract class AbstractConfigurator {
     static Logger log = LoggerFactory.getLogger(AbstractConfigurator.class.getName());
     protected NodeInfoCollector nodeInfoCollector;
     protected List<PirStatus> pirStatusList = new ArrayList<>();
+    Servlet servlet;
 
     public AbstractConfigurator(NodeInfoCollector nodeInfoCollector) {
         this.nodeInfoCollector = nodeInfoCollector;
-        Servlet.configurator = this;
     }
 
     protected static void configurePwmLights(SwitchListener lst, WallSwitch wallSwitch, WallSwitch.Side side, int initialPwmValue, PwmActor... pwmActors) {
@@ -109,12 +111,28 @@ public abstract class AbstractConfigurator {
     }
 
     private static Action[] toArray(List<Action> list) {
-        return list.toArray(new Action[list.size()]);
+        return list.toArray(new Action[0]);
     }
 
     public abstract void configure();
 
+    Iterable<PwmActor> getPwmActors(Iterable<Action> lightActions) {
+        Map<String, PwmActor> pwmActorMap = new TreeMap<>();
+        for (Action lightAction : lightActions) {
+            PwmActor actor = (PwmActor) lightAction.getActor();
+            PwmActor old = pwmActorMap.put(actor.getId(), actor);
+            if (old != null && old != actor) {
+                throw new RuntimeException("Id of actor '" + actor.getId() + "' is not unique");
+            }
+        }
+        return pwmActorMap.values();
+    }
+
     public abstract String getConfigurationJs();
+
+    public Servlet getServlet() {
+        return servlet;
+    }
 
     protected void setupPir(SwitchListener lst, NodePin pirPin, String id, String name, Action[] activateActions, Action[] deactivateActions) {
         setupSensor(lst, pirPin, id, name, activateActions, deactivateActions, true);

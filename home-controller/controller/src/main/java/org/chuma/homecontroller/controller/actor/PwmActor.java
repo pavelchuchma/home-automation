@@ -87,19 +87,13 @@ public class PwmActor extends AbstractPinActor implements IOnOffActor {
     private boolean setPwmValue(NodePin nodePin, int value, int retryCount) {
         validatePwmValue(value);
 
-        NodeInfoCollector nodeInfoCollector = NodeInfoCollector.getInstance();
-        Node node = nodeInfoCollector.getNode(nodePin.getNodeId());
-        if (node == null) {
-            throw new IllegalStateException(String.format("Node #%d not found in repository.", nodePin.getNodeId()));
-        }
-
         for (int i = 0; i < retryCount; i++) {
             try {
                 log.debug(String.format("Setting pwm %s to: %d", nodePin, value));
-                Packet response = node.setManualPwmValue(nodePin.getPin(), value);
+                Packet response = nodePin.getNode().setManualPwmValue(nodePin.getPin(), value);
 
                 // ignore no-response on AGATA - testing machine
-                if (!InetAddress.getLocalHost().getHostName().toUpperCase().equals("AGATA")) {
+                if (!InetAddress.getLocalHost().getHostName().equalsIgnoreCase("AGATA")) {
                     if (response == null) {
                         throw new IOException("No response.");
                     }

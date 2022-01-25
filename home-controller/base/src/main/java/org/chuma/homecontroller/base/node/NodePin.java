@@ -2,26 +2,21 @@ package org.chuma.homecontroller.base.node;
 
 public class NodePin {
     String id;
-    private int nodeId;
-    private Pin pin;
+    private final Node node;
+    private final Pin pin;
 
-    public NodePin(int nodeId, Pin pin) {
-        this.nodeId = nodeId;
-        this.pin = pin;
-    }
-
-    public NodePin(String id, int nodeId, Pin pin) {
+    public NodePin(String id, Node node, Pin pin) {
         this.id = id;
-        this.nodeId = nodeId;
+        this.node = node;
         this.pin = pin;
     }
 
     public String toString() {
-        return String.format("%s(node%d.%s)", id, nodeId, pin);
+        return String.format("%s(node%d.%s)", id, node.getNodeId(), pin);
     }
 
-    public int getNodeId() {
-        return nodeId;
+    public Node getNode() {
+        return node;
     }
 
     public Pin getPin() {

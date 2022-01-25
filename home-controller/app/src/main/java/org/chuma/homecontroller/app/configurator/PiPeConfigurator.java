@@ -93,10 +93,10 @@ public class PiPeConfigurator extends AbstractConfigurator {
                 vzduchVratnice = new ValveControllerImpl("vlVrt", "Vratnice", rele51.getRele5(), rele51.getRele6(), 10000),
         };
 
-        Servlet.setLouversControllers(louversControllers);
-        Servlet.setValveControllers(valveControllers);
-        Servlet.setLightActions(lightsActions.toArray(new Action[lightsActions.size()]));
-        Servlet.pirStatusList = pirStatusList;
+//        Servlet.setLouversControllers(louversControllers);
+//        Servlet.setValveControllers(valveControllers);
+//        Servlet.setLightActions(lightsActions.toArray(new Action[lightsActions.size()]));
+//        Servlet.pirStatusList = pirStatusList;
     }
 
     @Override

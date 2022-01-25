@@ -32,13 +32,6 @@ public class NodeInfoCollector implements Iterable<NodeInfo> {
         this.packetUartIO = packetUartIO;
     }
 
-    public static NodeInfoCollector getInstance() {
-        if (instance == null) {
-            throw new IllegalStateException("Not created yet!");
-        }
-        return instance;
-    }
-
     public SwitchListener getSwitchListener() {
         return switchListener;
     }

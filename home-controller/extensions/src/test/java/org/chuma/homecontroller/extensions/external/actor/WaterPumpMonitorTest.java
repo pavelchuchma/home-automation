@@ -45,8 +45,8 @@ public class WaterPumpMonitorTest {
         Assert.assertEquals("getRecords", 2, mon.getLastRecords(2).length);
         WaterPumpMonitor.Record[] records = mon.getLastRecords(10);
         Assert.assertEquals("getRecords", 2, records.length);
-        Assert.assertEquals("getRecords", 10, records[0].durationMs);
-        Assert.assertEquals("getRecords", 20, records[1].durationMs);
+        Assert.assertEquals("getRecords", 0.010, records[0].duration);
+        Assert.assertEquals("getRecords", 0.020, records[1].duration);
 
         Assert.assertEquals("getRecordCountInLastHours", 2, mon.getRecordCountInLastHours(1));
         Assert.assertEquals("getRecordCountInLastHours", 0, mon.getRecordCountInLastHours(0));

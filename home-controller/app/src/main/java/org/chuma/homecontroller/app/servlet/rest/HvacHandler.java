@@ -16,6 +16,10 @@ public class HvacHandler extends AbstractRestHandler<HvacActor> {
     @Override
     void writeJsonItemValues(JsonWriter jw, HvacActor a, HttpServletRequest request) {
         HvacDevice hvacDevice = a.getHvacDevice();
+        if (hvacDevice == null) {
+            return;
+        }
+
         jw.addAttribute("on", hvacDevice.isRunning());
         jw.addAttribute("fanSpeed", hvacDevice.getFanSpeed().toString());
         jw.addAttribute("currentMode", hvacDevice.getCurrentMode().toString());

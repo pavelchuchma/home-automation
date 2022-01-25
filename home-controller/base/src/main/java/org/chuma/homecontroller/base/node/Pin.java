@@ -36,7 +36,7 @@ public enum Pin {
 
     private final int index;
 
-    private Pin(int index) {
+    Pin(int index) {
         this.index = index;
     }
 
