@@ -81,6 +81,7 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
 
             response.setContentType("application/json;charset=utf-8");
             response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Access-Control-Allow-Headers", "*");
             response.getWriter().print(writer);
             response.setStatus(HttpServletResponse.SC_OK);
 
@@ -94,6 +95,8 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
                     log.error("Failed to handle action: " + target, e);
                 }
             }).start();
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Access-Control-Allow-Headers", "*");
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
         }
     }
