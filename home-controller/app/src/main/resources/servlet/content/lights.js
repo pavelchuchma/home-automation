@@ -31,40 +31,53 @@ function drawLightToolSign(x, y, ctx, drawVertical) {
     ctx.stroke();
 }
 
+class ToolBarItem {
+    constructor(id, x, y, floor, drawFunction, prefixValidator) {
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.floor = floor;
+        this.drawFunction = drawFunction;
+        this.prefixValidator = prefixValidator;
+    }
+}
+
 const toolsCoordinates = [
-    //id, x, y, floor, draw function, prefixValidator
-    ['lightToggle', 50, 50, -1, function (x, y, ctx) {
-        drawLightIcon(x - 10, y, 0, ctx);
-        drawLightIcon(x + 10, y, .75, ctx);
-    }, [isPwmId, isStairs]],
-    ['lightPlus', 50, 150, -1, function (x, y, ctx) {
-        drawLightIcon(x, y, toolLightPlusValue / 100, ctx);
-        drawLightToolSign(x, y, ctx, true);
-    }, [isPwmId, isStairs]],
-    ['lightMinus', 50, 250, -1, function (x, y, ctx) {
-        drawLightIcon(x, y, .25, ctx);
-        drawLightToolSign(x, y, ctx, false);
-    }, [isPwmId, isStairs]],
-    ['lightFull', 50, 350, -1, function (x, y, ctx) {
-        drawLightIcon(x, y, 1, ctx);
-    }, [isPwmId, isStairs]],
-    ['lightOff', 50, 450, -1, function (x, y, ctx) {
-        drawLightIcon(x, y, 0, ctx);
-    }, [isPwmId, isStairs]],
-    ['louversUp', 50, 550, -1, function (x, y, ctx) {
-        drawLouversToolIcon(x, y, .3, 0, 'stopped', ctx);
-    }, [isLouversId, isStairs]],
-    ['louversOutshine', 50, 650, -1, function (x, y, ctx) {
-        drawLouversToolIcon(x, y, 1, 0, 'stopped', ctx);
-    }, [isLouversId, isStairs]],
-    ['louversDown', 50, 750, -1, function (x, y, ctx) {
-        drawLouversToolIcon(x, y, 1, 1, 'stopped', ctx);
-    }, [isLouversId, isStairs]],
-    ['valveToggle', 50, 850, -1, function (x, y, ctx) {
-        drawValveIcon(x + 10, y - 5, 1, 'stopped', ctx);
-        drawValveIcon(x - 10, y + 5, 0, 'stopped', ctx);
-    }, [isValveId, isStairs]]
-];
+        //id, x, y, floor, draw function, prefixValidator
+        new ToolBarItem(
+            'lightToggle', 50, 50, -1, function (x, y, ctx) {
+                drawLightIcon(x - 10, y, 0, ctx);
+                drawLightIcon(x + 10, y, .75, ctx);
+            }, [isPwmId, isStairs]),
+        new ToolBarItem('lightPlus', 50, 150, -1, function (x, y, ctx) {
+            drawLightIcon(x, y, toolLightPlusValue / 100, ctx);
+            drawLightToolSign(x, y, ctx, true);
+        }, [isPwmId, isStairs]),
+        new ToolBarItem('lightMinus', 50, 250, -1, function (x, y, ctx) {
+            drawLightIcon(x, y, .25, ctx);
+            drawLightToolSign(x, y, ctx, false);
+        }, [isPwmId, isStairs]),
+        new ToolBarItem('lightFull', 50, 350, -1, function (x, y, ctx) {
+            drawLightIcon(x, y, 1, ctx);
+        }, [isPwmId, isStairs]),
+        new ToolBarItem('lightOff', 50, 450, -1, function (x, y, ctx) {
+            drawLightIcon(x, y, 0, ctx);
+        }, [isPwmId, isStairs]),
+        new ToolBarItem('louversUp', 50, 550, -1, function (x, y, ctx) {
+            drawLouversToolIcon(x, y, .3, 0, 'stopped', ctx);
+        }, [isLouversId, isStairs]),
+        new ToolBarItem('louversOutshine', 50, 650, -1, function (x, y, ctx) {
+            drawLouversToolIcon(x, y, 1, 0, 'stopped', ctx);
+        }, [isLouversId, isStairs]),
+        new ToolBarItem('louversDown', 50, 750, -1, function (x, y, ctx) {
+            drawLouversToolIcon(x, y, 1, 1, 'stopped', ctx);
+        }, [isLouversId, isStairs]),
+        new ToolBarItem('valveToggle', 50, 850, -1, function (x, y, ctx) {
+            drawValveIcon(x + 10, y - 5, 1, 'stopped', ctx);
+            drawValveIcon(x - 10, y + 5, 0, 'stopped', ctx);
+        }, [isValveId, isStairs])
+    ]
+;
 
 
 function drawLouversToolIcon(x, y, position, offset, action, ctx) {
@@ -125,44 +138,40 @@ function drawLouversIconImpl(x, y, position, offset, action, ctx, w, h) {
 
 function drawCharacterIcon(id, text) {
     const coords = itemCoordinateMap[id];
-    const x = coords[0];
-    const y = coords[1];
-
     const w = 70;
     const h = 80;
 
     // white rectangle
     mainCtx.beginPath();
-    mainCtx.rect(x - w / 2, y - h / 2, w, h);
+    mainCtx.rect(coords.x - w / 2, coords.y - h / 2, w, h);
     mainCtx.fillStyle = 'white';
     mainCtx.fill();
     mainCtx.strokeStyle = 'black';
     mainCtx.lineWidth = 2;
     mainCtx.stroke();
 
-
     mainCtx.beginPath();
     mainCtx.font = h - 20 + "px Arial Bold";
     mainCtx.fillStyle = 'black';
     mainCtx.textAlign = "center";
     mainCtx.textBaseline = 'middle';
-    mainCtx.fillText(text, x, y);
+    mainCtx.fillText(text, coords.x, coords.y);
     mainCtx.stroke();
-
 }
 
 const toolCoordinateMap = {};
-let selectedToolId = toolsCoordinates[0][0];
+let selectedToolId = toolsCoordinates[0].id;
 
 
 window.onload = function () {
     try {
+        //id, x, y, floor, draw function, prefixValidator
         itemCoordinates.forEach(function (lc) {
-            itemCoordinateMap[lc[0]] = [lc[1], lc[2], lc[3]];
+            itemCoordinateMap[lc.id] = lc;
         });
 
         toolsCoordinates.forEach(function (tc) {
-            toolCoordinateMap[tc[0]] = [tc[1], tc[2], tc[5]];
+            toolCoordinateMap[tc.id] = tc;
         });
 
         drawMainCanvas();
@@ -194,12 +203,12 @@ function findNearestItem(x, y, coordinates, validatorArray) {
     coordinates.forEach(function (lc) {
         // validate item type
         validatorArray.some(function (validator) {
-            const floor = lc[3];
-            if ((floor < 0 || floor === currentFloor) && validator(lc[0])) {
-                const dist = computeDistance(x, y, lc[1], lc[2]);
+            const floor = lc.floor;
+            if ((floor < 0 || floor === currentFloor) && validator(lc.id)) {
+                const dist = computeDistance(x, y, lc.x, lc.y);
                 if (resDist < 0 || dist < resDist) {
                     resDist = dist;
-                    resId = lc[0];
+                    resId = lc.id;
                 }
                 return true; // stop loop through validators
             }
@@ -235,8 +244,8 @@ function isLouversId(id) {
 
 function drawItems() {
     itemCoordinates.forEach(function (lc) {
-        const id = lc[0];
-        if (lc[3] === currentFloor) {
+        const id = lc.id;
+        if (lc.floor === currentFloor) {
             const statusItem = itemStatusMap[id];
             if (statusItem !== undefined) {
                 switch (statusItem.type) {
@@ -279,8 +288,8 @@ function drawToolSelection() {
         const r = 35;
 
         toolsCtx.beginPath();
-        toolsCtx.rect(c[1] - r, c[2] - r, 2 * r, 2 * r);
-        toolsCtx.strokeStyle = (selectedToolId === c[0]) ? 'red' : toolBoxBackground;
+        toolsCtx.rect(c.x - r, c.y - r, 2 * r, 2 * r);
+        toolsCtx.strokeStyle = (selectedToolId === c.id) ? 'red' : toolBoxBackground;
         toolsCtx.lineWidth = 10;
         toolsCtx.stroke();
     });
@@ -296,7 +305,7 @@ function drawToolsCanvas() {
     toolsCtx.stroke();
 
     toolsCoordinates.forEach(function (c) {
-        c[4](c[1], c[2], toolsCtx);
+        c.drawFunction(c.x, c.y, toolsCtx);
     });
 
     drawToolSelection();
@@ -519,42 +528,30 @@ function drawPirIcon(x, y, age, ctx) {
 function drawLight(id) {
     const lightStatus = itemStatusMap[id];
     const power = lightStatus.val / lightStatus.maxVal;
-
     const coords = itemCoordinateMap[id];
-    const x = coords[0];
-    const y = coords[1];
 
-    drawLightIcon(x, y, power, mainCtx);
+    drawLightIcon(coords.x, coords.y, power, mainCtx);
 }
 
 function drawValve(id) {
     const valveStatus = itemStatusMap[id];
-
     const coords = itemCoordinateMap[id];
-    const x = coords[0];
-    const y = coords[1];
 
-    drawValveIcon(x, y, valveStatus.pos, valveStatus.act, mainCtx);
+    drawValveIcon(coords.x, coords.y, valveStatus.pos, valveStatus.act, mainCtx);
 }
 
 function drawPir(id) {
     const pirStatus = itemStatusMap[id];
-
     const coords = itemCoordinateMap[id];
-    const x = coords[0];
-    const y = coords[1];
 
-    drawPirIcon(x, y, pirStatus.age, mainCtx);
+    drawPirIcon(coords.x, coords.y, pirStatus.age, mainCtx);
 }
 
 function drawOneLouvers(id) {
     const louversStatus = itemStatusMap[id];
-
     const coords = itemCoordinateMap[id];
-    const x = coords[0];
-    const y = coords[1];
 
-    drawLouversIcon(x, y, louversStatus.pos, louversStatus.off, louversStatus.act, mainCtx);
+    drawLouversIcon(coords.x, coords.y, louversStatus.pos, louversStatus.off, louversStatus.act, mainCtx);
 }
 
 function parseJsonStatusResponse(request, map) {
@@ -609,8 +606,8 @@ function getNewLightValue(lightStatus) {
     return val;
 }
 
-function buildLouversActionLink(itemStatus, possiton, offset) {
-    return '/rest/louvers/action?id=' + itemStatus.id + '&pos=' + possiton + '&off=' + offset;
+function buildLouversActionLink(itemStatus, position, offset) {
+    return '/rest/louvers/action?id=' + itemStatus.id + '&pos=' + position + '&off=' + offset;
 }
 
 let tmp = '';
@@ -619,7 +616,7 @@ function onCanvasClick(event) {
 
     const selectedTool = toolCoordinateMap[selectedToolId];
 
-    const itemId = findNearestItem(event.offsetX, event.offsetY, itemCoordinates, selectedTool[2]);
+    const itemId = findNearestItem(event.offsetX, event.offsetY, itemCoordinates, selectedTool.prefixValidator);
     const itemStatus = itemStatusMap[itemId];
 
     if (isStairs(itemId)) {
@@ -661,7 +658,7 @@ function onCanvasClick(event) {
     const coords = itemCoordinateMap[itemStatus.id];
     // draw changed light as gray
     mainCtx.beginPath();
-    mainCtx.arc(coords[0], coords[1], 15, 0, 2 * Math.PI);
+    mainCtx.arc(coords.x, coords.y, 15, 0, 2 * Math.PI);
     mainCtx.fillStyle = 'gray';
     mainCtx.fill();
 }
