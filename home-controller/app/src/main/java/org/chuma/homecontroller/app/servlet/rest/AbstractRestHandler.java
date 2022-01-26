@@ -42,14 +42,16 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
         return itemMap;
     }
 
-    static String getMandatoryStringParam(HttpServletRequest request, String name) {
-        String val = request.getParameter(name);
-        Validate.notNull(val, "Mandatory parameter '" + name + "' is missing");
-        return val;
+    static String getMandatoryStringParam(Map<String, String[]> requestParams, String name) {
+        String[] values = requestParams.get(name);
+        if (values == null || values.length == 0) {
+            throw new IllegalArgumentException("Mandatory parameter '" + name + "' is missing");
+        }
+        return values[0];
     }
 
-    static int getMandatoryIntParam(HttpServletRequest request, String name) {
-        return Integer.parseInt(getMandatoryStringParam(request, name));
+    static int getMandatoryIntParam(Map<String, String[]> requestParams, String name) {
+        return Integer.parseInt(getMandatoryStringParam(requestParams, name));
     }
 
     static int getIntParam(HttpServletRequest request, String name, int defaultValue) {
@@ -71,7 +73,7 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
     }
 
     @Override
-    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void handle(String target, Request request, HttpServletResponse response) throws IOException {
         if (target.startsWith(statusPath)) {
             log.debug("writeStatus: {}", this.getClass().getSimpleName());
             JsonWriter writer = new JsonWriter(true);
@@ -85,12 +87,13 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
             response.getWriter().print(writer);
             response.setStatus(HttpServletResponse.SC_OK);
 
-            baseRequest.setHandled(true);
+            request.setHandled(true);
         } else if (target.startsWith(actionPath)) {
-            T item = getItemById(request);
+            final Map<String, String[]> requestParameters = request.getParameterMap();
+            T item = getItemById(requestParameters);
             new Thread(() -> {
                 try {
-                    processAction(item, baseRequest, request);
+                    processAction(item, requestParameters);
                 } catch (Exception e) {
                     log.error("Failed to handle action: " + target, e);
                 }
@@ -115,14 +118,13 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
     void writeJsonItemValues(JsonWriter jw, T item, HttpServletRequest request) {
     }
 
-    void processAction(T instance, Request baseRequest, HttpServletRequest request) {
+    void processAction(T instance, Map<String, String[]> requestParameters) {
     }
 
-    T getItemById(HttpServletRequest request) {
-        String id = getMandatoryStringParam(request, "id");
+    T getItemById(Map<String, String[]> requestParams) {
+        String id = getMandatoryStringParam(requestParams, "id");
         T item = itemMap.get(id);
         Validate.notNull(item, "no item with id '" + id + "' found");
         return item;
     }
-
 }

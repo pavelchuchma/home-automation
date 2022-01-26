@@ -2,7 +2,7 @@ package org.chuma.homecontroller.app.servlet.rest;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.eclipse.jetty.server.Request;
+import java.util.Map;
 
 import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
 import org.chuma.homecontroller.controller.controller.LouversController;
@@ -21,9 +21,9 @@ public class LouversHandler extends AbstractRestHandler<LouversController> {
     }
 
     @Override
-    void processAction(LouversController controller, Request baseRequest, HttpServletRequest request) {
-        int position = getMandatoryIntParam(request, "pos");
-        int offset = getMandatoryIntParam(request, "off");
+    void processAction(LouversController controller, Map<String, String[]> requestParameters) {
+        int position = getMandatoryIntParam(requestParameters, "pos");
+        int offset = getMandatoryIntParam(requestParameters, "off");
         if (position == 0) {
             controller.up();
         } else if (position == 100) {

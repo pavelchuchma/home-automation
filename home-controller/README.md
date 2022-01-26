@@ -5,7 +5,7 @@
 * [ ] refactor web config
 * [ ] NodeInfoCollector: Convert node list to int->NodeInfo map
 * [ ] **BUG:** Broken stylesheets on http://pi/lights, louvers
-* [ ] **BUG:** frozen web after 5+ louvers are moving...
+* [x] **BUG:** frozen web after 5+ louvers are moving...
 * [ ] water pump report
 * [ ] deactivate PIR after manual switch off
 * [ ] Alexa support

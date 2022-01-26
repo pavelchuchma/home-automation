@@ -2,7 +2,7 @@ package org.chuma.homecontroller.app.servlet.rest;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.eclipse.jetty.server.Request;
+import java.util.Map;
 
 import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
 import org.chuma.homecontroller.extensions.actor.HvacActor;
@@ -36,8 +36,8 @@ public class HvacHandler extends AbstractRestHandler<HvacActor> {
     }
 
     @Override
-    void processAction(HvacActor hvacActor, Request baseRequest, HttpServletRequest request) {
-        if ("true".equals(getMandatoryStringParam(request, "on"))) {
+    void processAction(HvacActor hvacActor, Map<String, String[]> requestParameters) {
+        if ("true".equals(getMandatoryStringParam(requestParameters, "on"))) {
             hvacActor.switchOn(100, null);
         } else {
             hvacActor.switchOff(null);

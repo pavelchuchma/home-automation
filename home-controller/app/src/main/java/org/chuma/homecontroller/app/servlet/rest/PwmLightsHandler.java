@@ -1,8 +1,8 @@
 package org.chuma.homecontroller.app.servlet.rest;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
-import org.eclipse.jetty.server.Request;
 import static org.chuma.homecontroller.app.servlet.Servlet.currentValueFormatter;
 
 import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
@@ -23,8 +23,8 @@ public class PwmLightsHandler extends AbstractRestHandler<PwmActor> {
     }
 
     @Override
-    void processAction(PwmActor pwmActor, Request baseRequest, HttpServletRequest request) {
-        int val = getMandatoryIntParam(request, "val");
+    void processAction(PwmActor pwmActor, Map<String, String[]> requestParameters) {
+        int val = getMandatoryIntParam(requestParameters, "val");
         pwmActor.setValue(val, this);
     }
 }

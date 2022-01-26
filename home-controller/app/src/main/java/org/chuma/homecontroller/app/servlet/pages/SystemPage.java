@@ -1,6 +1,5 @@
 package org.chuma.homecontroller.app.servlet.pages;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
@@ -156,7 +155,7 @@ public class SystemPage extends AbstractPage {
     }
 
     @Override
-    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void handle(String target, Request request, HttpServletResponse response) throws IOException {
         int debugNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_INFO);
         int resetNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_RESET);
         int testCycleNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_CYCLE);
@@ -177,7 +176,7 @@ public class SystemPage extends AbstractPage {
             stopNodeTest(testEndNodeId);
         }
 
-        sendOkResponse(baseRequest, response, getBody(debugNodeId));
+        sendOkResponse(request, response, getBody(debugNodeId));
     }
 
     private void startNodeTest(int nodeId, NodeTestRunner.Mode mode) {

@@ -1,6 +1,5 @@
 package org.chuma.homecontroller.app.servlet.pages;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -73,7 +72,7 @@ public class LouversPage extends AbstractPage {
     }
 
     @Override
-    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        sendOkResponse(baseRequest, response, getBody());
+    public void handle(String target, Request request, HttpServletResponse response) throws IOException {
+        sendOkResponse(request, response, getBody());
     }
 }

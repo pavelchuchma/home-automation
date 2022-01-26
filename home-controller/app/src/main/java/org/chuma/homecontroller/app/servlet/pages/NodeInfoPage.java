@@ -1,6 +1,5 @@
 package org.chuma.homecontroller.app.servlet.pages;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -95,11 +94,11 @@ public class NodeInfoPage extends AbstractPage {
     }
 
     @Override
-    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void handle(String target, Request request, HttpServletResponse response) throws IOException {
         int actionIndex = tryTargetMatchAndParseArg(target, "/a");
         if (actionIndex > 0 && actionIndex <= rootActions.size()) {
             rootActions.get(actionIndex - 1).action.perform(-1);
         }
-        sendOkResponse(baseRequest, response, getBody());
+        sendOkResponse(request, response, getBody());
     }
 }

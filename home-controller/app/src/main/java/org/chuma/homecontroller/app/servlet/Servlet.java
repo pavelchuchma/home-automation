@@ -64,7 +64,7 @@ public class Servlet extends AbstractHandler {
             log.debug("handle: " + target);
             for (Handler handler : handlers) {
                 if (handler.getRootPath().equals(target) || target.startsWith(handler.getRootPath() + "/") || target.startsWith(handler.getRootPath() + "?")) {
-                    handler.handle(target, baseRequest, request, response);
+                    handler.handle(target, baseRequest, response);
                     return;
                 }
             }
@@ -77,7 +77,7 @@ public class Servlet extends AbstractHandler {
                     return;
                 }
             }
-            defaultPage.handle(target, baseRequest, request, response);
+            defaultPage.handle(target, baseRequest, response);
         } catch (Exception e) {
             log.error("failed to process '" + target + "'", e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
