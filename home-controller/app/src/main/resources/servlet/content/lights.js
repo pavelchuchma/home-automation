@@ -261,13 +261,14 @@ function drawItems() {
                     case 'pir':
                         drawPir(id);
                         break;
+                    case 'hvac':
+                        drawHvacScreen();
+                        break;
                 }
             } else if (id === 'stairsUp') {
                 drawCharacterIcon(id, '▲')
             } else if (id === 'stairsDown') {
                 drawCharacterIcon(id, '▼')
-            } else if (id === 'hvac') {
-                drawHvacScreen()
             }
         }
     });

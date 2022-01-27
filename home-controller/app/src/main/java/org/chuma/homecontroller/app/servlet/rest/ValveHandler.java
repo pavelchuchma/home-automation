@@ -14,7 +14,7 @@ public class ValveHandler extends AbstractRestHandler<ValveController> {
     @Override
     void writeJsonItemValues(JsonWriter jw, ValveController item, HttpServletRequest request) {
         jw.addAttribute("name", item.getLabel());
-        jw.addAttribute("pos", Double.toString(item.getPosition()));
+        jw.addAttribute("pos", item.getPosition());
         jw.addAttribute("act", item.getActivity().toString());
     }
 

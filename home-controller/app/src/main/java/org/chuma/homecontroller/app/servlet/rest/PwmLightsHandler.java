@@ -19,7 +19,7 @@ public class PwmLightsHandler extends AbstractRestHandler<PwmActor> {
         jw.addAttribute("name", actor.getLabel());
         jw.addAttribute("val", actor.getPwmValue());
         jw.addAttribute("maxVal", actor.getMaxPwmValue());
-        jw.addAttribute("curr", currentValueFormatter.format(actor.getOutputCurrent()));
+        jw.addAttribute("curr", actor.getOutputCurrent());
     }
 
     @Override
