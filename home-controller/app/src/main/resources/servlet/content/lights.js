@@ -1,7 +1,6 @@
 let mainCtx;
 let toolsCtx;
 let hvacCtx;
-let e = '';
 
 let currentFloor = 0;
 const floorIds = ['1stFloor', '2ndFloor'];
@@ -13,7 +12,6 @@ const baseUrl = getBaseUrl();
 const itemCoordinates = getComponents();
 
 const itemStatusMap = {};
-// x, y, floor
 const itemCoordinateMap = {};
 
 function drawLightToolSign(x, y, ctx, drawVertical) {
@@ -31,51 +29,70 @@ function drawLightToolSign(x, y, ctx, drawVertical) {
     ctx.stroke();
 }
 
-class ToolBarItem {
-    constructor(id, x, y, floor, drawFunction, prefixValidator) {
-        this.id = id;
-        this.x = x;
-        this.y = y;
-        this.floor = floor;
+class ToolBarItem extends CoordinateItem {
+    constructor(id, x, y, floor, drawFunction, prefixValidator, onItemClickHandler) {
+        super(id, x, y, floor, 'toolbar')
         this.drawFunction = drawFunction;
         this.prefixValidator = prefixValidator;
+        this.onItemClickHandler = onItemClickHandler;
     }
 }
 
+function handleLightClick(itemStatus, toolbarId) {
+    const value = getNewLightValue(itemStatus, toolbarId);
+    return '/rest/pwmLights/action?id=' + itemStatus.id + "&" + "val=" + value;
+}
+
 const toolsCoordinates = [
-        //id, x, y, floor, draw function, prefixValidator
         new ToolBarItem(
             'lightToggle', 50, 50, -1, function (x, y, ctx) {
                 drawLightIcon(x - 10, y, 0, ctx);
                 drawLightIcon(x + 10, y, .75, ctx);
-            }, [isPwmId, isStairs]),
+            }, [isPwmId, isStairs], handleLightClick),
+
         new ToolBarItem('lightPlus', 50, 150, -1, function (x, y, ctx) {
             drawLightIcon(x, y, toolLightPlusValue / 100, ctx);
             drawLightToolSign(x, y, ctx, true);
-        }, [isPwmId, isStairs]),
+        }, [isPwmId, isStairs], handleLightClick),
+
         new ToolBarItem('lightMinus', 50, 250, -1, function (x, y, ctx) {
             drawLightIcon(x, y, .25, ctx);
             drawLightToolSign(x, y, ctx, false);
-        }, [isPwmId, isStairs]),
+        }, [isPwmId, isStairs], handleLightClick),
+
         new ToolBarItem('lightFull', 50, 350, -1, function (x, y, ctx) {
             drawLightIcon(x, y, 1, ctx);
-        }, [isPwmId, isStairs]),
+        }, [isPwmId, isStairs], handleLightClick),
+
         new ToolBarItem('lightOff', 50, 450, -1, function (x, y, ctx) {
             drawLightIcon(x, y, 0, ctx);
-        }, [isPwmId, isStairs]),
+        }, [isPwmId, isStairs], handleLightClick),
+
         new ToolBarItem('louversUp', 50, 550, -1, function (x, y, ctx) {
             drawLouversToolIcon(x, y, .3, 0, 'stopped', ctx);
-        }, [isLouversId, isStairs]),
+        }, [isLouversId, isStairs], function (itemStatus, toolbarId) {
+            return buildLouversActionLink(itemStatus, 0, 0);
+        }),
+
         new ToolBarItem('louversOutshine', 50, 650, -1, function (x, y, ctx) {
             drawLouversToolIcon(x, y, 1, 0, 'stopped', ctx);
-        }, [isLouversId, isStairs]),
+        }, [isLouversId, isStairs], function (itemStatus, toolbarId) {
+            return buildLouversActionLink(itemStatus, 100, 0);
+        }),
+
         new ToolBarItem('louversDown', 50, 750, -1, function (x, y, ctx) {
             drawLouversToolIcon(x, y, 1, 1, 'stopped', ctx);
-        }, [isLouversId, isStairs]),
+        }, [isLouversId, isStairs], function (itemStatus, toolbarId) {
+            return buildLouversActionLink(itemStatus, 100, 100);
+        }),
+
         new ToolBarItem('valveToggle', 50, 850, -1, function (x, y, ctx) {
             drawValveIcon(x + 10, y - 5, 1, 'stopped', ctx);
             drawValveIcon(x - 10, y + 5, 0, 'stopped', ctx);
-        }, [isValveId, isStairs])
+        }, [isValveId, isStairs], function (itemStatus, toolbarId) {
+            const valveVal = (getValveState(itemStatus.act, itemStatus.pos) === 0) ? 100 : 0;
+            return '/rest/airValves/action?id=' + itemStatus.id + "&" + "val=" + valveVal;
+        })
     ]
 ;
 
@@ -162,12 +179,10 @@ function drawCharacterIcon(id, text) {
 const toolCoordinateMap = {};
 let selectedToolId = toolsCoordinates[0].id;
 
-
 window.onload = function () {
     try {
-        //id, x, y, floor, draw function, prefixValidator
-        itemCoordinates.forEach(function (lc) {
-            itemCoordinateMap[lc.id] = lc;
+        itemCoordinates.forEach(function (item) {
+            itemCoordinateMap[item.id] = item;
         });
 
         toolsCoordinates.forEach(function (tc) {
@@ -179,7 +194,15 @@ window.onload = function () {
         drawHvacCanvas();
         drawPumpCanvas();
         setInterval(onTimer, 750);
-        onTimer();
+        updateItems(false);
+
+        // assign types to coordinate CoordinateItem instance
+        itemCoordinates.forEach(function (item) {
+            const statusItem = itemStatusMap[item.id];
+            if (statusItem !== undefined && item.type === undefined) {
+                item.type = statusItem.type;
+            }
+        })
     } catch (e) {
         printException(e);
     }
@@ -230,10 +253,6 @@ function isValveId(id) {
     return startsWith(id, "vl");
 }
 
-function isPirId(id) {
-    return startsWith(id, "pir") || startsWith(id, "mgnt");
-}
-
 function startsWith(str, substr) {
     return str.length >= substr.length && (str.substr(0, substr.length) === substr);
 }
@@ -264,6 +283,9 @@ function drawItems() {
                     case 'hvac':
                         drawHvacScreen();
                         break;
+                    case 'wpump':
+                        drawPumpScreen();
+                        break;
                 }
             } else if (id === 'stairsUp') {
                 drawCharacterIcon(id, '▲')
@@ -272,7 +294,6 @@ function drawItems() {
             }
         }
     });
-    drawPumpScreen();
 }
 
 function drawMainCanvas() {
@@ -346,7 +367,7 @@ function drawHvacScreen() {
         hvacCtx.fillText('Unit temp: ' + hvacStatus.unitTemperature, 5, y += step);
         if (hvacStatus.defrost) {
             hvacCtx.font = "bold 15px Arial";
-            hvacCtx.fillText('Defrost!', 5, y += step + 5);
+            hvacCtx.fillText('Defrost!', 5, step + 5);
         }
     } else {
         hvacCtx.fillStyle = 'black';
@@ -389,7 +410,7 @@ function drawPumpScreen() {
     if (pumpStatus.lastRecords.length > 0) {
         lastRecordDuration = pumpStatus.lastRecords[pumpStatus.lastRecords.length - 1].duration;
     }
-    pumpCtx.fillText('Posledni: ' + Math.round(lastRecordDuration / 10.0) / 100.0 + ' s', 5, 35);
+    pumpCtx.fillText('Poslední: ' + Math.round(lastRecordDuration * 10.0) / 10.0 + ' s', 5, 35);
 }
 
 function drawLightIcon(x, y, power, ctx) {
@@ -454,7 +475,7 @@ function drawValveIcon(x, y, pos, act, ctx) {
     const r = 17;
     const color = getValveColor(act, pos);
 
-    // background rectagle
+    // background rectangle
     ctx.rect(x - r + 1, y - r + 1, 2 * r - 2, 2 * r - 2);
     ctx.strokeStyle = ctx.fillStyle = 'lightgray';
     ctx.lineWidth = 1;
@@ -570,11 +591,7 @@ function sendAction(action) {
     try {
         const request = new XMLHttpRequest();
         request.open('GET', baseUrl + action, true);
-        request.onreadystatechange = function () {
-            //request.close();
-        };
         request.send();
-
     } catch (e) {
         printException(e);
     }
@@ -587,12 +604,12 @@ function onToolsClick(event) {
     drawToolSelection();
 }
 
-function getNewLightValue(lightStatus) {
+function getNewLightValue(lightStatus, toolbarId) {
     const step = 15;
     const val = parseInt(lightStatus.val);
     const maxVal = parseInt(lightStatus.maxVal);
     const vPerc = Math.round(val / maxVal * 100);
-    switch (selectedToolId) {
+    switch (toolbarId) {
         case 'lightToggle':
             return (vPerc === 0) ? 75 : 0;
         case 'lightPlus':
@@ -614,13 +631,13 @@ function buildLouversActionLink(itemStatus, position, offset) {
 let tmp = '';
 
 function onCanvasClick(event) {
-
     const selectedTool = toolCoordinateMap[selectedToolId];
 
     const itemId = findNearestItem(event.offsetX, event.offsetY, itemCoordinates, selectedTool.prefixValidator);
     const itemStatus = itemStatusMap[itemId];
+    const coords = itemCoordinateMap[itemId]
 
-    if (isStairs(itemId)) {
+    if (coords.type === 'stairs') {
         currentFloor = (itemId === 'stairsUp') ? 1 : 0;
         drawMainCanvas();
         onTimer();
@@ -631,32 +648,11 @@ function onCanvasClick(event) {
     // debug(tmp);
     // return;
 
-    let action;
-    if (startsWith(selectedToolId, 'light')) {
-        const value = getNewLightValue(itemStatus);
-        action = '/rest/pwmLights/action?id=' + itemStatus.id + "&" + "val=" + value;
-    } else if (startsWith(selectedToolId, 'valveToggle')) {
-        const valveVal = (getValveState(itemStatus.act, itemStatus.pos) === 0) ? 100 : 0;
-        action = '/rest/airValves/action?id=' + itemStatus.id + "&" + "val=" + valveVal;
-    } else if (startsWith(selectedToolId, 'louvers')) {
-        switch (selectedToolId) {
-            case 'louversUp':
-                action = buildLouversActionLink(itemStatus, 0, 0);
-                break;
-            case 'louversOutshine':
-                action = buildLouversActionLink(itemStatus, 100, 0);
-                break;
-            case 'louversDown':
-                action = buildLouversActionLink(itemStatus, 100, 100);
-                break;
-        }
-    }
-
+    const action = selectedTool.onItemClickHandler(itemStatus, selectedToolId);
     if (action) {
         sendAction(action);
     }
 
-    const coords = itemCoordinateMap[itemStatus.id];
     // draw changed light as gray
     mainCtx.beginPath();
     mainCtx.arc(coords.x, coords.y, 15, 0, 2 * Math.PI);
@@ -669,19 +665,15 @@ function printException(e) {
     document.getElementById('error').innerHTML = e.message + '<br>' + e.stack.split('\n').join('<br>');
 }
 
-function updateImpl(path, code) {
+function updateImpl(path, code, async = true) {
     const request = new XMLHttpRequest();
-
-    request.open('GET', baseUrl + path, true);
-
+    request.open('GET', baseUrl + path, async);
     request.onreadystatechange = function () {
         if (request.readyState === 4 && request.status === 200) {
             try {
                 code(request);
             } catch (e) {
                 printException(e);
-            } finally {
-                //request.close();
             }
         }
     };
@@ -689,11 +681,11 @@ function updateImpl(path, code) {
     request.send();
 }
 
-function updateItems() {
+function updateItems(async = true) {
     updateImpl('/rest/all/status', function (request) {
         parseJsonStatusResponse(request, itemStatusMap);
         drawItems();
-    });
+    }, async);
 }
 
 function debug(s) {

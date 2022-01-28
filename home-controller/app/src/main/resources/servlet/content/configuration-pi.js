@@ -2,15 +2,6 @@ function getBaseUrl() {
     return 'http://192.168.68.150';
 }
 
-class CoordinateItem {
-    constructor(id, x, y, floor) {
-        this.id = id;
-        this.x = x;
-        this.y = y;
-        this.floor = floor;
-    }
-}
-
 function getComponents() {
     return [
         new CoordinateItem('pwmKuLi', 400, 650, 0),
@@ -62,8 +53,8 @@ function getComponents() {
         new CoordinateItem('lvOb6', 65, 882, 0),
         new CoordinateItem('lvKoupD', 65, 510, 0),
 
-        new CoordinateItem('stairsUp', 127, 690, 0),
-        new CoordinateItem('stairsDown', 127, 690, 1),
+        new CoordinateItem('stairsUp', 127, 690, 0, 'stairs'),
+        new CoordinateItem('stairsDown', 127, 690, 1, 'stairs'),
 
         new CoordinateItem('pwmVchH', 167, 97, 1),
         new CoordinateItem('pwmVrt1', 342, 207, 1),
@@ -124,11 +115,12 @@ function getComponents() {
         new CoordinateItem('pirZadHVch', 179, 232, 1),
         new CoordinateItem('pirZadHCh', 179, 346, 1),
         new CoordinateItem('pirChMa', 207, 946, 1),
+
         new CoordinateItem('mgntGH', 18, 61, 1),
         new CoordinateItem('mgntGD', 18, 117, 1),
-
         new CoordinateItem('mgntCrpd', 438, 376, 0),
 
-        new CoordinateItem('hvac', 0, 0, 0)
+        new CoordinateItem('hvac', 0, 0, 0),
+        new CoordinateItem('wpump', 0, 0, 0)
     ];
 }
