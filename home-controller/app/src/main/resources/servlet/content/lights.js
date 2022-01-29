@@ -8,11 +8,9 @@ const floorIds = ['1stFloor', '2ndFloor'];
 const toolBoxBackground = 'lightgray';
 const toolLightPlusValue = 66;
 
-const baseUrl = getBaseUrl();
-const itemCoordinates = getComponents();
-
-const itemStatusMap = {};
-const itemCoordinateMap = {};
+const status = new Status('/rest/all/status', 750, function () {
+    drawItems();
+});
 
 function drawLightToolSign(x, y, ctx, drawVertical) {
     ctx.beginPath();
@@ -30,11 +28,15 @@ function drawLightToolSign(x, y, ctx, drawVertical) {
 }
 
 class ToolBarItem extends CoordinateItem {
-    constructor(id, x, y, floor, drawFunction, prefixValidator, onItemClickHandler) {
-        super(id, x, y, floor, 'toolbar')
+    constructor(id, x, y, drawFunction, applicableOn, onItemClickHandler) {
+        super(id, x, y, -1, 'toolbar')
         this.drawFunction = drawFunction;
-        this.prefixValidator = prefixValidator;
+        this.applicableOn = applicableOn;
         this.onItemClickHandler = onItemClickHandler;
+    }
+
+    isApplicable(coordItem) {
+        return coordItem.type !== undefined && this.applicableOn.includes(coordItem.type);
     }
 }
 
@@ -44,52 +46,51 @@ function handleLightClick(itemStatus, toolbarId) {
 }
 
 const toolsCoordinates = [
-        new ToolBarItem(
-            'lightToggle', 50, 50, -1, function (x, y, ctx) {
-                drawLightIcon(x - 10, y, 0, ctx);
-                drawLightIcon(x + 10, y, .75, ctx);
-            }, [isPwmId, isStairs], handleLightClick),
+        new ToolBarItem('lightToggle', 50, 50, function (x, y, ctx) {
+            drawLightIcon(x - 10, y, 0, ctx);
+            drawLightIcon(x + 10, y, .75, ctx);
+        }, ['pwmLights'], handleLightClick),
 
-        new ToolBarItem('lightPlus', 50, 150, -1, function (x, y, ctx) {
+        new ToolBarItem('lightPlus', 50, 150, function (x, y, ctx) {
             drawLightIcon(x, y, toolLightPlusValue / 100, ctx);
             drawLightToolSign(x, y, ctx, true);
-        }, [isPwmId, isStairs], handleLightClick),
+        }, ['pwmLights'], handleLightClick),
 
-        new ToolBarItem('lightMinus', 50, 250, -1, function (x, y, ctx) {
+        new ToolBarItem('lightMinus', 50, 250, function (x, y, ctx) {
             drawLightIcon(x, y, .25, ctx);
             drawLightToolSign(x, y, ctx, false);
-        }, [isPwmId, isStairs], handleLightClick),
+        }, ['pwmLights'], handleLightClick),
 
-        new ToolBarItem('lightFull', 50, 350, -1, function (x, y, ctx) {
+        new ToolBarItem('lightFull', 50, 350, function (x, y, ctx) {
             drawLightIcon(x, y, 1, ctx);
-        }, [isPwmId, isStairs], handleLightClick),
+        }, ['pwmLights'], handleLightClick),
 
-        new ToolBarItem('lightOff', 50, 450, -1, function (x, y, ctx) {
+        new ToolBarItem('lightOff', 50, 450, function (x, y, ctx) {
             drawLightIcon(x, y, 0, ctx);
-        }, [isPwmId, isStairs], handleLightClick),
+        }, ['pwmLights'], handleLightClick),
 
-        new ToolBarItem('louversUp', 50, 550, -1, function (x, y, ctx) {
+        new ToolBarItem('louversUp', 50, 550, function (x, y, ctx) {
             drawLouversToolIcon(x, y, .3, 0, 'stopped', ctx);
-        }, [isLouversId, isStairs], function (itemStatus, toolbarId) {
+        }, ['louvers'], function (itemStatus) {
             return buildLouversActionLink(itemStatus, 0, 0);
         }),
 
-        new ToolBarItem('louversOutshine', 50, 650, -1, function (x, y, ctx) {
+        new ToolBarItem('louversOutshine', 50, 650, function (x, y, ctx) {
             drawLouversToolIcon(x, y, 1, 0, 'stopped', ctx);
-        }, [isLouversId, isStairs], function (itemStatus, toolbarId) {
+        }, ['louvers'], function (itemStatus) {
             return buildLouversActionLink(itemStatus, 100, 0);
         }),
 
-        new ToolBarItem('louversDown', 50, 750, -1, function (x, y, ctx) {
+        new ToolBarItem('louversDown', 50, 750, function (x, y, ctx) {
             drawLouversToolIcon(x, y, 1, 1, 'stopped', ctx);
-        }, [isLouversId, isStairs], function (itemStatus, toolbarId) {
+        }, ['louvers'], function (itemStatus) {
             return buildLouversActionLink(itemStatus, 100, 100);
         }),
 
-        new ToolBarItem('valveToggle', 50, 850, -1, function (x, y, ctx) {
+        new ToolBarItem('valveToggle', 50, 850, function (x, y, ctx) {
             drawValveIcon(x + 10, y - 5, 1, 'stopped', ctx);
             drawValveIcon(x - 10, y + 5, 0, 'stopped', ctx);
-        }, [isValveId, isStairs], function (itemStatus, toolbarId) {
+        }, ['airValves'], function (itemStatus) {
             const valveVal = (getValveState(itemStatus.act, itemStatus.pos) === 0) ? 100 : 0;
             return '/rest/airValves/action?id=' + itemStatus.id + "&" + "val=" + valveVal;
         })
@@ -154,7 +155,7 @@ function drawLouversIconImpl(x, y, position, offset, action, ctx, w, h) {
 }
 
 function drawCharacterIcon(id, text) {
-    const coords = itemCoordinateMap[id];
+    const coords = status.coordsMap[id];
     const w = 70;
     const h = 80;
 
@@ -181,10 +182,6 @@ let selectedToolId = toolsCoordinates[0].id;
 
 window.onload = function () {
     try {
-        itemCoordinates.forEach(function (item) {
-            itemCoordinateMap[item.id] = item;
-        });
-
         toolsCoordinates.forEach(function (tc) {
             toolCoordinateMap[tc.id] = tc;
         });
@@ -193,79 +190,35 @@ window.onload = function () {
         drawToolsCanvas();
         drawHvacCanvas();
         drawPumpCanvas();
-        setInterval(onTimer, 750);
-        updateItems(false);
-
-        // assign types to coordinate CoordinateItem instance
-        itemCoordinates.forEach(function (item) {
-            const statusItem = itemStatusMap[item.id];
-            if (statusItem !== undefined && item.type === undefined) {
-                item.type = statusItem.type;
-            }
-        })
     } catch (e) {
         printException(e);
     }
 };
 
-function onTimer() {
-    try {
-        updateItems();
-    } catch (e) {
-        printException(e);
-    }
-}
-
 function computeDistance(x1, y1, x2, y2) {
     return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 }
 
-function findNearestItem(x, y, coordinates, validatorArray) {
-    let resId = null;
-    let resDist = -1;
-    coordinates.forEach(function (lc) {
-        // validate item type
-        validatorArray.some(function (validator) {
-            const floor = lc.floor;
-            if ((floor < 0 || floor === currentFloor) && validator(lc.id)) {
-                const dist = computeDistance(x, y, lc.x, lc.y);
-                if (resDist < 0 || dist < resDist) {
-                    resDist = dist;
-                    resId = lc.id;
-                }
-                return true; // stop loop through validators
+function findNearestItem(x, y, coordinates, filter) {
+    let resId;
+    let resDist = Number.MAX_SAFE_INTEGER;
+    coordinates.filter(filter).forEach(function (lc) {
+        if (lc.floor === currentFloor || lc.floor < 0) {
+            const dist = computeDistance(x, y, lc.x, lc.y);
+            if (resDist < 0 || dist < resDist) {
+                resDist = dist;
+                resId = lc.id;
             }
-            return false;
-        });
+        }
     });
     return resId;
 }
 
-function isStairs(id) {
-    return startsWith(id, "stairs");
-}
-
-function isPwmId(id) {
-    return startsWith(id, "pwm");
-}
-
-function isValveId(id) {
-    return startsWith(id, "vl");
-}
-
-function startsWith(str, substr) {
-    return str.length >= substr.length && (str.substr(0, substr.length) === substr);
-}
-
-function isLouversId(id) {
-    return startsWith(id, "lv");
-}
-
 function drawItems() {
-    itemCoordinates.forEach(function (lc) {
+    status.coords.forEach(function (lc) {
         const id = lc.id;
         if (lc.floor === currentFloor) {
-            const statusItem = itemStatusMap[id];
+            const statusItem = status.statusMap[id];
             if (statusItem !== undefined) {
                 switch (statusItem.type) {
                     case 'airValves':
@@ -344,13 +297,12 @@ function drawHvacCanvas() {
 }
 
 function drawHvacScreen() {
-    // clr
     hvacCtx.rect(0, 0, 100, 150);
     hvacCtx.fillStyle = toolBoxBackground;
     hvacCtx.fill();
     hvacCtx.stroke();
 
-    const hvacStatus = itemStatusMap['hvac'];
+    const hvacStatus = status.statusMap['hvac'];
 
     if (hvacStatus.on) {
         hvacCtx.font = "bold 15px Arial";
@@ -361,7 +313,7 @@ function drawHvacScreen() {
         hvacCtx.fillText('Tgt temp: ' + hvacStatus.targetTemperature, 5, 60);
         hvacCtx.font = "13px Arial";
         let y = 70;
-        let step = 17;
+        const step = 17;
         hvacCtx.fillText('Air temp: ' + hvacStatus.airTemperature, 5, y += step);
         hvacCtx.fillText('Room temp: ' + hvacStatus.roomTemperature, 5, y += step);
         hvacCtx.fillText('Unit temp: ' + hvacStatus.unitTemperature, 5, y += step);
@@ -376,12 +328,12 @@ function drawHvacScreen() {
     }
 }
 
-function onHvacClick(event) {
-    const hvacStatus = itemStatusMap['hvac'];
+function onHvacClick() {
+    const hvacStatus = status.statusMap['hvac'];
     if (hvacStatus.on) {
-        sendAction('/rest/hvac/action?id=hvac&on=false');
+        status.sendAction('/rest/hvac/action?id=hvac&on=false');
     } else {
-        sendAction('/rest/hvac/action?id=hvac&on=true');
+        status.sendAction('/rest/hvac/action?id=hvac&on=true');
     }
 }
 
@@ -402,7 +354,7 @@ function drawPumpScreen() {
     pumpCtx.fill();
     pumpCtx.stroke();
 
-    const pumpStatus = itemStatusMap['wpump'];
+    const pumpStatus = status.statusMap['wpump'];
     pumpCtx.fillStyle = 'black';
     pumpCtx.font = "12px Arial";
     pumpCtx.fillText('Cykly: ' + pumpStatus.lastPeriodRecCount + '/' + pumpStatus.recCount, 5, 20);
@@ -548,30 +500,30 @@ function drawPirIcon(x, y, age, ctx) {
 }
 
 function drawLight(id) {
-    const lightStatus = itemStatusMap[id];
+    const lightStatus = status.statusMap[id];
     const power = lightStatus.val / lightStatus.maxVal;
-    const coords = itemCoordinateMap[id];
+    const coords = status.coordsMap[id];
 
     drawLightIcon(coords.x, coords.y, power, mainCtx);
 }
 
 function drawValve(id) {
-    const valveStatus = itemStatusMap[id];
-    const coords = itemCoordinateMap[id];
+    const valveStatus = status.statusMap[id];
+    const coords = status.coordsMap[id];
 
     drawValveIcon(coords.x, coords.y, valveStatus.pos, valveStatus.act, mainCtx);
 }
 
 function drawPir(id) {
-    const pirStatus = itemStatusMap[id];
-    const coords = itemCoordinateMap[id];
+    const pirStatus = status.statusMap[id];
+    const coords = status.coordsMap[id];
 
     drawPirIcon(coords.x, coords.y, pirStatus.age, mainCtx);
 }
 
 function drawOneLouvers(id) {
-    const louversStatus = itemStatusMap[id];
-    const coords = itemCoordinateMap[id];
+    const louversStatus = status.statusMap[id];
+    const coords = status.coordsMap[id];
 
     drawLouversIcon(coords.x, coords.y, louversStatus.pos, louversStatus.off, louversStatus.act, mainCtx);
 }
@@ -586,21 +538,10 @@ function parseJsonStatusResponse(request, map) {
     }
 }
 
-function sendAction(action) {
-    //document.getElementById('error').innerHTML = action;
-    try {
-        const request = new XMLHttpRequest();
-        request.open('GET', baseUrl + action, true);
-        request.send();
-    } catch (e) {
-        printException(e);
-    }
-}
-
 function onToolsClick(event) {
-    selectedToolId = findNearestItem(event.offsetX, event.offsetY, toolsCoordinates, [function () {
+    selectedToolId = findNearestItem(event.offsetX, event.offsetY, toolsCoordinates, function () {
         return true
-    }]);
+    });
     drawToolSelection();
 }
 
@@ -633,14 +574,16 @@ let tmp = '';
 function onCanvasClick(event) {
     const selectedTool = toolCoordinateMap[selectedToolId];
 
-    const itemId = findNearestItem(event.offsetX, event.offsetY, itemCoordinates, selectedTool.prefixValidator);
-    const itemStatus = itemStatusMap[itemId];
-    const coords = itemCoordinateMap[itemId]
+    const itemId = findNearestItem(event.offsetX, event.offsetY, status.coords, function (coordItem) {
+        return selectedTool.isApplicable(coordItem) || coordItem.type === 'stairs';
+    });
+    const itemStatus = status.statusMap[itemId];
+    const coords = status.coordsMap[itemId]
 
     if (coords.type === 'stairs') {
         currentFloor = (itemId === 'stairsUp') ? 1 : 0;
         drawMainCanvas();
-        onTimer();
+        drawItems();
         return;
     }
 
@@ -650,7 +593,7 @@ function onCanvasClick(event) {
 
     const action = selectedTool.onItemClickHandler(itemStatus, selectedToolId);
     if (action) {
-        sendAction(action);
+        status.sendAction(action);
     }
 
     // draw changed light as gray
@@ -658,34 +601,6 @@ function onCanvasClick(event) {
     mainCtx.arc(coords.x, coords.y, 15, 0, 2 * Math.PI);
     mainCtx.fillStyle = 'gray';
     mainCtx.fill();
-}
-
-
-function printException(e) {
-    document.getElementById('error').innerHTML = e.message + '<br>' + e.stack.split('\n').join('<br>');
-}
-
-function updateImpl(path, code, async = true) {
-    const request = new XMLHttpRequest();
-    request.open('GET', baseUrl + path, async);
-    request.onreadystatechange = function () {
-        if (request.readyState === 4 && request.status === 200) {
-            try {
-                code(request);
-            } catch (e) {
-                printException(e);
-            }
-        }
-    };
-
-    request.send();
-}
-
-function updateItems(async = true) {
-    updateImpl('/rest/all/status', function (request) {
-        parseJsonStatusResponse(request, itemStatusMap);
-        drawItems();
-    }, async);
 }
 
 function debug(s) {
