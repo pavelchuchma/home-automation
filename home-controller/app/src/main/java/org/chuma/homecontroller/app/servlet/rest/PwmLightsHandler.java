@@ -3,15 +3,13 @@ package org.chuma.homecontroller.app.servlet.rest;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
-import static org.chuma.homecontroller.app.servlet.Servlet.currentValueFormatter;
-
 import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
 import org.chuma.homecontroller.controller.actor.AbstractActor;
 import org.chuma.homecontroller.controller.actor.PwmActor;
 
 public class PwmLightsHandler extends AbstractRestHandler<PwmActor> {
     public PwmLightsHandler(Iterable<PwmActor> actors) {
-        super("pwmLights", "pwmLights", actors, AbstractActor::getId);
+        super("pwmLights", "pwmLight", actors, AbstractActor::getId);
     }
 
     @Override

@@ -49,25 +49,25 @@ const toolsCoordinates = [
         new ToolBarItem('lightToggle', 50, 50, function (x, y, ctx) {
             drawLightIcon(x - 10, y, 0, ctx);
             drawLightIcon(x + 10, y, .75, ctx);
-        }, ['pwmLights'], handleLightClick),
+        }, ['pwmLight'], handleLightClick),
 
         new ToolBarItem('lightPlus', 50, 150, function (x, y, ctx) {
             drawLightIcon(x, y, toolLightPlusValue / 100, ctx);
             drawLightToolSign(x, y, ctx, true);
-        }, ['pwmLights'], handleLightClick),
+        }, ['pwmLight'], handleLightClick),
 
         new ToolBarItem('lightMinus', 50, 250, function (x, y, ctx) {
             drawLightIcon(x, y, .25, ctx);
             drawLightToolSign(x, y, ctx, false);
-        }, ['pwmLights'], handleLightClick),
+        }, ['pwmLight'], handleLightClick),
 
         new ToolBarItem('lightFull', 50, 350, function (x, y, ctx) {
             drawLightIcon(x, y, 1, ctx);
-        }, ['pwmLights'], handleLightClick),
+        }, ['pwmLight'], handleLightClick),
 
         new ToolBarItem('lightOff', 50, 450, function (x, y, ctx) {
             drawLightIcon(x, y, 0, ctx);
-        }, ['pwmLights'], handleLightClick),
+        }, ['pwmLight'], handleLightClick),
 
         new ToolBarItem('louversUp', 50, 550, function (x, y, ctx) {
             drawLouversToolIcon(x, y, .3, 0, 'stopped', ctx);
@@ -90,7 +90,7 @@ const toolsCoordinates = [
         new ToolBarItem('valveToggle', 50, 850, function (x, y, ctx) {
             drawValveIcon(x + 10, y - 5, 1, 'stopped', ctx);
             drawValveIcon(x - 10, y + 5, 0, 'stopped', ctx);
-        }, ['airValves'], function (itemStatus) {
+        }, ['airValve'], function (itemStatus) {
             const valveVal = (getValveState(itemStatus.act, itemStatus.pos) === 0) ? 100 : 0;
             return '/rest/airValves/action?id=' + itemStatus.id + "&" + "val=" + valveVal;
         })
@@ -221,13 +221,13 @@ function drawItems() {
             const statusItem = status.statusMap[id];
             if (statusItem !== undefined) {
                 switch (statusItem.type) {
-                    case 'airValves':
+                    case 'airValve':
                         drawValve(id);
                         break;
                     case 'louvers':
                         drawOneLouvers(id);
                         break;
-                    case 'pwmLights':
+                    case 'pwmLight':
                         drawLight(id);
                         break;
                     case 'pir':

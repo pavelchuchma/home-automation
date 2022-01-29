@@ -8,7 +8,7 @@ import org.chuma.homecontroller.controller.controller.ValveController;
 
 public class ValveHandler extends AbstractRestHandler<ValveController> {
     public ValveHandler(Iterable<ValveController> valveControllers) {
-        super("airValves", "airValves", valveControllers, ValveController::getId);
+        super("airValves", "airValve", valveControllers, ValveController::getId);
     }
 
     @Override
