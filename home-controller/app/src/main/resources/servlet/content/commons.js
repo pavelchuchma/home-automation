@@ -13,23 +13,17 @@ class CoordinateItem {
 class Status {
     constructor(statusRefreshPath, refreshIntervalMs, onRefreshFunction) {
         this.statusRefreshPath = statusRefreshPath;
-        this.coords = getComponents();
         this.baseUrl = getBaseUrl();
-        this.statusMap = {};
-        this.coordsMap = {};
+        this.componentMap = new Map();
+
+        for (const item of getComponents()) {
+            this.componentMap.set(item.id, item);
+        }
+
+        Status.#refreshImpl(this);
 
         const t = this;
-        Status.#refreshImpl(t);
-
-        this.coords.forEach(function (item) {
-            const statusItem = t.statusMap[item.id];
-            if (statusItem !== undefined && item.type === undefined) {
-                item.type = statusItem.type;
-            }
-            t.coordsMap[item.id] = item;
-        });
-
-        setInterval(function() {
+        setInterval(function () {
             Status.#refreshImpl(t);
             onRefreshFunction();
         }, refreshIntervalMs);
@@ -44,8 +38,14 @@ class Status {
                     const content = JSON.parse(request.responseText);
                     for (const [type, items] of Object.entries(content)) {
                         for (const item of items) {
-                            item.type = type;
-                            t.statusMap[item.id] = item;
+                            const c = t.componentMap.get(item.id);
+                            if (c !== undefined) {
+                                item.x = c.x;
+                                item.y = c.y;
+                                item.floor = c.floor;
+                                item.type = type;
+                                t.componentMap.set(item.id, item);
+                            }
                         }
                     }
                 } catch (e) {

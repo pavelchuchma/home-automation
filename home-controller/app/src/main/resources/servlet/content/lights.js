@@ -5,8 +5,8 @@ let hvacCtx;
 let currentFloor = 0;
 const floorIds = ['1stFloor', '2ndFloor'];
 
-const toolBoxBackground = 'lightgray';
-const toolLightPlusValue = 66;
+const TOOLBOX_BACKGROUND = 'lightgray';
+const TOOL_LIGHT_PLUS_VALUE = 66;
 
 const status = new Status('/rest/all/status', 750, function () {
     drawItems();
@@ -35,13 +35,13 @@ class ToolBarItem extends CoordinateItem {
         this.onItemClickHandler = onItemClickHandler;
     }
 
-    isApplicable(coordItem) {
-        return coordItem.type !== undefined && this.applicableOn.includes(coordItem.type);
+    isApplicable(item) {
+        return item.type !== undefined && this.applicableOn.includes(item.type);
     }
 }
 
-function handleLightClick(itemStatus, toolbarId) {
-    const value = getNewLightValue(itemStatus, toolbarId);
+function handleLightClick(itemStatus, toolbar) {
+    const value = getNewLightValue(itemStatus, toolbar);
     return '/rest/pwmLights/action?id=' + itemStatus.id + "&" + "val=" + value;
 }
 
@@ -52,7 +52,7 @@ const toolsCoordinates = [
         }, ['pwmLight'], handleLightClick),
 
         new ToolBarItem('lightPlus', 50, 150, function (x, y, ctx) {
-            drawLightIcon(x, y, toolLightPlusValue / 100, ctx);
+            drawLightIcon(x, y, TOOL_LIGHT_PLUS_VALUE / 100, ctx);
             drawLightToolSign(x, y, ctx, true);
         }, ['pwmLight'], handleLightClick),
 
@@ -154,14 +154,13 @@ function drawLouversIconImpl(x, y, position, offset, action, ctx, w, h) {
     }
 }
 
-function drawCharacterIcon(id, text) {
-    const coords = status.coordsMap[id];
+function drawCharacterIcon(item, text) {
     const w = 70;
     const h = 80;
 
     // white rectangle
     mainCtx.beginPath();
-    mainCtx.rect(coords.x - w / 2, coords.y - h / 2, w, h);
+    mainCtx.rect(item.x - w / 2, item.y - h / 2, w, h);
     mainCtx.fillStyle = 'white';
     mainCtx.fill();
     mainCtx.strokeStyle = 'black';
@@ -173,12 +172,12 @@ function drawCharacterIcon(id, text) {
     mainCtx.fillStyle = 'black';
     mainCtx.textAlign = "center";
     mainCtx.textBaseline = 'middle';
-    mainCtx.fillText(text, coords.x, coords.y);
+    mainCtx.fillText(text, item.x, item.y);
     mainCtx.stroke();
 }
 
 const toolCoordinateMap = {};
-let selectedToolId = toolsCoordinates[0].id;
+let selectedTool = toolsCoordinates[0];
 
 window.onload = function () {
     try {
@@ -199,54 +198,58 @@ function computeDistance(x1, y1, x2, y2) {
     return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 }
 
-function findNearestItem(x, y, coordinates, filter) {
-    let resId;
+function findNearestItem(x, y, items, filter) {
+    let result;
     let resDist = Number.MAX_SAFE_INTEGER;
-    coordinates.filter(filter).forEach(function (lc) {
-        if (lc.floor === currentFloor || lc.floor < 0) {
-            const dist = computeDistance(x, y, lc.x, lc.y);
-            if (resDist < 0 || dist < resDist) {
+    for (const item of items) {
+        if (filter(item) && item.floor === currentFloor || item.floor < 0) {
+            const dist = computeDistance(x, y, item.x, item.y);
+            if (dist < resDist) {
                 resDist = dist;
-                resId = lc.id;
+                result = item;
             }
         }
-    });
-    return resId;
+    }
+    return result;
 }
 
 function drawItems() {
-    status.coords.forEach(function (lc) {
-        const id = lc.id;
-        if (lc.floor === currentFloor) {
-            const statusItem = status.statusMap[id];
-            if (statusItem !== undefined) {
-                switch (statusItem.type) {
-                    case 'airValve':
-                        drawValve(id);
-                        break;
-                    case 'louvers':
-                        drawOneLouvers(id);
-                        break;
-                    case 'pwmLight':
-                        drawLight(id);
-                        break;
-                    case 'pir':
-                        drawPir(id);
-                        break;
-                    case 'hvac':
-                        drawHvacScreen();
-                        break;
-                    case 'wpump':
-                        drawPumpScreen();
-                        break;
-                }
-            } else if (id === 'stairsUp') {
-                drawCharacterIcon(id, '▲')
-            } else if (id === 'stairsDown') {
-                drawCharacterIcon(id, '▼')
+    for (const item of status.componentMap.values()) {
+        if (item.floor === currentFloor || item.floor < 0) {
+            switch (item.type) {
+                case 'airValve':
+                    drawValveIcon(item.x, item.y, item.pos, item.act, mainCtx);
+                    break;
+                case 'louvers':
+                    drawLouversIcon(item.x, item.y, item.pos, item.off, item.act, mainCtx);
+                    break;
+                case 'pwmLight':
+                    const power = item.val / item.maxVal;
+                    drawLightIcon(item.x, item.y, power, mainCtx);
+                    break;
+                case 'pir':
+                    drawPirIcon(item.x, item.y, item.age, mainCtx);
+                    break;
+                case 'hvac':
+                    drawHvacScreen();
+                    break;
+                case 'wpump':
+                    drawPumpScreen();
+                    break;
+                case 'stairs':
+                    drawStairsIcon(item);
+                    break;
             }
         }
-    });
+    }
+}
+
+function drawStairsIcon(item) {
+    if (item.id === 'stairsUp') {
+        drawCharacterIcon(item, '▲')
+    } else if (item.id === 'stairsDown') {
+        drawCharacterIcon(item, '▼')
+    }
 }
 
 function drawMainCanvas() {
@@ -264,7 +267,7 @@ function drawToolSelection() {
 
         toolsCtx.beginPath();
         toolsCtx.rect(c.x - r, c.y - r, 2 * r, 2 * r);
-        toolsCtx.strokeStyle = (selectedToolId === c.id) ? 'red' : toolBoxBackground;
+        toolsCtx.strokeStyle = (selectedTool === c) ? 'red' : TOOLBOX_BACKGROUND;
         toolsCtx.lineWidth = 10;
         toolsCtx.stroke();
     });
@@ -275,7 +278,7 @@ function drawToolsCanvas() {
     toolsCtx = c.getContext("2d");
 
     toolsCtx.rect(0, 0, 100, toolsCoordinates.length * 100);
-    toolsCtx.fillStyle = toolBoxBackground;
+    toolsCtx.fillStyle = TOOLBOX_BACKGROUND;
     toolsCtx.fill();
     toolsCtx.stroke();
 
@@ -291,18 +294,18 @@ function drawHvacCanvas() {
     hvacCtx = c.getContext("2d");
 
     hvacCtx.rect(0, 0, 100, 150);
-    hvacCtx.fillStyle = toolBoxBackground;
+    hvacCtx.fillStyle = TOOLBOX_BACKGROUND;
     hvacCtx.fill();
     hvacCtx.stroke();
 }
 
 function drawHvacScreen() {
     hvacCtx.rect(0, 0, 100, 150);
-    hvacCtx.fillStyle = toolBoxBackground;
+    hvacCtx.fillStyle = TOOLBOX_BACKGROUND;
     hvacCtx.fill();
     hvacCtx.stroke();
 
-    const hvacStatus = status.statusMap['hvac'];
+    const hvacStatus = status.componentMap.get('hvac');
 
     if (hvacStatus.on) {
         hvacCtx.font = "bold 15px Arial";
@@ -316,7 +319,7 @@ function drawHvacScreen() {
         const step = 17;
         hvacCtx.fillText('Air temp: ' + hvacStatus.airTemperature, 5, y += step);
         hvacCtx.fillText('Room temp: ' + hvacStatus.roomTemperature, 5, y += step);
-        hvacCtx.fillText('Unit temp: ' + hvacStatus.unitTemperature, 5, y += step);
+        hvacCtx.fillText('Unit temp: ' + hvacStatus.unitTemperature, 5, y + step);
         if (hvacStatus.defrost) {
             hvacCtx.font = "bold 15px Arial";
             hvacCtx.fillText('Defrost!', 5, step + 5);
@@ -329,7 +332,7 @@ function drawHvacScreen() {
 }
 
 function onHvacClick() {
-    const hvacStatus = status.statusMap['hvac'];
+    const hvacStatus = status.componentMap.get('hvac');
     if (hvacStatus.on) {
         status.sendAction('/rest/hvac/action?id=hvac&on=false');
     } else {
@@ -342,7 +345,7 @@ function drawPumpCanvas() {
     pumpCtx = c.getContext("2d");
 
     pumpCtx.rect(0, 0, 100, 50);
-    pumpCtx.fillStyle = toolBoxBackground;
+    pumpCtx.fillStyle = TOOLBOX_BACKGROUND;
     pumpCtx.fill();
     pumpCtx.stroke();
 }
@@ -350,11 +353,11 @@ function drawPumpCanvas() {
 function drawPumpScreen() {
     // clr
     pumpCtx.rect(0, 0, 100, 150);
-    pumpCtx.fillStyle = toolBoxBackground;
+    pumpCtx.fillStyle = TOOLBOX_BACKGROUND;
     pumpCtx.fill();
     pumpCtx.stroke();
 
-    const pumpStatus = status.statusMap['wpump'];
+    const pumpStatus = status.componentMap.get('wpump');
     pumpCtx.fillStyle = 'black';
     pumpCtx.font = "12px Arial";
     pumpCtx.fillText('Cykly: ' + pumpStatus.lastPeriodRecCount + '/' + pumpStatus.recCount, 5, 20);
@@ -499,62 +502,23 @@ function drawPirIcon(x, y, age, ctx) {
 
 }
 
-function drawLight(id) {
-    const lightStatus = status.statusMap[id];
-    const power = lightStatus.val / lightStatus.maxVal;
-    const coords = status.coordsMap[id];
-
-    drawLightIcon(coords.x, coords.y, power, mainCtx);
-}
-
-function drawValve(id) {
-    const valveStatus = status.statusMap[id];
-    const coords = status.coordsMap[id];
-
-    drawValveIcon(coords.x, coords.y, valveStatus.pos, valveStatus.act, mainCtx);
-}
-
-function drawPir(id) {
-    const pirStatus = status.statusMap[id];
-    const coords = status.coordsMap[id];
-
-    drawPirIcon(coords.x, coords.y, pirStatus.age, mainCtx);
-}
-
-function drawOneLouvers(id) {
-    const louversStatus = status.statusMap[id];
-    const coords = status.coordsMap[id];
-
-    drawLouversIcon(coords.x, coords.y, louversStatus.pos, louversStatus.off, louversStatus.act, mainCtx);
-}
-
-function parseJsonStatusResponse(request, map) {
-    const content = JSON.parse(request.responseText);
-    for (const [type, items] of Object.entries(content)) {
-        for (const item of items) {
-            item.type = type;
-            map[item.id] = item;
-        }
-    }
-}
-
 function onToolsClick(event) {
-    selectedToolId = findNearestItem(event.offsetX, event.offsetY, toolsCoordinates, function () {
+    selectedTool = findNearestItem(event.offsetX, event.offsetY, toolsCoordinates, function () {
         return true
     });
     drawToolSelection();
 }
 
-function getNewLightValue(lightStatus, toolbarId) {
+function getNewLightValue(lightStatus, toolbar) {
     const step = 15;
     const val = parseInt(lightStatus.val);
     const maxVal = parseInt(lightStatus.maxVal);
     const vPerc = Math.round(val / maxVal * 100);
-    switch (toolbarId) {
+    switch (toolbar.id) {
         case 'lightToggle':
             return (vPerc === 0) ? 75 : 0;
         case 'lightPlus':
-            return (vPerc === 0) ? toolLightPlusValue : Math.min(100, vPerc + step);
+            return (vPerc === 0) ? TOOL_LIGHT_PLUS_VALUE : Math.min(100, vPerc + step);
         case 'lightMinus':
             return (vPerc === 0) ? 1 : Math.max(0, vPerc - step);
         case 'lightFull' :
@@ -572,16 +536,12 @@ function buildLouversActionLink(itemStatus, position, offset) {
 let tmp = '';
 
 function onCanvasClick(event) {
-    const selectedTool = toolCoordinateMap[selectedToolId];
-
-    const itemId = findNearestItem(event.offsetX, event.offsetY, status.coords, function (coordItem) {
-        return selectedTool.isApplicable(coordItem) || coordItem.type === 'stairs';
+    const item = findNearestItem(event.offsetX, event.offsetY, status.componentMap.values(), function (item) {
+        return selectedTool.isApplicable(item) || item.type === 'stairs';
     });
-    const itemStatus = status.statusMap[itemId];
-    const coords = status.coordsMap[itemId]
 
-    if (coords.type === 'stairs') {
-        currentFloor = (itemId === 'stairsUp') ? 1 : 0;
+    if (item.type === 'stairs') {
+        currentFloor = (item.id === 'stairsUp') ? 1 : 0;
         drawMainCanvas();
         drawItems();
         return;
@@ -591,14 +551,14 @@ function onCanvasClick(event) {
     // debug(tmp);
     // return;
 
-    const action = selectedTool.onItemClickHandler(itemStatus, selectedToolId);
+    const action = selectedTool.onItemClickHandler(item, selectedTool);
     if (action) {
         status.sendAction(action);
     }
 
     // draw changed light as gray
     mainCtx.beginPath();
-    mainCtx.arc(coords.x, coords.y, 15, 0, 2 * Math.PI);
+    mainCtx.arc(item.x, item.y, 15, 0, 2 * Math.PI);
     mainCtx.fillStyle = 'gray';
     mainCtx.fill();
 }
