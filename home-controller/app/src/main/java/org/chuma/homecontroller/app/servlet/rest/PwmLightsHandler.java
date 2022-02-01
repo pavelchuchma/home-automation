@@ -9,7 +9,7 @@ import org.chuma.homecontroller.controller.actor.PwmActor;
 
 public class PwmLightsHandler extends AbstractRestHandler<PwmActor> {
     public PwmLightsHandler(Iterable<PwmActor> actors) {
-        super("pwmLights", "pwmLight", actors, AbstractActor::getId);
+        super("pwmLights", "pwmLights", actors, AbstractActor::getId);
     }
 
     @Override

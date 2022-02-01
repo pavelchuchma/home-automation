@@ -1,22 +1,12 @@
 'use strict';
 
-class CoordinateItem {
-    constructor(id, x, y, floor, type) {
-        this.id = id;
-        this.x = x;
-        this.y = y;
-        this.floor = floor;
-        this.type = type;
-    }
-}
-
 class Status {
-    constructor(statusRefreshPath, refreshIntervalMs, onRefreshFunction) {
+    constructor(statusRefreshPath, refreshIntervalMs, onRefreshFunction, components, baseUrl) {
         this.statusRefreshPath = statusRefreshPath;
-        this.baseUrl = getBaseUrl();
+        this.baseUrl = baseUrl;
         this.componentMap = new Map();
 
-        for (const item of getComponents()) {
+        for (const item of components) {
             this.componentMap.set(item.id, item);
         }
 
@@ -40,11 +30,7 @@ class Status {
                         for (const item of items) {
                             const c = t.componentMap.get(item.id);
                             if (c !== undefined) {
-                                item.x = c.x;
-                                item.y = c.y;
-                                item.floor = c.floor;
-                                item.type = type;
-                                t.componentMap.set(item.id, item);
+                                c.update(item);
                             }
                         }
                     }
@@ -69,5 +55,6 @@ class Status {
 }
 
 function printException(e) {
+    console.log(e);
     document.getElementById('error').innerHTML = e.message + '<br>' + e.stack.split('\n').join('<br>');
 }
