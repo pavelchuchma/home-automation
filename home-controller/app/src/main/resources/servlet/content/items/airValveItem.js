@@ -15,14 +15,13 @@ class AirValveItem extends BaseItem {
     }
 
     draw(ctx) {
-        AirValveItem.drawIcon(this.x, this.y, this.pos, this.act, ctx)
+        AirValveItem.drawIcon(this.x, this.y, this.pos, this.act, this.#getValveColor(), ctx)
     }
 
-    static drawIcon(x, y, pos, act, ctx) {
+    static drawIcon(x, y, pos, act, color, ctx) {
         const angle = Math.PI * pos / -2;
         ctx.beginPath();
         const r = 17;
-        const color = AirValveItem.getValveColor(act, pos);
 
         // background rectangle
         ctx.rect(x - r + 1, y - r + 1, 2 * r - 2, 2 * r - 2);
@@ -69,8 +68,8 @@ class AirValveItem extends BaseItem {
         }
     }
 
-    static getValveColor(act, pos) {
-        switch (AirValveItem.getValveState(act, pos)) {
+    #getValveColor() {
+        switch (this.#getValveState()) {
             case 0:
                 return 'green';
             case 1:
@@ -80,14 +79,24 @@ class AirValveItem extends BaseItem {
         }
     }
 
-    static getValveState(act, pos) {
-        switch (act) {
+    #getValveState() {
+        switch (this.act) {
             case 'stopped':
-                return (pos === -1) ? -1 : (pos === 1) ? 1 : 0;
+                return (this.pos === -1) ? -1 : (this.pos === 1) ? 1 : 0;
             case 'movingUp':
                 return 0;
             case 'movingDown':
                 return 1;
         }
+    }
+
+    doAction(action) {
+        if (action !== 'toggle') {
+            console.log('Unknown action: ' + action);
+            return;
+        }
+        const newValue = (this.#getValveState() === 0) ? 100 : 0;
+        const path = `/rest/airValves/action?id=${this.id}&val=${newValue}`;
+        this._send(path);
     }
 }

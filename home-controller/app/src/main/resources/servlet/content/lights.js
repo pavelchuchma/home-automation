@@ -25,73 +25,46 @@ function drawLightToolSign(x, y, ctx, drawVertical) {
     ctx.stroke();
 }
 
-class ToolBarItem extends BaseItem {
-    constructor(id, x, y, drawFunction, applicableOn, onItemClickHandler) {
-        super(id, x, y, -1)
-        this.drawFunction = drawFunction;
-        this.applicableOn = applicableOn;
-        this.onItemClickHandler = onItemClickHandler;
-    }
-
-    isApplicable(item) {
-        return this.applicableOn.includes(item.constructor.name);
-    }
-}
-
-function handleLightClick(itemStatus, toolbar) {
-    const value = getNewLightValue(itemStatus, toolbar);
-    return '/rest/pwmLights/action?id=' + itemStatus.id + "&" + "val=" + value;
-}
-
 const toolsCoordinates = [
     new ToolBarItem('lightToggle', 50, 50, function (x, y, ctx) {
         PwmLightItem.drawIcon(x - 10, y, 0, ctx);
         PwmLightItem.drawIcon(x + 10, y, .75, ctx);
-    }, [PwmLightItem.name], handleLightClick),
+    }, [PwmLightItem.name, StairsItem.name], 'toggle'),
 
     new ToolBarItem('lightPlus', 50, 150, function (x, y, ctx) {
         PwmLightItem.drawIcon(x, y, TOOL_LIGHT_PLUS_VALUE / 100, ctx);
         drawLightToolSign(x, y, ctx, true);
-    }, [PwmLightItem.name], handleLightClick),
+    }, [PwmLightItem.name, StairsItem.name], 'plus'),
 
     new ToolBarItem('lightMinus', 50, 250, function (x, y, ctx) {
         PwmLightItem.drawIcon(x, y, .25, ctx);
         drawLightToolSign(x, y, ctx, false);
-    }, [PwmLightItem.name], handleLightClick),
+    }, [PwmLightItem.name, StairsItem.name], 'minus'),
 
     new ToolBarItem('lightFull', 50, 350, function (x, y, ctx) {
         PwmLightItem.drawIcon(x, y, 1, ctx);
-    }, [PwmLightItem.name], handleLightClick),
+    }, [PwmLightItem.name, StairsItem.name], 'full'),
 
     new ToolBarItem('lightOff', 50, 450, function (x, y, ctx) {
         PwmLightItem.drawIcon(x, y, 0, ctx);
-    }, [PwmLightItem.name], handleLightClick),
+    }, [PwmLightItem.name, StairsItem.name], 'off'),
 
     new ToolBarItem('louversUp', 50, 550, function (x, y, ctx) {
         LouversItem.drawIcon(x, y, .3, 0, 'stopped', ctx, 50, 60)
-    }, [LouversItem.name], function (itemStatus) {
-        return buildLouversActionLink(itemStatus, 0, 0);
-    }),
+    }, [LouversItem.name, StairsItem.name], 'up'),
 
     new ToolBarItem('louversOutshine', 50, 650, function (x, y, ctx) {
         LouversItem.drawIcon(x, y, 1, 0, 'stopped', ctx, 50, 60);
-    }, [LouversItem.name], function (itemStatus) {
-        return buildLouversActionLink(itemStatus, 100, 0);
-    }),
+    }, [LouversItem.name, StairsItem.name], 'outshine'),
 
     new ToolBarItem('louversDown', 50, 750, function (x, y, ctx) {
         LouversItem.drawIcon(x, y, 1, 1, 'stopped', ctx, 50, 60);
-    }, [LouversItem.name], function (itemStatus) {
-        return buildLouversActionLink(itemStatus, 100, 100);
-    }),
+    }, [LouversItem.name, StairsItem.name], 'down'),
 
     new ToolBarItem('valveToggle', 50, 850, function (x, y, ctx) {
-        AirValveItem.drawIcon(x + 10, y - 5, 1, 'stopped', ctx);
-        AirValveItem.drawIcon(x - 10, y + 5, 0, 'stopped', ctx);
-    }, [AirValveItem.name], function (itemStatus) {
-        const valveVal = (AirValveItem.getValveState(itemStatus.act, itemStatus.pos) === 0) ? 100 : 0;
-        return '/rest/airValves/action?id=' + itemStatus.id + "&" + "val=" + valveVal;
-    })
+        AirValveItem.drawIcon(x + 10, y - 5, 1, 'stopped', 'red', ctx);
+        AirValveItem.drawIcon(x - 10, y + 5, 0, 'stopped', 'green', ctx);
+    }, [AirValveItem.name, StairsItem.name], 'toggle')
 ];
 
 const toolCoordinateMap = {};
@@ -124,7 +97,7 @@ function findNearestItem(x, y, items, filter) {
     let result;
     let resDist = Number.MAX_SAFE_INTEGER;
     for (const item of items) {
-        if (filter(item) && item.floor === currentFloor || item.floor < 0) {
+        if ((item.floor === currentFloor || item.floor < 0) && (filter === undefined || filter(item))) {
             const dist = computeDistance(x, y, item.x, item.y);
             if (dist < resDist) {
                 resDist = dist;
@@ -154,8 +127,6 @@ function drawMainCanvas() {
     mainCtx = c.getContext("2d");
     const img = document.getElementById(getFloorIds()[currentFloor]);
     mainCtx.drawImage(img, 0, 0, img.width, img.height);
-
-    //document.getElementById('error').innerHTML = 'LOADED!';
 }
 
 function drawToolSelection() {
@@ -216,40 +187,16 @@ function drawPumpCanvas() {
 }
 
 function onToolsClick(event) {
-    selectedTool = findNearestItem(event.offsetX, event.offsetY, toolsCoordinates, function () {
-        return true
-    });
+    selectedTool = findNearestItem(event.offsetX, event.offsetY, toolsCoordinates);
     drawToolSelection();
 }
 
-function getNewLightValue(lightStatus, toolbar) {
-    const step = 15;
-    const val = parseInt(lightStatus.val);
-    const maxVal = parseInt(lightStatus.maxVal);
-    const vPerc = Math.round(val / maxVal * 100);
-    switch (toolbar.id) {
-        case 'lightToggle':
-            return (vPerc === 0) ? 75 : 0;
-        case 'lightPlus':
-            return (vPerc === 0) ? TOOL_LIGHT_PLUS_VALUE : Math.min(100, vPerc + step);
-        case 'lightMinus':
-            return (vPerc === 0) ? 1 : Math.max(0, vPerc - step);
-        case 'lightFull' :
-            return 100;
-        case 'lightOff':
-            return 0;
-    }
-    return val;
-}
-
-function buildLouversActionLink(itemStatus, position, offset) {
-    return '/rest/louvers/action?id=' + itemStatus.id + '&pos=' + position + '&off=' + offset;
-}
-
 function onCanvasClick(event) {
-    const item = findNearestItem(event.offsetX, event.offsetY, status.componentMap.values(), function (item) {
-        return selectedTool.isApplicable(item) || item instanceof StairsItem;
-    });
+    // console.log(['pwm', " + Math.round(parseFloat(event.offsetX)) + ", " + Math.round(parseFloat(event.offsetY)) + ", currentFloor])
+    // return;
+
+    const item = findNearestItem(event.offsetX, event.offsetY, status.componentMap.values(),
+            item => selectedTool.isApplicable(item));
 
     if (item instanceof StairsItem) {
         currentFloor = item.targetFloor;
@@ -258,15 +205,9 @@ function onCanvasClick(event) {
         return;
     }
 
-    // console.log(['pwm', " + Math.round(parseFloat(event.offsetX)) + ", " + Math.round(parseFloat(event.offsetY)) + ", currentFloor])
-    // return;
+    item.doAction(selectedTool.onClickAction);
 
-    const action = selectedTool.onItemClickHandler(item, selectedTool);
-    if (action) {
-        status.sendAction(action);
-    }
-
-    // draw changed light as gray
+    // draw changed item as gray
     mainCtx.beginPath();
     mainCtx.arc(item.x, item.y, 15, 0, 2 * Math.PI);
     mainCtx.fillStyle = 'gray';

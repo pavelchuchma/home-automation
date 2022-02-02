@@ -63,4 +63,26 @@ class LouversItem extends BaseItem {
             ctx.stroke();
         }
     }
+
+    doAction(action) {
+        let position;
+        let offset;
+        switch (action) {
+            case 'up':
+                position = 0;
+                offset = 0;
+                break;
+            case 'down':
+                position = 100;
+                offset = 100;
+                break;
+            case 'outshine':
+                position = 100;
+                offset = 0;
+                break;
+        }
+
+        const path = `/rest/louvers/action?id=${this.id}&pos=${position}&off=${offset}`;
+        this._send(path);
+    }
 }

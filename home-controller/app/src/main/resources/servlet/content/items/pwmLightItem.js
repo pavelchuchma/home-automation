@@ -54,4 +54,28 @@ class PwmLightItem extends BaseItem {
             ctx.fill();
         }
     }
+
+    doAction(action) {
+        const newValue = this.#getNewValue(action);
+        const path = `/rest/pwmLights/action?id=${this.id}&val=${newValue}`;
+        this._send(path);
+    }
+
+    #getNewValue(action) {
+        const step = 15;
+        const currentValue = Math.round(this.val / this.maxVal * 100);
+        switch (action) {
+            case 'toggle':
+                return (currentValue === 0) ? 75 : 0;
+            case 'plus':
+                return (currentValue === 0) ? TOOL_LIGHT_PLUS_VALUE : Math.min(100, currentValue + step);
+            case 'minus':
+                return (currentValue === 0) ? 1 : Math.max(0, currentValue - step);
+            case 'full' :
+                return 100;
+            case 'off':
+                return 0;
+        }
+        console.log('Unknown action: ' + action);
+    }
 }
