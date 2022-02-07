@@ -16,6 +16,7 @@ class HvacItem extends BaseItem {
         this.air2Temperature = undefined;
         this.roomTemperature = undefined;
         this.unitTemperature = undefined;
+
     }
 
     update(item) {
@@ -34,11 +35,8 @@ class HvacItem extends BaseItem {
         this.unitTemperature = item.unitTemperature;
     }
 
-    draw(ctx) {
-        ctx.rect(0, 0, 100, 150);
-        ctx.fillStyle = 'lightgray';
-        ctx.fill();
-        ctx.stroke();
+    draw() {
+        const ctx = getCanvasContext("hvacCanvas");
 
         if (this.on) {
             ctx.font = "bold 15px Arial";
@@ -62,5 +60,11 @@ class HvacItem extends BaseItem {
             ctx.font = "30px Arial";
             ctx.fillText('OFF', 15, 30);
         }
+    }
+
+    static onClick() {
+        const hvacStatus = status.componentMap.get('hvac');
+        const path = (hvacStatus.on) ? '/rest/hvac/action?id=hvac&on=false' : '/rest/hvac/action?id=hvac&on=true';
+        BaseItem._send(path)
     }
 }

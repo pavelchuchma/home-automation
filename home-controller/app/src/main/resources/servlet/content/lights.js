@@ -1,7 +1,5 @@
 let mainCtx;
 let toolsCtx;
-let hvacCtx;
-let pumpCtx;
 
 let currentFloor = 0;
 
@@ -78,8 +76,6 @@ window.onload = function () {
 
         drawMainCanvas();
         drawToolsCanvas();
-        drawHvacCanvas();
-        drawPumpCanvas();
 
         status = new Status('/rest/all/status', 750, function () {
             drawItems();
@@ -111,13 +107,7 @@ function findNearestItem(x, y, items, filter) {
 function drawItems() {
     for (const item of status.componentMap.values()) {
         if (item.floor === currentFloor || item.floor < 0) {
-            if (item instanceof HvacItem) {
-                item.draw(hvacCtx);
-            } else if (item instanceof WaterPumpItem) {
-                item.draw(pumpCtx);
-            } else {
-                item.draw(mainCtx);
-            }
+            item.draw(mainCtx);
         }
     }
 }
@@ -142,48 +132,12 @@ function drawToolSelection() {
 }
 
 function drawToolsCanvas() {
-    const c = document.getElementById("toolsCanvas");
-    toolsCtx = c.getContext("2d");
-
-    toolsCtx.rect(0, 0, 100, toolsCoordinates.length * 100);
-    toolsCtx.fillStyle = TOOLBOX_BACKGROUND;
-    toolsCtx.fill();
-    toolsCtx.stroke();
-
+    toolsCtx = getCanvasContext('toolsCanvas')
     toolsCoordinates.forEach(function (c) {
         c.drawFunction(c.x, c.y, toolsCtx);
     });
 
     drawToolSelection();
-}
-
-function drawHvacCanvas() {
-    const c = document.getElementById("hvacCanvas");
-    hvacCtx = c.getContext("2d");
-
-    hvacCtx.rect(0, 0, 100, 150);
-    hvacCtx.fillStyle = TOOLBOX_BACKGROUND;
-    hvacCtx.fill();
-    hvacCtx.stroke();
-}
-
-function onHvacClick() {
-    const hvacStatus = status.componentMap.get('hvac');
-    if (hvacStatus.on) {
-        status.sendAction('/rest/hvac/action?id=hvac&on=false');
-    } else {
-        status.sendAction('/rest/hvac/action?id=hvac&on=true');
-    }
-}
-
-function drawPumpCanvas() {
-    const c = document.getElementById("pumpCanvas");
-    pumpCtx = c.getContext("2d");
-
-    pumpCtx.rect(0, 0, 100, 50);
-    pumpCtx.fillStyle = TOOLBOX_BACKGROUND;
-    pumpCtx.fill();
-    pumpCtx.stroke();
 }
 
 function onToolsClick(event) {
@@ -196,7 +150,7 @@ function onCanvasClick(event) {
     // return;
 
     const item = findNearestItem(event.offsetX, event.offsetY, status.componentMap.values(),
-            item => selectedTool.isApplicable(item));
+        item => selectedTool.isApplicable(item));
 
     if (item instanceof StairsItem) {
         currentFloor = item.targetFloor;

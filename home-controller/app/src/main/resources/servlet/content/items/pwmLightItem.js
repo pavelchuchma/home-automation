@@ -58,7 +58,7 @@ class PwmLightItem extends BaseItem {
     doAction(action) {
         const newValue = this.#getNewValue(action);
         const path = `/rest/pwmLights/action?id=${this.id}&val=${newValue}`;
-        this._send(path);
+        BaseItem._send(path);
     }
 
     #getNewValue(action) {

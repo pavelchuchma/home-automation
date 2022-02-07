@@ -83,6 +83,6 @@ class LouversItem extends BaseItem {
         }
 
         const path = `/rest/louvers/action?id=${this.id}&pos=${position}&off=${offset}`;
-        this._send(path);
+        BaseItem._send(path);
     }
 }

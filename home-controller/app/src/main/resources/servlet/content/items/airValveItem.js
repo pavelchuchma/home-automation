@@ -97,6 +97,6 @@ class AirValveItem extends BaseItem {
         }
         const newValue = (this.#getValveState() === 0) ? 100 : 0;
         const path = `/rest/airValves/action?id=${this.id}&val=${newValue}`;
-        this._send(path);
+        BaseItem._send(path);
     }
 }

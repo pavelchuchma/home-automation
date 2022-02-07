@@ -17,12 +17,8 @@ class WaterPumpItem extends BaseItem {
         this.lastRecords = item.lastRecords;
     }
 
-    draw(ctx) {
-        // clr
-        ctx.rect(0, 0, 100, 150);
-        ctx.fillStyle = 'lightgray';
-        ctx.fill();
-        ctx.stroke();
+    draw() {
+        const ctx = getCanvasContext('pumpCanvas');
 
         ctx.fillStyle = 'black';
         ctx.font = "12px Arial";

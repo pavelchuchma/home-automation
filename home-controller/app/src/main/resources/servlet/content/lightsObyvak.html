@@ -3,6 +3,7 @@
 <head>
     <link href='lights.css' rel='stylesheet' type='text/css'/>
     <link href="favicon.png" rel="icon" type="image/png">
+    <script src="commons.js"></script>
     <script src="status.js"></script>
     <script src="items/baseItem.js"></script>
     <script src="items/airValveItem.js"></script>
@@ -42,14 +43,14 @@
                 </tr>
                 <tr>
                     <td>
-                        <canvas height="150" id="hvacCanvas" onclick="onHvacClick()" width="100">
+                        <canvas height="150" id="hvacCanvas" onclick="HvacItem.onClick()" width="100">
                             Your browser does not support the HTML5 canvas tag.
                         </canvas>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <canvas height="50" id="pumpCanvas" onclick="onPumpClick(event)" width="100">
+                        <canvas height="50" id="pumpCanvas" width="100">
                             Your browser does not support the HTML5 canvas tag.
                         </canvas>
                     </td>

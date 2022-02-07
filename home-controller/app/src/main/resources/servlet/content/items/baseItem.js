@@ -17,7 +17,7 @@ class BaseItem {
     doAction(action) {
     }
 
-    _send(path) {
+    static _send(path) {
         const request = new XMLHttpRequest();
         request.open('GET', getBaseUrl() + path, false);
         request.send();
