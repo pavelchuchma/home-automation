@@ -134,42 +134,42 @@ function getComponents() {
 
 function getToolbarItems() {
     return [
-        new ToolBarItem('lightToggle', 50, 50, function (x, y, ctx) {
+        new ToolBarItem('lightToggle', function (x, y, ctx) {
             PwmLightItem.drawIcon(x - 10, y, 0, ctx);
             PwmLightItem.drawIcon(x + 10, y, .75, ctx);
         }, [PwmLightItem.name, StairsItem.name], 'toggle'),
 
-        new ToolBarItem('lightPlus', 50, 150, function (x, y, ctx) {
+        new ToolBarItem('lightPlus', function (x, y, ctx) {
             PwmLightItem.drawIcon(x, y, .66, ctx);
             drawLightToolSign(x, y, ctx, true);
         }, [PwmLightItem.name, StairsItem.name], 'plus'),
 
-        new ToolBarItem('lightMinus', 50, 250, function (x, y, ctx) {
+        new ToolBarItem('lightMinus', function (x, y, ctx) {
             PwmLightItem.drawIcon(x, y, .25, ctx);
             drawLightToolSign(x, y, ctx, false);
         }, [PwmLightItem.name, StairsItem.name], 'minus'),
 
-        new ToolBarItem('lightFull', 50, 350, function (x, y, ctx) {
+        new ToolBarItem('lightFull', function (x, y, ctx) {
             PwmLightItem.drawIcon(x, y, 1, ctx);
         }, [PwmLightItem.name, StairsItem.name], 'full'),
 
-        new ToolBarItem('lightOff', 50, 450, function (x, y, ctx) {
+        new ToolBarItem('lightOff', function (x, y, ctx) {
             PwmLightItem.drawIcon(x, y, 0, ctx);
         }, [PwmLightItem.name, StairsItem.name], 'off'),
 
-        new ToolBarItem('louversUp', 50, 550, function (x, y, ctx) {
+        new ToolBarItem('louversUp', function (x, y, ctx) {
             LouversItem.drawIcon(x, y, .3, 0, 'stopped', ctx, 50, 60)
         }, [LouversItem.name, StairsItem.name], 'up'),
 
-        new ToolBarItem('louversOutshine', 50, 650, function (x, y, ctx) {
+        new ToolBarItem('louversOutshine', function (x, y, ctx) {
             LouversItem.drawIcon(x, y, 1, 0, 'stopped', ctx, 50, 60);
         }, [LouversItem.name, StairsItem.name], 'outshine'),
 
-        new ToolBarItem('louversDown', 50, 750, function (x, y, ctx) {
+        new ToolBarItem('louversDown', function (x, y, ctx) {
             LouversItem.drawIcon(x, y, 1, 1, 'stopped', ctx, 50, 60);
         }, [LouversItem.name, StairsItem.name], 'down'),
 
-        new ToolBarItem('valveToggle', 50, 850, function (x, y, ctx) {
+        new ToolBarItem('valveToggle', function (x, y, ctx) {
             AirValveItem.drawIcon(x + 10, y - 5, 1, 'stopped', 'red', ctx);
             AirValveItem.drawIcon(x - 10, y + 5, 0, 'stopped', 'green', ctx);
         }, [AirValveItem.name, StairsItem.name], 'toggle')

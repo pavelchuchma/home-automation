@@ -9,24 +9,6 @@ function getCanvasContext(canvasId) {
     return ctx;
 }
 
-function findNearestItem(x, y, items, filter) {
-    function computeDistance(x1, y1, x2, y2) {
-        return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-    }
-    let result;
-    let resDist = Number.MAX_SAFE_INTEGER;
-    for (const item of items) {
-        if ((item.floor === currentFloor || item.floor < 0) && (filter === undefined || filter(item))) {
-            const dist = computeDistance(x, y, item.x, item.y);
-            if (dist < resDist) {
-                resDist = dist;
-                result = item;
-            }
-        }
-    }
-    return result;
-}
-
 function drawLightToolSign(x, y, ctx, drawVertical) {
     ctx.beginPath();
     const r = 15;

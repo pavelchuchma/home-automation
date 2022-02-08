@@ -1,8 +1,8 @@
 'use strict';
 
-class ToolBarItem extends BaseItem {
-    constructor(id, x, y, drawFunction, applicableOn, onClickAction) {
-        super(id, x, y, -1)
+class ToolBarItem {
+    constructor(id, drawFunction, applicableOn, onClickAction) {
+        this.id = id;
         this.drawFunction = drawFunction;
         this.applicableOn = applicableOn;
         this.onClickAction = onClickAction;
