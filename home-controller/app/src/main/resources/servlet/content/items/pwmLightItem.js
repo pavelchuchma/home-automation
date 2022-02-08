@@ -68,7 +68,7 @@ class PwmLightItem extends BaseItem {
             case 'toggle':
                 return (currentValue === 0) ? 75 : 0;
             case 'plus':
-                return (currentValue === 0) ? TOOL_LIGHT_PLUS_VALUE : Math.min(100, currentValue + step);
+                return (currentValue === 0) ? 66 : Math.min(100, currentValue + step);
             case 'minus':
                 return (currentValue === 0) ? 1 : Math.max(0, currentValue - step);
             case 'full' :
