@@ -24,7 +24,7 @@ class WaterPumpItem extends BaseItem {
         ctx.font = "12px Arial";
         ctx.fillText('Cykly: ' + this.lastPeriodRecCount + '/' + this.recCount, 5, 20);
         let lastRecordDuration = -1;
-        if (this.lastRecords.length > 0) {
+        if (this.lastRecords !== undefined && this.lastRecords.length > 0) {
             lastRecordDuration = this.lastRecords[this.lastRecords.length - 1].duration;
         }
         ctx.fillText('Poslední: ' + Math.round(lastRecordDuration * 10.0) / 10.0 + ' s', 5, 35);

@@ -10,25 +10,24 @@ class Status {
             this.componentMap.set(item.id, item);
         }
 
-        Status.#refreshImpl(this);
+        this._refreshImpl();
 
-        const t = this;
-        setInterval(function () {
-            Status.#refreshImpl(t);
+        setInterval((function () {
+            this._refreshImpl();
             onRefreshFunction();
-        }, refreshIntervalMs);
+        }).bind(this), refreshIntervalMs);
     }
 
-    static #refreshImpl(t) {
+    _refreshImpl() {
         const request = new XMLHttpRequest();
-        request.open('GET', t.baseUrl + t.statusRefreshPath, false);
-        request.onreadystatechange = function () {
+        request.open('GET', this.baseUrl + this.statusRefreshPath, false);
+        request.onreadystatechange = (function () {
             if (request.readyState === 4 && request.status === 200) {
                 try {
                     const content = JSON.parse(request.responseText);
                     for (const [type, items] of Object.entries(content)) {
                         for (const item of items) {
-                            const c = t.componentMap.get(item.id);
+                            const c = this.componentMap.get(item.id);
                             if (c !== undefined) {
                                 c.update(item);
                             }
@@ -38,19 +37,8 @@ class Status {
                     printException(e);
                 }
             }
-        };
+        }).bind(this);
         request.send();
-    }
-
-    sendAction(action) {
-        //document.getElementById('error').innerHTML = action;
-        try {
-            const request = new XMLHttpRequest();
-            request.open('GET', this.baseUrl + action, true);
-            request.send();
-        } catch (e) {
-            printException(e);
-        }
     }
 }
 
