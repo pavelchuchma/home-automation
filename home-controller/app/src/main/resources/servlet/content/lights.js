@@ -1,16 +1,12 @@
 let mainCtx;
-let toolsCtx;
 let currentFloor = 0;
 let status;
-
-const toolbarItems = getToolbarItems();
-let selectedToolIndex = 0;
+let toolbar;
 
 window.onload = function () {
     try {
         drawMainCanvas();
-        drawToolsCanvas();
-
+        toolbar = new Toolbar();
         status = new Status('/rest/all/status', 750, function () {
             drawItems();
         }, getComponents(), getBaseUrl());
@@ -34,41 +30,13 @@ function drawMainCanvas() {
     mainCtx.drawImage(img, 0, 0, img.width, img.height);
 }
 
-function drawToolSelection() {
-    const itemHeight = toolsCtx.canvas.height / toolbarItems.length;
-    const itemWidth = toolsCtx.canvas.width;
-    for (let i = 0; i < toolbarItems.length; i++) {
-        const r = 35;
-
-        toolsCtx.beginPath();
-        toolsCtx.rect(itemWidth / 2 - r, (itemHeight * (i + 0.5)) - r, 2 * r, 2 * r);
-        toolsCtx.strokeStyle = (i === selectedToolIndex) ? 'red' : 'lightgray';
-        toolsCtx.lineWidth = 10;
-        toolsCtx.stroke();
-    }
-}
-
-function drawToolsCanvas() {
-    toolsCtx = getCanvasContext('toolsCanvas');
-    const itemHeight = toolsCtx.canvas.height / toolbarItems.length;
-    for (let i = 0; i < toolbarItems.length; i++) {
-        toolbarItems[i].drawFunction(toolsCtx.canvas.width / 2, itemHeight * (i + 0.5), toolsCtx);
-    }
-    drawToolSelection();
-}
-
-function onToolsClick(event) {
-    const itemHeight = toolsCtx.canvas.height / toolbarItems.length;
-    selectedToolIndex = Math.floor(parseFloat(event.offsetY) / itemHeight);
-    drawToolSelection();
-}
-
 function onCanvasClick(event) {
     // console.log(`new PwmLightItem('pwm', ${+Math.round(parseFloat(event.offsetX))}, ${Math.round(parseFloat(event.offsetY))}, ${currentFloor}),`);
     // return;
 
+    let selectedToolbar = toolbar.getCurrent();
     const item = findNearestItem(event.offsetX, event.offsetY, status.componentMap.values(),
-        item => toolbarItems[selectedToolIndex].isApplicable(item));
+        item => selectedToolbar.isApplicable(item));
 
     if (item instanceof StairsItem) {
         currentFloor = item.targetFloor;
@@ -77,7 +45,7 @@ function onCanvasClick(event) {
         return;
     }
 
-    item.doAction(toolbarItems[selectedToolIndex].onClickAction);
+    item.doAction(selectedToolbar.onClickAction);
 
     // draw changed item as gray
     mainCtx.beginPath();
@@ -104,4 +72,3 @@ function findNearestItem(x, y, items, filter) {
     }
     return result;
 }
-
