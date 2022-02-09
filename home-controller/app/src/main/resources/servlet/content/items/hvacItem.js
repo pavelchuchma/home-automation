@@ -17,6 +17,9 @@ class HvacItem extends BaseItem {
         this.roomTemperature = undefined;
         this.unitTemperature = undefined;
 
+        document.getElementById('hvacCanvas').addEventListener("click", (function () {
+            this.onClick();
+        }).bind(this));
     }
 
     update(item) {
@@ -62,9 +65,8 @@ class HvacItem extends BaseItem {
         }
     }
 
-    static onClick() {
-        const hvacStatus = status.componentMap.get('hvac');
-        const path = (hvacStatus.on) ? '/rest/hvac/action?id=hvac&on=false' : '/rest/hvac/action?id=hvac&on=true';
+    onClick() {
+        const path = `/rest/hvac/action?id=hvac&on=${(this.on) ? 'false' : 'true'}`;
         BaseItem._send(path)
     }
 }
