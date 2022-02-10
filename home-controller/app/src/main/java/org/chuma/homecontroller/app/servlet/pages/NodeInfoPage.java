@@ -20,7 +20,7 @@ import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
 
 public class NodeInfoPage extends AbstractPage {
     public static final String TARGET_NODE_INFO = "/";
-    private static final String TARGET_LIGHTS_OBYVAK = "/lightsObyvak.html";
+    private static final String FLOOR_PLAN_LOCATION = "/floorPlan.html";
     final Iterable<Page> pages;
     final List<ServletAction> rootActions;
     final NodeInfoCollector nodeInfoCollector;
@@ -59,7 +59,7 @@ public class NodeInfoPage extends AbstractPage {
                     .append(page.getReferenceName()).append("...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
         }
 
-        builder.append("<a href='" + TARGET_LIGHTS_OBYVAK + "'>Obyvak...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
+        builder.append("<a href='" + FLOOR_PLAN_LOCATION + "'>Obyvak...</a>&nbsp;&nbsp;&nbsp;&nbsp;");
 
         builder.append("<table class='nodeTable'>\n" +
                 "<tr><th class=''>Node #<th class=''>Last Ping Time<th class=''>Boot Time<th class=''>Build Time<th class=''>MessageLog");

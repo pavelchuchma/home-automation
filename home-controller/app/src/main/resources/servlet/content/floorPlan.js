@@ -5,11 +5,16 @@ let toolbar;
 
 window.onload = function () {
     try {
-        drawMainCanvas();
+        drawPlanCanvas();
         toolbar = new Toolbar();
         status = new Status('/rest/all/status', 750, function () {
             drawItems();
         }, getComponents(), getBaseUrl());
+        status.startRefresh();
+
+        document.getElementById('planCanvas').addEventListener("click", function (event) {
+            onPlanClick(event);
+        });
     } catch (e) {
         printException(e);
     }
@@ -23,14 +28,14 @@ function drawItems() {
     }
 }
 
-function drawMainCanvas() {
-    const c = document.getElementById("mainCanvas");
+function drawPlanCanvas() {
+    const c = document.getElementById("planCanvas");
     mainCtx = c.getContext("2d");
     const img = document.getElementById(getFloorIds()[currentFloor]);
     mainCtx.drawImage(img, 0, 0, img.width, img.height);
 }
 
-function onCanvasClick(event) {
+function onPlanClick(event) {
     // console.log(`new PwmLightItem('pwm', ${+Math.round(parseFloat(event.offsetX))}, ${Math.round(parseFloat(event.offsetY))}, ${currentFloor}),`);
     // return;
 
@@ -40,7 +45,7 @@ function onCanvasClick(event) {
 
     if (item instanceof StairsItem) {
         currentFloor = item.targetFloor;
-        drawMainCanvas();
+        drawPlanCanvas();
         drawItems();
         return;
     }

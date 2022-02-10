@@ -5,17 +5,20 @@ class Status {
         this.statusRefreshPath = statusRefreshPath;
         this.baseUrl = baseUrl;
         this.componentMap = new Map();
+        this.refreshIntervalMs = refreshIntervalMs;
+        this.onRefreshFunction = onRefreshFunction;
 
         for (const item of components) {
             this.componentMap.set(item.id, item);
         }
+    }
 
+    startRefresh() {
         this._refreshImpl();
 
         setInterval((function () {
             this._refreshImpl();
-            onRefreshFunction();
-        }).bind(this), refreshIntervalMs);
+        }).bind(this), this.refreshIntervalMs);
     }
 
     _refreshImpl() {
@@ -33,6 +36,7 @@ class Status {
                             }
                         }
                     }
+                    this.onRefreshFunction();
                 } catch (e) {
                     printException(e);
                 }
