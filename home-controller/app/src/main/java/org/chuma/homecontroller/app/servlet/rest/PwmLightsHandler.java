@@ -22,7 +22,32 @@ public class PwmLightsHandler extends AbstractRestHandler<PwmActor> {
 
     @Override
     void processAction(PwmActor pwmActor, Map<String, String[]> requestParameters) {
-        int val = getMandatoryIntParam(requestParameters, "val");
-        pwmActor.setValue(val, this);
+        String action = getStringParam(requestParameters, "action");
+        int currentVal = pwmActor.getPwmValuePercent();
+        int newVal;
+        if (action == null) {
+            newVal = getMandatoryIntParam(requestParameters, "val");
+        } else {
+            switch (action) {
+                case "toggle":
+                    newVal = (pwmActor.isOn()) ? 0 : 75;
+                    break;
+                case "plus":
+                    newVal = (pwmActor.isOn()) ? Math.min(currentVal + 15, 100) : 66;
+                    break;
+                case "minus":
+                    newVal = (pwmActor.isOn()) ? Math.max(currentVal - 15, 0) : 1;
+                    break;
+                case "full":
+                    newVal = 100;
+                    break;
+                case "off":
+                    newVal = 0;
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown action '" + action + "'");
+            }
+        }
+        pwmActor.setValue(newVal, this);
     }
 }

@@ -124,6 +124,10 @@ public class PwmActor extends AbstractPinActor implements IOnOffActor {
         return pwmValue;
     }
 
+    public int getPwmValuePercent() {
+        return (int) (pwmValue * 100d / maxPwmValue);
+    }
+
     public double getOutputCurrent() {
         return (double) pwmValue / MAX_PWM_VALUE * getLddOutput().getMaxLddCurrent();
     }

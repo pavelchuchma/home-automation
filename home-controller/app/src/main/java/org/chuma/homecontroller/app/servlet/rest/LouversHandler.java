@@ -35,7 +35,7 @@ public class LouversHandler extends AbstractRestHandler<LouversController> {
                 controller.outshine(offset);
                 return;
             default:
-                throw new RuntimeException("Unknown action '" + action + "'");
+                throw new IllegalArgumentException("Unknown action '" + action + "'");
         }
     }
 
