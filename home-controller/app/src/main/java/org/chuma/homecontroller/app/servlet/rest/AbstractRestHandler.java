@@ -43,9 +43,17 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
     }
 
     static String getMandatoryStringParam(Map<String, String[]> requestParams, String name) {
+        String val = getStringParam(requestParams, name);
+        if (val == null) {
+            throw new IllegalArgumentException("Mandatory parameter '" + name + "' is missing");
+        }
+        return val;
+    }
+
+    static String getStringParam(Map<String, String[]> requestParams, String name) {
         String[] values = requestParams.get(name);
         if (values == null || values.length == 0) {
-            throw new IllegalArgumentException("Mandatory parameter '" + name + "' is missing");
+            return null;
         }
         return values[0];
     }
@@ -54,8 +62,8 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
         return Integer.parseInt(getMandatoryStringParam(requestParams, name));
     }
 
-    static int getIntParam(HttpServletRequest request, String name, int defaultValue) {
-        String val = request.getParameter(name);
+    static int getIntParam(Map<String, String[]> requestParams, String name, int defaultValue) {
+        String val = getStringParam(requestParams, name);
         if (val == null) {
             return defaultValue;
         }

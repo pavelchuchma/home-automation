@@ -2,6 +2,8 @@ package org.chuma.homecontroller.app.servlet.rest;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.Map;
+
 import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
 import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
 
@@ -12,8 +14,9 @@ public class WaterPumpHandler extends AbstractRestHandler<WaterPumpMonitor> {
 
     @Override
     void writeJsonItemValues(JsonWriter jw, WaterPumpMonitor mon, HttpServletRequest request) {
-        int lastHours = getIntParam(request, "lastHours", 24);
-        int recordCount = getIntParam(request, "recordCount", 10);
+        final Map<String, String[]> parameterMap = request.getParameterMap();
+        int lastHours = getIntParam(parameterMap, "lastHours", 24);
+        int recordCount = getIntParam(parameterMap, "recordCount", 10);
 
         jw.addAttribute("on", mon.isOn());
         jw.addAttribute("recCount", mon.getRecordCount());

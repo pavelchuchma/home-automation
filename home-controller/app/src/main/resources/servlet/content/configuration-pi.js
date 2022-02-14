@@ -167,7 +167,7 @@ function getToolbarItems() {
 
         new ToolBarItem('louversDown', function (x, y, ctx) {
             LouversItem.drawIcon(x, y, 1, 1, 'stopped', ctx, 50, 60);
-        }, [LouversItem.name, StairsItem.name], 'down'),
+        }, [LouversItem.name, StairsItem.name], 'blind'),
 
         new ToolBarItem('valveToggle', function (x, y, ctx) {
             AirValveItem.drawIcon(x + 10, y - 5, 1, 'stopped', 'red', ctx);
