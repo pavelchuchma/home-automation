@@ -2,7 +2,6 @@ package org.chuma.homecontroller.app.configurator;
 
 import java.util.ArrayList;
 
-import org.chuma.homecontroller.app.servlet.Servlet;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.controller.LouversController;
@@ -42,9 +41,9 @@ public class MartinConfigurator extends AbstractConfigurator {
         LouversController vyhybka03;
 
         LouversController[] louversControllers = new LouversController[]{
-                vyhybka01 = new LouversControllerImpl("lvVyh01", "Vyhybka 01", rele51.getRele1(), rele51.getRele2(), 1000, 10),
-                vyhybka02 = new LouversControllerImpl("lvVyh02", "Vyhybka 02", rele51.getRele3(), rele51.getRele4(), 1000, 10),
-                vyhybka03 = new LouversControllerImpl("lvVyh03", "Vyhybka 03", rele51.getRele5(), rele51.getRele6(), 1000, 10),
+                vyhybka01 = new LouversControllerImpl("lvVyh01", "Vyhybka 01", rele51.getRelay1(), rele51.getRelay2(), 1000, 10),
+                vyhybka02 = new LouversControllerImpl("lvVyh02", "Vyhybka 02", rele51.getRelay3(), rele51.getRelay4(), 1000, 10),
+                vyhybka03 = new LouversControllerImpl("lvVyh03", "Vyhybka 03", rele51.getRelay5(), rele51.getRelay6(), 1000, 10),
         };
 
 

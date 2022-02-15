@@ -12,27 +12,27 @@ public class RelayBoardDevice extends AbstractConnectedDevice {
         super(id, node, connectorPosition, PIN_NAMES);
     }
 
-    public NodePin getRele1() {
+    public NodePin getRelay1() {
         return pins[2];
     }
 
-    public NodePin getRele2() {
+    public NodePin getRelay2() {
         return pins[4];
     }
 
-    public NodePin getRele3() {
+    public NodePin getRelay3() {
         return pins[0];
     }
 
-    public NodePin getRele4() {
+    public NodePin getRelay4() {
         return pins[1];
     }
 
-    public NodePin getRele5() {
+    public NodePin getRelay5() {
         return pins[3];
     }
 
-    public NodePin getRele6() {
+    public NodePin getRelay6() {
         return pins[5];
     }
 

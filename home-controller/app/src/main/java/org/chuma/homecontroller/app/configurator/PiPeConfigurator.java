@@ -2,7 +2,6 @@ package org.chuma.homecontroller.app.configurator;
 
 import java.util.ArrayList;
 
-import org.chuma.homecontroller.app.servlet.Servlet;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.Action;
@@ -47,7 +46,7 @@ public class PiPeConfigurator extends AbstractConfigurator {
         RelayBoardDevice rele51 = new RelayBoardDevice("rele51", actor, 1);
 
         // Zvonek
-        OnOffActor zvonekActor = new OnOffActor("zvonek", "Zvonek", rele51.getRele4(), 0, 1,
+        OnOffActor zvonekActor = new OnOffActor("zvonek", "Zvonek", rele51.getRelay4(), 0, 1,
                 switchCSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), switchCSw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON));
         SwitchOnSensorAction zvonekAction = new SwitchOnSensorAction(zvonekActor, 5, 100);
         SwitchOffAction zvonekStopAction = new SwitchOffAction(zvonekActor);
@@ -81,7 +80,7 @@ public class PiPeConfigurator extends AbstractConfigurator {
         LouversController zaluzieVratnice;
 
         LouversController[] louversControllers = new LouversController[]{
-                zaluzieVratnice = new LouversControllerImpl("lvVrt2", "Vratnice 2", rele51.getRele1(), rele51.getRele2(), 10000, 1000),
+                zaluzieVratnice = new LouversControllerImpl("lvVrt2", "Vratnice 2", rele51.getRelay1(), rele51.getRelay2(), 10000, 1000),
         };
 
         configureLouvers(lst, switchBSw, WallSwitch.Side.LEFT, zaluzieVratnice);
@@ -90,7 +89,7 @@ public class PiPeConfigurator extends AbstractConfigurator {
         ValveController vzduchVratnice;
 
         ValveController[] valveControllers = new ValveController[]{
-                vzduchVratnice = new ValveControllerImpl("vlVrt", "Vratnice", rele51.getRele5(), rele51.getRele6(), 10000),
+                vzduchVratnice = new ValveControllerImpl("vlVrt", "Vratnice", rele51.getRelay5(), rele51.getRelay6(), 10000),
         };
 
 //        Servlet.setLouversControllers(louversControllers);

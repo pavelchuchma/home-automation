@@ -17,13 +17,13 @@ import org.chuma.homecontroller.app.servlet.pages.LouversPage;
 import org.chuma.homecontroller.app.servlet.pages.NodeInfoPage;
 import org.chuma.homecontroller.app.servlet.pages.PirPage;
 import org.chuma.homecontroller.app.servlet.pages.SystemPage;
+import org.chuma.homecontroller.app.servlet.rest.AirValveHandler;
 import org.chuma.homecontroller.app.servlet.rest.AllStatusHandler;
 import org.chuma.homecontroller.app.servlet.rest.HvacHandler;
 import org.chuma.homecontroller.app.servlet.rest.LouversHandler;
 import org.chuma.homecontroller.app.servlet.rest.PirHandler;
 import org.chuma.homecontroller.app.servlet.rest.PwmLightsHandler;
 import org.chuma.homecontroller.app.servlet.rest.StatusHandler;
-import org.chuma.homecontroller.app.servlet.rest.ValveHandler;
 import org.chuma.homecontroller.app.servlet.rest.WaterPumpHandler;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.controller.ActionBinding;
@@ -209,14 +209,14 @@ public class PiConfigurator extends AbstractConfigurator {
 
         SwitchIndicator zaricKoupelnaHoreSw2Indicator = new SwitchIndicator(koupelnaHoreSw2.getRedLed(), SwitchIndicator.Mode.SIGNAL_ANY_ON);
         SwitchIndicator zaricKoupelnaHoreOknoSwIndicator = new SwitchIndicator(koupelnaHoreOknoSw.getRedLed(), SwitchIndicator.Mode.SIGNAL_ANY_ON);
-        OnOffActor zaricKoupelnaHore2Trubice = new OnOffActor("zaricKoupelnaHore2Trubice", "Zaric koupelna 2 rubice", rele01.getRele1(), 0, 1, zaricKoupelnaHoreSw2Indicator, zaricKoupelnaHoreOknoSwIndicator);
-        OnOffActor zaricKoupelnaHore1Trubice = new OnOffActor("zaricKoupelnaHore1Trubice", "Zaric koupelna 1 rubice", rele01.getRele2(), 0, 1, zaricKoupelnaHoreSw2Indicator, zaricKoupelnaHoreOknoSwIndicator);
-        OnOffActor obyvakZasLZvonek = new OnOffActor("obyvakZasL", "ObyvakZasLZvonek", rele01.getRele3(), 0, 1, zvonekPravySw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), zvonekLevySw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
+        OnOffActor zaricKoupelnaHore2Trubice = new OnOffActor("zaricKoupelnaHore2Trubice", "Zaric koupelna 2 rubice", rele01.getRelay1(), 0, 1, zaricKoupelnaHoreSw2Indicator, zaricKoupelnaHoreOknoSwIndicator);
+        OnOffActor zaricKoupelnaHore1Trubice = new OnOffActor("zaricKoupelnaHore1Trubice", "Zaric koupelna 1 rubice", rele01.getRelay2(), 0, 1, zaricKoupelnaHoreSw2Indicator, zaricKoupelnaHoreOknoSwIndicator);
+        OnOffActor obyvakZasLZvonek = new OnOffActor("obyvakZasL", "ObyvakZasLZvonek", rele01.getRelay3(), 0, 1, zvonekPravySw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), zvonekLevySw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
 
         RelayBoardDevice rele12 = new RelayBoardDevice("rele12", rozvadecDole, 2);
-        OnOffActor ovladacGaraz = new OnOffActor("ovladacGaraz", "Vrata garaz", rele12.getRele2(), 0, 1);
-        OnOffActor bzucakDvere = new OnOffActor("bzucakDvere", "Bzucak Dvere", rele12.getRele1(), 0, 1);
-        OnOffActor malyStromek = new OnOffActor("malyStromek", "Stromek pred dvermi", rele12.getRele3(), 0, 1);
+        OnOffActor ovladacGaraz = new OnOffActor("ovladacGaraz", "Vrata garaz", rele12.getRelay2(), 0, 1);
+        OnOffActor bzucakDvere = new OnOffActor("bzucakDvere", "Bzucak Dvere", rele12.getRelay1(), 0, 1);
+        OnOffActor malyStromek = new OnOffActor("malyStromek", "Stromek pred dvermi", rele12.getRelay3(), 0, 1);
 
         SwitchListener lst = nodeInfoCollector.getSwitchListener();
 
@@ -256,31 +256,31 @@ public class PiConfigurator extends AbstractConfigurator {
 //        int snowConstant = 3000;
         int snowConstant = 0;
         LouversController[] louversControllers = new LouversController[]{
-                zaluzieKoupelna = new LouversControllerImpl("lvKoupH", "Koupelna", rele6ZaluzieBPort1.getRele1(), rele6ZaluzieBPort1.getRele2(), 39000, 1600),
-                zaluzieKrystof = new LouversControllerImpl("lvKrys", "Kryštof", rele3ZaluzieAPort1.getRele1(), rele3ZaluzieAPort1.getRele2(), 35000, 1600),
-                zaluziePata = new LouversControllerImpl("lvPata", "Paťa", rele3ZaluzieAPort1.getRele3(), rele3ZaluzieAPort1.getRele4(), 35000, 1600),
-                zaluzieMarek = new LouversControllerImpl("lvMarek", "Marek", rele4ZaluzieAPort2.getRele1(), rele4ZaluzieAPort2.getRele2(), 35000, 1600),
+                zaluzieKoupelna = new LouversControllerImpl("lvKoupH", "Koupelna", rele6ZaluzieBPort1.getRelay1(), rele6ZaluzieBPort1.getRelay2(), 39000, 1600),
+                zaluzieKrystof = new LouversControllerImpl("lvKrys", "Kryštof", rele3ZaluzieAPort1.getRelay1(), rele3ZaluzieAPort1.getRelay2(), 35000, 1600),
+                zaluziePata = new LouversControllerImpl("lvPata", "Paťa", rele3ZaluzieAPort1.getRelay3(), rele3ZaluzieAPort1.getRelay4(), 35000, 1600),
+                zaluzieMarek = new LouversControllerImpl("lvMarek", "Marek", rele4ZaluzieAPort2.getRelay1(), rele4ZaluzieAPort2.getRelay2(), 35000, 1600),
 
-                zaluzieLoznice1 = new LouversControllerImpl("lvLoz1", "Ložnice 1", rele4ZaluzieAPort2.getRele5(), rele4ZaluzieAPort2.getRele6(), 28000, 1600),
-                zaluzieLoznice2 = new LouversControllerImpl("lvLoz2", "Ložnice 2", rele3ZaluzieAPort1.getRele5(), rele3ZaluzieAPort1.getRele6(), 28000, 1600),
-                zaluzieSatna = new LouversControllerImpl("lvSat", "Šatna", rele8Actor3Port1.getRele3(), rele8Actor3Port1.getRele4(), 39000, 1600),
-                zaluziePracovna = new LouversControllerImpl("lvPrc", "Pracovna", rele7ZaluzieBPort3.getRele1(), rele7ZaluzieBPort3.getRele2(), 54000, 1600),
+                zaluzieLoznice1 = new LouversControllerImpl("lvLoz1", "Ložnice 1", rele4ZaluzieAPort2.getRelay5(), rele4ZaluzieAPort2.getRelay6(), 28000, 1600),
+                zaluzieLoznice2 = new LouversControllerImpl("lvLoz2", "Ložnice 2", rele3ZaluzieAPort1.getRelay5(), rele3ZaluzieAPort1.getRelay6(), 28000, 1600),
+                zaluzieSatna = new LouversControllerImpl("lvSat", "Šatna", rele8Actor3Port1.getRelay3(), rele8Actor3Port1.getRelay4(), 39000, 1600),
+                zaluziePracovna = new LouversControllerImpl("lvPrc", "Pracovna", rele7ZaluzieBPort3.getRelay1(), rele7ZaluzieBPort3.getRelay2(), 54000, 1600),
 
-                zaluzieKuchyn = new LouversControllerImpl("lvKuch", "Kuchyň", rele2ZaluzieAPort3.getRele5(), rele2ZaluzieAPort3.getRele6(), 58000 - snowConstant, 1600),
-                zaluzieObyvak1 = new LouversControllerImpl("lvOb1", "Obývák 1", rele2ZaluzieAPort3.getRele1(), rele2ZaluzieAPort3.getRele2(), 57000 - snowConstant, 1600),
-                zaluzieObyvak2 = new LouversControllerImpl("lvOb2", "Obývák 2", rele8Actor3Port1.getRele5(), rele8Actor3Port1.getRele6(), 53000, 1600),
-                zaluzieObyvak3 = new LouversControllerImpl("lvOb3", "Obývák 3", rele2ZaluzieAPort3.getRele3(), rele2ZaluzieAPort3.getRele4(), 58000 - snowConstant, 1600),
+                zaluzieKuchyn = new LouversControllerImpl("lvKuch", "Kuchyň", rele2ZaluzieAPort3.getRelay5(), rele2ZaluzieAPort3.getRelay6(), 58000 - snowConstant, 1600),
+                zaluzieObyvak1 = new LouversControllerImpl("lvOb1", "Obývák 1", rele2ZaluzieAPort3.getRelay1(), rele2ZaluzieAPort3.getRelay2(), 57000 - snowConstant, 1600),
+                zaluzieObyvak2 = new LouversControllerImpl("lvOb2", "Obývák 2", rele8Actor3Port1.getRelay5(), rele8Actor3Port1.getRelay6(), 53000, 1600),
+                zaluzieObyvak3 = new LouversControllerImpl("lvOb3", "Obývák 3", rele2ZaluzieAPort3.getRelay3(), rele2ZaluzieAPort3.getRelay4(), 58000 - snowConstant, 1600),
 
-                zaluzieObyvak4 = new LouversControllerImpl("lvOb4", "Obývák 4", rele4ZaluzieAPort2.getRele3(), rele4ZaluzieAPort2.getRele4(), 58000 - snowConstant, 1600),
-                zaluzieObyvak5 = new LouversControllerImpl("lvOb5", "Obývák 5", rele7ZaluzieBPort3.getRele3(), rele7ZaluzieBPort3.getRele4(), 34000, 1600),
-                zaluzieObyvak6 = new LouversControllerImpl("lvOb6", "Obývák 6", rele7ZaluzieBPort3.getRele5(), rele7ZaluzieBPort3.getRele6(), 20000, 1600),
-                zaluzieKoupelnaDole = new LouversControllerImpl("lvKoupD", "Koupelna dole", rele8Actor3Port1.getRele1(), rele8Actor3Port1.getRele2(), 26000, 1600),
+                zaluzieObyvak4 = new LouversControllerImpl("lvOb4", "Obývák 4", rele4ZaluzieAPort2.getRelay3(), rele4ZaluzieAPort2.getRelay4(), 58000 - snowConstant, 1600),
+                zaluzieObyvak5 = new LouversControllerImpl("lvOb5", "Obývák 5", rele7ZaluzieBPort3.getRelay3(), rele7ZaluzieBPort3.getRelay4(), 34000, 1600),
+                zaluzieObyvak6 = new LouversControllerImpl("lvOb6", "Obývák 6", rele7ZaluzieBPort3.getRelay5(), rele7ZaluzieBPort3.getRelay6(), 20000, 1600),
+                zaluzieKoupelnaDole = new LouversControllerImpl("lvKoupD", "Koupelna dole", rele8Actor3Port1.getRelay1(), rele8Actor3Port1.getRelay2(), 26000, 1600),
 
-                zaluzieChodba1 = new LouversControllerImpl("lvCh1", "Chodba 1", rele6ZaluzieBPort1.getRele3(), rele6ZaluzieBPort1.getRele4(), 39000, 1600),
-                zaluzieChodba2 = new LouversControllerImpl("lvCh2", "Chodba 2", rele6ZaluzieBPort1.getRele5(), rele6ZaluzieBPort1.getRele6(), 39000, 1600),
-                zaluzieVratnice1 = new LouversControllerImpl("lvVrt1", "Vrátnice 1", rele5ZaluzieBPort2.getRele1(), rele5ZaluzieBPort2.getRele2(), 29000, 1600),
-                zaluzieVratnice2 = new LouversControllerImpl("lvVrt2", "Vrátnice 2", rele5ZaluzieBPort2.getRele3(), rele5ZaluzieBPort2.getRele4(), 29000, 1600),
-                zaluzieVratnice3 = new LouversControllerImpl("lvVrt3", "Vrátnice 3", rele5ZaluzieBPort2.getRele5(), rele5ZaluzieBPort2.getRele6(), 40000, 1600),
+                zaluzieChodba1 = new LouversControllerImpl("lvCh1", "Chodba 1", rele6ZaluzieBPort1.getRelay3(), rele6ZaluzieBPort1.getRelay4(), 39000, 1600),
+                zaluzieChodba2 = new LouversControllerImpl("lvCh2", "Chodba 2", rele6ZaluzieBPort1.getRelay5(), rele6ZaluzieBPort1.getRelay6(), 39000, 1600),
+                zaluzieVratnice1 = new LouversControllerImpl("lvVrt1", "Vrátnice 1", rele5ZaluzieBPort2.getRelay1(), rele5ZaluzieBPort2.getRelay2(), 29000, 1600),
+                zaluzieVratnice2 = new LouversControllerImpl("lvVrt2", "Vrátnice 2", rele5ZaluzieBPort2.getRelay3(), rele5ZaluzieBPort2.getRelay4(), 29000, 1600),
+                zaluzieVratnice3 = new LouversControllerImpl("lvVrt3", "Vrátnice 3", rele5ZaluzieBPort2.getRelay5(), rele5ZaluzieBPort2.getRelay6(), 40000, 1600),
         };
 
         ValveController vzduchVratnice;
@@ -295,17 +295,17 @@ public class PiConfigurator extends AbstractConfigurator {
         ValveController vzduchMarek;
         ValveController vzduchObyvak45;
         ValveController[] valveControllers = new ValveController[]{
-                vzduchVratnice = new ValveControllerImpl("vlVrt", "Vratnice", rele11.getRele1(), rele11.getRele2(), 150000),
-                vzduchPracovna = new ValveControllerImpl("vlPrc", "Pracovna", rele11.getRele3(), rele11.getRele4(), 150000),
-                vzduchKoupelnaDole = new ValveControllerImpl("vlKoupD", "KoupelnaDole", rele11.getRele5(), rele11.getRele6(), 150000),
+                vzduchVratnice = new ValveControllerImpl("vlVrt", "Vratnice", rele11.getRelay1(), rele11.getRelay2(), 150000),
+                vzduchPracovna = new ValveControllerImpl("vlPrc", "Pracovna", rele11.getRelay3(), rele11.getRelay4(), 150000),
+                vzduchKoupelnaDole = new ValveControllerImpl("vlKoupD", "KoupelnaDole", rele11.getRelay5(), rele11.getRelay6(), 150000),
 
-                vzduchJidelna = new ValveControllerImpl("vlJid", "Jidelna", rele09.getRele1(), rele09.getRele2(), 150000),
-                vzduchKoupelna = new ValveControllerImpl("vlKoupH", "KoupelnaHore", rele09.getRele3(), rele09.getRele4(), 150000),
-                vzduchPata = new ValveControllerImpl("vlPata", "Pata", rele09.getRele5(), rele09.getRele6(), 150000),
+                vzduchJidelna = new ValveControllerImpl("vlJid", "Jidelna", rele09.getRelay1(), rele09.getRelay2(), 150000),
+                vzduchKoupelna = new ValveControllerImpl("vlKoupH", "KoupelnaHore", rele09.getRelay3(), rele09.getRelay4(), 150000),
+                vzduchPata = new ValveControllerImpl("vlPata", "Pata", rele09.getRelay5(), rele09.getRelay6(), 150000),
 
-                vzduchObyvak23 = new ValveControllerImpl("vlObyv23", "Obyvak 2+3", rele10.getRele1(), rele10.getRele2(), 150000),
-                vzduchMarek = new ValveControllerImpl("vlMarek", "Marek", rele10.getRele3(), rele10.getRele4(), 150000),
-                vzduchObyvak45 = new ValveControllerImpl("vlObyv45", "Obyvak 4+5", rele10.getRele5(), rele10.getRele6(), 150000),
+                vzduchObyvak23 = new ValveControllerImpl("vlObyv23", "Obyvak 2+3", rele10.getRelay1(), rele10.getRelay2(), 150000),
+                vzduchMarek = new ValveControllerImpl("vlMarek", "Marek", rele10.getRelay3(), rele10.getRelay4(), 150000),
+                vzduchObyvak45 = new ValveControllerImpl("vlObyv45", "Obyvak 4+5", rele10.getRelay5(), rele10.getRelay6(), 150000),
         };
 
         SwitchIndicator krystofIndicator = new SwitchIndicator(krystofSwA2.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF);
@@ -767,7 +767,7 @@ public class PiConfigurator extends AbstractConfigurator {
         // rest handlers
         List<StatusHandler> restHandlers = Arrays.asList(
                 new LouversHandler(Arrays.asList(louversControllers)),
-                new ValveHandler(Arrays.asList(valveControllers)),
+                new AirValveHandler(Arrays.asList(valveControllers)),
                 new PwmLightsHandler(getPwmActors(lightActions)),
                 new PirHandler(pirStatusList),
                 new WaterPumpHandler(Collections.singleton(waterPumpMonitor)),
