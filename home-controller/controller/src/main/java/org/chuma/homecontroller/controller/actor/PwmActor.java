@@ -1,7 +1,6 @@
 package org.chuma.homecontroller.controller.actor;
 
 import java.io.IOException;
-import java.net.InetAddress;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,11 +8,9 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static org.chuma.homecontroller.base.packet.Packet.MAX_PWM_VALUE;
 
-import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.NodePin;
 import org.chuma.homecontroller.base.packet.Packet;
 import org.chuma.homecontroller.controller.device.LddBoardDevice;
-import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
 
 public class PwmActor extends AbstractPinActor implements IOnOffActor {
     static Logger log = LoggerFactory.getLogger(PwmActor.class.getName());
@@ -92,19 +89,16 @@ public class PwmActor extends AbstractPinActor implements IOnOffActor {
                 log.debug(String.format("Setting pwm %s to: %d", nodePin, value));
                 Packet response = nodePin.getNode().setManualPwmValue(nodePin.getPin(), value);
 
-                // ignore no-response on AGATA - testing machine
-                if (!InetAddress.getLocalHost().getHostName().equalsIgnoreCase("AGATA")) {
-                    if (response == null) {
-                        throw new IOException("No response.");
-                    }
-                    if (response.data == null || response.data.length != 1) {
-                        throw new IOException(String.format("Unexpected response length %s", response.toString()));
-                    }
-
-                    if (response.data[0] != 0) {
-                        throw new IOException(String.format("Unexpected response code (%d): %s", response.data[0], response.toString()));
-                    }
+                if (response == null) {
+                    throw new IOException("No response.");
                 }
+                if (response.data == null || response.data.length != 1) {
+                    throw new IOException(String.format("Unexpected response length %s", response));
+                }
+                if (response.data[0] != 0) {
+                    throw new IOException(String.format("Unexpected response code (%d): %s", response.data[0], response));
+                }
+
                 pwmValue = value;
                 log.info(String.format("PWM of %s set to: %d", nodePin, value));
                 return true;
