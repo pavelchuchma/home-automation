@@ -15,39 +15,50 @@ public class PwmLightsHandler extends AbstractRestHandler<PwmActor> {
     @Override
     void writeJsonItemValues(JsonWriter jw, PwmActor actor, HttpServletRequest request) {
         jw.addAttribute("name", actor.getLabel());
-        jw.addAttribute("val", actor.getPwmValue());
-        jw.addAttribute("maxVal", actor.getMaxPwmValue());
+        jw.addAttribute("val", actor.getValue());
+        jw.addAttribute("pwmVal", actor.getCurrentPwmValue());
+        jw.addAttribute("maxPwmVal", actor.getMaxPwmValue());
         jw.addAttribute("curr", actor.getOutputCurrent());
     }
 
     @Override
     void processAction(PwmActor pwmActor, Map<String, String[]> requestParameters) {
         String action = getStringParam(requestParameters, "action");
-        int currentVal = pwmActor.getPwmValuePercent();
-        int newVal;
         if (action == null) {
-            newVal = getMandatoryIntParam(requestParameters, "val");
+            double val = getMandatoryDoubleParam(requestParameters, "val");
+            pwmActor.switchOn(val, null);
         } else {
             switch (action) {
                 case "toggle":
-                    newVal = (pwmActor.isOn()) ? 0 : 75;
+                    if (pwmActor.isOn()) {
+                        pwmActor.switchOff(null);
+                    } else {
+                        pwmActor.switchOn(0.75, null);
+                    }
                     break;
                 case "plus":
-                    newVal = (pwmActor.isOn()) ? Math.min(currentVal + 15, 100) : 66;
+                    if (pwmActor.isOn()) {
+                        pwmActor.increasePwm(.15, null);
+                    } else {
+                        pwmActor.switchOn(0.66, null);
+                    }
                     break;
                 case "minus":
-                    newVal = (pwmActor.isOn()) ? Math.max(currentVal - 15, 0) : 1;
+                    if (pwmActor.isOn()) {
+                        pwmActor.decreasePwm(.15, null);
+                    } else {
+                        pwmActor.switchOn(0.01, null);
+                    }
                     break;
                 case "full":
-                    newVal = 100;
+                    pwmActor.switchOn(null);
                     break;
                 case "off":
-                    newVal = 0;
+                    pwmActor.switchOff(null);
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown action '" + action + "'");
             }
         }
-        pwmActor.setValue(newVal, this);
     }
 }

@@ -5,20 +5,21 @@ class PwmLightItem extends BaseItem {
         super(id, x, y, floor)
         this.name = undefined;
         this.val = undefined;
-        this.maxVal = undefined;
+        this.pwmVal = undefined;
+        this.maxPwmVal = undefined;
         this.curr = undefined;
     }
 
     update(item) {
         this.name = item.name;
         this.val = item.val;
-        this.maxVal = item.maxVal;
+        this.pwmVal = item.pwmVal;
+        this.maxPwmVal = item.maxPwmVal;
         this.curr = item.curr;
     }
 
     draw(ctx) {
-        const power = this.val / this.maxVal;
-        PwmLightItem.drawIcon(this.x, this.y, power, ctx);
+        PwmLightItem.drawIcon(this.x, this.y, this.val, ctx);
     }
 
     static drawIcon(x, y, power, ctx) {

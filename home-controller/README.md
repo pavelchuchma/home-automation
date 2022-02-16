@@ -1,11 +1,12 @@
 #TODO
-* [x] Remove boolean invert in callListenersAndSetActionData()
-* [x] refactor modules
-* [ ] refactor IOnOfActor.switchOn percent parameter from int to double
+* [ ] remove `String.format()` from debugs
+* [x] refactor IOnOfActor.switchOn percent parameter from int to double
+* [x] !!! refactor `LouverControllerImpl.setPosition()` percent parameter from int to double
+* [x] use `Validate.inclusiveBetween` whenever possible
 * [ ] refactor web config
 * [ ] NodeInfoCollector: Convert node list to int->NodeInfo map
+* [ ] fix tests
 * [ ] **BUG:** Broken stylesheets on http://pi/lights, louvers
-* [x] **BUG:** frozen web after 5+ louvers are moving...
 * [ ] water pump report
 * [ ] deactivate PIR after manual switch off
 * [ ] Alexa support

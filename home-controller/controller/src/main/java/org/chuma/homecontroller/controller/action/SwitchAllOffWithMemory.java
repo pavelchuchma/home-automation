@@ -7,12 +7,12 @@ public class SwitchAllOffWithMemory implements Action {
 
     final Action[] switchOffActions;
     final IOnOffActor[] actors;
-    int[] lastValues;
+    double[] lastValues;
 
     public SwitchAllOffWithMemory(IOnOffActor... actors) {
         this.actors = actors;
         this.switchOffActions = createSwitchOffActions(actors);
-        lastValues = new int[actors.length];
+        lastValues = new double[actors.length];
     }
 
     public static Action[] createSwitchOffActions(IOnOffActor... actors) {

@@ -2,6 +2,8 @@ package org.chuma.homecontroller.base.packet;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang3.Validate;
+
 import org.chuma.homecontroller.base.node.MessageType;
 
 public class Packet {
@@ -44,7 +46,7 @@ public class Packet {
         return new Packet(nodeId, MessageType.MSG_GetBuildTimeRequest, null);
     }
 
-    public static Packet createMsgSetPort(int nodeId, char port, int valueMask, int value, int eventMask, int trisValue) throws IllegalArgumentException {
+    public static Packet createMsgSetPort(int nodeId, char port, int valueMask, int value, int eventMask, int trisValue) {
         if (port < 'A' || port > 'D')
             throw new IllegalArgumentException("Only ports A, B, C and D are valid");
         int[] data;
@@ -74,11 +76,11 @@ public class Packet {
         return new Packet(nodeId, MessageType.MSG_SetHeartBeatPeriod, new int[]{seconds});
     }
 
-    public static Packet createMsgMSGSetManualPwmValue(int nodeId, char port, int pin, int value) throws IllegalArgumentException {
+    public static Packet createMsgMSGSetManualPwmValue(int nodeId, char port, int pin, int value) {
         int portNum = port - 'A';
-        if (port < 'A' || port > 'C') throw new IllegalArgumentException("Invalid port value");
-        if (pin < 0 || pin > 7) throw new IllegalArgumentException("Invalid pin value");
-        if (value < 0 || value > MAX_PWM_VALUE) throw new IllegalArgumentException("Invalid pwm value");
+        Validate.inclusiveBetween('A', 'C', port, "Invalid port value");
+        Validate.inclusiveBetween(0, 7, pin, "Invalid pin value");
+        Validate.inclusiveBetween(0, MAX_PWM_VALUE, value, "Invalid pwm value");
         return new Packet(nodeId, MessageType.MSG_SetManualPwmValueRequest, new int[]{portNum + (pin << 4), value});
     }
 

@@ -5,15 +5,15 @@ import org.chuma.homecontroller.controller.actor.IOnOffActor;
 
 public class InvertAction extends AbstractAction {
 
-    private int switchOnPercent;
+    private final double switchOnValue;
 
     public InvertAction(IOnOffActor actor) {
-        this(actor, 100);
+        this(actor, 1.0);
     }
 
-    public InvertAction(Actor actor, int switchOnPercent) {
+    public InvertAction(Actor actor, double switchOnValue) {
         super(actor);
-        this.switchOnPercent = switchOnPercent;
+        this.switchOnValue = switchOnValue;
     }
 
     @Override
@@ -22,7 +22,7 @@ public class InvertAction extends AbstractAction {
         if (onOffActor.isOn()) {
             onOffActor.switchOff(null);
         } else {
-            onOffActor.switchOn(switchOnPercent, null);
+            onOffActor.switchOn(switchOnValue, null);
         }
     }
 }

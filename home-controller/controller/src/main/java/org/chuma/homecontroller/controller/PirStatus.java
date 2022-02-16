@@ -76,7 +76,7 @@ public class PirStatus {
         }
 
         @Override
-        public boolean setValue(int val, Object actionData) {
+        public boolean setValue(double val, Object actionData) {
             return true;
         }
 
@@ -90,7 +90,7 @@ public class PirStatus {
         }
 
         @Override
-        public int getValue() {
+        public double getValue() {
             return 0;
         }
 

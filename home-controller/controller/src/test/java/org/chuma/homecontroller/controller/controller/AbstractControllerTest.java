@@ -67,7 +67,7 @@ public class AbstractControllerTest {
         }
 
         @Override
-        public boolean switchOn(int percent, Object actionData) {
+        public boolean switchOn(double value, Object actionData) {
             active = true;
             this.actionData = actionData;
             switchOnTime = System.currentTimeMillis();
@@ -103,7 +103,7 @@ public class AbstractControllerTest {
         }
 
         @Override
-        public boolean setValue(int val, Object actionData) {
+        public boolean setValue(double val, Object actionData) {
             throw new UnsupportedOperationException();
         }
 
@@ -118,7 +118,7 @@ public class AbstractControllerTest {
         }
 
         @Override
-        public int getValue() {
+        public double getValue() {
             throw new UnsupportedOperationException();
         }
 

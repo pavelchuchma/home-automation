@@ -1,5 +1,7 @@
 package org.chuma.homecontroller.app.servlet.rest.impl;
 
+import java.text.DecimalFormat;
+
 public class JsonWriter implements AutoCloseable {
     private static final int MAX_DEPTH = 10;
     private final StringBuilder sb;
@@ -7,6 +9,7 @@ public class JsonWriter implements AutoCloseable {
     private final char[] endingChars = new char[MAX_DEPTH];
     private final boolean indent;
     private int stackPosition = -1;
+    private DecimalFormat doubleFormat = new DecimalFormat("###.###");
 
     public JsonWriter(boolean indent) {
         this.indent = indent;
@@ -72,7 +75,7 @@ public class JsonWriter implements AutoCloseable {
 
     public JsonWriter addAttribute(String name, double value) {
         appendAttrName(name);
-        sb.append(String.format("%.4f", value));
+        sb.append(doubleFormat.format(value));
         return this;
     }
 

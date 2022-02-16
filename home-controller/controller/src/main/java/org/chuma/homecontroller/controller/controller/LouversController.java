@@ -25,7 +25,10 @@ public interface LouversController {
 
     void blind();
 
-    void outshine(int percent);
+    /**
+     * @param offset 0 - horizontal (open), 1 - closed
+     */
+    void outshine(double offset);
 
     void stop();
 }

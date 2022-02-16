@@ -11,14 +11,14 @@ public class PwmActionGroup {
     public static final int STEP_DELAY = 300;
     public static final int FIRST_STEP_DELAY = 600;
     static Logger log = LoggerFactory.getLogger(PwmActionGroup.class.getName());
-    int initialPwmValue;
-    Action upPressed;
-    Action upReleased;
-    Action downPressed;
-    Action downReleased;
+    final double switchOnValue;
+    final Action upPressed;
+    final Action upReleased;
+    final Action downPressed;
+    final Action downReleased;
 
-    public PwmActionGroup(PwmActor actor, int initialPwmValue) {
-        this.initialPwmValue = initialPwmValue;
+    public PwmActionGroup(PwmActor actor, double switchOnValue) {
+        this.switchOnValue = switchOnValue;
 
         upPressed = createUpPressed(actor);
         upReleased = createUpReleased(actor);
@@ -88,12 +88,10 @@ public class PwmActionGroup {
         @Override
         public void perform(int buttonDownDuration) {
             PwmActor actor = (PwmActor) getActor();
-            int value = actor.getValue();
-
-            if (value != 0) {
+            if (actor.isOn()) {
                 actor.setValue(0, this);
             } else {
-                actor.setValue(1, this);
+                actor.setValue(0.01, this);
             }
         }
     }
@@ -106,12 +104,11 @@ public class PwmActionGroup {
         @Override
         public void perform(int buttonUpDuration) {
             final PwmActor actor = (PwmActor) getActor();
-            final int initialValue = actor.getValue();
 
-            if (initialValue == 0) {
-                actor.setValue(initialPwmValue, this);
+            if (actor.isOn()) {
+                actor.increasePwm(.10, this);
             } else {
-                actor.increasePwm(10, this);
+                actor.setValue(switchOnValue, this);
             }
 
             try {
@@ -120,10 +117,10 @@ public class PwmActionGroup {
                     actor.wait(FIRST_STEP_DELAY);
                     while (true) {
                         // modified by somebody else or is fully open
-                        if (actor.getActionData() != this || actor.getValue() == 100) {
+                        if (actor.getActionData() != this || actor.getValue() == 1d) {
                             return;
                         }
-                        actor.increasePwm(10, this);
+                        actor.increasePwm(.1, this);
                         actor.wait(STEP_DELAY);
                     }
                 }

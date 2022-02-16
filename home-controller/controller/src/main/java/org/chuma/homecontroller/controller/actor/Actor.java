@@ -15,14 +15,14 @@ public interface Actor {
     String getLabel();
 
     /**
-     * @param val        target value
+     * @param val        target value. Acceptable values are from interval <0;1>.
      * @param actionData Optional action specific data. Each {@link Actor} instance holds one actionData instance
-     *                   usable by following actons
+     *                   usable by following actions
      * @return true on success
      */
-    boolean setValue(int val, Object actionData);
+    boolean setValue(double val, Object actionData);
 
-    int getValue();
+    double getValue();
 
     /**
      * @return The last stored action data.

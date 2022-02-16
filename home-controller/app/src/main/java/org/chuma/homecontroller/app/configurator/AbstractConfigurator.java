@@ -14,12 +14,9 @@ import org.chuma.homecontroller.base.node.NodePin;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.PirStatus;
 import org.chuma.homecontroller.controller.action.Action;
-import org.chuma.homecontroller.controller.action.DecreasePwmAction;
-import org.chuma.homecontroller.controller.action.IncreasePwmAction;
 import org.chuma.homecontroller.controller.action.LouversActionGroup;
 import org.chuma.homecontroller.controller.action.PwmActionGroup;
 import org.chuma.homecontroller.controller.action.SwitchOffAction;
-import org.chuma.homecontroller.controller.action.SwitchOnAction;
 import org.chuma.homecontroller.controller.actor.ActorListener;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
 import org.chuma.homecontroller.controller.actor.PwmActor;
@@ -40,18 +37,18 @@ public abstract class AbstractConfigurator {
         this.nodeInfoCollector = nodeInfoCollector;
     }
 
-    protected static void configurePwmLights(SwitchListener lst, WallSwitch wallSwitch, WallSwitch.Side side, int initialPwmValue, PwmActor... pwmActors) {
-        configurePwmLightsImpl(lst, wallSwitch, side, initialPwmValue, pwmActors, null);
+    protected static void configurePwmLights(SwitchListener lst, WallSwitch wallSwitch, WallSwitch.Side side, double switchOnValue, PwmActor... pwmActors) {
+        configurePwmLightsImpl(lst, wallSwitch, side, switchOnValue, pwmActors, null);
     }
 
-    protected static void configurePwmLightsImpl(SwitchListener lst, WallSwitch wallSwitch, WallSwitch.Side side, int initialPwmValue, PwmActor[] pwmActors, IOnOffActor[] switchOffOnlyActors) {
+    protected static void configurePwmLightsImpl(SwitchListener lst, WallSwitch wallSwitch, WallSwitch.Side side, double switchOnValue, PwmActor[] pwmActors, IOnOffActor[] switchOffOnlyActors) {
         List<Action> upperButtonUpActions = new ArrayList<>();
         List<Action> upperButtonDownActions = new ArrayList<>();
         List<Action> downButtonUpActions = new ArrayList<>();
         List<Action> downButtonDownActions = new ArrayList<>();
 
         for (PwmActor pwmActor : pwmActors) {
-            PwmActionGroup actionGroup = new PwmActionGroup(pwmActor, initialPwmValue);
+            PwmActionGroup actionGroup = new PwmActionGroup(pwmActor, switchOnValue);
             upperButtonUpActions.add(actionGroup.getUpButtonDownAction());
             upperButtonDownActions.add(actionGroup.getUpButtonUpAction());
             downButtonUpActions.add(actionGroup.getDownButtonDownAction());
@@ -69,13 +66,19 @@ public abstract class AbstractConfigurator {
         lst.addActionBinding(new ActionBinding(bottomButton, toArray(downButtonUpActions), toArray(downButtonDownActions)));
     }
 
-    static PwmActor addLddLight(ArrayList<Action> lightsActions, String id, String label, LddBoardDevice.LddNodePin pin, double maxLoad, ActorListener... actorListeners) {
-        log.debug(String.format("Adding LDD Light: %s, %s, %s, %s, %s, %s", pin.getDeviceName(), pin.getPin().getPinIndex(), id, label, pin.getMaxLddCurrent(), maxLoad));
-        PwmActor pwmActor = new PwmActor(id, label, pin, maxLoad / pin.getMaxLddCurrent(), actorListeners);
-        lightsActions.add(new SwitchOnAction(pwmActor));
-        lightsActions.add(new IncreasePwmAction(pwmActor));
-        lightsActions.add(new DecreasePwmAction(pwmActor));
-        lightsActions.add(new SwitchOffAction(pwmActor));
+    /**
+     * @param pwmActors
+     * @param id
+     * @param label
+     * @param pin
+     * @param maxCurrentAmp  Maximal current in Amperes for light
+     * @param actorListeners
+     * @return
+     */
+    static PwmActor addLddLight(List<PwmActor> pwmActors, String id, String label, LddBoardDevice.LddNodePin pin, double maxCurrentAmp, ActorListener... actorListeners) {
+        log.debug(String.format("Adding LDD Light: %s, %s, %s, %s, %s, %s", pin.getDeviceName(), pin.getPin().getPinIndex(), id, label, pin.getMaxLddCurrent(), maxCurrentAmp));
+        PwmActor pwmActor = new PwmActor(id, label, pin, maxCurrentAmp, actorListeners);
+        pwmActors.add(pwmActor);
         return pwmActor;
     }
 

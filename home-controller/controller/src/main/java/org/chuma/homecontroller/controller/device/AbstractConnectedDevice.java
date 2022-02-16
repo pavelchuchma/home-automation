@@ -1,5 +1,7 @@
 package org.chuma.homecontroller.controller.device;
 
+import org.apache.commons.lang3.Validate;
+
 import org.chuma.homecontroller.base.node.CpuFrequency;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.NodePin;
@@ -42,14 +44,8 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
      * @return Pin instance according to input coordinates
      */
     public static Pin getPin(int connectorNumber, int connectorPin) {
-        if (connectorNumber < 1 || connectorNumber > 3) {
-            throw new IllegalArgumentException(String.format("Invalid connector #%d. It must be 1..3", connectorNumber));
-        }
-
-        if (connectorPin < 1 || connectorPin > 6) {
-            throw new IllegalArgumentException(String.format("Invalid connector pin#%d. It must be 1..6", connectorPin));
-        }
-
+        Validate.inclusiveBetween(1,3, connectorNumber, String.format("Invalid connector #%d. It must be 1..3", connectorNumber));
+        Validate.inclusiveBetween(1,6, connectorPin, String.format("Invalid connector pin#%d. It must be 1..6", connectorPin));
         return layout[connectorNumber - 1][connectorPin - 1];
     }
 

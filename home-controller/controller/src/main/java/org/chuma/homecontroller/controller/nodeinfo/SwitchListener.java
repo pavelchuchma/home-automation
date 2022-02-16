@@ -73,7 +73,7 @@ public class SwitchListener extends AbstractNodeListener {
     }
 
     @Override
-    public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, IllegalArgumentException {
+    public void onReboot(Node node, int pingCounter, int rconValue) {
         node.initialize();
     }
 }

@@ -5,24 +5,24 @@ import org.chuma.homecontroller.controller.actor.IOnOffActor;
 
 public class SwitchOnSensorAction extends AbstractSensorAction {
 
-    public SwitchOnSensorAction(IOnOffActor actor, int timeout) {
-        this(actor, timeout, 100, Priority.LOW, null);
+    public SwitchOnSensorAction(IOnOffActor actor, int timeoutSec) {
+        this(actor, timeoutSec, 1d, Priority.LOW, null);
     }
 
-    public SwitchOnSensorAction(IOnOffActor actor, int timeout, int switchOnPercent) {
-        this(actor, timeout, switchOnPercent, Priority.LOW, null);
+    public SwitchOnSensorAction(IOnOffActor actor, int timeoutSec, double switchOnValue) {
+        this(actor, timeoutSec, switchOnValue, Priority.LOW, null);
     }
 
-    public SwitchOnSensorAction(IOnOffActor actor, int timeout, int switchOnPercent, Priority priority) {
-        this(actor, timeout, switchOnPercent, priority, null);
+    public SwitchOnSensorAction(IOnOffActor actor, int timeoutSec, double switchOnValue, Priority priority) {
+        this(actor, timeoutSec, switchOnValue, priority, null);
     }
 
-    public SwitchOnSensorAction(IOnOffActor actor, int timeout, int switchOnPercent, ICondition condition) {
-        this(actor, timeout, switchOnPercent, Priority.LOW, condition);
+    public SwitchOnSensorAction(IOnOffActor actor, int timeoutSec, double switchOnValue, ICondition condition) {
+        this(actor, timeoutSec, switchOnValue, Priority.LOW, condition);
     }
 
-    public SwitchOnSensorAction(IOnOffActor actor, int timeout, int switchOnPercent, Priority priority, ICondition condition) {
-        super(actor, timeout, true, switchOnPercent, priority, condition);
+    public SwitchOnSensorAction(IOnOffActor actor, int timeoutSec, double switchOnValue, Priority priority, ICondition condition) {
+        super(actor, timeoutSec, true, switchOnValue, priority, condition);
     }
 
     @Override

@@ -18,7 +18,7 @@ public class HvacActor extends AbstractActor implements IOnOffActor {
     }
 
     @Override
-    public boolean switchOn(int percent, Object actionData) {
+    public boolean switchOn(double value, Object actionData) {
         return setValue(1, actionData);
     }
 
@@ -28,7 +28,7 @@ public class HvacActor extends AbstractActor implements IOnOffActor {
     }
 
     @Override
-    public boolean setValue(int val, Object actionData) {
+    public boolean setValue(double val, Object actionData) {
         if (hvacDevice == null) {
             return false;
         }
@@ -43,7 +43,7 @@ public class HvacActor extends AbstractActor implements IOnOffActor {
     }
 
     @Override
-    public int getValue() {
+    public double getValue() {
         return (isOn()) ? 1 : 0;
     }
 

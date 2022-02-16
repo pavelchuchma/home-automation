@@ -26,7 +26,6 @@ public class LouversControllerImpl implements LouversController {
     }
 
     public LouversControllerImpl(String id, String name, NodePin relayUp, NodePin relayDown, int downPositionMs, int maxOffsetMs) {
-
         IOnOffActor upActor = new OnOffActor(name + " Up", "LABEL", relayUp, 0, 1);
         IOnOffActor downActor = new OnOffActor(name + " Down", "LABEL", relayDown, 0, 1);
 
@@ -80,74 +79,74 @@ public class LouversControllerImpl implements LouversController {
 
     @Override
     public void up() {
-        log.debug(String.format("'%s': Up", name));
+        log.debug("'{}': Up", name);
         setPosition(0, 0);
     }
 
-    void setPosition(double downPercent, double offsetPercent) {
-        Validate.inclusiveBetween(0., 100., downPercent);
-        Validate.inclusiveBetween(0., 100., offsetPercent);
+    /**
+     * @param position value from interval <0;1>, where 0 stands for up and 1 for down
+     * @param offset   value from interval <0;1>, where 0 stands for open and 1 for closed
+     */
+    void setPosition(double position, double offset) {
+        Validate.inclusiveBetween(0d, 1d, position);
+        Validate.inclusiveBetween(0d, 1d, offset);
 
-        int desiredPositionMs = (int) (downPercent / 100.0 * louversPosition.position.maxPositionMs);
-        int desiredOffsetMs = (int) (offsetPercent / 100.0 * louversPosition.offset.maxPositionMs);
-        log.debug(String.format("setPosition to: %d ms, offset: %d ms", desiredPositionMs, desiredOffsetMs));
-        Object aData = new Object();
+        int desiredPositionMs = (int) (position * louversPosition.position.maxPositionMs);
+        int desiredOffsetMs = (int) (offset * louversPosition.offset.maxPositionMs);
+        log.debug("setPosition to: {} ms, offset: {} ms", desiredPositionMs, desiredOffsetMs);
+        final Object aData = new Object();
         try {
             synchronized (this) {
                 actionData = aData;
                 notifyAll();
-                int position = louversPosition.getPosition();
-                int offset = louversPosition.getOffset();
+                int currentPositionMs = louversPosition.getPosition();
+                int currentOffsetMs = louversPosition.getOffset();
 
-                while (position < 0 || offset < 0) {
-                    log.debug(String.format(" finding position first. Current position: %d, offset: %d", position, offset));
+                while (currentPositionMs < 0 || currentOffsetMs < 0) {
+                    log.debug(" finding current position first. Current position: {}, offset: {}", currentPositionMs, currentOffsetMs);
                     // position unknown, move to closer end
-                    if (downPercent > 50) {
+                    if (position > 0.5) {
                         // move down
                         moveImpl(downActor, upActor, louversPosition::startDown, true, aData);
                     } else {
                         // move up
                         moveImpl(upActor, downActor, louversPosition::startUp, true, aData);
                     }
-                    position = louversPosition.getPosition();
-                    offset = louversPosition.getOffset();
+                    currentPositionMs = louversPosition.getPosition();
+                    currentOffsetMs = louversPosition.getOffset();
                 }
-
-                // validate position is known
-                Validate.isTrue(position >= 0);
-                Validate.isTrue(offset >= 0);
 
                 boolean needStopConflictingActor = true;
-                int posMsDiff = desiredPositionMs - position;
-                if (desiredPositionMs == 0 && position != 0) {
+                int posMsDiff = desiredPositionMs - currentPositionMs;
+                if (desiredPositionMs == 0 && currentPositionMs != 0) {
                     posMsDiff -= louversPosition.upReserve;
                 }
-                log.debug(String.format(" Before move: desiredPos: %d, currentPos: %d, diff: %d", desiredPositionMs, position, posMsDiff));
+                log.debug(" Before move: desiredPos: {}, currentPos: {}, diff: {}", desiredPositionMs, currentPositionMs, posMsDiff);
                 if (Math.abs(posMsDiff) > louversPosition.position.maxPositionMs * 0.005
-                        && (downPercent != 100 || !louversPosition.isDown())) {
+                        && (position != 1 || !louversPosition.isDown())) {
                     // position needs a correction
                     moveImpl(posMsDiff, aData, true);
-                    position = louversPosition.getPosition();
+                    currentPositionMs = louversPosition.getPosition();
                     needStopConflictingActor = false;
-                    log.debug(String.format(" After move: desiredPos: %d, currentPos: %d, diff: %d", desiredPositionMs, position, desiredPositionMs - position));
+                    log.debug(" After move: desiredPos: {}, currentPos: {}, diff: {}", desiredPositionMs, currentPositionMs, desiredPositionMs - currentPositionMs);
                 } else {
                     log.debug("  no position change needed");
                 }
 
-                offset = louversPosition.getOffset();
-                int offMsDiff = desiredOffsetMs - offset;
-                log.debug(String.format(" Before move: desiredOff: %d, currentOff: %d, diff: %d", desiredOffsetMs, offset, offMsDiff));
+                currentOffsetMs = louversPosition.getOffset();
+                int offMsDiff = desiredOffsetMs - currentOffsetMs;
+                log.debug(" Before move: desiredOff: {}, currentOff: {}, diff: {}", desiredOffsetMs, currentOffsetMs, offMsDiff);
 
                 if (Math.abs(offMsDiff) > louversPosition.offset.maxPositionMs * 0.025) {
                     // offset needs a correction
                     moveImpl(offMsDiff, aData, needStopConflictingActor);
-                    offset = louversPosition.getOffset();
-                    log.debug(String.format(" After move: desiredOff: %d, currentOff: %d, diff: %d", desiredOffsetMs, offset, desiredOffsetMs - offset));
+                    currentOffsetMs = louversPosition.getOffset();
+                    log.debug(" After move: desiredOff: {}, currentOff: {}, diff: {}", desiredOffsetMs, currentOffsetMs, desiredOffsetMs - currentOffsetMs);
                 } else {
                     log.debug("  no offset change needed");
                 }
-                position = louversPosition.getPosition();
-                log.debug(String.format(" after setPosition: %d (off: %d)", position, offset));
+                currentPositionMs = louversPosition.getPosition();
+                log.debug(" after setPosition: {} (off: {})", currentPositionMs, currentOffsetMs);
             }
         } catch (ExternalModificationException e) {
             log.debug("External modification, exiting");
@@ -160,7 +159,6 @@ public class LouversControllerImpl implements LouversController {
 
     /**
      * @param msDiff negative -> up, positive -> down
-     * @throws ExternalModificationException
      */
     private void moveImpl(int msDiff, Object aData, boolean stopConflictingActor) throws ExternalModificationException {
         if (msDiff > 0) {
@@ -189,10 +187,11 @@ public class LouversControllerImpl implements LouversController {
         }
         int moveMs = positionAction.getAsInt();
         if (moveMs > 0) {
-            log.debug(String.format("%s switching on actor '%s' for %d ms", name, actor.getId(), moveMs));
+            log.debug("{} switching on actor '{}' for {} ms", name, actor.getId(), moveMs);
             actor.switchOn(aData);
+            log.debug("{} waiting on actor '{}' for {} ms", name, actor.getId(), moveMs);
             wait(actor, aData, moveMs);
-            log.debug(String.format("done, switching actor '%s' off", actor.getId()));
+            log.debug("done, switching actor '{}' off", actor.getId());
         }
         louversPosition.stop();
         if (!actor.switchOff(aData)) {
@@ -214,19 +213,19 @@ public class LouversControllerImpl implements LouversController {
 
     @Override
     public synchronized void blind() {
-        log.debug(String.format("'%s': Blind", name));
-        setPosition(100, 100);
+        log.debug("'{}': Blind", name);
+        setPosition(1, 1);
     }
 
     @Override
-    public synchronized void outshine(int percent) {
-        log.debug(String.format("'%s': Outshine %d%%", name, percent));
-        setPosition(100, percent);
+    public synchronized void outshine(double offset) {
+        log.debug("'{}': Outshine {}", name, offset);
+        setPosition(1, offset);
     }
 
     @Override
     public void stop() {
-        log.debug(String.format("'%s': Stop", name));
+        log.debug("'{}': Stop", name);
         synchronized (this) {
             louversPosition.stop();
             Object stopData = new Object();
@@ -240,11 +239,11 @@ public class LouversControllerImpl implements LouversController {
     private void stopActorIfNecessary(IOnOffActor actor, Object stopData) {
         if (actor.getActionData() != actionData || actor.isOn()) {
             if (!actor.switchOff(stopData)) {
-                throw new RuntimeException("Failed to stop actor " + actor.toString());
+                throw new RuntimeException("Failed to stop actor " + actor);
             }
         }
     }
 
-    class ExternalModificationException extends Exception {
+    private static class ExternalModificationException extends Exception {
     }
 }

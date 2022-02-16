@@ -1,14 +1,10 @@
 package org.chuma.homecontroller.controller.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.chuma.homecontroller.base.node.NodePin;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
 
 public class ValveControllerImpl implements ValveController {
-    static Logger log = LoggerFactory.getLogger(ValveControllerImpl.class.getName());
-    private LouversControllerImpl impl;
+    private final LouversControllerImpl impl;
 
     public ValveControllerImpl(String id, String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs) {
         impl = new LouversControllerImpl(id, name, upActor, downActor, downPositionMs, 0);
@@ -49,8 +45,8 @@ public class ValveControllerImpl implements ValveController {
     }
 
     @Override
-    public void setPosition(int percent) {
-        impl.setPosition(percent, 0);
+    public void setPosition(double value) {
+        impl.setPosition(value, 0);
     }
 
     @Override
@@ -60,6 +56,6 @@ public class ValveControllerImpl implements ValveController {
 
     @Override
     public void close() {
-        impl.setPosition(100, 0);
+        impl.setPosition(1, 0);
     }
 }

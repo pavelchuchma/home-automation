@@ -31,7 +31,7 @@ public class PiPeConfigurator extends AbstractConfigurator {
     @Override
     public void configure() {
         SwitchListener lst = nodeInfoCollector.getSwitchListener();
-        ArrayList<Action> lightsActions = new ArrayList<>();
+        ArrayList<PwmActor> pwmActors = new ArrayList<>();
 
         Node bridge = nodeInfoCollector.createNode(1, "Bridge");
         Node actor = nodeInfoCollector.createNode(44, "Actor");
@@ -48,7 +48,7 @@ public class PiPeConfigurator extends AbstractConfigurator {
         // Zvonek
         OnOffActor zvonekActor = new OnOffActor("zvonek", "Zvonek", rele51.getRelay4(), 0, 1,
                 switchCSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), switchCSw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON));
-        SwitchOnSensorAction zvonekAction = new SwitchOnSensorAction(zvonekActor, 5, 100);
+        SwitchOnSensorAction zvonekAction = new SwitchOnSensorAction(zvonekActor, 5, 1.0);
         SwitchOffAction zvonekStopAction = new SwitchOffAction(zvonekActor);
         lst.addActionBinding(new ActionBinding(switchCSw.getRightUpperButton(), zvonekAction, null));
         lst.addActionBinding(new ActionBinding(switchCSw.getRightBottomButton(), zvonekStopAction, null));
@@ -59,22 +59,22 @@ public class PiPeConfigurator extends AbstractConfigurator {
 
         // LDD5
         LddBoardDevice lddDevice5 = new LddBoardDevice("lddDevice5", actor, 2, .35, .35, 1.0, 1.0, 1.0, 1.0);
-        PwmActor vratnice1PwmActor = addLddLight(lightsActions, "pwmVrt1", "Vratnice 1", lddDevice5.getLdd1(), 0.35, vratniceOffIndicator, vratniceOnIndicator); // .6
-        PwmActor vratnice2PwmActor = addLddLight(lightsActions, "pwmVrt2", "Vratnice 2", lddDevice5.getLdd2(), 0.35, vratniceOffIndicator, vratniceOnIndicator); // .72
-        PwmActor led3PwmActor = addLddLight(lightsActions, "pwmZadH", "Zádveří", lddDevice5.getLdd3(), 0.35); // .36
-        PwmActor led4PwmActor = addLddLight(lightsActions, "pwmKpHZrc", "Koupena zrcadla", lddDevice5.getLdd4(), 0.35); // .36
-        PwmActor led5PwmActor = addLddLight(lightsActions, "pwmKpH", "Koupelna", lddDevice5.getLdd5(), 0.7); // .72
-        PwmActor led6PwmActor = addLddLight(lightsActions, "pwmVchH", "Vchod hore", lddDevice5.getLdd6(), 1.0); // 1.08
+        PwmActor vratnice1PwmActor = addLddLight(pwmActors, "pwmVrt1", "Vratnice 1", lddDevice5.getLdd1(), 0.35, vratniceOffIndicator, vratniceOnIndicator); // .6
+        PwmActor vratnice2PwmActor = addLddLight(pwmActors, "pwmVrt2", "Vratnice 2", lddDevice5.getLdd2(), 0.35, vratniceOffIndicator, vratniceOnIndicator); // .72
+        PwmActor led3PwmActor = addLddLight(pwmActors, "pwmZadH", "Zádveří", lddDevice5.getLdd3(), 0.35); // .36
+        PwmActor led4PwmActor = addLddLight(pwmActors, "pwmKpHZrc", "Koupena zrcadla", lddDevice5.getLdd4(), 0.35); // .36
+        PwmActor led5PwmActor = addLddLight(pwmActors, "pwmKpH", "Koupelna", lddDevice5.getLdd5(), 0.7); // .72
+        PwmActor led6PwmActor = addLddLight(pwmActors, "pwmVchH", "Vchod hore", lddDevice5.getLdd6(), 1.0); // 1.08
 
 
-        configurePwmLights(lst, switchASw, WallSwitch.Side.LEFT, 60, vratnice1PwmActor);
-        configurePwmLights(lst, switchASw, WallSwitch.Side.RIGHT, 60, vratnice2PwmActor);
+        configurePwmLights(lst, switchASw, WallSwitch.Side.LEFT, 0.6, vratnice1PwmActor);
+        configurePwmLights(lst, switchASw, WallSwitch.Side.RIGHT, 0.6, vratnice2PwmActor);
 
 
         // PIR
         InputDevice pirDevice = new InputDevice("pirDevice", pirSensors, 3);
         setupPir(lst, pirDevice.getIn1AndActivate(), "pirZadHVch", "Zadveri hore vchod",
-                new SwitchOnSensorAction(vratnice2PwmActor, 600, 5), new SwitchOffSensorAction(vratnice2PwmActor, 10));
+                new SwitchOnSensorAction(vratnice2PwmActor, 600, 0.05), new SwitchOffSensorAction(vratnice2PwmActor, 10));
 
         // Louvers
         LouversController zaluzieVratnice;

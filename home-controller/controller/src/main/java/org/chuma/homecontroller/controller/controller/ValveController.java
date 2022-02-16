@@ -16,7 +16,11 @@ public interface ValveController {
      */
     double getPosition();
 
-    void setPosition(int percent);
+    /**
+     *
+     * @param value 0 - open, 1 - closed
+     */
+    void setPosition(double value);
 
     void open();
 

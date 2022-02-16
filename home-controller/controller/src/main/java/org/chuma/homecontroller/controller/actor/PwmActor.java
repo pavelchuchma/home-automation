@@ -2,6 +2,7 @@ package org.chuma.homecontroller.controller.actor;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static java.lang.Math.max;
@@ -15,65 +16,53 @@ import org.chuma.homecontroller.controller.device.LddBoardDevice;
 public class PwmActor extends AbstractPinActor implements IOnOffActor {
     static Logger log = LoggerFactory.getLogger(PwmActor.class.getName());
 
-    int maxPwmValue;
-    int pwmValue = 0;
+    final int maxPwmValue;
+    int currentPwmValue = 0;
 
-
-    public PwmActor(String name, String label, LddBoardDevice.LddNodePin output, double maxLoad, ActorListener... actorListeners) {
-        super(name, label, output, 0, actorListeners);
-        if (maxLoad < 0 || maxLoad > 1) {
-            throw new IllegalArgumentException("Invalid maxLoad value: " + maxLoad);
-        }
+    public PwmActor(String name, String label, LddBoardDevice.LddNodePin outputPin, double maxCurrentAmp, ActorListener... actorListeners) {
+        super(name, label, outputPin, actorListeners);
+        double maxLoad = maxCurrentAmp / outputPin.getMaxLddCurrent();
+        Validate.inclusiveBetween(0,1, maxLoad,
+                String.format("Invalid maxLoad value: %s. Bound output %s is not enough for %.2f A",
+                        maxLoad, outputPin.getDeviceName(), maxCurrentAmp));
 
         this.maxPwmValue = (int) (MAX_PWM_VALUE * maxLoad);
     }
 
-    private static void validatePercentageValue(int val) {
-        if (val < 0 || val > 100) {
-            throw new IllegalArgumentException("Invalid PWM percentage value: " + val + "%");
-        }
-    }
-
     @Override
-    public synchronized boolean setValue(int pwmPercent, Object actionData) {
-        validatePercentageValue(pwmPercent);
-        int newPwmValue = (int) (pwmPercent * .01 * maxPwmValue);
-        if (pwmPercent > 0 && newPwmValue == 0) {
+    public synchronized boolean setValue(double val, Object actionData) {
+        Validate.inclusiveBetween(0,1, val);
+
+        int newPwmValue = (int) (val * maxPwmValue);
+        if (val > 0 && newPwmValue == 0) {
             // nonzero percent -> set pwm at least to 1
             newPwmValue = 1;
         }
 
-        if (setPwmValue(outputPin, newPwmValue, RETRY_COUNT)) {
-            value = pwmPercent;
+        if (setPwmValue(outputPin, newPwmValue)) {
             callListenersAndSetActionData(actionData);
             return true;
         }
         return false;
     }
 
-    private void validatePwmValue(int val) {
-        if (val < 0 || val > maxPwmValue) {
-            throw new IllegalArgumentException("Invalid PWM value: " + val);
-        }
-    }
-
     public boolean isOn() {
-        return value != 0;
+        return currentPwmValue > 0;
     }
 
-    public boolean increasePwm(int step, Object actionData) {
-        int val = min(value + step, 100);
+    public boolean increasePwm(double step, Object actionData) {
+        double val = min(getValue() + step, 1);
         return setValue(val, actionData);
     }
 
-    public boolean decreasePwm(int step, Object actionData) {
-        int val = max(value - step, 0);
+    public boolean decreasePwm(double step, Object actionData) {
+        double val = max(getValue() - step, 0);
         return setValue(val, actionData);
     }
 
     @Override
-    public boolean switchOn(int percent, Object actionData) {
-        return setValue(percent, actionData);
+    public boolean switchOn(double value, Object actionData) {
+        return setValue(value, actionData);
     }
 
     @Override
@@ -81,10 +70,11 @@ public class PwmActor extends AbstractPinActor implements IOnOffActor {
         return setValue(0, actionData);
     }
 
-    private boolean setPwmValue(NodePin nodePin, int value, int retryCount) {
-        validatePwmValue(value);
+    private boolean setPwmValue(NodePin nodePin, int value) {
+        Validate.inclusiveBetween(0,maxPwmValue, value,
+                String.format("Invalid PWM value: %d. It must be <= %d", value, maxPwmValue));
 
-        for (int i = 0; i < retryCount; i++) {
+        for (int i = 0; i < AbstractPinActor.RETRY_COUNT; i++) {
             try {
                 log.debug(String.format("Setting pwm %s to: %d", nodePin, value));
                 Packet response = nodePin.getNode().setManualPwmValue(nodePin.getPin(), value);
@@ -99,7 +89,7 @@ public class PwmActor extends AbstractPinActor implements IOnOffActor {
                     throw new IOException(String.format("Unexpected response code (%d): %s", response.data[0], response));
                 }
 
-                pwmValue = value;
+                currentPwmValue = value;
                 log.info(String.format("PWM of %s set to: %d", nodePin, value));
                 return true;
 
@@ -114,16 +104,17 @@ public class PwmActor extends AbstractPinActor implements IOnOffActor {
         return maxPwmValue;
     }
 
-    public int getPwmValue() {
-        return pwmValue;
+    public int getCurrentPwmValue() {
+        return currentPwmValue;
     }
 
-    public int getPwmValuePercent() {
-        return (int) (pwmValue * 100d / maxPwmValue);
+    @Override
+    public double getValue() {
+        return (double) currentPwmValue / MAX_PWM_VALUE;
     }
 
     public double getOutputCurrent() {
-        return (double) pwmValue / MAX_PWM_VALUE * getLddOutput().getMaxLddCurrent();
+        return (double) currentPwmValue / MAX_PWM_VALUE * getLddOutput().getMaxLddCurrent();
     }
 
     public double getMaxOutputCurrent() {

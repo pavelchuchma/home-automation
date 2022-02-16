@@ -62,6 +62,10 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
         return Integer.parseInt(getMandatoryStringParam(requestParams, name));
     }
 
+    static double getMandatoryDoubleParam(Map<String, String[]> requestParams, String name) {
+        return Double.parseDouble(getMandatoryStringParam(requestParams, name));
+    }
+
     static int getIntParam(Map<String, String[]> requestParams, String name, int defaultValue) {
         String val = getStringParam(requestParams, name);
         if (val == null) {

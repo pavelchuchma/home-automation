@@ -13,7 +13,7 @@ public class RecuperationActor extends AbstractActor implements IOnOffActor {
     }
 
     @Override
-    public boolean switchOn(int percent, Object actionData) {
+    public boolean switchOn(double value, Object actionData) {
         return setValue(2, actionData);
     }
 
@@ -23,7 +23,7 @@ public class RecuperationActor extends AbstractActor implements IOnOffActor {
     }
 
     @Override
-    public boolean setValue(int val, Object actionData) {
+    public boolean setValue(double val, Object actionData) {
         if (recuperation.setSpeed((val == 0) ? 0 : 2)) {
             callListenersAndSetActionData(actionData);
             return true;
@@ -32,7 +32,7 @@ public class RecuperationActor extends AbstractActor implements IOnOffActor {
     }
 
     @Override
-    public int getValue() {
+    public double getValue() {
         return recuperation.getStatus().getSpeed();
     }
 

@@ -128,18 +128,18 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     }
 
     @SuppressWarnings("SameParameterValue")
-    void setPortValueNoWait(char port, int valueMask, int value) throws IOException, IllegalArgumentException {
+    void setPortValueNoWait(char port, int valueMask, int value) throws IOException {
         log.debug("setPortValueNoWait");
         packetUartIO.send(Packet.createMsgSetPort(nodeId, port, valueMask, value, -1, -1));
         log.debug("setPortValueNoWait: done.");
 
     }
 
-    public Packet setPortValue(char port, int valueMask, int value) throws IOException, IllegalArgumentException {
+    public Packet setPortValue(char port, int valueMask, int value) throws IOException {
         return setPortValue(port, valueMask, value, -1, -1);
     }
 
-    public Packet setPortValue(char port, int valueMask, int value, int eventMask, int trisValue) throws IOException, IllegalArgumentException {
+    public Packet setPortValue(char port, int valueMask, int value, int eventMask, int trisValue) throws IOException {
         log.debug("setPortValue");
         Packet response = packetUartIO.send(
                 Packet.createMsgSetPort(nodeId, port, valueMask, value, eventMask, trisValue),
@@ -148,7 +148,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return response;
     }
 
-    public Packet setPinValue(Pin pin, int value) throws IOException, IllegalArgumentException {
+    public Packet setPinValue(Pin pin, int value) throws IOException {
         return setPortValue(pin.getPort(), pin.getBitMask(), (value != 0) ? 0xFF : 0x00);
     }
 
@@ -183,7 +183,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         packetUartIO.send(req);
     }
 
-    synchronized public Packet setManualPwmValue(Pin pin, int value) throws IOException, IllegalArgumentException {
+    synchronized public Packet setManualPwmValue(Pin pin, int value) throws IOException {
         log.debug("setPwmValue");
         Packet req = Packet.createMsgMSGSetManualPwmValue(nodeId, pin.getPort(), pin.getPinIndex(), value);
         return packetUartIO.send(req, MessageType.MSG_SetManualPwmValueResponse, SET_PORT_TIMEOUT);
@@ -201,7 +201,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         packetUartIO.send(req);
     }
 
-    synchronized public boolean setFrequency(CpuFrequency cpuFrequency) throws IOException, IllegalArgumentException {
+    synchronized public boolean setFrequency(CpuFrequency cpuFrequency) throws IOException {
         log.debug("setFrequency");
         if (cpuFrequency == CpuFrequency.unknown)
             throw new IllegalArgumentException("Unsupported frequency value: " + cpuFrequency);
@@ -222,7 +222,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         }
     }
 
-    public void packetReceivedImpl(Packet packet) throws IOException, IllegalArgumentException {
+    public void packetReceivedImpl(Packet packet) throws IOException {
         log.debug("packetReceived: " + packet);
         if (packet.nodeId != nodeId) throw new RuntimeException("Bad handler " + packet.nodeId + "!=" + nodeId);
 
@@ -377,6 +377,6 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
         void onButtonUp(Node node, Pin pin, int downTime);
 
-        void onReboot(Node node, int pingCounter, int rconValue) throws IOException, IllegalArgumentException;
+        void onReboot(Node node, int pingCounter, int rconValue) throws IOException;
     }
 }

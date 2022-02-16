@@ -1,5 +1,6 @@
 package org.chuma.homecontroller.controller.action;
 
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,19 +12,21 @@ public class AbstractSensorAction extends AbstractAction {
     public static final int BLINK_DELAY = 600;
     public static final int MAX_BLINK_DURATION = 10_000;
     static Logger log = LoggerFactory.getLogger(AbstractSensorAction.class.getName());
-    private final int switchOnPercent;
+    private final double switchOnValue;
     private final Priority priority;
     private final ICondition condition;
-    int timeout;
+    int timeoutMs;
     boolean canSwitchOn;
 
-    protected AbstractSensorAction(IOnOffActor actor, int timeout, boolean canSwitchOn, int switchOnPercent, Priority priority, ICondition condition) {
+    protected AbstractSensorAction(IOnOffActor actor, int timeoutSec, boolean canSwitchOn, double switchOnValue, Priority priority, ICondition condition) {
         super(actor);
+        Validate.inclusiveBetween(0,1, switchOnValue);
+
         this.priority = priority;
         this.condition = condition;
-        this.timeout = timeout * 1000;
+        this.timeoutMs = timeoutSec * 1000;
         this.canSwitchOn = canSwitchOn;
-        this.switchOnPercent = switchOnPercent;
+        this.switchOnValue = switchOnValue;
     }
 
     private boolean canOverwriteState(IOnOffActor act) {
@@ -62,19 +65,19 @@ public class AbstractSensorAction extends AbstractAction {
                     return;
                 }
 
-                long endTime = System.currentTimeMillis() + timeout;
+                long endTime = System.currentTimeMillis() + timeoutMs;
 
                 if (canSwitchOn) {
                     log.debug("switching on, setting my data");
-                    act.switchOn(switchOnPercent, aData);
+                    act.switchOn(switchOnValue, aData);
                 } else {
                     log.debug("cannot switch on, setting my data only");
                     act.setActionData(aData);
                 }
 
-                if (timeout > MAX_BLINK_DURATION) {
-                    log.debug(String.format("Going to wait for %d ms", timeout - MAX_BLINK_DURATION));
-                    act.wait(timeout - MAX_BLINK_DURATION);
+                if (timeoutMs > MAX_BLINK_DURATION) {
+                    log.debug(String.format("Going to wait for %d ms", timeoutMs - MAX_BLINK_DURATION));
+                    act.wait(timeoutMs - MAX_BLINK_DURATION);
                     log.debug("Woken up");
                 }
                 if (act.getActionData() != aData) {

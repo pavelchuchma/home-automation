@@ -13,14 +13,10 @@ public abstract class AbstractPinActor extends AbstractActor {
     static Logger log = LoggerFactory.getLogger(AbstractPinActor.class.getName());
 
     NodePin outputPin;
-    int initValue;
-    int value;
 
-    public AbstractPinActor(String id, String label, NodePin outputPin, int initValue, ActorListener... actorListeners) {
+    public AbstractPinActor(String id, String label, NodePin outputPin, ActorListener... actorListeners) {
         super(id, label, actorListeners);
         this.outputPin = outputPin;
-        this.initValue = initValue;
-        this.value = initValue;
     }
 
     public static boolean setPinValueImpl(NodePin nodePin, int value, int retryCount) {
@@ -52,11 +48,6 @@ public abstract class AbstractPinActor extends AbstractActor {
             }
         }
         return false;
-    }
-
-    @Override
-    public int getValue() {
-        return value;
     }
 
     /**

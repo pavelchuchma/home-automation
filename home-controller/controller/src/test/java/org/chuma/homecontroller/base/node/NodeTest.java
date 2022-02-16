@@ -251,7 +251,7 @@ public class NodeTest {
             }
 
             @Override
-            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, IllegalArgumentException {
+            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException {
                 node.setPortValue('B', Bits.bit7, 0x00, 0x00, 0xFF ^ Bits.bit7 ^ Bits.bit0);
                 node.setHeartBeatPeriod(10);
             }
@@ -332,7 +332,7 @@ public class NodeTest {
             }
 
             @Override
-            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, IllegalArgumentException {
+            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException {
                 //To change body of implemented methods use File | Settings | File Templates.
                 node.setPortValue('A', 0, 0,
                         Bits.bit0 | Bits.bit2 | Bits.bit3 | Bits.bit5 | Bits.bit6,
@@ -412,7 +412,7 @@ public class NodeTest {
             }
 
             @Override
-            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, IllegalArgumentException {
+            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException {
                 node.setPortValue('B', Bits.bit7, 0x00, 0x00, 0xFF ^ Bits.bit7 ^ Bits.bit0);
                 node.setHeartBeatPeriod(10);
             }
@@ -493,7 +493,7 @@ public class NodeTest {
             }
 
             @Override
-            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException, IllegalArgumentException {
+            public void onReboot(Node node, int pingCounter, int rconValue) throws IOException {
                 //To change body of implemented methods use File | Settings | File Templates.
                 node.setPortValue('A', 0, 0,
                         Bits.bit0 | Bits.bit2 | Bits.bit3 | Bits.bit5 | Bits.bit6,
