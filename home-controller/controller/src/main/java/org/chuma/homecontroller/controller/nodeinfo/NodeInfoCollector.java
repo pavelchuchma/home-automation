@@ -55,10 +55,11 @@ public class NodeInfoCollector implements Iterable<NodeInfo> {
                 // Check if build time is set.
                 // But do it in double-checked section to prevent parallel getBuildTime calls to one node.
                 if (nodeInfo.buildTime == null && packet.messageType == MessageType.MSG_OnHeartBeat) {
+                    //noinspection SynchronizationOnLocalVariableOrMethodParameter
                     synchronized (nodeInfo) {
                         if (nodeInfo.buildTime == null) {
                             try {
-                                log.info(String.format("Getting buidtime of node: %d nodeInfo: %s", packet.nodeId, nodeInfo));
+                                log.info("Getting build time of node: {} nodeInfo: {}", packet.nodeId, nodeInfo);
                                 nodeInfo.buildTime = nodeInfo.node.getBuildTime();
                             } catch (IOException e) {
                                 log.error("Cannot get build time of node #" + packet.nodeId, e);
@@ -75,16 +76,11 @@ public class NodeInfoCollector implements Iterable<NodeInfo> {
             }
         });
 
-        packetUartIO.addSentPacketListener(new PacketUartIO.PacketSentListener() {
-            @Override
-            public void packetSent(Packet packet) {
-                getOrCreateNodeInfo(packet).addSentLogMessage(packet);
-            }
-        });
+        packetUartIO.addSentPacketListener(packet -> getOrCreateNodeInfo(packet).addSentLogMessage(packet));
     }
 
     public synchronized void addNode(Node node) {
-        log.debug(String.format("Node #%d added", node.getNodeId()));
+        log.debug("Node #{} added", node.getNodeId());
 
         if (nodeInfoArray[node.getNodeId()] != null) {
             nodeInfoArray[node.getNodeId()].node = node;

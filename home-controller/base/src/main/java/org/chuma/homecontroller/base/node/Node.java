@@ -162,7 +162,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
                 log.error("err", e);
             }
             if (val < 0) res = false;
-            log.info(String.format("#%d: %s", nodeId, registerToString(address, val)));
+            log.info("#{}: {}", nodeId, registerToString(address, val));
         }
         return res;
     }
@@ -259,7 +259,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
             }
             // on reboot
         } else if (packet.messageType == MessageType.MSG_OnReboot) {
-            log.info(String.format("#%d: Reboot received", nodeId));
+            log.info("#{}: Reboot received", nodeId);
             try {
                 for (Listener listener : listeners) {
                     listener.onReboot(this, packet.data[0], packet.data[1]);
@@ -285,7 +285,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     }
 
     public void initialize() {
-        log.info(String.format("Initialization of node: %s started", this));
+        log.info("Initialization of node: {} started", this);
 
         int commonOutputMask = 0;
         int commonEventMask = 0;
@@ -305,11 +305,11 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
         for (int attempt = 0; attempt < 20; attempt++) {
             if (doInitialization(commonOutputMask, commonEventMask, commonInitialOutputValues, reqFrequency)) {
-                log.info(String.format("Initialization of node: %s succeeded", this));
+                log.info("Initialization of node: {} succeeded", this);
                 return;
             }
         }
-        log.error(String.format("Initialization of node: %s FAILED", this));
+        log.error("Initialization of node: {} FAILED", this);
         //todo: reboot device and try it again in case of failure!
     }
 
@@ -333,7 +333,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
                         }
                         if (setPortValue((char) ('A' + port), valueMask, value, eventMask, trisMask) == null) {
                             //todo: validate response value. Existence of response need not be enough
-                            log.error(String.format("Setting of port %c of node %s failed", (char) ('A' + port), this));
+                            log.error("Setting of port {} of node {} failed", (char) ('A' + port), this);
                             return false;
                         }
                     }
@@ -341,7 +341,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
                 if (reqFrequency != CpuFrequency.unknown) {
                     if (!setFrequency(reqFrequency)) {
-                        log.error(String.format("Setting frequency of node %s failed", this));
+                        log.error("Setting frequency of node {} failed", this);
                         return false;
                     }
                 }

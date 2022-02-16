@@ -1,6 +1,5 @@
 package org.chuma.homecontroller.controller.nodeinfo;
 
-import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -26,7 +25,7 @@ public class SwitchListener extends AbstractNodeListener {
         if (existingMapping != null) {
             throw new IllegalArgumentException("Node #" + binding.getTrigger().getNode().getNodeId() + ":" + binding.getTrigger().getPin().name() + " already bound");
         }
-        log.info(String.format("ActionBinding '%s' added", binding));
+        log.info("ActionBinding '{}' added", binding);
         if (binding.getButtonDownActions() != null) {
             log.info(" buttonDown");
             for (Action a : binding.getButtonDownActions()) {
@@ -55,16 +54,16 @@ public class SwitchListener extends AbstractNodeListener {
         String swKey = createNodePinKey(node.getNodeId(), pin);
         final ActionBinding sw = switchMap.get(swKey);
         if (sw != null) {
-            log.debug(String.format("Executing ActionBinding: %s", sw));
+            log.debug("Executing ActionBinding: {}", sw);
             Action[] actions = (buttonDown) ? sw.getButtonDownActions() : sw.getButtonUpActions();
             if (actions != null) {
                 for (final Action a : actions) {
-                    log.debug(String.format("-> action: %s of action type %s", (a.getActor() != null) ? a.getActor().getId() : "{null}", a.getClass().getSimpleName()));
+                    log.debug("-> action: {} of action type {}", (a.getActor() != null) ? a.getActor().getId() : "{null}", a.getClass().getSimpleName());
                     new Thread(() -> {
                         try {
                             a.perform(previousDurationMs);
                         } catch (Exception e) {
-                            log.error("Failed to perform actions of " + sw.toString(), e);
+                            log.error("Failed to perform actions of " + sw, e);
                         }
                     }).start();
                 }

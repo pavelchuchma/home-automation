@@ -25,7 +25,7 @@ public class LouversActionGroup {
     transient boolean upButtonIsDown;
     transient boolean downButtonIsDown;
 
-    private SecondaryMode tuningMode;
+    private final SecondaryMode tuningMode;
 
     public LouversActionGroup(LouversController louversController, ActorListener secondaryModeIndicator) {
         this.louversController = louversController;
@@ -52,7 +52,7 @@ public class LouversActionGroup {
         return downReleased;
     }
 
-    private boolean switchTuningModeState() {
+    private void switchTuningModeState() {
         boolean active = tuningMode.switchState();
         downReleased.muteNextAction();
         upReleased.muteNextAction();
@@ -60,7 +60,6 @@ public class LouversActionGroup {
             // stop movement because it was started by first button pressed when tuning mode was active
             louversController.stop();
         }
-        return active;
     }
 
     abstract class LAction implements Action {
@@ -85,7 +84,7 @@ public class LouversActionGroup {
 
         @Override
         public void perform(int buttonDownDuration) {
-            log.debug(String.format("%s.perform(mute:%s)", this.getClass().getSimpleName(), muteNextAction));
+            log.debug("{}.perform(mute:{})", this.getClass().getSimpleName(), muteNextAction);
             if (buttonDownDuration < 0 || buttonDownDuration > MAX_BUTTON_DOWN_DURATION) {
                 return;
             }

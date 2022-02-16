@@ -117,8 +117,6 @@ public class PacketUartIO implements IPacketUartIO {
         for (PacketReceivedListener listener : receivedListeners) {
             processPacketByListener(packet, listener, "listenerAll");
         }
-
-        //log.debug(String.format(" done: processPacketImpl for %s", packet));
     }
 
     @Override

@@ -76,7 +76,7 @@ public class AbstractSensorAction extends AbstractAction {
                 }
 
                 if (timeoutMs > MAX_BLINK_DURATION) {
-                    log.debug(String.format("Going to wait for %d ms", timeoutMs - MAX_BLINK_DURATION));
+                    log.debug("Going to wait for {} ms", timeoutMs - MAX_BLINK_DURATION);
                     act.wait(timeoutMs - MAX_BLINK_DURATION);
                     log.debug("Woken up");
                 }

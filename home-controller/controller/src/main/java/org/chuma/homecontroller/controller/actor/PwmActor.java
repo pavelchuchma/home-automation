@@ -76,7 +76,7 @@ public class PwmActor extends AbstractPinActor implements IOnOffActor {
 
         for (int i = 0; i < AbstractPinActor.RETRY_COUNT; i++) {
             try {
-                log.debug(String.format("Setting pwm %s to: %d", nodePin, value));
+                log.debug("Setting pwm {} to: {}", nodePin, value);
                 Packet response = nodePin.getNode().setManualPwmValue(nodePin.getPin(), value);
 
                 if (response == null) {
@@ -90,7 +90,7 @@ public class PwmActor extends AbstractPinActor implements IOnOffActor {
                 }
 
                 currentPwmValue = value;
-                log.info(String.format("PWM of %s set to: %d", nodePin, value));
+                log.info("PWM of {} set to: {}", nodePin, value);
                 return true;
 
             } catch (Exception e) {

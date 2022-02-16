@@ -26,7 +26,7 @@ public abstract class AbstractPinActor extends AbstractActor {
 
         for (int i = 0; i < retryCount; i++) {
             try {
-                log.debug(String.format("Setting pin %s to: %d", nodePin, value));
+                log.debug("Setting pin {} to: {}", nodePin, value);
                 Packet response = nodePin.getNode().setPinValue(nodePin.getPin(), value);
                 if (response == null) {
                     throw new IOException("No response.");
@@ -37,7 +37,7 @@ public abstract class AbstractPinActor extends AbstractActor {
 
                 // verify value in response
                 int setVal = ((response.data[1] & nodePin.getPin().getBitMask()) != 0) ? 1 : 0;
-                log.info(String.format("%s set to: %d", nodePin, setVal));
+                log.info("{} set to: {}", nodePin, setVal);
                 if (setVal != value) {
                     throw new IOException(String.format("%s was set to %d but response value is %d", nodePin, value, setVal));
                 }

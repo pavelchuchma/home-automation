@@ -76,7 +76,7 @@ public abstract class AbstractConfigurator {
      * @return
      */
     static PwmActor addLddLight(List<PwmActor> pwmActors, String id, String label, LddBoardDevice.LddNodePin pin, double maxCurrentAmp, ActorListener... actorListeners) {
-        log.debug(String.format("Adding LDD Light: %s, %s, %s, %s, %s, %s", pin.getDeviceName(), pin.getPin().getPinIndex(), id, label, pin.getMaxLddCurrent(), maxCurrentAmp));
+        log.debug("Adding LDD Light: {}, {}, {}, {}, {}, {}", pin.getDeviceName(), pin.getPin().getPinIndex(), id, label, pin.getMaxLddCurrent(), maxCurrentAmp);
         PwmActor pwmActor = new PwmActor(id, label, pin, maxCurrentAmp, actorListeners);
         pwmActors.add(pwmActor);
         return pwmActor;

@@ -1,12 +1,12 @@
 #TODO
-* [ ] remove `String.format()` from debugs
+* [ ] NodeInfoCollector: Convert node list to int->NodeInfo map
+* [ ] **BUG:** Broken stylesheets on http://pi/lights, louvers
+* [x] remove `String.format()` from debugs
 * [x] refactor IOnOfActor.switchOn percent parameter from int to double
 * [x] !!! refactor `LouverControllerImpl.setPosition()` percent parameter from int to double
 * [x] use `Validate.inclusiveBetween` whenever possible
 * [ ] refactor web config
-* [ ] NodeInfoCollector: Convert node list to int->NodeInfo map
 * [ ] fix tests
-* [ ] **BUG:** Broken stylesheets on http://pi/lights, louvers
 * [ ] water pump report
 * [ ] deactivate PIR after manual switch off
 * [ ] Alexa support
