@@ -55,7 +55,7 @@ import org.chuma.homecontroller.controller.device.OutputDevice;
 import org.chuma.homecontroller.controller.device.RelayBoardDevice;
 import org.chuma.homecontroller.controller.device.SwitchIndicator;
 import org.chuma.homecontroller.controller.device.WallSwitch;
-import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
+import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
 import org.chuma.homecontroller.extensions.action.condition.SunCondition;
 import org.chuma.homecontroller.extensions.actor.HvacActor;
@@ -67,50 +67,50 @@ public class PiConfigurator extends AbstractConfigurator {
 
     static Logger log = LoggerFactory.getLogger(PiConfigurator.class.getName());
 
-    public PiConfigurator(NodeInfoCollector nodeInfoCollector) {
-        super(nodeInfoCollector);
+    public PiConfigurator(NodeInfoRegistry nodeInfoRegistry) {
+        super(nodeInfoRegistry);
     }
 
     @Override
     public void configure() {
 
-        Node bridge = nodeInfoCollector.createNode(1, "Bridge");
-        Node zadveri = nodeInfoCollector.createNode(2, "Zadveri");
-        Node actor3 = nodeInfoCollector.createNode(3, "Actor3");
-        Node zaluzieB = nodeInfoCollector.createNode(4, "ZaluzieB");
-        Node schodyDoleL = nodeInfoCollector.createNode(5, "SchodyDoleL");
-        Node lozniceOkno = nodeInfoCollector.createNode(6, "LozniceOkno");
-        Node pirNodeA = nodeInfoCollector.createNode(7, "PirNodeA");
-        Node zadveriDoleChodba = nodeInfoCollector.createNode(8, "ZadveriDoleUChodby");
-        Node koupelnaHore = nodeInfoCollector.createNode(9, "KoupelnaHore");
-        Node vratnice = nodeInfoCollector.createNode(10, "Vratnice");
-        Node schodyDoleR = nodeInfoCollector.createNode(33, "SchodyDoleR");
-        Node krystof = nodeInfoCollector.createNode(12, "Krystof");
-        Node zaluzieA = nodeInfoCollector.createNode(13, "ZaluzieA");
-        Node marek = nodeInfoCollector.createNode(14, "Marek");
-        Node patrik = nodeInfoCollector.createNode(15, "Patrik");
-        Node chodbaVzadu = nodeInfoCollector.createNode(16, "ChodbaVzadu");
-        Node zadveriDoleVchod = nodeInfoCollector.createNode(17, "ZadveriDoleUVchodu");
-        Node pracovna = nodeInfoCollector.createNode(18, "Pracovna");
-        Node lddActorA = nodeInfoCollector.createNode(19, "LDD-ActorA");
-        Node garazVzadu = nodeInfoCollector.createNode(20, "GarazVzadu");
-        Node lozniceDvere = nodeInfoCollector.createNode(21, "LozniceDvere");
-        Node garazVpredu = nodeInfoCollector.createNode(22, "GarazVpredu");
-        Node pradelna = nodeInfoCollector.createNode(23, "Pradelna");
-        Node lddActorB = nodeInfoCollector.createNode(24, "LDD-ActorB");
-        Node koupelnaDole = nodeInfoCollector.createNode(25, "KoupelnaDole");
-        Node kuchyn = nodeInfoCollector.createNode(26, "KuchynDole");
-        Node obyvakGauc = nodeInfoCollector.createNode(27, "ObyvakGauc");
-        Node obyvakVzaduR = nodeInfoCollector.createNode(28, "ObyvakVzaduR");
-        Node lddActorC = nodeInfoCollector.createNode(29, "LDD-ActorC");
-        Node obyvakVzaduL = nodeInfoCollector.createNode(30, "ObyvakVzaduL");
-        Node sklep = nodeInfoCollector.createNode(31, "Sklep");
-        Node actor4 = nodeInfoCollector.createNode(32, "Actor4");
-        Node rozvadecDole = nodeInfoCollector.createNode(34, "RozvadecDole");
-        Node lozniceZed = nodeInfoCollector.createNode(35, "LozniceZed");
-        Node chodbaOkno = nodeInfoCollector.createNode(39, "ChodbaOkno");
-        Node switchTestNode50 = nodeInfoCollector.createNode(50, "SwitchTestNode50");
-        Node switchTestNode41 = nodeInfoCollector.createNode(41, "SwitchTestNode41");
+        Node bridge = nodeInfoRegistry.createNode(1, "Bridge");
+        Node zadveri = nodeInfoRegistry.createNode(2, "Zadveri");
+        Node actor3 = nodeInfoRegistry.createNode(3, "Actor3");
+        Node zaluzieB = nodeInfoRegistry.createNode(4, "ZaluzieB");
+        Node schodyDoleL = nodeInfoRegistry.createNode(5, "SchodyDoleL");
+        Node lozniceOkno = nodeInfoRegistry.createNode(6, "LozniceOkno");
+        Node pirNodeA = nodeInfoRegistry.createNode(7, "PirNodeA");
+        Node zadveriDoleChodba = nodeInfoRegistry.createNode(8, "ZadveriDoleUChodby");
+        Node koupelnaHore = nodeInfoRegistry.createNode(9, "KoupelnaHore");
+        Node vratnice = nodeInfoRegistry.createNode(10, "Vratnice");
+        Node schodyDoleR = nodeInfoRegistry.createNode(33, "SchodyDoleR");
+        Node krystof = nodeInfoRegistry.createNode(12, "Krystof");
+        Node zaluzieA = nodeInfoRegistry.createNode(13, "ZaluzieA");
+        Node marek = nodeInfoRegistry.createNode(14, "Marek");
+        Node patrik = nodeInfoRegistry.createNode(15, "Patrik");
+        Node chodbaVzadu = nodeInfoRegistry.createNode(16, "ChodbaVzadu");
+        Node zadveriDoleVchod = nodeInfoRegistry.createNode(17, "ZadveriDoleUVchodu");
+        Node pracovna = nodeInfoRegistry.createNode(18, "Pracovna");
+        Node lddActorA = nodeInfoRegistry.createNode(19, "LDD-ActorA");
+        Node garazVzadu = nodeInfoRegistry.createNode(20, "GarazVzadu");
+        Node lozniceDvere = nodeInfoRegistry.createNode(21, "LozniceDvere");
+        Node garazVpredu = nodeInfoRegistry.createNode(22, "GarazVpredu");
+        Node pradelna = nodeInfoRegistry.createNode(23, "Pradelna");
+        Node lddActorB = nodeInfoRegistry.createNode(24, "LDD-ActorB");
+        Node koupelnaDole = nodeInfoRegistry.createNode(25, "KoupelnaDole");
+        Node kuchyn = nodeInfoRegistry.createNode(26, "KuchynDole");
+        Node obyvakGauc = nodeInfoRegistry.createNode(27, "ObyvakGauc");
+        Node obyvakVzaduR = nodeInfoRegistry.createNode(28, "ObyvakVzaduR");
+        Node lddActorC = nodeInfoRegistry.createNode(29, "LDD-ActorC");
+        Node obyvakVzaduL = nodeInfoRegistry.createNode(30, "ObyvakVzaduL");
+        Node sklep = nodeInfoRegistry.createNode(31, "Sklep");
+        Node actor4 = nodeInfoRegistry.createNode(32, "Actor4");
+        Node rozvadecDole = nodeInfoRegistry.createNode(34, "RozvadecDole");
+        Node lozniceZed = nodeInfoRegistry.createNode(35, "LozniceZed");
+        Node chodbaOkno = nodeInfoRegistry.createNode(39, "ChodbaOkno");
+        Node switchTestNode50 = nodeInfoRegistry.createNode(50, "SwitchTestNode50");
+        Node switchTestNode41 = nodeInfoRegistry.createNode(41, "SwitchTestNode41");
 
         WallSwitch chodbaOkno1Sw = new WallSwitch("chodbaOkno1Sw", chodbaOkno, 1);
         WallSwitch chodbaOkno2Sw = new WallSwitch("chodbaOkno2Sw", chodbaOkno, 2);
@@ -218,7 +218,7 @@ public class PiConfigurator extends AbstractConfigurator {
         OnOffActor bzucakDvere = new OnOffActor("bzucakDvere", "Bzucak Dvere", rele12.getRelay1(), 0, 1);
         OnOffActor malyStromek = new OnOffActor("malyStromek", "Stromek pred dvermi", rele12.getRelay3(), 0, 1);
 
-        SwitchListener lst = nodeInfoCollector.getSwitchListener();
+        SwitchListener lst = nodeInfoRegistry.getSwitchListener();
 
         // zaluzie
         RelayBoardDevice rele3ZaluzieAPort1 = new RelayBoardDevice("rele3ZaluzieAPort1", zaluzieA, 1);
@@ -762,7 +762,7 @@ public class PiConfigurator extends AbstractConfigurator {
         List<Handler> pageHandlers = Arrays.asList(
                 new LightsPage(pwmActors),
                 new LouversPage(louversControllers),
-                new SystemPage(nodeInfoCollector),
+                new SystemPage(nodeInfoRegistry),
                 new PirPage(pirStatusList));
         // rest handlers
         List<StatusHandler> restHandlers = Arrays.asList(
@@ -776,7 +776,7 @@ public class PiConfigurator extends AbstractConfigurator {
         List<Handler> handlers = new ArrayList<>(pageHandlers);
         handlers.addAll(restHandlers);
         handlers.add(new AllStatusHandler(restHandlers));
-        servlet = new Servlet(handlers, new NodeInfoPage(nodeInfoCollector, handlers, rootActions), getConfigurationJs());
+        servlet = new Servlet(handlers, new NodeInfoPage(nodeInfoRegistry, handlers, rootActions), getConfigurationJs());
 
 //        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);
 //        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));

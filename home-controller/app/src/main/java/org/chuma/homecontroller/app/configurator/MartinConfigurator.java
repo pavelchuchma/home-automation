@@ -9,24 +9,24 @@ import org.chuma.homecontroller.controller.controller.LouversControllerImpl;
 import org.chuma.homecontroller.controller.controller.ValveController;
 import org.chuma.homecontroller.controller.device.RelayBoardDevice;
 import org.chuma.homecontroller.controller.device.WallSwitch;
-import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
+import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
 
 public class MartinConfigurator extends AbstractConfigurator {
 
-    public MartinConfigurator(NodeInfoCollector nodeInfoCollector) {
-        super(nodeInfoCollector);
+    public MartinConfigurator(NodeInfoRegistry nodeInfoRegistry) {
+        super(nodeInfoRegistry);
     }
 
     @Override
     public void configure() {
-        SwitchListener lst = nodeInfoCollector.getSwitchListener();
+        SwitchListener lst = nodeInfoRegistry.getSwitchListener();
         ArrayList<Action> lightsActions = new ArrayList<>();
 
-        Node bridge = nodeInfoCollector.createNode(1, "Bridge");
-        Node node36 = nodeInfoCollector.createNode(36, "Node36");
-        Node node37 = nodeInfoCollector.createNode(37, "Node37");
-        Node node40 = nodeInfoCollector.createNode(40, "Node40");
+        Node bridge = nodeInfoRegistry.createNode(1, "Bridge");
+        Node node36 = nodeInfoRegistry.createNode(36, "Node36");
+        Node node37 = nodeInfoRegistry.createNode(37, "Node37");
+        Node node40 = nodeInfoRegistry.createNode(40, "Node40");
 
         WallSwitch switchASw = new WallSwitch("switchASw", node36, 1);
         WallSwitch switchBSw = new WallSwitch("switchBSw", node36, 2);

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.controller.ActionBinding;
-import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.action.SwitchOffAction;
 import org.chuma.homecontroller.controller.action.SwitchOffSensorAction;
 import org.chuma.homecontroller.controller.action.SwitchOnSensorAction;
@@ -19,24 +18,24 @@ import org.chuma.homecontroller.controller.device.LddBoardDevice;
 import org.chuma.homecontroller.controller.device.RelayBoardDevice;
 import org.chuma.homecontroller.controller.device.SwitchIndicator;
 import org.chuma.homecontroller.controller.device.WallSwitch;
-import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
+import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
 
 public class PiPeConfigurator extends AbstractConfigurator {
 
-    public PiPeConfigurator(NodeInfoCollector nodeInfoCollector) {
-        super(nodeInfoCollector);
+    public PiPeConfigurator(NodeInfoRegistry nodeInfoRegistry) {
+        super(nodeInfoRegistry);
     }
 
     @Override
     public void configure() {
-        SwitchListener lst = nodeInfoCollector.getSwitchListener();
+        SwitchListener lst = nodeInfoRegistry.getSwitchListener();
         ArrayList<PwmActor> pwmActors = new ArrayList<>();
 
-        Node bridge = nodeInfoCollector.createNode(1, "Bridge");
-        Node actor = nodeInfoCollector.createNode(44, "Actor");
-        Node switches = nodeInfoCollector.createNode(43, "Switches");
-        Node pirSensors = nodeInfoCollector.createNode(42, "PirSensors");
+        Node bridge = nodeInfoRegistry.createNode(1, "Bridge");
+        Node actor = nodeInfoRegistry.createNode(44, "Actor");
+        Node switches = nodeInfoRegistry.createNode(43, "Switches");
+        Node pirSensors = nodeInfoRegistry.createNode(42, "PirSensors");
 
         WallSwitch switchASw = new WallSwitch("switchASw", switches, 1);
         WallSwitch switchBSw = new WallSwitch("switchBSw", switches, 2);

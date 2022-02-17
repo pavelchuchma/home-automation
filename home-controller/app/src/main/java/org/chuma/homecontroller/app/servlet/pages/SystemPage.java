@@ -12,7 +12,7 @@ import org.chuma.homecontroller.base.node.Pic;
 import org.chuma.homecontroller.base.node.Pin;
 import org.chuma.homecontroller.controller.device.AbstractConnectedDevice;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
-import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
+import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 
 public class SystemPage extends AbstractPage {
     public static final String TARGET_SYSTEM_INFO = "/system/i";
@@ -22,11 +22,11 @@ public class SystemPage extends AbstractPage {
     public static final String TARGET_SYSTEM_TEST_ALL_OFF = "/system/testAllOff";
     public static final String TARGET_SYSTEM_TEST_END = "/system/testEnd";
     private final HashMap<NodeInfo, NodeTestRunner> testRunners;
-    final NodeInfoCollector nodeInfoCollector;
+    final NodeInfoRegistry nodeInfoRegistry;
 
-    public SystemPage(NodeInfoCollector nodeInfoCollector) {
+    public SystemPage(NodeInfoRegistry nodeInfoRegistry) {
         super("/system", "System", "System", "favicon.png");
-        this.nodeInfoCollector = nodeInfoCollector;
+        this.nodeInfoRegistry = nodeInfoRegistry;
         this.testRunners = new HashMap<>();
     }
 
@@ -37,7 +37,7 @@ public class SystemPage extends AbstractPage {
 
         builder.append("<br/><br/><table class='systemTable'><tr>");
 
-        for (NodeInfo nodeInfo : nodeInfoCollector) {
+        for (NodeInfo nodeInfo : nodeInfoRegistry.getNodeInfos()) {
             int nodeId = nodeInfo.getNode().getNodeId();
 
             String resetLink = "";
@@ -71,7 +71,7 @@ public class SystemPage extends AbstractPage {
     private String printNodeDebugInfo(int debugNodeId) {
         StringBuilder builder = new StringBuilder();
 
-        Node node = nodeInfoCollector.getNode(debugNodeId);
+        Node node = nodeInfoRegistry.getNode(debugNodeId);
         builder.append(String.format("<br/><br/><div class='nodeInfoTitle'>%d-%s Detail</div>", node.getNodeId(), node.getName()));
 
         int[] portValues = new int[3];
@@ -164,7 +164,7 @@ public class SystemPage extends AbstractPage {
         int testEndNodeId = tryTargetMatchAndParseArg(target, TARGET_SYSTEM_TEST_END);
 
         if (resetNodeId != -1) {
-            Node n = nodeInfoCollector.getNode(resetNodeId);
+            Node n = nodeInfoRegistry.getNode(resetNodeId);
             n.reset();
         } else if (testCycleNodeId >= 0) {
             startNodeTest(testCycleNodeId, NodeTestRunner.Mode.cycle);
@@ -181,7 +181,7 @@ public class SystemPage extends AbstractPage {
 
     private void startNodeTest(int nodeId, NodeTestRunner.Mode mode) {
         synchronized (testRunners) {
-            NodeInfo nodeInfo = nodeInfoCollector.getNodeInfo(nodeId);
+            NodeInfo nodeInfo = nodeInfoRegistry.getNodeInfo(nodeId);
 
             NodeTestRunner testRunner = testRunners.get(nodeInfo);
             if (testRunner == null) {
@@ -196,7 +196,7 @@ public class SystemPage extends AbstractPage {
 
     private void stopNodeTest(int nodeId) {
         synchronized (testRunners) {
-            NodeInfo nodeInfo = nodeInfoCollector.getNodeInfo(nodeId);
+            NodeInfo nodeInfo = nodeInfoRegistry.getNodeInfo(nodeId);
             NodeTestRunner testRunner = testRunners.get(nodeInfo);
             if (testRunner != null) {
                 testRunner.setMode(NodeTestRunner.Mode.endTest);

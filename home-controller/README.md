@@ -1,6 +1,7 @@
 #TODO
-* [ ] NodeInfoCollector: Convert node list to int->NodeInfo map
+* [ ] refactor louvers page
 * [ ] **BUG:** Broken stylesheets on http://pi/lights, louvers
+* [x] NodeInfoCollector: Convert node list to int->NodeInfo map
 * [x] remove `String.format()` from debugs
 * [x] refactor IOnOfActor.switchOn percent parameter from int to double
 * [x] !!! refactor `LouverControllerImpl.setPosition()` percent parameter from int to double

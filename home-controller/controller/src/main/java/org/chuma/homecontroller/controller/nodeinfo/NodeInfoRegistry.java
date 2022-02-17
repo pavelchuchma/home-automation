@@ -2,7 +2,8 @@ package org.chuma.homecontroller.controller.nodeinfo;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,22 +14,14 @@ import org.chuma.homecontroller.base.packet.IPacketUartIO;
 import org.chuma.homecontroller.base.packet.Packet;
 import org.chuma.homecontroller.base.packet.PacketUartIO;
 
-public class NodeInfoCollector implements Iterable<NodeInfo> {
-    static Logger log = LoggerFactory.getLogger(NodeInfoCollector.class.getName());
-    static NodeInfoCollector instance;
+public class NodeInfoRegistry {
+    static Logger log = LoggerFactory.getLogger(NodeInfoRegistry.class.getName());
 
-    IPacketUartIO packetUartIO;
-    //TODO: convert to int->NodeInfo map
-    NodeInfo[] nodeInfoArray = new NodeInfo[70];
+    final IPacketUartIO packetUartIO;
+    final Map<Integer, NodeInfo> nodeInfoMap = new HashMap<>();
+    final SwitchListener switchListener = new SwitchListener();
 
-    SwitchListener switchListener = new SwitchListener();
-
-    public NodeInfoCollector(final IPacketUartIO packetUartIO) {
-        if (instance != null) {
-            throw new IllegalStateException("Already created!!!");
-        }
-        instance = this;
-
+    public NodeInfoRegistry(final IPacketUartIO packetUartIO) {
         this.packetUartIO = packetUartIO;
     }
 
@@ -36,8 +29,8 @@ public class NodeInfoCollector implements Iterable<NodeInfo> {
         return switchListener;
     }
 
-    public NodeInfo[] getNodeInfoArray() {
-        return nodeInfoArray;
+    public Iterable<NodeInfo> getNodeInfos() {
+        return nodeInfoMap.values();
     }
 
     public void start() {
@@ -79,71 +72,44 @@ public class NodeInfoCollector implements Iterable<NodeInfo> {
         packetUartIO.addSentPacketListener(packet -> getOrCreateNodeInfo(packet).addSentLogMessage(packet));
     }
 
-    public synchronized void addNode(Node node) {
-        log.debug("Node #{} added", node.getNodeId());
+    public synchronized NodeInfo addNode(Node node) {
+        final Integer nodeId = node.getNodeId();
 
-        if (nodeInfoArray[node.getNodeId()] != null) {
-            nodeInfoArray[node.getNodeId()].node = node;
+        NodeInfo nodeInfo = nodeInfoMap.get(nodeId);
+        if (nodeInfo != null) {
+            nodeInfo.node = node;
         } else {
-            nodeInfoArray[node.getNodeId()] = new NodeInfo(node);
+            nodeInfo = new NodeInfo(node);
+            nodeInfoMap.put(nodeId, nodeInfo);
         }
         node.addListener(switchListener);
+        log.debug("Node #{} added", nodeId);
+        return nodeInfo;
     }
 
     private synchronized NodeInfo getOrCreateNodeInfo(Packet packet) {
-        if (nodeInfoArray[packet.nodeId] == null) {
-            log.debug("Registering node #" + packet.nodeId);
-            Node node = new Node(packet.nodeId, packetUartIO);
-            addNode(node);
+        NodeInfo nodeInfo = nodeInfoMap.get(packet.nodeId);
+        if (nodeInfo != null) {
+            return nodeInfo;
         }
-        return nodeInfoArray[packet.nodeId];
+
+        log.debug("Registering node #" + packet.nodeId);
+        Node node = new Node(packet.nodeId, packetUartIO);
+        return addNode(node);
     }
 
-    public synchronized Node getNode(int i) {
-        return (nodeInfoArray[i] != null) ? nodeInfoArray[i].node : null;
+    public synchronized Node getNode(int nodeId) {
+        NodeInfo nodeInfo = nodeInfoMap.get(nodeId);
+        return (nodeInfo != null) ? nodeInfo.node : null;
     }
 
-    public synchronized NodeInfo getNodeInfo(int i) {
-        return nodeInfoArray[i];
+    public synchronized NodeInfo getNodeInfo(int nodeId) {
+        return nodeInfoMap.get(nodeId);
     }
 
     public Node createNode(int i, String name) {
         Node node = new Node(i, name, packetUartIO);
         addNode(node);
         return node;
-    }
-
-    @Override
-    public Iterator<NodeInfo> iterator() {
-        return new NodeInfoIterator();  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    class NodeInfoIterator implements Iterator<NodeInfo> {
-        int position = 0;
-
-        @Override
-        public boolean hasNext() {
-            for (int i = position; i < nodeInfoArray.length; i++) {
-                if (nodeInfoArray[i] != null) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public NodeInfo next() {
-            for (; position < nodeInfoArray.length; position++) {
-                if (nodeInfoArray[position] != null) {
-                    return nodeInfoArray[position++];
-                }
-            }
-            throw new IllegalStateException("Calling next when hasNext returned false");
-        }
-
-        @Override
-        public void remove() {
-            throw new IllegalStateException("Remove not implemented");
-        }
     }
 }

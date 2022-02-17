@@ -14,7 +14,7 @@ import org.chuma.homecontroller.base.packet.IPacketUartIO;
 import org.chuma.homecontroller.base.packet.PacketUartIO;
 import org.chuma.homecontroller.base.packet.PacketUartIOException;
 import org.chuma.homecontroller.base.packet.PacketUartIOMock;
-import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
+import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 
 public class Main {
     static Logger log = LoggerFactory.getLogger(Main.class.getName());
@@ -33,27 +33,26 @@ public class Main {
                 }
             }
 
-            NodeInfoCollector nodeInfoCollector = new NodeInfoCollector(packetUartIO);
+            NodeInfoRegistry nodeInfoRegistry = new NodeInfoRegistry(packetUartIO);
 
             String hostName = InetAddress.getLocalHost().getHostName();
             AbstractConfigurator configurator;
             if (hostName.equalsIgnoreCase("raspberrypi") || hostName.equalsIgnoreCase("pchuchma")) {
-                configurator = new PiConfigurator(nodeInfoCollector);
+                configurator = new PiConfigurator(nodeInfoRegistry);
             } else if (hostName.equalsIgnoreCase("martinpi")) {
-                configurator = new MartinConfigurator(nodeInfoCollector);
+                configurator = new MartinConfigurator(nodeInfoRegistry);
             } else {
-                configurator = new PiPeConfigurator(nodeInfoCollector);
+                configurator = new PiPeConfigurator(nodeInfoRegistry);
             }
             log.info("Hostname: " + hostName + " using configurator: " + configurator.getClass());
             configurator.configure();
 
-            nodeInfoCollector.start();
+            nodeInfoRegistry.start();
 
             packetUartIO.start();
             System.out.println("Listening ...");
 
             Servlet.startServer(configurator.getServlet());
-
         } catch (PacketUartIOException e) {
             log.error("Initialization failed", e);
             e.printStackTrace();

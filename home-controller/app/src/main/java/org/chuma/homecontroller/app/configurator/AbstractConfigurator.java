@@ -24,17 +24,17 @@ import org.chuma.homecontroller.controller.controller.LouversController;
 import org.chuma.homecontroller.controller.device.LddBoardDevice;
 import org.chuma.homecontroller.controller.device.SwitchIndicator;
 import org.chuma.homecontroller.controller.device.WallSwitch;
-import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
+import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
 
 public abstract class AbstractConfigurator {
     static Logger log = LoggerFactory.getLogger(AbstractConfigurator.class.getName());
-    protected NodeInfoCollector nodeInfoCollector;
+    protected NodeInfoRegistry nodeInfoRegistry;
     protected List<PirStatus> pirStatusList = new ArrayList<>();
     Servlet servlet;
 
-    public AbstractConfigurator(NodeInfoCollector nodeInfoCollector) {
-        this.nodeInfoCollector = nodeInfoCollector;
+    public AbstractConfigurator(NodeInfoRegistry nodeInfoRegistry) {
+        this.nodeInfoRegistry = nodeInfoRegistry;
     }
 
     protected static void configurePwmLights(SwitchListener lst, WallSwitch wallSwitch, WallSwitch.Side side, double switchOnValue, PwmActor... pwmActors) {

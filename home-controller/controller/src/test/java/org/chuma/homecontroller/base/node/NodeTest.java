@@ -14,7 +14,7 @@ import org.chuma.homecontroller.base.packet.PacketUartIOException;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.device.InputDevice;
-import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
+import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
 
 public class NodeTest {
@@ -578,14 +578,14 @@ public class NodeTest {
     }
 
     @Test
-    public void testIntialization() throws PacketUartIOException {
+    public void testInitialization() throws PacketUartIOException {
         String port = (System.getenv("COMPUTERNAME") != null) ? "COM1" : "/dev/ttyS80";
         PacketUartIO packetUartIO = new PacketUartIO(port, 19200);
-        NodeInfoCollector nodeInfoCollector = new NodeInfoCollector(packetUartIO);
+        NodeInfoRegistry nodeInfoRegistry = new NodeInfoRegistry(packetUartIO);
 
-        SwitchListener lst = nodeInfoCollector.getSwitchListener();
+        SwitchListener lst = nodeInfoRegistry.getSwitchListener();
 
-        Node pirNodeA = nodeInfoCollector.createNode(7, "PirNodeA");
+        Node pirNodeA = nodeInfoRegistry.createNode(7, "PirNodeA");
         InputDevice pirA1Prizemi = new InputDevice("PirA1Prizemi", pirNodeA, 3);
         lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn5AndActivate(), (Action) null, null));
 

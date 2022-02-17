@@ -16,18 +16,18 @@ import org.chuma.homecontroller.base.node.MessageType;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.controller.nodeinfo.LogMessage;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
-import org.chuma.homecontroller.controller.nodeinfo.NodeInfoCollector;
+import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 
 public class NodeInfoPage extends AbstractPage {
     public static final String TARGET_NODE_INFO = "/";
     private static final String FLOOR_PLAN_LOCATION = "/floorPlan.html";
     final Iterable<Page> pages;
     final List<ServletAction> rootActions;
-    final NodeInfoCollector nodeInfoCollector;
+    final NodeInfoRegistry nodeInfoRegistry;
 
-    public NodeInfoPage(NodeInfoCollector nodeInfoCollector, Iterable<Handler> handlers, Collection<ServletAction> rootActions) {
+    public NodeInfoPage(NodeInfoRegistry nodeInfoRegistry, Iterable<Handler> handlers, Collection<ServletAction> rootActions) {
         super(TARGET_NODE_INFO, "Node Info", "Nodes", "favicon.png");
-        this.nodeInfoCollector = nodeInfoCollector;
+        this.nodeInfoRegistry = nodeInfoRegistry;
         this.rootActions = new ArrayList<>(rootActions);
 
         List<Page> pages = new ArrayList<>();
@@ -64,7 +64,7 @@ public class NodeInfoPage extends AbstractPage {
         builder.append("<table class='nodeTable'>\n" +
                 "<tr><th class=''>Node #<th class=''>Last Ping Time<th class=''>Boot Time<th class=''>Build Time<th class=''>MessageLog");
 
-        for (NodeInfo info : nodeInfoCollector.getNodeInfoArray()) {
+        for (NodeInfo info : nodeInfoRegistry.getNodeInfos()) {
             if (info != null) {
                 String lastPingClass = "errorValue";
                 String lastPingString = "-";
