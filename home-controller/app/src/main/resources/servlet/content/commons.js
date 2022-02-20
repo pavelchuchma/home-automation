@@ -23,3 +23,8 @@ function drawLightToolSign(x, y, ctx, drawVertical) {
     ctx.lineWidth = 7;
     ctx.stroke();
 }
+
+function printException(e) {
+    console.log(e);
+    document.getElementById('error').innerHTML = e.message + '<br>' + e.stack.split('\n').join('<br>');
+}

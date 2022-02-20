@@ -1,0 +1,40 @@
+td {
+    vertical-align: top;
+}
+
+td.errorValue {
+    color: red;
+}
+
+table.buttonTable {
+    border: 2px solid black;
+    border-collapse: collapse;
+    width: 100%
+}
+
+td.louversItem {
+    border: 2px solid black;
+    border-collapse: collapse;
+    padding: 0px;
+    width: 20%;
+    font-size: 1em;
+    text-align: center;
+}
+
+td.louversName {
+    border-collapse: collapse;
+    padding: 0px;
+    width: 20%;
+    text-align: center;
+    font-size: 2em;
+}
+
+td.louversArrow {
+    text-align: center;
+    font-size: 5em;
+    text-decoration: none;
+}
+
+td.louversArrow-moving {
+    color: red;
+}

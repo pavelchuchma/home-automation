@@ -5,18 +5,33 @@ import java.io.IOException;
 
 import org.eclipse.jetty.server.Request;
 
-import org.chuma.homecontroller.controller.controller.Activity;
 import org.chuma.homecontroller.controller.controller.LouversController;
 
 public class LouversPage extends AbstractPage {
     public static final String CLASS_LOUVERS_ARROW = "louversArrow";
-    public static final String CLASS_LOUVERS_ARROW_ACTIVE = "louversArrow louversArrow-moving";
-    public static final String TARGET_LOUVERS = "/louvers";
     final LouversController[] louversControllers;
 
     public LouversPage(LouversController[] louversControllers) {
-        super(TARGET_LOUVERS, "Žaluzie", "Žaluzie", "favicon.png");
+        super("/louvers", "Žaluzie", "Žaluzie", "favicon.png");
         this.louversControllers = louversControllers;
+    }
+
+    @Override
+    String getHtmlHead() {
+        return "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "    <meta charset=\"UTF-8\">\n" +
+                "    <title>Louvers Control</title>\n" +
+                "    <link href='louvers.css' rel='stylesheet' type='text/css'/>\n" +
+                "    <link href=\"favicon.png\" rel=\"icon\" type=\"image/png\">\n" +
+                "    <script src=\"commons.js\"></script>\n" +
+                "    <script src=\"status.js\"></script>\n" +
+                "    <script src=\"items/baseItem.js\"></script>\n" +
+                "    <script src=\"items/louversItem.js\"></script>\n" +
+                "    <script src=\"configuration-pi.js\"></script>\n" +
+                "    <script src=\"louvers.js\"></script>\n" +
+                "</head>";
     }
 
     public String getBody() {
@@ -24,7 +39,7 @@ public class LouversPage extends AbstractPage {
 
         builder.append("<html>")
                 .append(getHtmlHead())
-                .append("<body><a href='")
+                .append("<body><p id='error'></p><a href='")
                 .append(getRootPath()).append("'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
 
         for (int i = 0; i < louversControllers.length; i += 4) {
@@ -44,31 +59,23 @@ public class LouversPage extends AbstractPage {
         builder.append("<br/><br/><table class='buttonTable'>");
         for (int i = startIndex; i < startIndex + count; i++) {
             LouversController lc = louversControllers[i];
-            String upArrow = (lc.isUp()) ? "▲" : "△";
-            String downArrow = (lc.isDown()) ? "▼" : "▽";
-            String outshineCharacter = "☀";
 
-            Activity activity = lc.getActivity();
-            String upArrowClazz = (activity == Activity.movingUp) ? CLASS_LOUVERS_ARROW_ACTIVE : CLASS_LOUVERS_ARROW;
-            String downArrowClazz = (activity == Activity.movingDown) ? CLASS_LOUVERS_ARROW_ACTIVE : CLASS_LOUVERS_ARROW;
-            builder.append("    <td class='louversItem'>\n" +
-                    "        <table>\n");
+            builder.append("<td id='").append(lc.getId()).append("' class='louversItem'>\n" +
+                    "<table>\n");
 
-            appendLouversIcon(builder, upArrow, 3 * i, upArrowClazz);
-            appendLouversIcon(builder, outshineCharacter, 3 * i + 1, CLASS_LOUVERS_ARROW);
-            appendLouversIcon(builder, downArrow, 3 * i + 2, downArrowClazz);
+            appendLouversIcon(builder, "?", lc.getId(), "up");
+            appendLouversIcon(builder, "☀", lc.getId(), "outshine");
+            appendLouversIcon(builder, "?", lc.getId(), "blind");
 
-            builder.append(String.format("<tr>" +
-                    "            <td colspan=\"3\" class='louversName'>%s<tr>\n" +
-                    "        </table>\n", lc.getLabel()));
-
+            builder.append("<tr><td colspan='3' class='louversName'>").append(lc.getLabel()).append("<tr>\n</table>\n");
         }
         builder.append("</table>");
         return builder.toString();
     }
 
-    private void appendLouversIcon(StringBuilder builder, String icon, int linkAction, String clazz) {
-        builder.append(String.format("<td onClick=\"document.location.href='%s%s'\" class='%s'>%s\n", "TODO", linkAction, clazz, icon));
+    private void appendLouversIcon(StringBuilder builder, String icon, String id, String action) {
+        builder.append("<td id='act_").append(id).append('_').append(action).append("' onClick=\"handleClick('").append(id).append("', '").append(action)
+                .append("')\" class='").append(CLASS_LOUVERS_ARROW).append("'>").append(icon).append("\n");
     }
 
     @Override

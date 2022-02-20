@@ -45,8 +45,3 @@ class Status {
         request.send();
     }
 }
-
-function printException(e) {
-    console.log(e);
-    document.getElementById('error').innerHTML = e.message + '<br>' + e.stack.split('\n').join('<br>');
-}

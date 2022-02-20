@@ -33,33 +33,6 @@ td.lightNameSelected {
     font-size: 2em;
 }
 
-td.louversItem {
-    border: 2px solid black;
-    border-collapse: collapse;
-    padding: 0px;
-    width: 20%;
-    font-size: 1em;
-    text-align: center;
-}
-
-td.louversName {
-    border-collapse: collapse;
-    padding: 0px;
-    width: 20%;
-    text-align: center;
-    font-size: 2em;
-}
-
-td.louversArrow {
-    text-align: center;
-    font-size: 5em;
-    text-decoration: none;
-}
-
-td.louversArrow-moving {
-    color: red;
-}
-
 td.nodeInfoConnectorTable {
     border: 1px solid black;
 }

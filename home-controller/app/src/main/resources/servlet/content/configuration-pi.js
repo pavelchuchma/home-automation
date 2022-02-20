@@ -9,6 +9,36 @@ function getFloorIds() {
     return ['1stFloor', '2ndFloor'];
 }
 
+function getLouversComponents() {
+    return [
+        new LouversItem('lvKoupH', 530, 473, 1),
+        new LouversItem('lvKrys', 530, 640, 1),
+        new LouversItem('lvPata', 530, 823, 1),
+        new LouversItem('lvMarek', 530, 1006, 1),
+
+        new LouversItem('lvLoz1', 530, 1311, 1),
+        new LouversItem('lvLoz2', 397, 1440, 1),
+        new LouversItem('lvSat', 55, 1085, 1),
+        new LouversItem('lvPrc', 55, 1325, 1),
+
+        new LouversItem('lvKuch', 510, 809, 0),
+        new LouversItem('lvOb1', 510, 978, 0),
+        new LouversItem('lvOb2', 510, 1121, 0),
+        new LouversItem('lvOb3', 510, 1285, 0),
+
+        new LouversItem('lvOb4', 360, 1430, 0),
+        new LouversItem('lvOb5', 65, 1286, 0),
+        new LouversItem('lvOb6', 65, 882, 0),
+        new LouversItem('lvKoupD', 65, 510, 0),
+
+        new LouversItem('lvCh1', 55, 850, 1),
+        new LouversItem('lvCh2', 55, 512, 1),
+        new LouversItem('lvVrt1', 260, 118, 1),
+        new LouversItem('lvVrt2', 370, 50, 1),
+        new LouversItem('lvVrt3', 530, 298, 1),
+    ];
+}
+
 function getComponents() {
     return [
         new PwmLightItem('pwmKuLi', 400, 650, 0),
@@ -51,15 +81,6 @@ function getComponents() {
         new PwmLightItem('pwmDrv', 130, 1459, 0),
         new PwmLightItem('pwmSchd', 57, 760, 0),
 
-        new LouversItem('lvKuch', 510, 809, 0),
-        new LouversItem('lvOb1', 510, 978, 0),
-        new LouversItem('lvOb2', 510, 1121, 0),
-        new LouversItem('lvOb3', 510, 1285, 0),
-        new LouversItem('lvOb4', 360, 1430, 0),
-        new LouversItem('lvOb5', 65, 1286, 0),
-        new LouversItem('lvOb6', 65, 882, 0),
-        new LouversItem('lvKoupD', 65, 510, 0),
-
         new StairsItem('stairsUp', 127, 690, 0, 1, '▲'),
         new StairsItem('stairsDown', 127, 690, 1, 0, '▼'),
 
@@ -80,20 +101,6 @@ function getComponents() {
         new PwmLightItem('pwmPrac', 167, 1324, 1),
         new PwmLightItem('pwmSat', 194, 1128, 1),
         new PwmLightItem('pwmWc', 134, 953, 1),
-
-        new LouversItem('lvVrt1', 260, 118, 1),
-        new LouversItem('lvVrt2', 370, 50, 1),
-        new LouversItem('lvVrt3', 530, 298, 1),
-        new LouversItem('lvKoupH', 530, 473, 1),
-        new LouversItem('lvKrys', 530, 640, 1),
-        new LouversItem('lvPata', 530, 823, 1),
-        new LouversItem('lvMarek', 530, 1006, 1),
-        new LouversItem('lvLoz1', 530, 1311, 1),
-        new LouversItem('lvLoz2', 397, 1440, 1),
-        new LouversItem('lvPrc', 55, 1325, 1),
-        new LouversItem('lvSat', 55, 1085, 1),
-        new LouversItem('lvCh1', 55, 850, 1),
-        new LouversItem('lvCh2', 55, 512, 1),
 
         new AirValveItem('vlVrt', 450, 330, 1),
         new AirValveItem('vlPrc', 132, 1254, 1),
@@ -129,7 +136,7 @@ function getComponents() {
 
         new HvacItem('hvac', 0, 0, 0),
         new WaterPumpItem('wpump', 0, 0, 0)
-    ];
+    ].concat(getLouversComponents());
 }
 
 function getToolbarItems() {
