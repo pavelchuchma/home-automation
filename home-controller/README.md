@@ -1,7 +1,7 @@
 #TODO
 * [ ] refactor lights page
 * [x] refactor louvers page
-* [ ] reincarnate `generateMessageType.bat`
+* [x] reincarnate `generateMessageType.bat`
 * [ ] **BUG:** Broken stylesheets on http://pi/lights, louvers
 * [x] NodeInfoCollector: Convert node list to int->NodeInfo map
 * [x] remove `String.format()` from debugs

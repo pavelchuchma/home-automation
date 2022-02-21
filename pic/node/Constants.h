@@ -124,7 +124,7 @@ typedef struct {
 
 #endif	/* CONSTANTS_H */
 
-#if (0)  //registryMaping
+#if (0)  //registryMapping
     receiveQueue_r = receiveQueue+32
     receiveQueue_w = receiveQueue+33
     receiveQueue_packetCount = receiveQueue+34
