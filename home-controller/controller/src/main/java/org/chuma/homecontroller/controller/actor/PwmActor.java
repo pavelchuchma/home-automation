@@ -110,7 +110,7 @@ public class PwmActor extends AbstractPinActor implements IOnOffActor {
 
     @Override
     public double getValue() {
-        return (double) currentPwmValue / MAX_PWM_VALUE;
+        return (double) currentPwmValue / maxPwmValue;
     }
 
     public double getOutputCurrent() {

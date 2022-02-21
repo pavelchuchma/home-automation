@@ -22,6 +22,9 @@ public interface Actor {
      */
     boolean setValue(double val, Object actionData);
 
+    /**
+     * @return values are from interval <0;1>
+     */
     double getValue();
 
     /**
