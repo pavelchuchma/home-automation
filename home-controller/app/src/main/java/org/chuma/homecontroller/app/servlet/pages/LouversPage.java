@@ -1,14 +1,8 @@
 package org.chuma.homecontroller.app.servlet.pages;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-import org.eclipse.jetty.server.Request;
-
 import org.chuma.homecontroller.controller.controller.LouversController;
 
 public class LouversPage extends AbstractPage {
-    public static final String CLASS_LOUVERS_ARROW = "louversArrow";
     final LouversController[] louversControllers;
 
     public LouversPage(LouversController[] louversControllers) {
@@ -17,30 +11,25 @@ public class LouversPage extends AbstractPage {
     }
 
     @Override
-    String getHtmlHead() {
-        return "<!DOCTYPE html>\n" +
-                "<html>\n" +
-                "<head>\n" +
-                "    <meta charset=\"UTF-8\">\n" +
-                "    <title>Louvers Control</title>\n" +
-                "    <link href='louvers.css' rel='stylesheet' type='text/css'/>\n" +
-                "    <link href=\"favicon.png\" rel=\"icon\" type=\"image/png\">\n" +
-                "    <script src=\"commons.js\"></script>\n" +
-                "    <script src=\"status.js\"></script>\n" +
-                "    <script src=\"items/baseItem.js\"></script>\n" +
-                "    <script src=\"items/louversItem.js\"></script>\n" +
-                "    <script src=\"configuration-pi.js\"></script>\n" +
-                "    <script src=\"louvers.js\"></script>\n" +
-                "</head>";
+    public String[] getStylesheets() {
+        return new String[]{"louvers.css"};
     }
 
-    public String getBody() {
-        StringBuilder builder = new StringBuilder();
+    @Override
+    public String[] getScripts() {
+        return new String[]{
+                "commons.js",
+                "status.js",
+                "items/baseItem.js",
+                "items/louversItem.js",
+                "configuration-pi.js",
+                "louvers.js"
+        };
+    }
 
-        builder.append("<html>")
-                .append(getHtmlHead())
-                .append("<body><p id='error'></p><a href='")
-                .append(getRootPath()).append("'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
+    @Override
+    public void appendContent(StringBuilder builder) {
+        builder.append("<a href='/'>Back</a>\n");
 
         for (int i = 0; i < louversControllers.length; i += 4) {
             int count = (i + 8 < louversControllers.length) ? 4 : louversControllers.length - i;
@@ -49,9 +38,6 @@ public class LouversPage extends AbstractPage {
                 break;
             }
         }
-
-        builder.append("</body></html>");
-        return builder.toString();
     }
 
     private String getLouversTable(int startIndex, int count) {
@@ -75,11 +61,6 @@ public class LouversPage extends AbstractPage {
 
     private void appendLouversIcon(StringBuilder builder, String icon, String id, String action) {
         builder.append("<td id='act_").append(id).append('_').append(action).append("' onClick=\"handleClick('").append(id).append("', '").append(action)
-                .append("')\" class='").append(CLASS_LOUVERS_ARROW).append("'>").append(icon).append("\n");
-    }
-
-    @Override
-    public void handle(String target, Request request, HttpServletResponse response) throws IOException {
-        sendOkResponse(request, response, getBody());
+                .append("')\" class='louversArrow'>").append(icon).append("\n");
     }
 }

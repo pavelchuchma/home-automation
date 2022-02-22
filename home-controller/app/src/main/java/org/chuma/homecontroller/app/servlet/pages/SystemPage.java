@@ -30,9 +30,9 @@ public class SystemPage extends AbstractPage {
         this.testRunners = new HashMap<>();
     }
 
-    public String getBody(int debugNodeId) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("<html>").append(getHtmlHead()).append("<body><a href='").append(getRootPath())
+    public String getContent(int debugNodeId) {
+        StringBuilder builder = beginHtlDocument();
+        builder.append("<a href='").append(getRootPath())
                 .append("'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
 
         builder.append("<br/><br/><table class='systemTable'><tr>");
@@ -176,7 +176,7 @@ public class SystemPage extends AbstractPage {
             stopNodeTest(testEndNodeId);
         }
 
-        sendOkResponse(request, response, getBody(debugNodeId));
+        sendOkResponse(request, response, getContent(debugNodeId));
     }
 
     private void startNodeTest(int nodeId, NodeTestRunner.Mode mode) {
@@ -203,5 +203,9 @@ public class SystemPage extends AbstractPage {
             }
             testRunners.remove(nodeInfo);
         }
+    }
+
+    @Override
+    void appendContent(StringBuilder builder) {
     }
 }

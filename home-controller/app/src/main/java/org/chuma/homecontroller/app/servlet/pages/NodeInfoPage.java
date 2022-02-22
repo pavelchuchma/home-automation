@@ -19,14 +19,13 @@ import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 
 public class NodeInfoPage extends AbstractPage {
-    public static final String TARGET_NODE_INFO = "/";
     private static final String FLOOR_PLAN_LOCATION = "/floorPlan.html";
     final Iterable<Page> pages;
     final List<ServletAction> rootActions;
     final NodeInfoRegistry nodeInfoRegistry;
 
     public NodeInfoPage(NodeInfoRegistry nodeInfoRegistry, Iterable<Handler> handlers, Collection<ServletAction> rootActions) {
-        super(TARGET_NODE_INFO, "Node Info", "Nodes", "favicon.png");
+        super("/", "Node Info", "Nodes", "favicon.png");
         this.nodeInfoRegistry = nodeInfoRegistry;
         this.rootActions = new ArrayList<>(rootActions);
 
@@ -39,11 +38,13 @@ public class NodeInfoPage extends AbstractPage {
         this.pages = pages;
     }
 
-    public String getBody() {
-        StringBuilder builder = new StringBuilder();
+    @Override
+    int getRefreshInterval() {
+        return 1;
+    }
 
-        builder.append("<html><meta http-equiv='refresh' content='1;url=/'/>").append(getHtmlHead()).append("<body>");
-
+    @Override
+    public void appendContent(StringBuilder builder) {
         int i = 1;
         boolean rootActionAdded = false;
         for (ServletAction action : rootActions) {
@@ -88,9 +89,6 @@ public class NodeInfoPage extends AbstractPage {
             }
         }
         builder.append("</table>");
-        builder.append("</body></html>");
-        return builder.toString();
-
     }
 
     @Override
@@ -99,6 +97,6 @@ public class NodeInfoPage extends AbstractPage {
         if (actionIndex > 0 && actionIndex <= rootActions.size()) {
             rootActions.get(actionIndex - 1).action.perform(-1);
         }
-        sendOkResponse(request, response, getBody());
+        super.handle(target, request, response);
     }
 }

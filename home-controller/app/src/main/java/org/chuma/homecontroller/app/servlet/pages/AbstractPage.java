@@ -39,11 +39,37 @@ public abstract class AbstractPage implements Page {
         return favicon;
     }
 
-    String getHtmlHead() {
-        return "<html><head>" +
-                "<link rel='icon' type='image/png' href='" + getFavicon() + "'>" +
-                "<link href='report.css' rel='stylesheet' type='text/css'/>" +
-                "</head>";
+    public String[] getStylesheets() {
+        return new String[]{"report.css"};
+    }
+
+    public String[] getScripts() {
+        return new String[]{};
+    }
+
+    int getRefreshInterval() {
+        return -1;
+    }
+
+    StringBuilder beginHtlDocument() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "<head>\n" +
+                "    <meta charset='UTF-8'>\n");
+        if (getRefreshInterval() > 0) {
+            builder.append("    <meta http-equiv='refresh' content='").append(getRefreshInterval()).append(";url=").append(getRootPath()).append("'/>\n");
+        }
+        builder.append("    <title>").append(getTitle()).append("</title>\n" +
+                "    <link href='").append(getFavicon()).append("' rel='icon' type='image/png'>\n");
+        for (String stylesheet : getStylesheets()) {
+            builder.append("    <link href='").append(stylesheet).append("' rel='stylesheet' type='text/css'/>\n");
+        }
+        for (String script : getScripts()) {
+            builder.append("    <script src='").append(script).append("'></script>\n");
+        }
+        builder.append("</head>\n<body>\n<p id='error'></p>\n");
+        return builder;
     }
 
     void sendOkResponse(Request baseRequest, HttpServletResponse response, String body) throws IOException {
@@ -81,5 +107,15 @@ public abstract class AbstractPage implements Page {
             }
         }
         return -1;
+    }
+
+    abstract void appendContent(StringBuilder builder);
+
+    @Override
+    public void handle(String target, Request request, HttpServletResponse response) throws IOException {
+        StringBuilder builder = beginHtlDocument();
+        appendContent(builder);
+        builder.append("</body></html>");
+        sendOkResponse(request, response, builder.toString());
     }
 }
