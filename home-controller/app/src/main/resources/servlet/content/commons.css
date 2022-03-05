@@ -1,0 +1,13 @@
+td {
+    vertical-align: top;
+}
+
+td.errorValue {
+    color: red;
+}
+
+table.buttonTable {
+    border: 2px solid black;
+    border-collapse: collapse;
+    width: 100%
+}

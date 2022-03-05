@@ -39,7 +39,7 @@ function getLouversComponents() {
     ];
 }
 
-function getComponents() {
+function getPwmLightComponents() {
     return [
         new PwmLightItem('pwmKuLi', 400, 650, 0),
         new PwmLightItem('pwmKch1', 410, 759, 0),
@@ -81,9 +81,6 @@ function getComponents() {
         new PwmLightItem('pwmDrv', 130, 1459, 0),
         new PwmLightItem('pwmSchd', 57, 760, 0),
 
-        new StairsItem('stairsUp', 127, 690, 0, 1, '▲'),
-        new StairsItem('stairsDown', 127, 690, 1, 0, '▼'),
-
         new PwmLightItem('pwmVchH', 167, 97, 1),
         new PwmLightItem('pwmVrt1', 342, 207, 1),
         new PwmLightItem('pwmVrt2', 436, 207, 1),
@@ -101,6 +98,14 @@ function getComponents() {
         new PwmLightItem('pwmPrac', 167, 1324, 1),
         new PwmLightItem('pwmSat', 194, 1128, 1),
         new PwmLightItem('pwmWc', 134, 953, 1),
+    ];
+}
+
+function getComponents() {
+    return [
+
+        new StairsItem('stairsUp', 127, 690, 0, 1, '▲'),
+        new StairsItem('stairsDown', 127, 690, 1, 0, '▼'),
 
         new AirValveItem('vlVrt', 450, 330, 1),
         new AirValveItem('vlPrc', 132, 1254, 1),
@@ -136,7 +141,7 @@ function getComponents() {
 
         new HvacItem('hvac', 0, 0, 0),
         new WaterPumpItem('wpump', 0, 0, 0)
-    ].concat(getLouversComponents());
+    ].concat(getLouversComponents()).concat(getPwmLightComponents());
 }
 
 function getToolbarItems() {

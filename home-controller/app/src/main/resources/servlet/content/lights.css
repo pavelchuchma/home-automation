@@ -1,0 +1,38 @@
+div.powerDetail {
+    color: gray;
+    font-size: .65em;
+    alignment: right;
+    padding-left: 2em;
+    text-align: left;
+}
+
+div.lightTitle {
+}
+
+table.lightsTable {
+}
+
+td {
+    vertical-align: middle;
+    border: 1px;
+}
+
+td.lightAction {
+    padding: 0.0em .5em;
+    font-size: 1.1em;
+}
+
+td.main {
+    padding: 0.5em .75em;
+    background-color: rgba(255, 0, 0, .0);
+    border: 2px solid transparent;
+}
+
+td.onOff {
+    vertical-align: bottom;
+}
+
+img.onOff {
+    height: 2.5em;
+    width: 2.5em;
+}

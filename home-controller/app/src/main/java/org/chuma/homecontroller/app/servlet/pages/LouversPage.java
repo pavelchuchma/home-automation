@@ -12,7 +12,7 @@ public class LouversPage extends AbstractPage {
 
     @Override
     public String[] getStylesheets() {
-        return new String[]{"louvers.css"};
+        return new String[]{"commons.css", "louvers.css"};
     }
 
     @Override
@@ -60,7 +60,7 @@ public class LouversPage extends AbstractPage {
     }
 
     private void appendLouversIcon(StringBuilder builder, String icon, String id, String action) {
-        builder.append("<td id='act_").append(id).append('_').append(action).append("' onClick=\"handleClick('").append(id).append("', '").append(action)
+        builder.append("<td id='act_").append(id).append('_').append(action).append("' onClick=\"status.doAction('").append(id).append("', '").append(action)
                 .append("')\" class='louversArrow'>").append(icon).append("\n");
     }
 }

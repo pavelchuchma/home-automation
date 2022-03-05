@@ -60,4 +60,9 @@ class PwmLightItem extends BaseItem {
         const path = `/rest/pwmLights/action?id=${this.id}&action=${action}`;
         BaseItem._send(path);
     }
+
+    increaseValue(val) {
+        const path = `/rest/pwmLights/action?id=${this.id}&action=increase&val=${val}`;
+        BaseItem._send(path);
+    }
 }

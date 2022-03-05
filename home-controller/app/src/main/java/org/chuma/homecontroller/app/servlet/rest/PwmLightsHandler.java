@@ -56,6 +56,10 @@ public class PwmLightsHandler extends AbstractRestHandler<PwmActor> {
                 case "off":
                     pwmActor.switchOff(null);
                     break;
+                case "increase":
+                    double val = getMandatoryDoubleParam(requestParameters, "val");
+                    pwmActor.increasePwm(val, null);
+                    break;
                 default:
                     throw new IllegalArgumentException("Unknown action '" + action + "'");
             }

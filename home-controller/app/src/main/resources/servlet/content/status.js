@@ -44,4 +44,9 @@ class Status {
         }).bind(this);
         request.send();
     }
+
+    doAction(id, action) {
+        const item = this.componentMap.get(id);
+        item.doAction(action);
+    }
 }
