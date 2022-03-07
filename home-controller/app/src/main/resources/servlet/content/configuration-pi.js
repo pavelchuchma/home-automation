@@ -101,22 +101,8 @@ function getPwmLightComponents() {
     ];
 }
 
-function getComponents() {
+function getSensorComponents() {
     return [
-
-        new StairsItem('stairsUp', 127, 690, 0, 1, '▲'),
-        new StairsItem('stairsDown', 127, 690, 1, 0, '▼'),
-
-        new AirValveItem('vlVrt', 450, 330, 1),
-        new AirValveItem('vlPrc', 132, 1254, 1),
-        new AirValveItem('vlKoupD', 172, 433, 0),
-        new AirValveItem('vlObyv45', 450, 1380, 0),
-        new AirValveItem('vlObyv23', 450, 1193, 0),
-        new AirValveItem('vlJid', 450, 980, 0),
-        new AirValveItem('vlMarek', 450, 1068, 1),
-        new AirValveItem('vlPata', 450, 726, 1),
-        new AirValveItem('vlKoupH', 450, 515, 1),
-
         new PirItem('pirPrdDv', 378, 376, 0),
         new PirItem('pirPrdPr', 378, 227, 0),
         new PirItem('pirSch', 133, 797, 0),
@@ -139,9 +125,29 @@ function getComponents() {
         new BaseItem('mgntGD', 18, 117, 1),
         new BaseItem('mgntCrpd', 438, 376, 0),
 
+        new BaseItem('pisD', 0, 0, 0),
+        new BaseItem('pisH', 0, 0, 1),
+    ];
+}
+
+function getComponents() {
+    return [
+        new StairsItem('stairsUp', 127, 690, 0, 1, '▲'),
+        new StairsItem('stairsDown', 127, 690, 1, 0, '▼'),
+
+        new AirValveItem('vlVrt', 450, 330, 1),
+        new AirValveItem('vlPrc', 132, 1254, 1),
+        new AirValveItem('vlKoupD', 172, 433, 0),
+        new AirValveItem('vlObyv45', 450, 1380, 0),
+        new AirValveItem('vlObyv23', 450, 1193, 0),
+        new AirValveItem('vlJid', 450, 980, 0),
+        new AirValveItem('vlMarek', 450, 1068, 1),
+        new AirValveItem('vlPata', 450, 726, 1),
+        new AirValveItem('vlKoupH', 450, 515, 1),
+
         new HvacItem('hvac', 0, 0, 0),
         new WaterPumpItem('wpump', 0, 0, 0)
-    ].concat(getLouversComponents()).concat(getPwmLightComponents());
+    ].concat(getLouversComponents(), getPwmLightComponents(), getSensorComponents());
 }
 
 function getToolbarItems() {

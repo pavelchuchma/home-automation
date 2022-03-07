@@ -8,7 +8,7 @@ import org.chuma.homecontroller.controller.PirStatus;
 
 public class PirHandler extends AbstractRestHandler<PirStatus> {
     public PirHandler(Iterable<PirStatus> pirStatuses) {
-        super("pir", "pir", pirStatuses, PirStatus::getId);
+        super("sensors", "sensors", pirStatuses, PirStatus::getId);
     }
 
     @Override

@@ -3,7 +3,7 @@ let status;
 window.onload = function () {
     try {
         status = new Status('/rest/pwmLights/status', 750, function () {
-            initialize();
+            updateAll();
         }, getPwmLightComponents(), getBaseUrl());
         status.startRefresh();
         for (const item of status.componentMap.values()) {
@@ -16,7 +16,7 @@ window.onload = function () {
     }
 };
 
-function initialize() {
+function updateAll() {
     for (const item of status.componentMap.values()) {
         updateValue(item);
     }

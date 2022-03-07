@@ -1,0 +1,18 @@
+table.sensorTable {
+}
+
+td {
+    vertical-align: middle;
+    border: 1px;
+}
+
+td.active {
+    padding: 0.0em .5em;
+    font-size: 1.0em;
+    color: red;
+}
+
+td.inactive {
+    padding: 0.0em .5em;
+    font-size: 1.0em;
+}
