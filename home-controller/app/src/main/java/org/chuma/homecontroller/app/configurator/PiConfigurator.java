@@ -392,8 +392,8 @@ public class PiConfigurator extends AbstractConfigurator {
 
         LddBoardDevice lddDevice9 = new LddBoardDevice("lddDevice9", lddActorB, 3, 1.5, 1.5, 1.5, 1, .7, .7);
         PwmActor jidelnaStulPwmActor = addLddLight(pwmActors, "pwmJdl", "Jidelna stůl", lddDevice9.getLdd1(), 1.5, schodyDoleJidelnaSw3Indicator); // 1.5
-        PwmActor garaz1PwmActor = addLddLight(pwmActors, "pwmG1", "Garáž 1", lddDevice9.getLdd2(), 0.7, garazZadveriSwAIndicator, garazGarazSwAIndicator); // .72
-        PwmActor garaz2PwmActor = addLddLight(pwmActors, "pwmG2", "Garáž 2", lddDevice9.getLdd3(), 0.7, garazZadveriSwAIndicator, garazGarazSwAIndicator); // .72
+        PwmActor garaz1PwmActor = addLddLight(pwmActors, "pwmG1", "Garáž 1", lddDevice9.getLdd2(), 1.44, garazZadveriSwAIndicator, garazGarazSwAIndicator); // 2x.72
+        PwmActor garaz2PwmActor = addLddLight(pwmActors, "pwmG2", "Garáž 2", lddDevice9.getLdd3(), 1.44, garazZadveriSwAIndicator, garazGarazSwAIndicator); // 2x.72
         PwmActor spajzPwmActor = addLddLight(pwmActors, "pwmSpjz", "Špajz", lddDevice9.getLdd4(), 1, prizemiVzaduKuchynSw2Indicator, chodbaDoleSpajzSw3.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON)); // 1.05
         PwmActor garaz3PwmActor = addLddLight(pwmActors, "pwmG3", "Garáž 3", lddDevice9.getLdd5(), 0.6, garazZadveriSwAIndicator, garazGarazSwAIndicator); // .6
         PwmActor drevnikPwmActor = addLddLight(pwmActors, "pwmDrv", "Dřevník", lddDevice9.getLdd6(), 0.7, drevnikSwIndicator); // .72
@@ -506,7 +506,7 @@ public class PiConfigurator extends AbstractConfigurator {
         lst.addActionBinding(new ActionBinding(zadveriSwA1.getRightUpperButton(), ovladacGarazAction, null));
 //        lst.addActionBinding(new ActionBinding(zadveriSwA1.getRightBottomButton(), stomekAction, null));
 
-        configurePwmLights(lst, zadveriSwA2, WallSwitch.Side.LEFT, 0.8, garaz1PwmActor, garaz2PwmActor);
+        configurePwmLights(lst, zadveriSwA2, WallSwitch.Side.LEFT, 0.5, garaz1PwmActor, garaz2PwmActor);
         configurePwmLights(lst, zadveriSwA2, WallSwitch.Side.RIGHT, 0.8, garaz3PwmActor);
         configurePwmLights(lst, zadveriVratniceSw3, WallSwitch.Side.LEFT, 0.8, vchodHorePwmActor);
         configurePwmLights(lst, zadveriVratniceSw3, WallSwitch.Side.RIGHT, 0.8, zadveriPwmActor);
@@ -523,7 +523,7 @@ public class PiConfigurator extends AbstractConfigurator {
         lst.addActionBinding(new ActionBinding(zvonekPravySw.getRightBottomButton(), zvonekAction, null));
 
         // garaz
-        configurePwmLights(lst, garazASw1, WallSwitch.Side.LEFT, 0.8, garaz1PwmActor, garaz2PwmActor);
+        configurePwmLights(lst, garazASw1, WallSwitch.Side.LEFT, 0.5, garaz1PwmActor, garaz2PwmActor);
         configurePwmLights(lst, garazASw1, WallSwitch.Side.RIGHT, 0.8, garaz3PwmActor);
         lst.addActionBinding(new ActionBinding(garazASw2.getLeftUpperButton(), ovladacGarazAction, null));
         lst.addActionBinding(new ActionBinding(garazASw2.getLeftBottomButton(), ovladacGarazAction, null));
@@ -531,8 +531,8 @@ public class PiConfigurator extends AbstractConfigurator {
         lst.addActionBinding(new ActionBinding(garazASw2.getRightBottomButton(), new SwitchOffAction(pudaPwmActor), null));
 
         configurePwmLights(lst, garazBSwL, WallSwitch.Side.LEFT, 0.8, garaz3PwmActor);
-        configurePwmLights(lst, garazBSwL, WallSwitch.Side.RIGHT, 0.8, garaz2PwmActor);
-        configurePwmLights(lst, garazBSwR, WallSwitch.Side.LEFT, 0.8, garaz1PwmActor);
+        configurePwmLights(lst, garazBSwL, WallSwitch.Side.RIGHT, 0.5, garaz2PwmActor);
+        configurePwmLights(lst, garazBSwR, WallSwitch.Side.LEFT, 0.5, garaz1PwmActor);
         lst.addActionBinding(new ActionBinding(garazBSwR.getRightUpperButton(), ovladacGarazAction, null));
         lst.addActionBinding(new ActionBinding(garazBSwR.getRightBottomButton(), ovladacGarazAction, null));
 
