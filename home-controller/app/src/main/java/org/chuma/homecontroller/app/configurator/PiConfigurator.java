@@ -21,6 +21,7 @@ import org.chuma.homecontroller.app.servlet.rest.AirValveHandler;
 import org.chuma.homecontroller.app.servlet.rest.AllStatusHandler;
 import org.chuma.homecontroller.app.servlet.rest.HvacHandler;
 import org.chuma.homecontroller.app.servlet.rest.LouversHandler;
+import org.chuma.homecontroller.app.servlet.rest.NodeHandler;
 import org.chuma.homecontroller.app.servlet.rest.PirHandler;
 import org.chuma.homecontroller.app.servlet.rest.PwmLightsHandler;
 import org.chuma.homecontroller.app.servlet.rest.StatusHandler;
@@ -765,7 +766,7 @@ public class PiConfigurator extends AbstractConfigurator {
                 new SystemPage(nodeInfoRegistry),
                 new PirPage(pirStatusList));
         // rest handlers
-        List<StatusHandler> restHandlers = Arrays.asList(
+        List<StatusHandler> deviceRestHandlers = Arrays.asList(
                 new LouversHandler(Arrays.asList(louversControllers)),
                 new AirValveHandler(Arrays.asList(valveControllers)),
                 new PwmLightsHandler(pwmActors),
@@ -774,8 +775,9 @@ public class PiConfigurator extends AbstractConfigurator {
                 new HvacHandler(Collections.singleton(hvacActor)));
         // rest/all handler
         List<Handler> handlers = new ArrayList<>(pageHandlers);
-        handlers.addAll(restHandlers);
-        handlers.add(new AllStatusHandler(restHandlers));
+        handlers.add(new NodeHandler(nodeInfoRegistry));
+        handlers.addAll(deviceRestHandlers);
+        handlers.add(new AllStatusHandler(deviceRestHandlers));
         servlet = new Servlet(handlers, new NodeInfoPage(nodeInfoRegistry, handlers, rootActions), getConfigurationJs());
 
 //        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);

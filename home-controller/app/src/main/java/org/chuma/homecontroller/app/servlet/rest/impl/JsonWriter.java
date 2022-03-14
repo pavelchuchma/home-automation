@@ -9,7 +9,7 @@ public class JsonWriter implements AutoCloseable {
     private final char[] endingChars = new char[MAX_DEPTH];
     private final boolean indent;
     private int stackPosition = -1;
-    private DecimalFormat doubleFormat = new DecimalFormat("###.###");
+    private final DecimalFormat doubleFormat = new DecimalFormat("###.###");
 
     public JsonWriter(boolean indent) {
         this.indent = indent;
@@ -57,7 +57,11 @@ public class JsonWriter implements AutoCloseable {
 
     public JsonWriter addAttribute(String name, String value) {
         appendAttrName(name);
-        sb.append("\"").append(value).append("\"");
+        if (value != null) {
+            sb.append("\"").append(value).append("\"");
+        } else {
+            sb.append("null");
+        }
         return this;
     }
 

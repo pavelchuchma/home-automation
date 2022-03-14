@@ -120,11 +120,15 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
         try (JsonWriter arrayWriter = writer.startArrayAttribute(statusJsonArrayName)) {
             for (Map.Entry<String, T> entry : itemMap.entrySet()) {
                 try (JsonWriter objectWriter = arrayWriter.startObject()) {
-                    objectWriter.addAttribute("id", entry.getKey());
+                    writeIdImpl(entry, objectWriter);
                     writeJsonItemValues(objectWriter, entry.getValue(), request);
                 }
             }
         }
+    }
+
+    void writeIdImpl(Map.Entry<String, T> entry, JsonWriter objectWriter) {
+        objectWriter.addAttribute("id", entry.getKey());
     }
 
     void writeJsonItemValues(JsonWriter jw, T item, HttpServletRequest request) {
