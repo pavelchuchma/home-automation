@@ -5,3 +5,8 @@
 build
 /app/out/
 /.idea/shelf/
+
+# Eclipse
+.classpath
+.project
+.settings

@@ -9,6 +9,7 @@
 plugins {
     // Apply the java-library plugin for API and implementation separation.
     id 'org.chuma.homecontroller.java-library-conventions'
+    id 'eclipse'
 }
 
 

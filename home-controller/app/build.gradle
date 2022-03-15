@@ -4,6 +4,7 @@
 
 plugins {
     id 'org.chuma.homecontroller.java-application-conventions'
+    id 'eclipse'
 }
 
 dependencies {
