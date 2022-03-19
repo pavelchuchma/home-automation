@@ -75,7 +75,7 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
     }
 
     @Override
-    public String getRootPath() {
+    public String getPath() {
         return rootPath;
     }
 

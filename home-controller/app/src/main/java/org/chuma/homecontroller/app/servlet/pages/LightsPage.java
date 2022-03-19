@@ -9,8 +9,8 @@ import org.chuma.homecontroller.controller.actor.PwmActor;
 public class LightsPage extends AbstractPage {
     final List<PwmActor> pwmActors;
 
-    public LightsPage(List<PwmActor> pwmActors) {
-        super("/lights", "Světla", "Světla", "favicon.png");
+    public LightsPage(List<PwmActor> pwmActors, Iterable<Page> links) {
+        super("/lights", "Světla", "Světla", "favicon.png", links);
         this.pwmActors = pwmActors;
     }
 
@@ -33,7 +33,6 @@ public class LightsPage extends AbstractPage {
 
     @Override
     public void appendContent(StringBuilder builder) {
-        builder.append("<a href='/'>Back</a>\n");
         builder.append("<br/><br/><table class='lightsTable'>");
         for (PwmActor actor : pwmActors) {
             builder.append("<tr>");

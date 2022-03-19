@@ -1,0 +1,21 @@
+td.pingOK {
+    /*color: red;*/
+}
+
+td.pingLate {
+    color: red;
+}
+
+td.messageLog {
+    font-size: smaller;
+    border-top-style: dashed;
+    border-top-width: 2px;
+}
+
+div.receivedMessage {
+    /*color: blue;*/
+}
+
+div.sentMessage {
+    color: blue;
+}

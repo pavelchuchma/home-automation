@@ -6,23 +6,23 @@ import java.util.Date;
 import java.util.Map;
 
 import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
+import org.chuma.homecontroller.base.node.MessageType;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.controller.nodeinfo.LogMessage;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 
 public class NodeHandler extends AbstractRestHandler<NodeInfo> {
-    private final NodeInfoRegistry nodeInfoRegistry;
 
     public NodeHandler(NodeInfoRegistry nodeInfoRegistry) {
         super("nodes", "nodes", nodeInfoRegistry.getNodeInfos(),
                 nodeInfo -> String.valueOf(nodeInfo.getNode().getNodeId()));
-        this.nodeInfoRegistry = nodeInfoRegistry;
     }
 
     private static String dateAsString(Date date) {
         return (date != null) ? String.valueOf(date) : null;
     }
+
     @Override
     void writeJsonItemValues(JsonWriter jw, NodeInfo info, HttpServletRequest request) {
         final Node node = info.getNode();
@@ -36,6 +36,7 @@ public class NodeHandler extends AbstractRestHandler<NodeInfo> {
                 try (JsonWriter objectWriter = arrayWriter.startObject()) {
                     objectWriter.addAttribute("dir", (m.received) ? "r" : "s");
                     objectWriter.addAttribute("type", m.packet.messageType);
+                    objectWriter.addAttribute("typeName", MessageType.toString(m.packet.messageType));
                     objectWriter.addAttribute("data", (m.packet.data != null) ? Arrays.toString(m.packet.data) : "");
                 }
             }

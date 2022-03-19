@@ -15,7 +15,9 @@ import org.chuma.homecontroller.app.servlet.ServletAction;
 import org.chuma.homecontroller.app.servlet.pages.LightsPage;
 import org.chuma.homecontroller.app.servlet.pages.LouversPage;
 import org.chuma.homecontroller.app.servlet.pages.NodeInfoPage;
+import org.chuma.homecontroller.app.servlet.pages.Page;
 import org.chuma.homecontroller.app.servlet.pages.PirPage;
+import org.chuma.homecontroller.app.servlet.pages.StaticPage;
 import org.chuma.homecontroller.app.servlet.pages.SystemPage;
 import org.chuma.homecontroller.app.servlet.rest.AirValveHandler;
 import org.chuma.homecontroller.app.servlet.rest.AllStatusHandler;
@@ -64,6 +66,7 @@ import org.chuma.homecontroller.extensions.actor.RadioOnOffActor;
 import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
 import org.chuma.hvaccontroller.device.HvacDevice;
 
+@SuppressWarnings({"unused", "DuplicatedCode"})
 public class PiConfigurator extends AbstractConfigurator {
 
     static Logger log = LoggerFactory.getLogger(PiConfigurator.class.getName());
@@ -284,29 +287,18 @@ public class PiConfigurator extends AbstractConfigurator {
                 zaluzieVratnice3 = new LouversControllerImpl("lvVrt3", "Vrátnice 3", rele5ZaluzieBPort2.getRelay5(), rele5ZaluzieBPort2.getRelay6(), 40000, 1600),
         };
 
-        ValveController vzduchVratnice;
-        ValveController vzduchPracovna;
-        ValveController vzduchKoupelnaDole;
-
-        ValveController vzduchJidelna;
-        ValveController vzduchKoupelna;
-        ValveController vzduchPata;
-
-        ValveController vzduchObyvak23;
-        ValveController vzduchMarek;
-        ValveController vzduchObyvak45;
         ValveController[] valveControllers = new ValveController[]{
-                vzduchVratnice = new ValveControllerImpl("vlVrt", "Vratnice", rele11.getRelay1(), rele11.getRelay2(), 150000),
-                vzduchPracovna = new ValveControllerImpl("vlPrc", "Pracovna", rele11.getRelay3(), rele11.getRelay4(), 150000),
-                vzduchKoupelnaDole = new ValveControllerImpl("vlKoupD", "KoupelnaDole", rele11.getRelay5(), rele11.getRelay6(), 150000),
+                new ValveControllerImpl("vlVrt", "Vratnice", rele11.getRelay1(), rele11.getRelay2(), 150000),
+                new ValveControllerImpl("vlPrc", "Pracovna", rele11.getRelay3(), rele11.getRelay4(), 150000),
+                new ValveControllerImpl("vlKoupD", "KoupelnaDole", rele11.getRelay5(), rele11.getRelay6(), 150000),
 
-                vzduchJidelna = new ValveControllerImpl("vlJid", "Jidelna", rele09.getRelay1(), rele09.getRelay2(), 150000),
-                vzduchKoupelna = new ValveControllerImpl("vlKoupH", "KoupelnaHore", rele09.getRelay3(), rele09.getRelay4(), 150000),
-                vzduchPata = new ValveControllerImpl("vlPata", "Pata", rele09.getRelay5(), rele09.getRelay6(), 150000),
+                new ValveControllerImpl("vlJid", "Jidelna", rele09.getRelay1(), rele09.getRelay2(), 150000),
+                new ValveControllerImpl("vlKoupH", "KoupelnaHore", rele09.getRelay3(), rele09.getRelay4(), 150000),
+                new ValveControllerImpl("vlPata", "Pata", rele09.getRelay5(), rele09.getRelay6(), 150000),
 
-                vzduchObyvak23 = new ValveControllerImpl("vlObyv23", "Obyvak 2+3", rele10.getRelay1(), rele10.getRelay2(), 150000),
-                vzduchMarek = new ValveControllerImpl("vlMarek", "Marek", rele10.getRelay3(), rele10.getRelay4(), 150000),
-                vzduchObyvak45 = new ValveControllerImpl("vlObyv45", "Obyvak 4+5", rele10.getRelay5(), rele10.getRelay6(), 150000),
+                new ValveControllerImpl("vlObyv23", "Obyvak 2+3", rele10.getRelay1(), rele10.getRelay2(), 150000),
+                new ValveControllerImpl("vlMarek", "Marek", rele10.getRelay3(), rele10.getRelay4(), 150000),
+                new ValveControllerImpl("vlObyv45", "Obyvak 4+5", rele10.getRelay5(), rele10.getRelay6(), 150000),
         };
 
         SwitchIndicator krystofIndicator = new SwitchIndicator(krystofSwA2.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF);
@@ -760,11 +752,16 @@ public class PiConfigurator extends AbstractConfigurator {
         lst.addActionBinding(new ActionBinding(testSw.getLeftBottomButton(), new SwitchOffAction(testingLeftOnOffActor), null));
 
         // page handlers
-        List<Handler> pageHandlers = Arrays.asList(
-                new LightsPage(pwmActors),
-                new LouversPage(louversControllers),
-                new SystemPage(nodeInfoRegistry),
-                new PirPage(pirStatusList));
+        Page floorsPage = new StaticPage("/", "/floorPlan.html", "Mapa");
+        List<Page> pages = new ArrayList<>();
+        //noinspection CollectionAddAllCanBeReplacedWithConstructor
+        pages.addAll(Arrays.asList(
+                floorsPage,
+                new LightsPage(pwmActors, pages),
+                new LouversPage(louversControllers, pages),
+                new PirPage(pirStatusList, pages),
+                new NodeInfoPage(nodeInfoRegistry, pages, rootActions),
+                new SystemPage(nodeInfoRegistry, pages)));
         // rest handlers
         List<StatusHandler> deviceRestHandlers = Arrays.asList(
                 new LouversHandler(Arrays.asList(louversControllers)),
@@ -774,11 +771,11 @@ public class PiConfigurator extends AbstractConfigurator {
                 new WaterPumpHandler(Collections.singleton(waterPumpMonitor)),
                 new HvacHandler(Collections.singleton(hvacActor)));
         // rest/all handler
-        List<Handler> handlers = new ArrayList<>(pageHandlers);
+        List<Handler> handlers = new ArrayList<>(pages);
         handlers.add(new NodeHandler(nodeInfoRegistry));
         handlers.addAll(deviceRestHandlers);
         handlers.add(new AllStatusHandler(deviceRestHandlers));
-        servlet = new Servlet(handlers, new NodeInfoPage(nodeInfoRegistry, handlers, rootActions), getConfigurationJs());
+        servlet = new Servlet(handlers, floorsPage.getPath(), getConfigurationJs());
 
 //        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);
 //        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));

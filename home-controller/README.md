@@ -1,6 +1,7 @@
 #TODO
-* [ ] refactor lights page
-* [ ] **BUG:** Broken stylesheets on http://pi/lights, louvers
+* [ ] virtualize `configuration-pi.js' instead of string replace in servlet
+* [x] refactor lights page
+* [x] **BUG:** Broken stylesheets on http://pi/lights, louvers
 * [x] refactor louvers page
 * [x] reincarnate `generateMessageType.bat`
 * [x] NodeInfoCollector: Convert node list to int->NodeInfo map

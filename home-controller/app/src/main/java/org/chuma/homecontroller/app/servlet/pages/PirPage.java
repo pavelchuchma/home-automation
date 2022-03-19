@@ -7,8 +7,8 @@ import org.chuma.homecontroller.controller.PirStatus;
 public class PirPage extends AbstractPage {
     final List<PirStatus> pirStatusList;
 
-    public PirPage(List<PirStatus> pirStatusList) {
-        super("/sensors", "Senzory", "Senzory", "favicon.png");
+    public PirPage(List<PirStatus> pirStatusList, Iterable<Page> links) {
+        super("/sensors", "Senzory", "Senzory", "favicon.png", links);
         this.pirStatusList = pirStatusList;
     }
 
@@ -31,7 +31,6 @@ public class PirPage extends AbstractPage {
 
     @Override
     public void appendContent(StringBuilder builder) {
-        builder.append("<a href='/'>Back</a>\n");
         builder.append("<br/><br/><table class='sensorTable'>");
 
         for (PirStatus status : pirStatusList) {

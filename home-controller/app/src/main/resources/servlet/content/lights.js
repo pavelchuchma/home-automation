@@ -31,11 +31,12 @@ function onWheel(event, id) {
 }
 
 function updateValue(item) {
-    const title = document.getElementById('lt_' + item.id);
+    const id = item.id;
+    const title = document.getElementById('lt_' + id);
     title.innerHTML = `${item.name} ${Math.round(item.val * 100)}%`;
-    const detail = document.getElementById('pd_' + item.id);
+    const detail = document.getElementById('pd_' + id);
     detail.innerHTML = `${item.pwmVal}/${item.maxPwmVal} ${item.curr}A`;
-    const main = document.getElementById('main_' + item.id);
+    const main = document.getElementById('main_' + id);
     main.style.borderColor = (item.pwmVal > 0) ? 'red' : 'transparent';
     main.style.backgroundColor = `rgba(255, 0, 0, ${item.val})`;
 }

@@ -1,29 +1,28 @@
 package org.chuma.homecontroller.app.servlet.pages;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 
-import org.apache.commons.lang3.Validate;
 import org.eclipse.jetty.server.Request;
 
 public abstract class AbstractPage implements Page {
-    final String rootPath;
+    final String path;
     final String title;
-    final String referenceName;
+    final String linkTitle;
     final String favicon;
+    final Iterable<Page> links;
 
-    public AbstractPage(String rootPath, String title, String referenceName, String favicon) {
-        this.rootPath = rootPath;
+    public AbstractPage(String path, String title, String linkTitle, String favicon, Iterable<Page> links) {
+        this.path = path;
         this.title = title;
-        this.referenceName = referenceName;
+        this.linkTitle = linkTitle;
         this.favicon = favicon;
+        this.links = links;
     }
 
     @Override
-    public String getRootPath() {
-        return rootPath;
+    public String getPath() {
+        return path;
     }
 
     public String getTitle() {
@@ -31,8 +30,8 @@ public abstract class AbstractPage implements Page {
     }
 
     @Override
-    public String getReferenceName() {
-        return referenceName;
+    public String getLinkTitle() {
+        return linkTitle;
     }
 
     public String getFavicon() {
@@ -58,7 +57,7 @@ public abstract class AbstractPage implements Page {
                 "<head>\n" +
                 "    <meta charset='UTF-8'>\n");
         if (getRefreshInterval() > 0) {
-            builder.append("    <meta http-equiv='refresh' content='").append(getRefreshInterval()).append(";url=").append(getRootPath()).append("'/>\n");
+            builder.append("    <meta http-equiv='refresh' content='").append(getRefreshInterval()).append(";url=").append(getPath()).append("'/>\n");
         }
         builder.append("    <title>").append(getTitle()).append("</title>\n" +
                 "    <link href='").append(getFavicon()).append("' rel='icon' type='image/png'>\n");
@@ -69,6 +68,20 @@ public abstract class AbstractPage implements Page {
             builder.append("    <script src='").append(script).append("'></script>\n");
         }
         builder.append("</head>\n<body>\n<p id='error'></p>\n");
+
+        for (Page page : links) {
+            if (page != this) {
+                builder.append("<a href='").append(page.getPath()).append("'>");
+            }
+            builder.append(page.getLinkTitle()).append("...");
+            if (page != this) {
+                builder.append("</a>");
+            }
+            builder.append("&nbsp;&nbsp;&nbsp;&nbsp;");
+        }
+        if (links.iterator().hasNext()) {
+            builder.append("<br/>");
+        }
         return builder;
     }
 
@@ -77,25 +90,6 @@ public abstract class AbstractPage implements Page {
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
         response.getWriter().println(body);
-    }
-
-    void initJsonResponse(Request baseRequest, HttpServletResponse response) {
-        response.setContentType("application/json;charset=utf-8");
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setStatus(HttpServletResponse.SC_OK);
-        baseRequest.setHandled(true);
-    }
-
-    void appendNameValue(StringBuffer b, String name, String value) {
-        b.append("\"").append(name).append("\":\"").append(value).append("\"");
-    }
-
-    <T> T getItemById(HttpServletRequest request, Map<String, T> map) {
-        String id = request.getParameter("id");
-        Validate.notNull(id, "no id specified");
-        T item = map.get(id);
-        Validate.notNull(item, "unknown id");
-        return item;
     }
 
     int tryTargetMatchAndParseArg(String target, String pattern) {

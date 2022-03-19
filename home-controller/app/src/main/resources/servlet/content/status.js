@@ -1,15 +1,18 @@
 'use strict';
 
 class Status {
-    constructor(statusRefreshPath, refreshIntervalMs, onRefreshFunction, components, baseUrl) {
+    constructor(statusRefreshPath, refreshIntervalMs, onRefreshFunction, components, baseUrl, factoryMethod) {
         this.statusRefreshPath = statusRefreshPath;
         this.baseUrl = baseUrl;
         this.componentMap = new Map();
         this.refreshIntervalMs = refreshIntervalMs;
         this.onRefreshFunction = onRefreshFunction;
+        this.factoryMethod = factoryMethod;
 
-        for (const item of components) {
-            this.componentMap.set(item.id, item);
+        if (components !== undefined) {
+            for (const item of components) {
+                this.componentMap.set(item.id, item);
+            }
         }
     }
 
@@ -30,7 +33,11 @@ class Status {
                     const content = JSON.parse(request.responseText);
                     for (const [type, items] of Object.entries(content)) {
                         for (const item of items) {
-                            const c = this.componentMap.get(item.id);
+                            let c = this.componentMap.get(item.id);
+                            if (c === undefined && this.factoryMethod !== undefined) {
+                                c = this.factoryMethod(item.id);
+                                this.componentMap.set(item.id, c)
+                            }
                             if (c !== undefined) {
                                 c.update(item);
                             }

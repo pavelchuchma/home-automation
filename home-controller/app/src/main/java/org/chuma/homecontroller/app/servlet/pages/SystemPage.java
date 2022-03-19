@@ -24,16 +24,14 @@ public class SystemPage extends AbstractPage {
     private final HashMap<NodeInfo, NodeTestRunner> testRunners;
     final NodeInfoRegistry nodeInfoRegistry;
 
-    public SystemPage(NodeInfoRegistry nodeInfoRegistry) {
-        super("/system", "System", "System", "favicon.png");
+    public SystemPage(NodeInfoRegistry nodeInfoRegistry, Iterable<Page> links) {
+        super("/system", "System", "System", "favicon.png", links);
         this.nodeInfoRegistry = nodeInfoRegistry;
         this.testRunners = new HashMap<>();
     }
 
     public String getContent(int debugNodeId) {
         StringBuilder builder = beginHtlDocument();
-        builder.append("<a href='").append(getRootPath())
-                .append("'>Refresh</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href='/'>Back</a>\n");
 
         builder.append("<br/><br/><table class='systemTable'><tr>");
 

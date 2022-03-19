@@ -5,8 +5,8 @@ import org.chuma.homecontroller.controller.controller.LouversController;
 public class LouversPage extends AbstractPage {
     final LouversController[] louversControllers;
 
-    public LouversPage(LouversController[] louversControllers) {
-        super("/louvers", "Žaluzie", "Žaluzie", "favicon.png");
+    public LouversPage(LouversController[] louversControllers, Iterable<Page> links) {
+        super("/louvers", "Žaluzie", "Žaluzie", "favicon.png", links);
         this.louversControllers = louversControllers;
     }
 
@@ -29,8 +29,6 @@ public class LouversPage extends AbstractPage {
 
     @Override
     public void appendContent(StringBuilder builder) {
-        builder.append("<a href='/'>Back</a>\n");
-
         for (int i = 0; i < louversControllers.length; i += 4) {
             int count = (i + 8 < louversControllers.length) ? 4 : louversControllers.length - i;
             builder.append(getLouversTable(i, count));
