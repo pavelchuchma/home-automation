@@ -6,6 +6,10 @@ td.pingLate {
     color: red;
 }
 
+th {
+    text-align: left;
+}
+
 td.messageLog {
     font-size: smaller;
     border-top-style: dashed;
