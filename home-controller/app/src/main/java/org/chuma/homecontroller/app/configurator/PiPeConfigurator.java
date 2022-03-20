@@ -96,9 +96,4 @@ public class PiPeConfigurator extends AbstractConfigurator {
 //        Servlet.setLightActions(lightsActions.toArray(new Action[lightsActions.size()]));
 //        Servlet.pirStatusList = pirStatusList;
     }
-
-    @Override
-    public String getConfigurationJs() {
-        return "configuration-pipe.js";
-    }
 }

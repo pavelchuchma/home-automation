@@ -64,9 +64,4 @@ public class MartinConfigurator extends AbstractConfigurator {
 //        Servlet.setLightActions(lightsActions.toArray(new Action[lightsActions.size()]));
 //        Servlet.pirStatusList = pirStatusList;
     }
-
-    @Override
-    public String getConfigurationJs() {
-        return "configuration-martin.js";
-    }
 }

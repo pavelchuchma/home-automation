@@ -34,7 +34,7 @@ public class NodeInfoPage extends AbstractPage {
                 "status.js",
                 "items/baseItem.js",
                 "items/nodeInfoItem.js",
-                "configuration-pi.js",
+                VIRTUAL_CONFIGURATION_JS_FILENAME,
                 "nodeInfo.js"
         };
     }

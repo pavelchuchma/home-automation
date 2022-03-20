@@ -16,14 +16,12 @@ import org.chuma.homecontroller.app.servlet.pages.StaticPage;
 public class Servlet extends AbstractHandler {
     public static DecimalFormat currentValueFormatter = new DecimalFormat("###.##");
     static Logger log = LoggerFactory.getLogger(Servlet.class.getName());
-    final String configurationJs;
     final private Iterable<Handler> handlers;
     final private String defaultPath;
 
-    public Servlet(Iterable<Handler> handlers, String defaultPage, String configurationJs) {
+    public Servlet(Iterable<Handler> handlers, String defaultPage) {
         this.handlers = handlers;
         this.defaultPath = defaultPage;
-        this.configurationJs = configurationJs;
     }
 
     public static void startServer(Servlet servlet) throws Exception {

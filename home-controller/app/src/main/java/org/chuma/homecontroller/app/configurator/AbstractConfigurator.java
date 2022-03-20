@@ -131,8 +131,6 @@ public abstract class AbstractConfigurator {
         return pwmActorMap.values();
     }
 
-    public abstract String getConfigurationJs();
-
     public Servlet getServlet() {
         return servlet;
     }

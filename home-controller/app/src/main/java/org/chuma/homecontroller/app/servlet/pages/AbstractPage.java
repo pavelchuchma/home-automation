@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.eclipse.jetty.server.Request;
 
 public abstract class AbstractPage implements Page {
+    public static final String VIRTUAL_CONFIGURATION_JS_FILENAME = "configuration.js";
     final String path;
     final String title;
     final String linkTitle;
@@ -46,19 +47,12 @@ public abstract class AbstractPage implements Page {
         return new String[]{};
     }
 
-    int getRefreshInterval() {
-        return -1;
-    }
-
     StringBuilder beginHtlDocument() {
         StringBuilder builder = new StringBuilder();
         builder.append("<!DOCTYPE html>\n" +
                 "<html>\n" +
                 "<head>\n" +
                 "    <meta charset='UTF-8'>\n");
-        if (getRefreshInterval() > 0) {
-            builder.append("    <meta http-equiv='refresh' content='").append(getRefreshInterval()).append(";url=").append(getPath()).append("'/>\n");
-        }
         builder.append("    <title>").append(getTitle()).append("</title>\n" +
                 "    <link href='").append(getFavicon()).append("' rel='icon' type='image/png'>\n");
         for (String stylesheet : getStylesheets()) {

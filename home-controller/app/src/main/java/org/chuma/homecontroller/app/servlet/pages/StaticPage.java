@@ -17,7 +17,7 @@ public class StaticPage implements Page {
     final String linkTitle;
 
     public StaticPage(String path, String resourcePath, String linkTitle) {
-        this.path = path;
+        this.path = (path.startsWith("/")) ? path : '/' + path;
         this.linkTitle = linkTitle;
         this.resourcePath = resourcePath;
     }

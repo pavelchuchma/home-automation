@@ -1,5 +1,5 @@
 #TODO
-* [ ] virtualize `configuration-pi.js' instead of string replace in servlet
+* [x] virtualize `configuration-pi.js' instead of string replace in servlet
 * [x] refactor lights page
 * [x] **BUG:** Broken stylesheets on http://pi/lights, louvers
 * [x] refactor louvers page

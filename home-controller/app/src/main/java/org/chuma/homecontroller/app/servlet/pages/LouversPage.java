@@ -22,7 +22,7 @@ public class LouversPage extends AbstractPage {
                 "status.js",
                 "items/baseItem.js",
                 "items/louversItem.js",
-                "configuration-pi.js",
+                VIRTUAL_CONFIGURATION_JS_FILENAME,
                 "louvers.js"
         };
     }

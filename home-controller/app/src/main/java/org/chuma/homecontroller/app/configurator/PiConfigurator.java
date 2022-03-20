@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static org.chuma.homecontroller.app.servlet.pages.AbstractPage.VIRTUAL_CONFIGURATION_JS_FILENAME;
 
 import org.chuma.homecontroller.app.servlet.Handler;
 import org.chuma.homecontroller.app.servlet.Servlet;
@@ -772,10 +773,11 @@ public class PiConfigurator extends AbstractConfigurator {
                 new HvacHandler(Collections.singleton(hvacActor)));
         // rest/all handler
         List<Handler> handlers = new ArrayList<>(pages);
+        handlers.add(new StaticPage(VIRTUAL_CONFIGURATION_JS_FILENAME, "/configuration-pi.js", null));
         handlers.add(new NodeHandler(nodeInfoRegistry));
         handlers.addAll(deviceRestHandlers);
         handlers.add(new AllStatusHandler(deviceRestHandlers));
-        servlet = new Servlet(handlers, floorsPage.getPath(), getConfigurationJs());
+        servlet = new Servlet(handlers, floorsPage.getPath());
 
 //        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);
 //        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));
@@ -790,10 +792,5 @@ public class PiConfigurator extends AbstractConfigurator {
             return null;
         }
         return hvacDevice;
-    }
-
-    @Override
-    public String getConfigurationJs() {
-        return "configuration-pi.js";
     }
 }
