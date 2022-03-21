@@ -3,27 +3,66 @@ package org.chuma.homecontroller.base.packet;
 import java.io.IOException;
 
 public interface IPacketUartIO {
+    /**
+     * Register listener for any message received.
+     */
     void addReceivedPacketListener(PacketUartIO.PacketReceivedListener listener);
 
+    /**
+     * Register listener for specific message type received from given node. There can be only one such listener registered
+     * for particular combination of {@code nodeId} and {@code messageType}.
+     *
+     * @param nodeId node ID to receive message from
+     * @param messageType message type to receive or -1 for any
+     */
     void addSpecificReceivedPacketListener(PacketUartIO.PacketReceivedListener listener, int nodeId, int messageType);
 
+    /**
+     * Register listener called after the message was successfully sent.
+     */
     void addSentPacketListener(PacketUartIO.PacketSentListener listener);
 
+    /**
+     * Send packet.
+     */
     void send(Packet packet) throws IOException;
 
+    /**
+     * Send packet and wait for response of given type. Uses {@link #addSpecificReceivedPacketListener(PacketReceivedListener, int, int)}
+     * to handle the response so it will discard any listener already registered for packet node ID and {@code responseType}.
+     *
+     * @return received response or null if not received within timeout
+     */
     Packet send(Packet packet, int responseType, int timeout) throws IOException;
 
+    /**
+     * Start to receive and process messages.
+     */
     void start();
 
+    /**
+     * Stop processing.
+     */
     void close();
 
-    // Listener interface
+    /**
+     * Listener called for received message.
+     */
     public interface PacketReceivedListener {
+        /**
+         * Called when message was received.
+         */
         void packetReceived(Packet packet);
 
+        /**
+         * Called when listener was registered in {@link PacketUartIO}.
+         */
         void notifyRegistered(PacketUartIO packetUartIO);
     }
 
+    /**
+     * Listener called after message was successfully sent.
+     */
     public interface PacketSentListener {
         void packetSent(Packet packet);
     }

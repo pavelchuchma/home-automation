@@ -6,6 +6,10 @@ import org.apache.commons.lang3.Validate;
 
 import org.chuma.homecontroller.base.node.MessageType;
 
+/**
+ * Packet represent single message. It's properties include source/target node ID,
+ * message type and data, at most five bytes.
+ */
 public class Packet {
     public static final int MAX_PWM_VALUE = 48;
 

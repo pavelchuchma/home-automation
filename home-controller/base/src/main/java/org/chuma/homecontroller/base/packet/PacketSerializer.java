@@ -9,6 +9,22 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Serialize and deserialize packet (message) to/from the stream. The serialized message format is as follows:
+ *
+ * <ul>
+ *   <li>byte - node ID
+ *   <li>byte - message type
+ *   <li>0..5 bytes - data
+ *   <li>byte - highest bits byte
+ *   <li>CRC
+ * </ul>
+ *
+ * All bytes except CRC have highest bit set, CRC has highest bit cleared. So any byte with cleated highest
+ * bit indicated last byte in message. The highest bits from message bytes are stored in "highest bits byte" -
+ * the last but one byte of the message. Here the bit 0 is highest bit of the first byte (offset 0), bit 1
+ * corresponds to second byte (offset 1), etc. CRC is calculated as sum of all bytes except CRC.
+ */
 public class PacketSerializer {
     static Logger log = LoggerFactory.getLogger(PacketSerializer.class.getName());
     static Logger msgLog = LoggerFactory.getLogger(PacketUartIO.class.getName() + ".msg");
@@ -51,6 +67,9 @@ public class PacketSerializer {
         return null;
     }
 
+    /**
+     * Deserialize single packet from input stream.
+     */
     public Packet readPacket(InputStream inputStream) throws IOException {
         try {
             while (true) {
@@ -71,6 +90,9 @@ public class PacketSerializer {
     }
 
     synchronized public void writePacket(Packet packet, OutputStream outputStream) throws IOException {
+    /**
+     * Serialize packet to output stream.
+     */
         byte[] buff = new byte[packet.length + 2];
         buff[0] = (byte) packet.nodeId;
         buff[1] = (byte) packet.messageType;
