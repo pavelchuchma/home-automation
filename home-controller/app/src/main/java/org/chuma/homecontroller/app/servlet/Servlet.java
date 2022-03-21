@@ -26,7 +26,7 @@ public class Servlet extends AbstractHandler {
 
     public static void startServer(Servlet servlet) throws Exception {
         log.info("Starting web server");
-        Server server = new Server(80);
+        Server server = new Server(Integer.parseInt(System.getProperty("servlet.port", "80")));
         server.setHandler(servlet);
 
         server.start();
