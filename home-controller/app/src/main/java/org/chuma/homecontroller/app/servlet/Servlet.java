@@ -25,6 +25,9 @@ public class Servlet extends AbstractHandler {
     }
 
     public static void startServer(Servlet servlet) throws Exception {
+        if (servlet == null) {
+            throw new IllegalArgumentException("servlet is null");
+        }
         log.info("Starting web server");
         Server server = new Server(Integer.parseInt(System.getProperty("servlet.port", "80")));
         server.setHandler(servlet);
@@ -34,6 +37,7 @@ public class Servlet extends AbstractHandler {
         server.join();
     }
 
+    @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request,
                        HttpServletResponse response) throws IOException {
         try {
