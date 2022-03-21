@@ -3,7 +3,6 @@ package org.chuma.homecontroller.base.packet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,9 +30,8 @@ public class PacketUartIO implements IPacketUartIO {
     boolean closed = false;
 
     public PacketUartIO(String portName, int baudRate) throws PacketUartIOException {
-        log.debug("Creating '" + portName + "' @" + baudRate + " bauds...");
-        //noinspection rawtypes
-        Enumeration portList = CommPortIdentifier.getPortIdentifiers();
+        log.debug("Creating '{}' @{} bauds...", portName, baudRate);
+        Enumeration<?> portList = CommPortIdentifier.getPortIdentifiers();
 
         while (portList.hasMoreElements()) {
             CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
@@ -121,7 +119,7 @@ public class PacketUartIO implements IPacketUartIO {
 
     @Override
     public void addReceivedPacketListener(PacketReceivedListener listener) {
-        log.debug("addReceivedPacketListener: " + listener);
+        log.debug("addReceivedPacketListener: {}", listener);
         // create a new copy to be thread safe
         List<PacketReceivedListener> tmp = new ArrayList<>(receivedListeners);
         tmp.add(listener);
@@ -133,14 +131,14 @@ public class PacketUartIO implements IPacketUartIO {
     @Override
     public void addSpecificReceivedPacketListener(PacketReceivedListener listener, int nodeId, int messageType) {
         String key = createSpecificListenerKey(nodeId, messageType);
-        log.debug("addSpecificReceivedPacketListener: " + listener + " for " + key);
+        log.debug("addSpecificReceivedPacketListener: {} for {}", listener, key);
         specificReceivedListeners.put(key, listener);
         listener.notifyRegistered(this);
     }
 
     @Override
     public void addSentPacketListener(PacketSentListener listener) {
-        log.debug("addSentPacketListener: " + listener);
+        log.debug("addSentPacketListener: {}", listener);
         sentListeners.add(listener);
     }
 
@@ -150,8 +148,8 @@ public class PacketUartIO implements IPacketUartIO {
 
     @Override
     public void send(Packet packet) throws IOException {
-        msgLog.debug(" < " + packet);
-        packetSerializer.writePacket(packet, serialPort.getOutputStream());
+        msgLog.debug(" < {}", packet);
+        PacketSerializer.writePacket(packet, serialPort.getOutputStream());
         for (PacketSentListener listener : sentListeners) {
             listener.packetSent(packet);
         }
@@ -159,17 +157,17 @@ public class PacketUartIO implements IPacketUartIO {
 
     @Override
     public Packet send(Packet packet, int responseType, int timeout) throws IOException {
-        log.debug("send(" + packet + ", " + MessageType.toString(responseType) + ")");
+        log.debug("send({}, {})", packet, MessageType.toString(responseType));
         ResponseWrapper responseWrapper = new ResponseWrapper(packet.nodeId, responseType);
-        long begin = new Date().getTime();
+        long begin = System.currentTimeMillis();
         send(packet);
 
         // hack to force output write
 //        send(Packet.createMsgEchoRequest(49, 1, 2));
 
         Packet response = responseWrapper.waitForResponse(timeout);
-        log.debug("resp (in " + (new Date().getTime() - begin) + " of " + timeout + "ms) " + response);
-        if (response == null) log.error("No response for " + packet + ", " + MessageType.toString(responseType) + ")");
+        log.debug("resp (in {} of {}ms) {}", (System.currentTimeMillis() - begin), timeout, response);
+        if (response == null) log.error("No response for {}, {}", packet, MessageType.toString(responseType));
         return response;
     }
 

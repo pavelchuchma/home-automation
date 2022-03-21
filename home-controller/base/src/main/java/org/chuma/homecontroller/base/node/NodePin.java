@@ -1,7 +1,7 @@
 package org.chuma.homecontroller.base.node;
 
 public class NodePin {
-    String id;
+    private String id;
     private final Node node;
     private final Pin pin;
 

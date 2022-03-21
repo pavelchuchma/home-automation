@@ -29,7 +29,7 @@ public class PacketSerializer {
     static Logger log = LoggerFactory.getLogger(PacketSerializer.class.getName());
     static Logger msgLog = LoggerFactory.getLogger(PacketUartIO.class.getName() + ".msg");
 
-    List<Integer> buff = new ArrayList<Integer>();
+    private List<Integer> buff = new ArrayList<Integer>();
 
     private void reset() {
         buff.clear();
@@ -89,10 +89,10 @@ public class PacketSerializer {
         }
     }
 
-    synchronized public void writePacket(Packet packet, OutputStream outputStream) throws IOException {
     /**
      * Serialize packet to output stream.
      */
+    synchronized public static void writePacket(Packet packet, OutputStream outputStream) throws IOException {
         byte[] buff = new byte[packet.length + 2];
         buff[0] = (byte) packet.nodeId;
         buff[1] = (byte) packet.messageType;
