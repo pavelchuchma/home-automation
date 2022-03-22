@@ -23,7 +23,7 @@ public class MessageType {
     public static final byte MSG_UartTransmitPerfTestMessage = 40; //packetNumber, byte incremented by 1 from firstByte in first packet
     public static final byte MSG_ReadRamRequest = 41; //MsgReadRamRequest
     public static final byte MSG_ReadRamResponse = 42; //1 byte
-    public static final byte MSG_WriteRamRequest = 43; //MsgWriteRamRequest, response is MSG_ReadRamResponse
+    public static final byte MSG_WriteRamRequest = 43; //MsgWriteRamRequest, response is MSG_WriteRamResponse
     public static final byte MSG_WriteRamResponse = 44; //2 bytes (original and new value)
     public static final byte MSG_OnDebug = 45; //
     public static final byte MSG_GetBuildTimeRequest = 47; // no data

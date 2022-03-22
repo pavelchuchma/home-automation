@@ -52,7 +52,7 @@ enum Commands {
     MSG_UartTransmitPerfTestMessage = 40, //packetNumber, byte incremented by 1 from firstByte in first packet
     MSG_ReadRamRequest = 41, //MsgReadRamRequest
     MSG_ReadRamResponse = 42, //1 byte
-    MSG_WriteRamRequest = 43, //MsgWriteRamRequest, response is MSG_ReadRamResponse
+    MSG_WriteRamRequest = 43, //MsgWriteRamRequest, response is MSG_WriteRamResponse
     MSG_WriteRamResponse = 44, //2 bytes (original and new value)
     MSG_OnDebug = 45, //
     MSG_GetBuildTimeRequest = 47, // no data
