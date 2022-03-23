@@ -38,7 +38,7 @@ public interface IPacketUartIO {
     /**
      * Start to receive and process messages.
      */
-    void start();
+    void start() throws IOException;
 
     /**
      * Stop processing.

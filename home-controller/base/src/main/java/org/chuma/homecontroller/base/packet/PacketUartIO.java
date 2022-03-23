@@ -2,10 +2,10 @@ package org.chuma.homecontroller.base.packet;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,16 +18,15 @@ import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.base.node.MessageType;
 
 public class PacketUartIO implements IPacketUartIO {
-    static Logger log = LoggerFactory.getLogger(PacketUartIO.class.getName());
-    static Logger msgLog = LoggerFactory.getLogger(PacketUartIO.class.getName() + ".msg");
-    protected List<PacketReceivedListener> receivedListeners = new ArrayList<>();
-    protected ConcurrentHashMap<String, PacketReceivedListener> specificReceivedListeners = new ConcurrentHashMap<>();
-    protected List<PacketSentListener> sentListeners = new ArrayList<>();
-    SerialPort serialPort;
-    InputStream inputStream;
-    PacketSerializer packetSerializer = new PacketSerializer();
-    ExecutorService threadPool = Executors.newFixedThreadPool(40);
-    boolean closed = false;
+    private static Logger log = LoggerFactory.getLogger(PacketUartIO.class.getName());
+    private static Logger msgLog = LoggerFactory.getLogger(PacketUartIO.class.getName() + ".msg");
+
+    private Collection<PacketReceivedListener> receivedListeners = new ConcurrentLinkedQueue<>();
+    private ConcurrentHashMap<String, PacketReceivedListener> specificReceivedListeners = new ConcurrentHashMap<>();
+    private Collection<PacketSentListener> sentListeners = new ConcurrentLinkedQueue<>();
+    private SerialPort serialPort;
+    private ExecutorService threadPool = Executors.newFixedThreadPool(40);
+    private boolean closed = false;
 
     public PacketUartIO(String portName, int baudRate) throws PacketUartIOException {
         log.debug("Creating '{}' @{} bauds...", portName, baudRate);
@@ -39,7 +38,6 @@ public class PacketUartIO implements IPacketUartIO {
                 if (portId.getName().equals(portName)) {
                     try {
                         serialPort = (SerialPort) portId.open("SimpleReadApp", 2000);
-                        inputStream = serialPort.getInputStream();
                         serialPort.notifyOnDataAvailable(false);
                         serialPort.setSerialPortParams(baudRate,
                                 SerialPort.DATABITS_8,
@@ -59,9 +57,11 @@ public class PacketUartIO implements IPacketUartIO {
         throw new PacketUartIOException(new NoSuchPortException());
     }
 
-    public void start() {
+    public void start() throws IOException {
+        InputStream inputStream = serialPort.getInputStream();
         new Thread(() -> {
             log.debug("Starting read com thread");
+            PacketSerializer packetSerializer = new PacketSerializer();
             while (!closed) {
                 try {
                     Packet receivedPacket = packetSerializer.readPacket(inputStream);
@@ -120,11 +120,7 @@ public class PacketUartIO implements IPacketUartIO {
     @Override
     public void addReceivedPacketListener(PacketReceivedListener listener) {
         log.debug("addReceivedPacketListener: {}", listener);
-        // create a new copy to be thread safe
-        List<PacketReceivedListener> tmp = new ArrayList<>(receivedListeners);
-        tmp.add(listener);
-
-        receivedListeners = tmp;
+        receivedListeners.add(listener);
         listener.notifyRegistered(this);
     }
 
@@ -148,8 +144,10 @@ public class PacketUartIO implements IPacketUartIO {
 
     @Override
     public void send(Packet packet) throws IOException {
-        msgLog.debug(" < {}", packet);
-        PacketSerializer.writePacket(packet, serialPort.getOutputStream());
+        synchronized (this) {
+            msgLog.debug(" < {}", packet);
+            PacketSerializer.writePacket(packet, serialPort.getOutputStream());
+        }
         for (PacketSentListener listener : sentListeners) {
             listener.packetSent(packet);
         }

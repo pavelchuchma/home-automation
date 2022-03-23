@@ -43,7 +43,7 @@ public class PacketSerializerTest {
             packetSerializer.readPacket(completeStream);
             Assert.fail();
         } catch (IOException e) {
-            Assert.assertTrue(e.getMessage().startsWith("CRC Failed: "));
+            Assert.assertTrue(e.getMessage().startsWith("CRC FAILED: "));
         }
 
         try {

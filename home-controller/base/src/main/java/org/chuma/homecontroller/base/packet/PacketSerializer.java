@@ -92,7 +92,7 @@ public class PacketSerializer {
     /**
      * Serialize packet to output stream.
      */
-    synchronized public static void writePacket(Packet packet, OutputStream outputStream) throws IOException {
+    public static void writePacket(Packet packet, OutputStream outputStream) throws IOException {
         byte[] buff = new byte[packet.length + 2];
         buff[0] = (byte) packet.nodeId;
         buff[1] = (byte) packet.messageType;
