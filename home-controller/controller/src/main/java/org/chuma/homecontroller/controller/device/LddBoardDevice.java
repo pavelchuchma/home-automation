@@ -5,7 +5,6 @@ import static java.lang.Math.round;
 import org.chuma.homecontroller.base.node.CpuFrequency;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.NodePin;
-import org.chuma.homecontroller.base.node.Pin;
 
 public class LddBoardDevice extends AbstractConnectedDevice {
     private static final String[] PIN_NAMES = new String[]{"ldd6", "ldd5", "ldd4", "ldd3", "ldd2", "ldd1"};
@@ -53,7 +52,7 @@ public class LddBoardDevice extends AbstractConnectedDevice {
 
     @Override
     public int getOutputMasks() {
-        return createMask(new Pin[]{pins[0].getPin(), pins[1].getPin(), pins[2].getPin(), pins[3].getPin(), pins[4].getPin(), pins[5].getPin()});
+        return createMask(pins);
     }
 
     @Override

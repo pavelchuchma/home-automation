@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,19 +16,20 @@ import org.chuma.homecontroller.base.packet.IPacketUartIO;
 import org.chuma.homecontroller.base.packet.Packet;
 import org.chuma.homecontroller.base.packet.PacketUartIO;
 
-
 public class Node implements PacketUartIO.PacketReceivedListener {
     public static final int HEART_BEAT_PERIOD = 60;
     public static final int SET_PORT_TIMEOUT = 100;
     public static final int GET_BUILD_TIME_TIMEOUT = 500;
+    public static final int RESPONSE_TIMEOUT = 300;
     private static final Object typeInitializationLock = new Object();
-    static Logger log = LoggerFactory.getLogger(Node.class.getName());
-    protected List<Listener> listeners = new ArrayList<>();
-    protected long[] downTimes = new long[32];
-    int nodeId;
-    String name;
-    IPacketUartIO packetUartIO;
-    List<ConnectedDevice> devices = new ArrayList<>(3);
+    private static Logger log = LoggerFactory.getLogger(Node.class.getName());
+
+    private final Queue<Listener> listeners = new ConcurrentLinkedQueue<>();
+    private long[] lastChangeTimes = new long[32];
+    private final int nodeId;
+    private final String name;
+    private final IPacketUartIO packetUartIO;
+    private final List<ConnectedDevice> devices = new ArrayList<>(3);
 
     public Node(int nodeId, IPacketUartIO packetUartIO) {
         this(nodeId, "unknown" + nodeId, packetUartIO);
@@ -36,6 +39,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         this.nodeId = nodeId;
         this.name = name;
         this.packetUartIO = packetUartIO;
+        // Register itself to receive messages from corresponding HW node
         packetUartIO.addSpecificReceivedPacketListener(this, nodeId, -1);
     }
 
@@ -44,17 +48,21 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return "0b" + bin.substring(bin.length() - 8);
     }
 
-    public static String pinToString(int pin) {
-        return Character.toString((char) ('A' + pin / 8)) + pin % 8;
-    }
-
     private static String registerToString(int address, int value) {
         return Pic.toString(address) + "=" + value + " (" + asBinary(value) + ")";
     }
 
     public void addListener(Listener listener) {
-        log.debug("addListener: " + listener);
+        log.debug("addListener: {}", listener);
         listeners.add(listener);
+    }
+
+    public List<ConnectedDevice> getDevices() {
+        return new ArrayList<>(devices);
+    }
+
+    public void removeDevices() {
+        devices.clear();
     }
 
     public void addDevice(ConnectedDevice device) {
@@ -63,10 +71,12 @@ public class Node implements PacketUartIO.PacketReceivedListener {
                 throw new IllegalArgumentException(String.format("Cannot add device %s on connector position %d because" +
                         " it is already used by %s", device, device.getConnectorNumber(), d));
             }
+            // TODO: Check that device masks don't overlap - each device has distinct set of pins
         }
         devices.add(device);
     }
 
+    @Override
     public String toString() {
         return String.format("Node%d[%s]", nodeId, name);
     }
@@ -79,55 +89,53 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return name;
     }
 
-    @SuppressWarnings("SameParameterValue")
-    synchronized int echo(int dataLength) throws IOException {
-        log.debug("echo (" + dataLength + ")");
+    public synchronized int echo(int dataLength) throws IOException {
+        log.debug("echo ({})", dataLength);
         Packet req = Packet.createMsgEchoRequest(nodeId, dataLength);
-        Packet response = packetUartIO.send(req, MessageType.MSG_EchoResponse, 300);
+        Packet response = packetUartIO.send(req, MessageType.MSG_EchoResponse, RESPONSE_TIMEOUT);
         if (response == null) return -1;
 
-        log.debug("  < " + response);
+        // TODO: Some check that data is correct?
+        log.debug("  < {}", response);
         return 0;
     }
 
-    synchronized public int readMemory(int address) throws IOException {
-        log.debug("readMemory: " + Pic.toString(address));
+    public synchronized int readMemory(int address) throws IOException {
+        log.debug("readMemory: {}", Pic.toString(address));
         Packet req = Packet.createMsgReadRamRequest(nodeId, address);
-        Packet response = packetUartIO.send(req, MessageType.MSG_ReadRamResponse, 300);
+        Packet response = packetUartIO.send(req, MessageType.MSG_ReadRamResponse, RESPONSE_TIMEOUT);
         if (response == null) return -1;
 
-        log.debug("  < " + registerToString(address, response.data[0]));
+        log.debug("  < {}", registerToString(address, response.data[0]));
         return response.data[0];
     }
 
-    @SuppressWarnings("unused")
-    synchronized int writeMemory(int address, int mask, int value) throws IOException {
-        log.debug("writeMemory: " + Pic.toString(address) + "(&" + Integer.toBinaryString(mask) + ")=" + value);
+    public synchronized int writeMemory(int address, int mask, int value) throws IOException {
+        log.debug("writeMemory: {}(&{})={}", Pic.toString(address), Integer.toBinaryString(mask), value);
         Packet req = Packet.createMsgWriteRamRequest(nodeId, address, mask, value);
-        Packet response = packetUartIO.send(req, MessageType.MSG_WriteRamResponse, 300);
+        Packet response = packetUartIO.send(req, MessageType.MSG_WriteRamResponse, RESPONSE_TIMEOUT);
         if (response == null) return -1;
 
-        log.debug("  < " + registerToString(address, response.data[0]));
+        log.debug("  < {}", registerToString(address, response.data[0]));
         return response.data[0];
     }
 
     public Date getBuildTime() throws IOException {
         log.debug("getBuildTime");
         Packet response = packetUartIO.send(Packet.createMsgGetBuildTime(nodeId), MessageType.MSG_GetBuildTimeResponse, GET_BUILD_TIME_TIMEOUT);
-        log.debug("getBuildTime -> " + response);
+        log.debug("getBuildTime -> {}", response);
         return (response != null) ?
                 new GregorianCalendar(response.data[0] + 2000, response.data[1] - 1, response.data[2], response.data[3], response.data[4]).getTime()
                 : null;
     }
 
-    public char echo(int a, int b) throws IOException {
+    public int echo(int a, int b) throws IOException {
         log.debug("echo");
-        Packet response = packetUartIO.send(Packet.createMsgEchoRequest(nodeId, a, b), MessageType.MSG_EchoResponse, 300);
-        log.debug("echo -> " + response);
-        return (char) ((response != null) ? response.data[1] : 0);
+        Packet response = packetUartIO.send(Packet.createMsgEchoRequest(nodeId, a, b), MessageType.MSG_EchoResponse, RESPONSE_TIMEOUT);
+        log.debug("echo -> {}", response);
+        return ((response != null) ? response.data[1] : -1);
     }
 
-    @SuppressWarnings("SameParameterValue")
     void setPortValueNoWait(char port, int valueMask, int value) throws IOException {
         log.debug("setPortValueNoWait");
         packetUartIO.send(Packet.createMsgSetPort(nodeId, port, valueMask, value, -1, -1));
@@ -170,10 +178,10 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     synchronized boolean enablePwm(int cpuFrequency, int canBaudRatePrescaler, int value) throws IOException {
         log.debug("enablePwm");
         Packet req = Packet.createMsgEnablePwmRequest(nodeId, cpuFrequency, canBaudRatePrescaler, value);
-        Packet response = packetUartIO.send(req, MessageType.MSG_EnablePwmResponse, 300);
+        Packet response = packetUartIO.send(req, MessageType.MSG_EnablePwmResponse, RESPONSE_TIMEOUT);
         if (response == null) return false;
 
-        log.debug("  < " + response);
+        log.debug("  < {}", response);
         return true;
     }
 
@@ -189,19 +197,19 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return packetUartIO.send(req, MessageType.MSG_SetManualPwmValueResponse, SET_PORT_TIMEOUT);
     }
 
-    synchronized public void setInitializationFinished() throws IOException {
+    public synchronized void setInitializationFinished() throws IOException {
         log.debug("setInitializationFinished");
         Packet req = Packet.createMsgInitializationFinished(nodeId);
         packetUartIO.send(req);
     }
 
-    synchronized public void setHeartBeatPeriod(int seconds) throws IOException {
+    public synchronized void setHeartBeatPeriod(int seconds) throws IOException {
         log.debug("setHeartBeatPeriod");
         Packet req = Packet.createMsgSetHeartBeatPeriod(nodeId, seconds);
         packetUartIO.send(req);
     }
 
-    synchronized public boolean setFrequency(CpuFrequency cpuFrequency) throws IOException {
+    public synchronized boolean setFrequency(CpuFrequency cpuFrequency) throws IOException {
         log.debug("setFrequency");
         if (cpuFrequency == CpuFrequency.unknown)
             throw new IllegalArgumentException("Unsupported frequency value: " + cpuFrequency);
@@ -209,7 +217,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         Packet response = packetUartIO.send(req, MessageType.MSG_SetFrequencyResponse, SET_PORT_TIMEOUT);
         if (response == null) return false;
 
-        log.debug("  < " + response);
+        log.debug("  < {}", response);
         return true;
     }
 
@@ -222,8 +230,8 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         }
     }
 
-    public void packetReceivedImpl(Packet packet) throws IOException {
-        log.debug("packetReceived: " + packet);
+    private void packetReceivedImpl(Packet packet) throws IOException {
+        log.debug("packetReceived: {}", packet);
         if (packet.nodeId != nodeId) throw new RuntimeException("Bad handler " + packet.nodeId + "!=" + nodeId);
 
         // on pin change
@@ -239,20 +247,20 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
                     // compute downTime (-1 for first case)
                     long now = new Date().getTime();
-                    long downTime = (downTimes[pin.ordinal()] > 0) ? now - downTimes[pin.ordinal()] : -1;
-                    downTimes[pin.ordinal()] = now;
+                    long timeSinceChange = (lastChangeTimes[pin.ordinal()] > 0) ? now - lastChangeTimes[pin.ordinal()] : -1;
+                    lastChangeTimes[pin.ordinal()] = now;
 
                     if ((pinMask & eventValue) != 0) {
                         //button UP
-                        log.info("button '" + pin + "' UP (" + downTime + "ms)");
+                        log.info("button '{}' UP ({}ms)", pin, timeSinceChange);
                         for (Listener listener : listeners) {
-                            listener.onButtonUp(this, pin, (int) downTime);
+                            listener.onButtonUp(this, pin, (int) timeSinceChange);
                         }
                     } else {
                         //button DOWN
-                        log.info("button '" + pin + "' DOWN (" + downTime + "ms)");
+                        log.info("button '{}' DOWN ({}ms)", pin, timeSinceChange);
                         for (Listener listener : listeners) {
-                            listener.onButtonDown(this, pin, (int) downTime);
+                            listener.onButtonDown(this, pin, (int) timeSinceChange);
                         }
                     }
                 }
@@ -274,14 +282,6 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     @Override
     public void notifyRegistered(PacketUartIO packetUartIO) {
 
-    }
-
-    public List<ConnectedDevice> getDevices() {
-        return new ArrayList<>(devices);
-    }
-
-    public void removeDevices() {
-        devices.clear();
     }
 
     public void initialize() {

@@ -12,6 +12,7 @@ import org.chuma.homecontroller.base.node.MessageType;
  */
 public class Packet {
     public static final int MAX_PWM_VALUE = 48;
+    private static final int[] ECHO_DATA = new int[]{'A', 'B', 'C', 'D', 'E'};
 
     public final int nodeId;
     public final int messageType;
@@ -39,7 +40,7 @@ public class Packet {
     }
 
     public static Packet createMsgEchoRequest(int nodeId, int dataLen) {
-        return new Packet(nodeId, MessageType.MSG_EchoRequest, Arrays.copyOf(new int[]{'A', 'B', 'C', 'D', 'E'}, dataLen));
+        return new Packet(nodeId, MessageType.MSG_EchoRequest, Arrays.copyOf(ECHO_DATA, dataLen));
     }
 
     public static Packet createMsgEchoRequest(int nodeId, int a, int b) {

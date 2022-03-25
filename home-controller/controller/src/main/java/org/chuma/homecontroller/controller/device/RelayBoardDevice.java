@@ -2,7 +2,6 @@ package org.chuma.homecontroller.controller.device;
 
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.NodePin;
-import org.chuma.homecontroller.base.node.Pin;
 
 public class RelayBoardDevice extends AbstractConnectedDevice {
 
@@ -43,7 +42,7 @@ public class RelayBoardDevice extends AbstractConnectedDevice {
 
     @Override
     public int getOutputMasks() {
-        return createMask(new Pin[]{pins[0].getPin(), pins[1].getPin(), pins[2].getPin(), pins[3].getPin(), pins[4].getPin(), pins[5].getPin()});
+        return createMask(pins);
     }
 
     @Override

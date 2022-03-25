@@ -25,7 +25,7 @@ public class NodeTest {
         PacketUartIO packetUartIO = new PacketUartIO("COM1", 19200);
         Node node = new Node(1, packetUartIO);
 
-        log.debug("node.Node " + node.nodeId + " val: " + node.readMemory(0x43));
+        log.debug("node.Node " + node.getNodeId() + " val: " + node.readMemory(0x43));
         packetUartIO.close();
     }
 
@@ -37,7 +37,7 @@ public class NodeTest {
             Node node = new Node(i, packetUartIO);
 
             Date buildTime = node.getBuildTime();
-            log.debug("node.Node " + node.nodeId + " BuildTime: " + buildTime);
+            log.debug("node.Node " + node.getNodeId() + " BuildTime: " + buildTime);
             Assert.assertNotNull(buildTime);
         }
         packetUartIO.close();

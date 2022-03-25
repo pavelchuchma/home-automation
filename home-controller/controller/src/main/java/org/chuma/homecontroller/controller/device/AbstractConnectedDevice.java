@@ -14,9 +14,9 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
             {Pin.pinB0, Pin.pinB1, Pin.pinC5, Pin.pinC4, Pin.pinC6, Pin.pinC7}
     };
     private final String id;
-    NodePin[] pins = new NodePin[6];
-    CpuFrequency requiredCpuFrequency;
-    int connectorNumber;
+    protected NodePin[] pins = new NodePin[6];
+    private CpuFrequency requiredCpuFrequency;
+    private int connectorNumber;
 
     public AbstractConnectedDevice(String id, Node node, int connectorNumber, String[] names) {
         this(id, node, connectorNumber, names, CpuFrequency.unknown);
@@ -59,10 +59,10 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
         return connectorNumber;
     }
 
-    protected int createMask(Pin[] pins) {
+    protected int createMask(NodePin ... pins) {
         int result = 0;
-        for (Pin pin : pins) {
-            result |= 1 << pin.ordinal();
+        for (NodePin pin : pins) {
+            result |= 1 << pin.getPin().ordinal();
         }
         return result;
     }

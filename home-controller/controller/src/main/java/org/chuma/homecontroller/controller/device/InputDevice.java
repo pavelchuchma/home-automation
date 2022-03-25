@@ -2,7 +2,6 @@ package org.chuma.homecontroller.controller.device;
 
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.NodePin;
-import org.chuma.homecontroller.base.node.Pin;
 
 public class InputDevice extends AbstractConnectedDevice {
     private int eventMask;
@@ -39,7 +38,7 @@ public class InputDevice extends AbstractConnectedDevice {
     }
 
     private NodePin getPinAndUpdateEventMask(int index) {
-        eventMask |= createMask(new Pin[]{pins[index].getPin()});
+        eventMask |= createMask(pins[index]);
         return pins[index];
     }
 

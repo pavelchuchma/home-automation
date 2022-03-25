@@ -2,7 +2,6 @@ package org.chuma.homecontroller.controller.device;
 
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.NodePin;
-import org.chuma.homecontroller.base.node.Pin;
 
 public class WallSwitch extends AbstractConnectedDevice {
 
@@ -57,18 +56,18 @@ public class WallSwitch extends AbstractConnectedDevice {
 
     @Override
     public int getEventMask() {
-        return createMask(new Pin[]{pins[0].getPin(), pins[1].getPin(), pins[2].getPin(), pins[3].getPin()});
+        return createMask(pins[0], pins[1], pins[2], pins[3]);
     }
 
     @Override
     public int getOutputMasks() {
-        return createMask(new Pin[]{getRedLed().getPin(), getGreenLed().getPin()});
+        return createMask(getRedLed(), getGreenLed());
     }
 
     @Override
     public int getInitialOutputValues() {
         //TODO: initialize in accord with assigned indicators
-        return createMask(new Pin[]{getGreenLed().getPin(), getRedLed().getPin()});
+        return createMask(getGreenLed(), getRedLed());
     }
 
     public enum Side {
