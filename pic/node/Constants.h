@@ -33,12 +33,12 @@ enum PortEnum {
 enum Commands {
 //Begin Commands
     MSG_SetPortResponse = 15, // data = request Command Id, value, tris (if set)
-    MSG_SetPortA = 16, //MsgSetPortRequest
+    MSG_SetPortA = 16, //MsgSetPortRequest - order is important - see Packet.createMsgSetPort()
     MSG_SetPortB = 17, //MsgSetPortRequest
     MSG_SetPortC = 18, //MsgSetPortRequest
     MSG_SetPortD = 19, //MsgSetPortRequest
     MSG_OnPortAPinChange = 20, // data[0] = changes & eventMask, data[1] = port & eventMask
-    MSG_OnPortBPinChange = 21,
+    MSG_OnPortBPinChange = 21, // Order of MSG_OnPortXPinChange is important - see Node.packetReceivedImpl()
     MSG_OnPortCPinChange = 22,
     MSG_OnPortDPinChange = 23,
     MSG_None = 32,
@@ -46,13 +46,13 @@ enum Commands {
     MSG_SetUartBaudRate = 34, //SPBRGH, SPBRG
     MSG_OnHeartBeat = 35,
     MSG_ErrorReport = 36,
-    MSG_EchoRequest = 37,
+    MSG_EchoRequest = 37, //data with up to 5 bytes
     MSG_EchoResponse = 38,
     MSG_UartTransmitPerfTestRequest = 39, //MsgUartTransmitPerfTestRequest
     MSG_UartTransmitPerfTestMessage = 40, //packetNumber, byte incremented by 1 from firstByte in first packet
     MSG_ReadRamRequest = 41, //MsgReadRamRequest
     MSG_ReadRamResponse = 42, //1 byte
-    MSG_WriteRamRequest = 43, //MsgWriteRamRequest, response is MSG_WriteRamResponse
+    MSG_WriteRamRequest = 43, //2 bytes address, mask, value
     MSG_WriteRamResponse = 44, //2 bytes (original and new value)
     MSG_OnDebug = 45, //
     MSG_GetBuildTimeRequest = 47, // no data

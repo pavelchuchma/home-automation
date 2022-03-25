@@ -1,5 +1,10 @@
 package org.chuma.homecontroller.base.node;
 
+/**
+ * Constants for individual port pins. There are four ports (A..D) with eight pins.
+ *
+ * @see Node
+ */
 public enum Pin {
     pinA0(0),
     pinA1(1),

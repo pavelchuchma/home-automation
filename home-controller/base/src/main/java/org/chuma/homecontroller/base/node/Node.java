@@ -16,6 +16,25 @@ import org.chuma.homecontroller.base.packet.IPacketUartIO;
 import org.chuma.homecontroller.base.packet.Packet;
 import org.chuma.homecontroller.base.packet.PacketUartIO;
 
+/**
+ * Represents single PIC in system. Each node has unique ID which identifies the PIC (is stored in PIC code).
+ *
+ * For details on following description see PIC18F2585/2680/4585/4680 manual, chapter 10.0 - I/O ports.
+ *
+ * PIC provides up to four ports (A..D) with 8 pins. Some pins may have several alternate functions depending
+ * on peripheral features. If the feature is enabled, the pin may not be used as general purpose I/O pin.
+ * For example pins 2 and 3 of port B are used by Controller Area Network (CAN) module. Since whole "home automation"
+ * project uses CAN for communication, these pins are unavailable.
+ *
+ * Each port has three registers for its operation:
+ * <ul>
+ * <li>TRIS - data direction register (0 - output, 1 - input)
+ * <li>PORT - input (reads the levels of the pins)
+ * <li>LAT - output
+ * </ul>
+ *
+ * Before initializing the node, you should add devices which define how PIC ports should be configured.
+ */
 public class Node implements PacketUartIO.PacketReceivedListener {
     public static final int HEART_BEAT_PERIOD = 60;
     public static final int FAST_RESPONSE_TIMEOUT = 100;
@@ -52,19 +71,31 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return Pic.toString(address) + "=" + value + " (" + asBinary(value) + ")";
     }
 
+    /**
+     * Register new listener for PIC state changes.
+     */
     public void addListener(Listener listener) {
         log.debug("addListener: {}", listener);
         listeners.add(listener);
     }
 
+    /**
+     * Get connected devices.
+     */
     public List<ConnectedDevice> getDevices() {
         return new ArrayList<>(devices);
     }
 
+    /**
+     * Remove all connected devices.
+     */
     public void removeDevices() {
         devices.clear();
     }
 
+    /**
+     * Add connected device to node. Each connected device must have unique connector number.
+     */
     public void addDevice(ConnectedDevice device) {
         for (ConnectedDevice d : devices) {
             if (d.getConnectorNumber() == device.getConnectorNumber()) {
@@ -89,6 +120,12 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return name;
     }
 
+    /**
+     * Let PIC echo given number of bytes (up to five).
+     *
+     * @param dataLength how many bytes (max is 5)
+     * @return 0 if successful or -1 if response not received within timeout
+     */
     public synchronized int echo(int dataLength) throws IOException {
         log.debug("echo ({})", dataLength);
         Packet req = Packet.createMsgEchoRequest(nodeId, dataLength);
@@ -100,6 +137,11 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return 0;
     }
 
+    /**
+     * Read one byte from PIC (data) memory at given address.
+     *
+     * @return read byte or -1 if response not received within timeout
+     */
     public synchronized int readMemory(int address) throws IOException {
         log.debug("readMemory: {}", Pic.toString(address));
         Packet req = Packet.createMsgReadRamRequest(nodeId, address);
@@ -110,6 +152,11 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return response.data[0];
     }
 
+    /**
+     * Write one byte to PIC (data) memory at given address.
+     *
+     * @return original byte value before write or -1 if response not received within timeout
+     */
     public synchronized int writeMemory(int address, int mask, int value) throws IOException {
         log.debug("writeMemory: {}(&{})={}", Pic.toString(address), Integer.toBinaryString(mask), value);
         Packet req = Packet.createMsgWriteRamRequest(nodeId, address, mask, value);
@@ -120,6 +167,9 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return response.data[0];
     }
 
+    /**
+     * Get PIC code build time.
+     */
     public Date getBuildTime() throws IOException {
         log.debug("getBuildTime");
         Packet response = packetUartIO.send(Packet.createMsgGetBuildTime(nodeId), MessageType.MSG_GetBuildTimeResponse, GET_BUILD_TIME_TIMEOUT);
@@ -130,6 +180,11 @@ public class Node implements PacketUartIO.PacketReceivedListener {
                 : null;
     }
 
+    /**
+     * Let PIC echo given bytes (a, b, a + 1, a + 2, a + 3).
+     *
+     * @return second byte (b) or -1 if response not received within timeout
+     */
     public int echo(int a, int b) throws IOException {
         log.debug("echo");
         Packet response = packetUartIO.send(Packet.createMsgEchoRequest(nodeId, a, b), MessageType.MSG_EchoResponse, SLOW_RESPONSE_TIMEOUT);
@@ -143,10 +198,24 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         log.debug("setPortValueNoWait: done.");
     }
 
+    /**
+     * Set port value. This sets port pins specified by mask to corresponding value. 
+     *
+     * @param port port A..D
+     * @param valueMask mask specifying pins to set
+     * @param value values for the pins
+     * @return packet with {@link MessageType#MSG_SetPortResponse} or null if response not received within timeout
+     */
     public Packet setPortValue(char port, int valueMask, int value) throws IOException {
         return setPortValue(port, valueMask, value, -1, -1);
     }
 
+    /**
+     * Set port and TRIS values.
+     *
+     * @param port port A..D
+     * @return
+     */
     public Packet setPortValue(char port, int valueMask, int value, int eventMask, int trisValue) throws IOException {
         log.debug("setPortValue");
         Packet response = packetUartIO.send(
@@ -156,10 +225,22 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return response;
     }
 
+    /**
+     * Set value of single pin.
+     *
+     * @param pin pin to set
+     * @param value pin value, 0 to set to 0, non-zero to set to 1
+     * @return packet with {@link MessageType#MSG_SetPortResponse} or null if response not received within timeout
+     */
     public Packet setPinValue(Pin pin, int value) throws IOException {
         return setPortValue(pin.getPort(), pin.getBitMask(), (value != 0) ? 0xFF : 0x00);
     }
 
+    /**
+     * Dump bytes on given PIC addresses to log.
+     *
+     * @return true if successful, false if any response not received
+     */
     public boolean dumpMemory(int[] addresses) {
         boolean res = true;
         for (int address : addresses) {
@@ -197,18 +278,29 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return packetUartIO.send(req, MessageType.MSG_SetManualPwmValueResponse, FAST_RESPONSE_TIMEOUT);
     }
 
+    /**
+     * Send initialization finished packet to PIC.
+     */
     public synchronized void setInitializationFinished() throws IOException {
         log.debug("setInitializationFinished");
         Packet req = Packet.createMsgInitializationFinished(nodeId);
         packetUartIO.send(req);
     }
 
+    /**
+     * Set heart beat period.
+     */
     public synchronized void setHeartBeatPeriod(int seconds) throws IOException {
         log.debug("setHeartBeatPeriod");
         Packet req = Packet.createMsgSetHeartBeatPeriod(nodeId, seconds);
         packetUartIO.send(req);
     }
 
+    /**
+     * Set PIC CPU frequency.
+     *
+     * @return true if successful, false if response not received
+     */
     public synchronized boolean setFrequency(CpuFrequency cpuFrequency) throws IOException {
         log.debug("setFrequency");
         if (cpuFrequency == CpuFrequency.unknown)
@@ -284,6 +376,9 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
     }
 
+    /**
+     * Initialize PIC for connected devices. Asks each device for properties and configures the PIC accordingly.
+     */
     public void initialize() {
         log.info("Initialization of node: {} started", this);
 
@@ -353,6 +448,9 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         }
     }
 
+    /**
+     * Reset node. Returns response from PIC.
+     */
     public Packet reset() throws IOException {
         log.debug("RESET");
         Packet response = packetUartIO.send(
@@ -362,6 +460,9 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return response;
     }
 
+    /**
+     * Reads 4 bytes of PIC program memory on given address.
+     */
     public int[] readProgramMemory(int address) throws IOException {
         Packet response = packetUartIO.send(
                 Packet.createMsgReadProgramMemory(getNodeId(), address),
@@ -372,11 +473,27 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return null;
     }
 
+    /**
+     * Listener called when PIC reported state change.
+     */
     public interface Listener {
+        /**
+         * Pin changed to down state (0).
+         *
+         * @param upTime how long the pin was in up state (1), -1 if first state change
+         */
         void onButtonDown(Node node, Pin pin, int upTime);
 
+        /**
+         * Pin changed to up state (1).
+         *
+         * @param downTime how long the pin was in down state (0), -1 if first state change
+         */
         void onButtonUp(Node node, Pin pin, int downTime);
 
+        /**
+         * PIC rebooting - asks for initialization.
+         */
         void onReboot(Node node, int pingCounter, int rconValue) throws IOException;
     }
 }

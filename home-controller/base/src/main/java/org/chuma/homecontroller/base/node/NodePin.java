@@ -1,5 +1,8 @@
 package org.chuma.homecontroller.base.node;
 
+/**
+ * Represents connected device pin.
+ */
 public class NodePin {
     private String id;
     private final Node node;

@@ -4,12 +4,12 @@ package org.chuma.homecontroller.base.node;
 
 public class MessageType {
     public static final byte MSG_SetPortResponse = 15; // data = request Command Id, value, tris (if set)
-    public static final byte MSG_SetPortA = 16; //MsgSetPortRequest
+    public static final byte MSG_SetPortA = 16; //MsgSetPortRequest - order is important - see Packet.createMsgSetPort()
     public static final byte MSG_SetPortB = 17; //MsgSetPortRequest
     public static final byte MSG_SetPortC = 18; //MsgSetPortRequest
     public static final byte MSG_SetPortD = 19; //MsgSetPortRequest
     public static final byte MSG_OnPortAPinChange = 20; // data[0] = changes & eventMask, data[1] = port & eventMask
-    public static final byte MSG_OnPortBPinChange = 21;
+    public static final byte MSG_OnPortBPinChange = 21; // Order of MSG_OnPortXPinChange is important - see Node.packetReceivedImpl()
     public static final byte MSG_OnPortCPinChange = 22;
     public static final byte MSG_OnPortDPinChange = 23;
     public static final byte MSG_None = 32;
@@ -17,13 +17,13 @@ public class MessageType {
     public static final byte MSG_SetUartBaudRate = 34; //SPBRGH, SPBRG
     public static final byte MSG_OnHeartBeat = 35;
     public static final byte MSG_ErrorReport = 36;
-    public static final byte MSG_EchoRequest = 37;
+    public static final byte MSG_EchoRequest = 37; //data with up to 5 bytes
     public static final byte MSG_EchoResponse = 38;
     public static final byte MSG_UartTransmitPerfTestRequest = 39; //MsgUartTransmitPerfTestRequest
     public static final byte MSG_UartTransmitPerfTestMessage = 40; //packetNumber, byte incremented by 1 from firstByte in first packet
     public static final byte MSG_ReadRamRequest = 41; //MsgReadRamRequest
     public static final byte MSG_ReadRamResponse = 42; //1 byte
-    public static final byte MSG_WriteRamRequest = 43; //MsgWriteRamRequest, response is MSG_WriteRamResponse
+    public static final byte MSG_WriteRamRequest = 43; //2 bytes address, mask, value
     public static final byte MSG_WriteRamResponse = 44; //2 bytes (original and new value)
     public static final byte MSG_OnDebug = 45; //
     public static final byte MSG_GetBuildTimeRequest = 47; // no data
