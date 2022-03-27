@@ -2,9 +2,6 @@
 
 package org.chuma.homecontroller.base.node;
 
-/**
- * Defines constants and toString() for some "well-known" PIC RAM addresses.
- */
 public class Pic {
     public static final int appFlags = 0x32;
     public static final int canReceiveLongMsgCount = 0x40;

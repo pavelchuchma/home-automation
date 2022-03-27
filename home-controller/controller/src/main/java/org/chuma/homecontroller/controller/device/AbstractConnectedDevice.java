@@ -9,7 +9,7 @@ import org.chuma.homecontroller.base.node.Pin;
 
 /**
  * Base implementation of device connected to node (PIC).
- *
+ * <p>
  * This implementation provides up to three devices with six pins connected to single node (PIC).
  * The device pins are as follows:
  *
@@ -18,13 +18,13 @@ import org.chuma.homecontroller.base.node.Pin;
  * <li>connector 2: C3, C1, C0, A6, C2, A7
  * <li>connector 3: B0, B1, C5, C4, C6, C7
  * </ul>
- *
+ * <p>
  * Check {@link #layout} field for exact values, the table above may not be up-to-date.
- *
- * The device pins are a bit strange because of PCB layout and because some of the pins are reserved
+ * <p>
+ * The device pins are a bit strange because of PCB layout and because some pins are reserved
  * for internal use (like CANRX and CANTX on port B). From each PCB with single PIC there are three
  * 6-pin (in fact 8 including Vcc and GND) connectors (1-3) leading to PCBs with "devices". So each
- * device instance corresponds to that single HW device. 
+ * device instance corresponds to that single HW device.
  */
 public abstract class AbstractConnectedDevice implements org.chuma.homecontroller.base.node.ConnectedDevice {
     final static Pin[][] layout = {
@@ -40,10 +40,10 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
     /**
      * Create new device with unknown CPU frequency automatically adding itself to node.
      *
-     * @param id device ID
-     * @param node node (PIC) to which device is connected
+     * @param id              device ID
+     * @param node            node (PIC) to which device is connected
      * @param connectorNumber on which connector (1-3)
-     * @param names names of all six pins (this is purely informative, for debugs etc.) 
+     * @param names           names of all six pins (this is purely informative, for debugs etc.)
      */
     public AbstractConnectedDevice(String id, Node node, int connectorNumber, String[] names) {
         this(id, node, connectorNumber, names, CpuFrequency.unknown);
@@ -52,10 +52,10 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
     /**
      * Create new device automatically adding itself to node.
      *
-     * @param id device ID
-     * @param node node (PIC) to which device is connected
-     * @param connectorNumber on which connector (1-3)
-     * @param names names of all six pins (this is purely informative, for debugs etc.) 
+     * @param id                   device ID
+     * @param node                 node (PIC) to which device is connected
+     * @param connectorNumber      on which connector (1-3)
+     * @param names                names of all six pins (this is purely informative, for debugs etc.)
      * @param requiredCpuFrequency PIC CPU frequency required by the device
      */
     public AbstractConnectedDevice(String id, Node node, int connectorNumber, String[] names, CpuFrequency requiredCpuFrequency) {
@@ -82,8 +82,8 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
      * @return Pin instance according to input coordinates
      */
     public static Pin getPin(int connectorNumber, int connectorPin) {
-        Validate.inclusiveBetween(1,3, connectorNumber, String.format("Invalid connector #%d. It must be 1..3", connectorNumber));
-        Validate.inclusiveBetween(1,6, connectorPin, String.format("Invalid connector pin#%d. It must be 1..6", connectorPin));
+        Validate.inclusiveBetween(1, 3, connectorNumber, String.format("Invalid connector #%d. It must be 1..3", connectorNumber));
+        Validate.inclusiveBetween(1, 6, connectorPin, String.format("Invalid connector pin#%d. It must be 1..6", connectorPin));
         return layout[connectorNumber - 1][connectorPin - 1];
     }
 
@@ -100,7 +100,7 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
     /**
      * Create mask for given pins. Specified pins will be set to 1 in mask.
      */
-    protected int createMask(NodePin ... pins) {
+    protected int createMask(NodePin... pins) {
         int result = 0;
         for (NodePin pin : pins) {
             result |= 1 << pin.getPin().ordinal();

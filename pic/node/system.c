@@ -139,7 +139,7 @@ void processSetPort() {
     FSR1L = (char) &PORTA + (receivedPacket.messageType - MSG_SetPortA);
     INDF1 = (INDF1 & ~setPortRequest.valueMask) | (setPortRequest.value & setPortRequest.valueMask);
 
-    //store tris value to outPacket
+    //store value to outPacket
     outPacket.data[1] = INDF1;
 
     // set checkInput

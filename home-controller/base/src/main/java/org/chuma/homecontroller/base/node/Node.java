@@ -18,22 +18,21 @@ import org.chuma.homecontroller.base.packet.PacketUartIO;
 
 /**
  * Represents single PIC in system. Each node has unique ID which identifies the PIC (is stored in PIC code).
- *
+ * <p>
  * For details on following description see PIC18F2585/2680/4585/4680 manual, chapter 10.0 - I/O ports.
- *
+ * <p>
  * PIC provides up to four ports (A..D) with 8 pins. Some pins may have several alternate functions depending
  * on peripheral features. If the feature is enabled, the pin may not be used as general purpose I/O pin.
  * For example pins 2 and 3 of port B are used by Controller Area Network (CAN) module. Since whole "home automation"
  * project uses CAN for communication, these pins are unavailable.
- *
- * Each port has three registers for its operation:
+ * <p>
+ * Each port has two registers for its operation:
  * <ul>
  * <li>TRIS - data direction register (0 - output, 1 - input)
- * <li>PORT - input (reads the levels of the pins)
- * <li>LAT - output
+ * <li>PORT - input or output depending on TRIS value
  * </ul>
- *
- * Before initializing the node, you should add devices which define how PIC ports should be configured.
+ * <p>
+ * Devices must be bound to node before initializing the node.
  */
 public class Node implements PacketUartIO.PacketReceivedListener {
     public static final int HEART_BEAT_PERIOD = 60;
@@ -199,11 +198,11 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     }
 
     /**
-     * Set port value. This sets port pins specified by mask to corresponding value. 
+     * Set port value. It sets port pins specified by mask to corresponding value.
      *
-     * @param port port A..D
-     * @param valueMask mask specifying pins to set
-     * @param value values for the pins
+     * @param port      port A..D
+     * @param valueMask 8 bit mask to be applied on {@param value}. Only bits corresponding to 1 in mask will be applied to port value.
+     * @param value     8 bit value to be set to desired port (after {@param valueMask} application)
      * @return packet with {@link MessageType#MSG_SetPortResponse} or null if response not received within timeout
      */
     public Packet setPortValue(char port, int valueMask, int value) throws IOException {
@@ -213,8 +212,12 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     /**
      * Set port and TRIS values.
      *
-     * @param port port A..D
-     * @return
+     * @param port      port A..D
+     * @param valueMask 8 bit mask to be applied on {@param value}. Only bits corresponding to 1 in mask will be applied to port value.
+     * @param value     8 bit value to be set to desired port (after {@param valueMask} application)
+     * @param eventMask enable sending events on value change. Registered {@link Listener} instances are called then
+     * @param trisValue set port TRIS values to set up input and output pins
+     * @return packet with {@link MessageType#MSG_SetPortResponse} or null if response not received within timeout
      */
     public Packet setPortValue(char port, int valueMask, int value, int eventMask, int trisValue) throws IOException {
         log.debug("setPortValue");
@@ -228,7 +231,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     /**
      * Set value of single pin.
      *
-     * @param pin pin to set
+     * @param pin   pin to set
      * @param value pin value, 0 to set to 0, non-zero to set to 1
      * @return packet with {@link MessageType#MSG_SetPortResponse} or null if response not received within timeout
      */
@@ -256,6 +259,12 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return res;
     }
 
+    /**
+     * Enables native (hardware) PWM on the PIC's CCP1 pin.
+     * It is possible to reach high frequency and precision using native PWM, but there is only one CCP port on each PIC.
+     * <p>
+     * Not used, not tested very well.
+     */
     synchronized boolean enablePwm(int cpuFrequency, int canBaudRatePrescaler, int value) throws IOException {
         log.debug("enablePwm");
         Packet req = Packet.createMsgEnablePwmRequest(nodeId, cpuFrequency, canBaudRatePrescaler, value);
@@ -266,12 +275,24 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return true;
     }
 
+    /**
+     * Sets value of native PWM on the PIC's CCP1 pin.
+     * <p>
+     * Not used, not tested very well.
+     */
     synchronized void setPwmValue(int value) throws IOException {
         log.debug("setPwmValue");
         Packet req = Packet.createMsgSetPwmValueRequest(nodeId, value);
         packetUartIO.send(req);
     }
 
+    /**
+     * Sets value of manually (software) driven PWM. This PWM implementation has fixed duty cycle of size 48 and can
+     * be applied on each output pin.
+     *
+     * @param pin   Target pin.
+     * @param value Value from range <0;48). 0 is for off, 47 stands for full output
+     */
     synchronized public Packet setManualPwmValue(Pin pin, int value) throws IOException {
         log.debug("setPwmValue");
         Packet req = Packet.createMsgMSGSetManualPwmValue(nodeId, pin.getPort(), pin.getPinIndex(), value);

@@ -5,7 +5,8 @@ package org.chuma.homecontroller.base.node;
  */
 public interface ConnectedDevice {
     /**
-     * Device ID, must be unique within node to which it will be connected.
+     * ID of connector on PIC board where device is connected.
+     * Must be unique within node to which it will be connected.
      */
     int getConnectorNumber();
 
