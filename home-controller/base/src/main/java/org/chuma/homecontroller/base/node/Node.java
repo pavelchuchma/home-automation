@@ -18,14 +18,14 @@ import org.chuma.homecontroller.base.packet.PacketUartIO;
 
 public class Node implements PacketUartIO.PacketReceivedListener {
     public static final int HEART_BEAT_PERIOD = 60;
-    public static final int SET_PORT_TIMEOUT = 100;
+    public static final int FAST_RESPONSE_TIMEOUT = 100;
+    public static final int SLOW_RESPONSE_TIMEOUT = 300;
     public static final int GET_BUILD_TIME_TIMEOUT = 500;
-    public static final int RESPONSE_TIMEOUT = 300;
     private static final Object typeInitializationLock = new Object();
-    private static Logger log = LoggerFactory.getLogger(Node.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(Node.class.getName());
 
     private final Queue<Listener> listeners = new ConcurrentLinkedQueue<>();
-    private long[] lastChangeTimes = new long[32];
+    private final long[] lastChangeTimes = new long[32];
     private final int nodeId;
     private final String name;
     private final IPacketUartIO packetUartIO;
@@ -92,7 +92,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     public synchronized int echo(int dataLength) throws IOException {
         log.debug("echo ({})", dataLength);
         Packet req = Packet.createMsgEchoRequest(nodeId, dataLength);
-        Packet response = packetUartIO.send(req, MessageType.MSG_EchoResponse, RESPONSE_TIMEOUT);
+        Packet response = packetUartIO.send(req, MessageType.MSG_EchoResponse, SLOW_RESPONSE_TIMEOUT);
         if (response == null) return -1;
 
         // TODO: Some check that data is correct?
@@ -103,7 +103,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     public synchronized int readMemory(int address) throws IOException {
         log.debug("readMemory: {}", Pic.toString(address));
         Packet req = Packet.createMsgReadRamRequest(nodeId, address);
-        Packet response = packetUartIO.send(req, MessageType.MSG_ReadRamResponse, RESPONSE_TIMEOUT);
+        Packet response = packetUartIO.send(req, MessageType.MSG_ReadRamResponse, SLOW_RESPONSE_TIMEOUT);
         if (response == null) return -1;
 
         log.debug("  < {}", registerToString(address, response.data[0]));
@@ -113,7 +113,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     public synchronized int writeMemory(int address, int mask, int value) throws IOException {
         log.debug("writeMemory: {}(&{})={}", Pic.toString(address), Integer.toBinaryString(mask), value);
         Packet req = Packet.createMsgWriteRamRequest(nodeId, address, mask, value);
-        Packet response = packetUartIO.send(req, MessageType.MSG_WriteRamResponse, RESPONSE_TIMEOUT);
+        Packet response = packetUartIO.send(req, MessageType.MSG_WriteRamResponse, SLOW_RESPONSE_TIMEOUT);
         if (response == null) return -1;
 
         log.debug("  < {}", registerToString(address, response.data[0]));
@@ -124,6 +124,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         log.debug("getBuildTime");
         Packet response = packetUartIO.send(Packet.createMsgGetBuildTime(nodeId), MessageType.MSG_GetBuildTimeResponse, GET_BUILD_TIME_TIMEOUT);
         log.debug("getBuildTime -> {}", response);
+        //noinspection MagicConstant
         return (response != null) ?
                 new GregorianCalendar(response.data[0] + 2000, response.data[1] - 1, response.data[2], response.data[3], response.data[4]).getTime()
                 : null;
@@ -131,7 +132,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
     public int echo(int a, int b) throws IOException {
         log.debug("echo");
-        Packet response = packetUartIO.send(Packet.createMsgEchoRequest(nodeId, a, b), MessageType.MSG_EchoResponse, RESPONSE_TIMEOUT);
+        Packet response = packetUartIO.send(Packet.createMsgEchoRequest(nodeId, a, b), MessageType.MSG_EchoResponse, SLOW_RESPONSE_TIMEOUT);
         log.debug("echo -> {}", response);
         return ((response != null) ? response.data[1] : -1);
     }
@@ -140,7 +141,6 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         log.debug("setPortValueNoWait");
         packetUartIO.send(Packet.createMsgSetPort(nodeId, port, valueMask, value, -1, -1));
         log.debug("setPortValueNoWait: done.");
-
     }
 
     public Packet setPortValue(char port, int valueMask, int value) throws IOException {
@@ -151,7 +151,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         log.debug("setPortValue");
         Packet response = packetUartIO.send(
                 Packet.createMsgSetPort(nodeId, port, valueMask, value, eventMask, trisValue),
-                MessageType.MSG_SetPortResponse, SET_PORT_TIMEOUT);
+                MessageType.MSG_SetPortResponse, FAST_RESPONSE_TIMEOUT);
         log.debug("setPortValue: done.");
         return response;
     }
@@ -178,7 +178,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     synchronized boolean enablePwm(int cpuFrequency, int canBaudRatePrescaler, int value) throws IOException {
         log.debug("enablePwm");
         Packet req = Packet.createMsgEnablePwmRequest(nodeId, cpuFrequency, canBaudRatePrescaler, value);
-        Packet response = packetUartIO.send(req, MessageType.MSG_EnablePwmResponse, RESPONSE_TIMEOUT);
+        Packet response = packetUartIO.send(req, MessageType.MSG_EnablePwmResponse, SLOW_RESPONSE_TIMEOUT);
         if (response == null) return false;
 
         log.debug("  < {}", response);
@@ -194,7 +194,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     synchronized public Packet setManualPwmValue(Pin pin, int value) throws IOException {
         log.debug("setPwmValue");
         Packet req = Packet.createMsgMSGSetManualPwmValue(nodeId, pin.getPort(), pin.getPinIndex(), value);
-        return packetUartIO.send(req, MessageType.MSG_SetManualPwmValueResponse, SET_PORT_TIMEOUT);
+        return packetUartIO.send(req, MessageType.MSG_SetManualPwmValueResponse, FAST_RESPONSE_TIMEOUT);
     }
 
     public synchronized void setInitializationFinished() throws IOException {
@@ -214,7 +214,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         if (cpuFrequency == CpuFrequency.unknown)
             throw new IllegalArgumentException("Unsupported frequency value: " + cpuFrequency);
         Packet req = Packet.createMsgSetFrequency(nodeId, cpuFrequency.getValue());
-        Packet response = packetUartIO.send(req, MessageType.MSG_SetFrequencyResponse, SET_PORT_TIMEOUT);
+        Packet response = packetUartIO.send(req, MessageType.MSG_SetFrequencyResponse, FAST_RESPONSE_TIMEOUT);
         if (response == null) return false;
 
         log.debug("  < {}", response);
@@ -245,7 +245,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
                     //event on pin[i]
                     Pin pin = Pin.get(port, i);
 
-                    // compute downTime (-1 for first case)
+                    // compute timeSinceChange (-1 for first case)
                     long now = new Date().getTime();
                     long timeSinceChange = (lastChangeTimes[pin.ordinal()] > 0) ? now - lastChangeTimes[pin.ordinal()] : -1;
                     lastChangeTimes[pin.ordinal()] = now;
@@ -357,7 +357,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         log.debug("RESET");
         Packet response = packetUartIO.send(
                 Packet.createMsgReset(getNodeId()),
-                MessageType.MSG_ResetResponse, SET_PORT_TIMEOUT);
+                MessageType.MSG_ResetResponse, FAST_RESPONSE_TIMEOUT);
         log.debug("RESET done.");
         return response;
     }
@@ -365,7 +365,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     public int[] readProgramMemory(int address) throws IOException {
         Packet response = packetUartIO.send(
                 Packet.createMsgReadProgramMemory(getNodeId(), address),
-                MessageType.MSG_ReadProgramResponse, SET_PORT_TIMEOUT);
+                MessageType.MSG_ReadProgramResponse, FAST_RESPONSE_TIMEOUT);
         if (response != null) {
             return Arrays.copyOf(response.data, response.data.length);
         }

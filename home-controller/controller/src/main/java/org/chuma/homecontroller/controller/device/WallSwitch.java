@@ -56,7 +56,7 @@ public class WallSwitch extends AbstractConnectedDevice {
 
     @Override
     public int getEventMask() {
-        return createMask(pins[0], pins[1], pins[2], pins[3]);
+        return createMask(getLeftUpperButton(), getLeftBottomButton(), getRightUpperButton(), getRightBottomButton());
     }
 
     @Override
