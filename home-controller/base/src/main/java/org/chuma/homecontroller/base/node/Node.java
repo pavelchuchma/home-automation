@@ -291,7 +291,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
      * be applied on each output pin.
      *
      * @param pin   Target pin.
-     * @param value Value from range <0;48). 0 is for off, 47 stands for full output
+     * @param value Value from range <0;48>. 0 is for off, 48 stands for full output
      */
     synchronized public Packet setManualPwmValue(Pin pin, int value) throws IOException {
         log.debug("setPwmValue");
