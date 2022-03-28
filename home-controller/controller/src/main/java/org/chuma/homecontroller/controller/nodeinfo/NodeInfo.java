@@ -11,10 +11,10 @@ import org.chuma.homecontroller.base.packet.Packet;
 public class NodeInfo {
     private static final Date resetSupportedSince = new GregorianCalendar(2014, 7, 1).getTime();
 
-    Node node;
-    Date buildTime;
-    Date bootTime;
-    Date lastPingTime;
+    private Node node;
+    private Date buildTime;
+    private Date bootTime;
+    private Date lastPingTime;
     private LinkedList<LogMessage> messageLog = new LinkedList<LogMessage>();
 
     public NodeInfo(Node node) {
@@ -26,8 +26,16 @@ public class NodeInfo {
         return node;
     }
 
+    public void setNode(Node node) {
+        this.node = node;
+    }
+
     public Date getBuildTime() {
         return buildTime;
+    }
+
+    public void setBuildTime(Date buildTime) {
+        this.buildTime = buildTime;
     }
 
     public Date getBootTime() {
@@ -60,9 +68,10 @@ public class NodeInfo {
 
     public LogMessage[] getMessageLog() {
         synchronized (messageLog) {
-            long threshold = new Date().getTime() - 5_000;
+            long threshold = System.currentTimeMillis() - 5_000;
             Iterator<LogMessage> i = messageLog.descendingIterator();
 
+            // TODO: There should be some other log cleaner ensure cleaning when this method in never called
             while (i.hasNext()) {
                 LogMessage m = i.next();
                 if (m.receivedDate < threshold) {
@@ -77,15 +86,5 @@ public class NodeInfo {
 
     public boolean isResetSupported() {
         return buildTime != null && buildTime.after(resetSupportedSince);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return this == obj;
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
     }
 }

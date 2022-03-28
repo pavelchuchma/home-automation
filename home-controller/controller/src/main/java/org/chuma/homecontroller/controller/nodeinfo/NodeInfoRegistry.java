@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.controller.nodeinfo;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,38 +30,41 @@ public class NodeInfoRegistry {
         return switchListener;
     }
 
-    public Iterable<NodeInfo> getNodeInfos() {
-        return nodeInfoMap.values();
+    public synchronized Iterable<NodeInfo> getNodeInfos() {
+        return new ArrayList<>(nodeInfoMap.values());
     }
 
     public void start() {
         packetUartIO.addReceivedPacketListener(new PacketUartIO.PacketReceivedListener() {
             @Override
             public void packetReceived(Packet packet) {
+                // Find or register node
                 NodeInfo nodeInfo = getOrCreateNodeInfo(packet);
-                // set boot time in case of reboot message
+                // Set boot time in case of reboot message
                 if (packet.messageType == MessageType.MSG_OnReboot) {
                     nodeInfo.setBootTime(new Date());
                     // invalidate build time
-                    nodeInfo.buildTime = null;
+                    nodeInfo.setBuildTime(null);
                 }
 
                 // Check if build time is set.
                 // But do it in double-checked section to prevent parallel getBuildTime calls to one node.
-                if (nodeInfo.buildTime == null && packet.messageType == MessageType.MSG_OnHeartBeat) {
+                if (nodeInfo.getBuildTime() == null && packet.messageType == MessageType.MSG_OnHeartBeat) {
                     //noinspection SynchronizationOnLocalVariableOrMethodParameter
                     synchronized (nodeInfo) {
-                        if (nodeInfo.buildTime == null) {
+                        if (nodeInfo.getBuildTime() == null) {
                             try {
                                 log.info("Getting build time of node: {} nodeInfo: {}", packet.nodeId, nodeInfo);
-                                nodeInfo.buildTime = nodeInfo.node.getBuildTime();
+                                nodeInfo.setBuildTime(nodeInfo.getNode().getBuildTime());
                             } catch (IOException e) {
                                 log.error("Cannot get build time of node #" + packet.nodeId, e);
                             }
                         }
                     }
                 }
+                // Last ping is last time something was received from the node
                 nodeInfo.setLastPingTime(new Date());
+                // Log received message
                 nodeInfo.addReceivedSentMessage(packet);
             }
 
@@ -69,6 +73,7 @@ public class NodeInfoRegistry {
             }
         });
 
+        // Register sent packet listener to automatically register unknown nodes and log messages
         packetUartIO.addSentPacketListener(packet -> getOrCreateNodeInfo(packet).addSentLogMessage(packet));
     }
 
@@ -77,7 +82,7 @@ public class NodeInfoRegistry {
 
         NodeInfo nodeInfo = nodeInfoMap.get(nodeId);
         if (nodeInfo != null) {
-            nodeInfo.node = node;
+            nodeInfo.setNode(node);
         } else {
             nodeInfo = new NodeInfo(node);
             nodeInfoMap.put(nodeId, nodeInfo);
@@ -87,29 +92,29 @@ public class NodeInfoRegistry {
         return nodeInfo;
     }
 
+    public Node createNode(int nodeId, String name) {
+        Node node = new Node(nodeId, name, packetUartIO);
+        addNode(node);
+        return node;
+    }
+
     private synchronized NodeInfo getOrCreateNodeInfo(Packet packet) {
         NodeInfo nodeInfo = nodeInfoMap.get(packet.nodeId);
         if (nodeInfo != null) {
             return nodeInfo;
         }
 
-        log.debug("Registering node #" + packet.nodeId);
+        log.debug("Registering node #{}", packet.nodeId);
         Node node = new Node(packet.nodeId, packetUartIO);
         return addNode(node);
     }
 
     public synchronized Node getNode(int nodeId) {
         NodeInfo nodeInfo = nodeInfoMap.get(nodeId);
-        return (nodeInfo != null) ? nodeInfo.node : null;
+        return (nodeInfo != null) ? nodeInfo.getNode() : null;
     }
 
     public synchronized NodeInfo getNodeInfo(int nodeId) {
         return nodeInfoMap.get(nodeId);
-    }
-
-    public Node createNode(int i, String name) {
-        Node node = new Node(i, name, packetUartIO);
-        addNode(node);
-        return node;
     }
 }

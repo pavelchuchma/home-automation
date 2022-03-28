@@ -1,7 +1,5 @@
 package org.chuma.homecontroller.controller.nodeinfo;
 
-import java.util.Date;
-
 import org.chuma.homecontroller.base.packet.Packet;
 
 public class LogMessage {
@@ -12,6 +10,6 @@ public class LogMessage {
     public LogMessage(Packet packet, boolean received) {
         this.received = received;
         this.packet = packet;
-        receivedDate = new Date().getTime();
+        receivedDate = System.currentTimeMillis();
     }
 }

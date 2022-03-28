@@ -4,10 +4,9 @@ import org.chuma.homecontroller.base.node.NodePin;
 import org.chuma.homecontroller.controller.action.Action;
 
 public class ActionBinding {
-    NodePin trigger;
-
-    Action[] buttonDownActions;
-    Action[] buttonUpActions;
+    private final NodePin trigger;
+    private final Action[] buttonDownActions;
+    private final Action[] buttonUpActions;
 
     public ActionBinding(NodePin trigger, Action buttonDownAction, Action buttonUpAction) {
         this(trigger, (buttonDownAction != null) ? new Action[]{buttonDownAction} : null,

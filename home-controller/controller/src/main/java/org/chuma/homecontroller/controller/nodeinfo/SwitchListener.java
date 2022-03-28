@@ -12,8 +12,8 @@ import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.Action;
 
 public class SwitchListener extends AbstractNodeListener {
-    static Logger log = LoggerFactory.getLogger(SwitchListener.class.getName());
-    ConcurrentHashMap<String, ActionBinding> switchMap = new ConcurrentHashMap<>();
+    private static final Logger log = LoggerFactory.getLogger(SwitchListener.class.getName());
+    private final ConcurrentHashMap<String, ActionBinding> switchMap = new ConcurrentHashMap<>();
 
     public static String createNodePinKey(int nodeId, Pin pin) {
         return String.format("%d:%s", nodeId, pin);
@@ -29,13 +29,13 @@ public class SwitchListener extends AbstractNodeListener {
         if (binding.getButtonDownActions() != null) {
             log.info(" buttonDown");
             for (Action a : binding.getButtonDownActions()) {
-                log.info("  - " + a.toString());
+                log.info("  - {}", a);
             }
         }
         if (binding.getButtonUpActions() != null) {
             log.info(" buttonUp");
             for (Action a : binding.getButtonUpActions()) {
-                log.info("  - " + a.toString());
+                log.info("  - {}", a);
             }
         }
     }
@@ -59,6 +59,7 @@ public class SwitchListener extends AbstractNodeListener {
             if (actions != null) {
                 for (final Action a : actions) {
                     log.debug("-> action: {} of action type {}", (a.getActor() != null) ? a.getActor().getId() : "{null}", a.getClass().getSimpleName());
+                    // TODO: Use executor?
                     new Thread(() -> {
                         try {
                             a.perform(previousDurationMs);
