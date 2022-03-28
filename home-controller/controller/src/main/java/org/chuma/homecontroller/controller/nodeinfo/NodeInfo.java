@@ -8,6 +8,10 @@ import java.util.LinkedList;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.packet.Packet;
 
+/**
+ * Represents {@link Node} in system with additional information like build time,
+ * boot time, last ping time and message log (list of log messages).
+ */
 public class NodeInfo {
     private static final Date resetSupportedSince = new GregorianCalendar(2014, 7, 1).getTime();
 
@@ -46,6 +50,9 @@ public class NodeInfo {
         this.bootTime = bootTime;
     }
 
+    /**
+     * Last ping is last time something was received from the node.
+     */
     public Date getLastPingTime() {
         return lastPingTime;
     }
@@ -54,18 +61,27 @@ public class NodeInfo {
         this.lastPingTime = lastPingTime;
     }
 
+    /**
+     * Log sent message.
+     */
     public void addSentLogMessage(Packet packet) {
         synchronized (messageLog) {
             messageLog.addFirst(new LogMessage(packet, false));
         }
     }
 
+    /**
+     * Log received message.
+     */
     public void addReceivedSentMessage(Packet packet) {
         synchronized (messageLog) {
             messageLog.addFirst(new LogMessage(packet, true));
         }
     }
 
+    /**
+     * Get messages logged in last 5 seconds, oldest first. Clears all older messages.
+     */
     public LogMessage[] getMessageLog() {
         synchronized (messageLog) {
             long threshold = System.currentTimeMillis() - 5_000;
@@ -84,6 +100,9 @@ public class NodeInfo {
         }
     }
 
+    /**
+     * Check if node can be reset.
+     */
     public boolean isResetSupported() {
         return buildTime != null && buildTime.after(resetSupportedSince);
     }

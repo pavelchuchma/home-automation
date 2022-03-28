@@ -3,6 +3,9 @@ package org.chuma.homecontroller.controller.device;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.NodePin;
 
+/**
+ * Device with all six pins configured as output. All pins are initially set to 1.
+ */
 public class OutputDevice extends AbstractConnectedDevice {
 
     private static final String[] PIN_NAMES = new String[]{"out1", "out2", "out3", "out4", "out5", "out6"};

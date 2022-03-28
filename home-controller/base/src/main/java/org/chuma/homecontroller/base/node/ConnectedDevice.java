@@ -16,12 +16,15 @@ public interface ConnectedDevice {
     CpuFrequency getRequiredCpuFrequency();
 
     /**
-     * Event mask - pins which should be in input state (others are unchanged).
+     * Event mask - pins for which to receive change notifications. Remember to clear such pins
+     * in output mask since otherwise the pin won't be in input state.
      */
     int getEventMask();
 
     /**
-     * Output mask - pins which should be in output state (others are unchanged).
+     * Output mask - pins which should be in output state. Other pins will become input ones.
+     * Usually you will want pins in input state to be present in event mask to receive change
+     * notifications.
      */
     int getOutputMasks();
 

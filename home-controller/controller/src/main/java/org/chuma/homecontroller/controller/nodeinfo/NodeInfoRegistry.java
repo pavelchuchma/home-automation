@@ -15,6 +15,10 @@ import org.chuma.homecontroller.base.packet.IPacketUartIO;
 import org.chuma.homecontroller.base.packet.Packet;
 import org.chuma.homecontroller.base.packet.PacketUartIO;
 
+/**
+ * Registry of all nodes in system. Supports autodiscovery of nodes by automatically registering
+ * nodes referenced in any sent or received packet.
+ */
 public class NodeInfoRegistry {
     static Logger log = LoggerFactory.getLogger(NodeInfoRegistry.class.getName());
 
@@ -26,10 +30,17 @@ public class NodeInfoRegistry {
         this.packetUartIO = packetUartIO;
     }
 
+    /**
+     * Get switch listener registered to each added node. This switch listener
+     * will receive all events from the nodes.
+     */
     public SwitchListener getSwitchListener() {
         return switchListener;
     }
 
+    /**
+     * Get {@link NodeInfo} for all registered nodes.
+     */
     public synchronized Iterable<NodeInfo> getNodeInfos() {
         return new ArrayList<>(nodeInfoMap.values());
     }
@@ -77,6 +88,9 @@ public class NodeInfoRegistry {
         packetUartIO.addSentPacketListener(packet -> getOrCreateNodeInfo(packet).addSentLogMessage(packet));
     }
 
+    /**
+     * Add node to system.
+     */
     public synchronized NodeInfo addNode(Node node) {
         final Integer nodeId = node.getNodeId();
 
@@ -92,12 +106,18 @@ public class NodeInfoRegistry {
         return nodeInfo;
     }
 
+    /**
+     * Create new node and add it to the system.
+     */
     public Node createNode(int nodeId, String name) {
         Node node = new Node(nodeId, name, packetUartIO);
         addNode(node);
         return node;
     }
 
+    /**
+     * Get {@link NodeInfo} for node specified in packet. The node gets automatically registered if not present.
+     */
     private synchronized NodeInfo getOrCreateNodeInfo(Packet packet) {
         NodeInfo nodeInfo = nodeInfoMap.get(packet.nodeId);
         if (nodeInfo != null) {
@@ -109,11 +129,21 @@ public class NodeInfoRegistry {
         return addNode(node);
     }
 
+    /**
+     * Get {@link Node} instance for given node ID.
+     *
+     * @return node or null if not registered
+     */
     public synchronized Node getNode(int nodeId) {
         NodeInfo nodeInfo = nodeInfoMap.get(nodeId);
         return (nodeInfo != null) ? nodeInfo.getNode() : null;
     }
 
+    /**
+     * Get {@link NodeInfo} for given node ID.
+     *
+     * @return node info or null if not registered
+     */
     public synchronized NodeInfo getNodeInfo(int nodeId) {
         return nodeInfoMap.get(nodeId);
     }

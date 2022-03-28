@@ -3,6 +3,9 @@ package org.chuma.homecontroller.controller.device;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.NodePin;
 
+/**
+ * Device consisting of four buttons (input) and two LEDs (lights, output).
+ */
 public class WallSwitch extends AbstractConnectedDevice {
 
     private SwitchIndicator redIndicator;

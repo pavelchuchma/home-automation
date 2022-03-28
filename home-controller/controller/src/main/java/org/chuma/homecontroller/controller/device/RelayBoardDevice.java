@@ -3,6 +3,9 @@ package org.chuma.homecontroller.controller.device;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.NodePin;
 
+/**
+ * Device consisting of six relays, each on one pin. Output pins are initially set to 0 (off). 
+ */
 public class RelayBoardDevice extends AbstractConnectedDevice {
 
     private static final String[] PIN_NAMES = new String[]{"relay3", "relay4", "relay1", "relay5", "relay2", "relay6"};

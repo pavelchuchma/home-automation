@@ -11,6 +11,11 @@ import org.chuma.homecontroller.base.node.Pin;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.Action;
 
+/**
+ * Switch listener is registered by {@link NodeInfoRegistry} to all nodes to receive all notifications.
+ * It dispatches notification to registered {@link Action} instances which are bound to single node pin
+ * via {@link ActionBinding}.
+ */
 public class SwitchListener extends AbstractNodeListener {
     private static final Logger log = LoggerFactory.getLogger(SwitchListener.class.getName());
     private final ConcurrentHashMap<String, ActionBinding> switchMap = new ConcurrentHashMap<>();
@@ -19,6 +24,9 @@ public class SwitchListener extends AbstractNodeListener {
         return String.format("%d:%s", nodeId, pin);
     }
 
+    /**
+     * Register action.
+     */
     public void addActionBinding(ActionBinding binding) {
         String key = createNodePinKey(binding.getTrigger().getNode().getNodeId(), binding.getTrigger().getPin());
         ActionBinding existingMapping = switchMap.put(key, binding);

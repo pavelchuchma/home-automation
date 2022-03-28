@@ -3,6 +3,10 @@ package org.chuma.homecontroller.controller.device;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.NodePin;
 
+/**
+ * Device with all six pins configured as input. The actually active pins are selected
+ * by calling one of {@link #getIn1AndActivate()} methods.
+ */
 public class InputDevice extends AbstractConnectedDevice {
     private int eventMask;
 

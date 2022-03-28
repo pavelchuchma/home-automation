@@ -496,6 +496,10 @@ public class Node implements PacketUartIO.PacketReceivedListener {
 
     /**
      * Listener called when PIC reported state change.
+     * <p>
+     * The methods are named according to the HW implementation. When button is not preset (up state),
+     * there is high voltage on input pin (logical 1). When it gets pressed, the pin goes to logical 0.
+     * So button down means pin state goes to 0 and button up means pin goes to 1.
      */
     public interface Listener {
         /**
