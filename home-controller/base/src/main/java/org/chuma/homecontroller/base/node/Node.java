@@ -14,8 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.chuma.homecontroller.base.packet.IPacketUartIO;
+import org.chuma.homecontroller.base.packet.IPacketUartIO.PacketReceivedListener;
 import org.chuma.homecontroller.base.packet.Packet;
-import org.chuma.homecontroller.base.packet.PacketUartIO;
 
 /**
  * Represents single PIC in system. Each node has unique ID which identifies the PIC (is stored in PIC code).
@@ -35,7 +35,7 @@ import org.chuma.homecontroller.base.packet.PacketUartIO;
  * <p>
  * Devices must be bound to node before initializing the node.
  */
-public class Node implements PacketUartIO.PacketReceivedListener {
+public class Node implements PacketReceivedListener {
     public static final int HEART_BEAT_PERIOD = 60;
     public static final int FAST_RESPONSE_TIMEOUT = 100;
     public static final int SLOW_RESPONSE_TIMEOUT = 300;
@@ -422,7 +422,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     }
 
     @Override
-    public void notifyRegistered(PacketUartIO packetUartIO) {
+    public void notifyRegistered(IPacketUartIO packetUartIO) {
 
     }
 

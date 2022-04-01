@@ -6,7 +6,7 @@ public interface IPacketUartIO {
     /**
      * Register listener for any message received.
      */
-    void addReceivedPacketListener(PacketUartIO.PacketReceivedListener listener);
+    void addReceivedPacketListener(PacketReceivedListener listener);
 
     /**
      * Register listener for specific message type received from given node. There can be only one such listener registered
@@ -15,12 +15,12 @@ public interface IPacketUartIO {
      * @param nodeId node ID to receive message from
      * @param messageType message type to receive or -1 for any
      */
-    void addSpecificReceivedPacketListener(PacketUartIO.PacketReceivedListener listener, int nodeId, int messageType);
+    void addSpecificReceivedPacketListener(PacketReceivedListener listener, int nodeId, int messageType);
 
     /**
      * Register listener called after the message was successfully sent.
      */
-    void addSentPacketListener(PacketUartIO.PacketSentListener listener);
+    void addSentPacketListener(PacketSentListener listener);
 
     /**
      * Send packet.
@@ -55,9 +55,9 @@ public interface IPacketUartIO {
         void packetReceived(Packet packet);
 
         /**
-         * Called when listener was registered in {@link PacketUartIO}.
+         * Called when listener was registered in {@link IPacketUartIO}.
          */
-        void notifyRegistered(PacketUartIO packetUartIO);
+        void notifyRegistered(IPacketUartIO packetUartIO);
     }
 
     /**

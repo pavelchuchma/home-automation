@@ -15,14 +15,14 @@ public class PacketUartIOTest {
     public void testCreation() throws Exception {
         PacketUartIO packetUartIO = new PacketUartIO("COM4", 19200);
         try {
-            packetUartIO.addReceivedPacketListener(new PacketUartIO.PacketReceivedListener() {
+            packetUartIO.addReceivedPacketListener(new IPacketUartIO.PacketReceivedListener() {
                 @Override
                 public void packetReceived(Packet packet) {
                     log.debug("packetReceived: " + packet);
                 }
 
                 @Override
-                public void notifyRegistered(PacketUartIO packetUartIO) {
+                public void notifyRegistered(IPacketUartIO packetUartIO) {
                     log.debug("notifyRegistered: " + packetUartIO);
                 }
             });
@@ -66,14 +66,14 @@ public class PacketUartIOTest {
     @Test
     public void testListeners() throws Exception {
         final Packet[] received = new Packet[1];
-        PacketUartIO.PacketReceivedListener listener = new PacketUartIO.PacketReceivedListener() {
+        PacketUartIO.PacketReceivedListener listener = new IPacketUartIO.PacketReceivedListener() {
             @Override
             public void packetReceived(Packet packet) {
                 received[0] = packet;
             }
 
             @Override
-            public void notifyRegistered(PacketUartIO packetUartIO) {
+            public void notifyRegistered(IPacketUartIO packetUartIO) {
             }
         };
 

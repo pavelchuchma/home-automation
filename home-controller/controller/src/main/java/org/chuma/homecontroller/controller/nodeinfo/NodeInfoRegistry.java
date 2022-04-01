@@ -13,7 +13,6 @@ import org.chuma.homecontroller.base.node.MessageType;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.packet.IPacketUartIO;
 import org.chuma.homecontroller.base.packet.Packet;
-import org.chuma.homecontroller.base.packet.PacketUartIO;
 
 /**
  * Registry of all nodes in system. Supports autodiscovery of nodes by automatically registering
@@ -46,7 +45,7 @@ public class NodeInfoRegistry {
     }
 
     public void start() {
-        packetUartIO.addReceivedPacketListener(new PacketUartIO.PacketReceivedListener() {
+        packetUartIO.addReceivedPacketListener(new IPacketUartIO.PacketReceivedListener() {
             @Override
             public void packetReceived(Packet packet) {
                 // Find or register node
@@ -80,7 +79,7 @@ public class NodeInfoRegistry {
             }
 
             @Override
-            public void notifyRegistered(PacketUartIO packetUartIO) {
+            public void notifyRegistered(IPacketUartIO packetUartIO) {
             }
         });
 
