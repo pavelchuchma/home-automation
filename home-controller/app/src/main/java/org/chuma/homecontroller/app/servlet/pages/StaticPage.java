@@ -10,11 +10,15 @@ import org.eclipse.jetty.server.Request;
 
 import org.chuma.homecontroller.app.servlet.Servlet;
 
+/**
+ * Page handler returning static file stored as Java resource in {@code "servlet/content"} directory.
+ * Automatically determines content type according to file extension.
+ */
 public class StaticPage implements Page {
-    final static Map<String, String> fileExtensionToContentType = buildFileTypeMap();
-    final String path;
-    final String resourcePath;
-    final String linkTitle;
+    private final static Map<String, String> fileExtensionToContentType = buildFileTypeMap();
+    private final String path;
+    private final String resourcePath;
+    private final String linkTitle;
 
     public StaticPage(String path, String resourcePath, String linkTitle) {
         this.path = (path.startsWith("/")) ? path : '/' + path;
@@ -37,6 +41,12 @@ public class StaticPage implements Page {
         return (i > 0) ? target.substring(i) : null;
     }
 
+    /**
+     * Return given Java resource in {@code "servlet/content"} directory as response setting
+     * the content type according to file extension.
+     *
+     * @return true if response written, false if not
+     */
     public static boolean sendFile(String target, HttpServletResponse response) throws IOException {
         if (target.contains(":") || target.contains("..")) {
             // suspicious path

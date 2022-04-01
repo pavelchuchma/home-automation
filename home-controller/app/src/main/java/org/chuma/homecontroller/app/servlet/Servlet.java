@@ -13,17 +13,27 @@ import org.slf4j.LoggerFactory;
 
 import org.chuma.homecontroller.app.servlet.pages.StaticPage;
 
+/**
+ * Jetty URL handler dispatching requests to registered {@link Handler}s and serving static pages via {@link StaticPage#sendFile(String, HttpServletResponse)}.
+ */
 public class Servlet extends AbstractHandler {
     public static DecimalFormat currentValueFormatter = new DecimalFormat("###.##");
     static Logger log = LoggerFactory.getLogger(Servlet.class.getName());
     final private Iterable<Handler> handlers;
     final private String defaultPath;
 
+    /**
+     * Create servlet with given URL handlers and redirect URL if no handler found.
+     */
     public Servlet(Iterable<Handler> handlers, String defaultPage) {
         this.handlers = handlers;
         this.defaultPath = defaultPage;
     }
 
+    /**
+     * Start HTTP server with given servlet as request handler. Server runs on port
+     * specified in {@code servlet.port} property or on port 80.
+     */
     public static void startServer(Servlet servlet) throws Exception {
         if (servlet == null) {
             throw new IllegalArgumentException("servlet is null");
