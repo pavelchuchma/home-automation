@@ -34,8 +34,8 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
     };
     private final String id;
     protected NodePin[] pins = new NodePin[6];
-    private CpuFrequency requiredCpuFrequency;
-    private int connectorNumber;
+    private final CpuFrequency requiredCpuFrequency;
+    private final int connectorNumber;
 
     /**
      * Create new device with unknown CPU frequency automatically adding itself to node.
