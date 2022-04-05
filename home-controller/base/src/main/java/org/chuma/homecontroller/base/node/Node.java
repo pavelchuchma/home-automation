@@ -62,7 +62,10 @@ public class Node implements PacketReceivedListener {
         packetUartIO.addSpecificReceivedPacketListener(this, nodeId, -1);
     }
 
-    private static String asBinary(int i) {
+    /**
+     * Return string representation of byte value in binary format (e.g. 0b00110011).
+     */
+    public static String asBinary(int i) {
         String bin = "0000000" + Integer.toBinaryString(i);
         return "0b" + bin.substring(bin.length() - 8);
     }

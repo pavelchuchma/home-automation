@@ -29,6 +29,10 @@ public class NodeInfoRegistry {
         this.packetUartIO = packetUartIO;
     }
 
+    public IPacketUartIO getPacketUartIO() {
+        return packetUartIO;
+    }
+
     /**
      * Get switch listener registered to each added node. This switch listener
      * will receive all events from the nodes.

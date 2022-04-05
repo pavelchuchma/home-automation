@@ -17,7 +17,7 @@ public class Packet {
     public final int nodeId;
     public final int messageType;
     public final int[] data;
-    final int length;
+    public final int length;
 
     public Packet(int nodeId, int messageType, int[] data) {
         if (data != null && data.length > 5) throw new IllegalArgumentException("Too long data: " + data.length);

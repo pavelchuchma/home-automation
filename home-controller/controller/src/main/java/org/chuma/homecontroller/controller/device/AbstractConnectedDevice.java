@@ -27,7 +27,7 @@ import org.chuma.homecontroller.base.node.Pin;
  * device instance corresponds to that single HW device.
  */
 public abstract class AbstractConnectedDevice implements org.chuma.homecontroller.base.node.ConnectedDevice {
-    final static Pin[][] layout = {
+    public final static Pin[][] layout = {
             {Pin.pinA5, Pin.pinA3, Pin.pinA2, Pin.pinA0, Pin.pinB4, Pin.pinB5},
             {Pin.pinC3, Pin.pinC1, Pin.pinC0, Pin.pinA6, Pin.pinC2, Pin.pinA7},
             {Pin.pinB0, Pin.pinB1, Pin.pinC5, Pin.pinC4, Pin.pinC6, Pin.pinC7}
@@ -95,6 +95,10 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
     @Override
     public int getConnectorNumber() {
         return connectorNumber;
+    }
+
+    public String getId() {
+        return id;
     }
 
     /**
