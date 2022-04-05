@@ -204,6 +204,6 @@ public class SystemPage extends AbstractPage {
     }
 
     @Override
-    void appendContent(StringBuilder builder) {
+    protected void appendContent(StringBuilder builder) {
     }
 }

@@ -97,7 +97,7 @@ public abstract class AbstractPage implements Page {
         return -1;
     }
 
-    abstract void appendContent(StringBuilder builder);
+    protected abstract void appendContent(StringBuilder builder);
 
     @Override
     public void handle(String target, Request request, HttpServletResponse response) throws IOException {
