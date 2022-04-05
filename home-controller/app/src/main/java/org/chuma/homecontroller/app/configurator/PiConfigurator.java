@@ -774,6 +774,7 @@ public class PiConfigurator extends AbstractConfigurator {
                 new PirHandler(pirStatusList),
                 new WaterPumpHandler(Collections.singleton(waterPumpMonitor)),
                 new HvacHandler(Collections.singleton(hvacActor)));
+        configureSimulator(pages, wsHandlers, false);
         // rest/all handler
         List<Handler> handlers = new ArrayList<>(pages);
         handlers.add(new StaticPage(VIRTUAL_CONFIGURATION_JS_FILENAME, "/configuration-pi.js", null));
