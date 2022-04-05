@@ -1,8 +1,9 @@
 'use strict';
 
 function getBaseUrl() {
-    // return 'http://localhost';
-    return 'http://192.168.68.150';
+    var s = new URL("/", new URL(window.location.href)).toString();
+    // Strip trailing slash
+    return s.substring(0, s.length - 1);
 }
 
 function getFloorIds() {
