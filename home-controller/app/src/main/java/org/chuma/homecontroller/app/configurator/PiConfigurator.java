@@ -30,6 +30,7 @@ import org.chuma.homecontroller.app.servlet.rest.PwmLightsHandler;
 import org.chuma.homecontroller.app.servlet.rest.ServletActionHandler;
 import org.chuma.homecontroller.app.servlet.rest.StatusHandler;
 import org.chuma.homecontroller.app.servlet.rest.WaterPumpHandler;
+import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.AbstractSensorAction;
@@ -753,6 +754,7 @@ public class PiConfigurator extends AbstractConfigurator {
         lst.addActionBinding(new ActionBinding(testSw.getLeftUpperButton(), new SwitchOnAction(testingLeftOnOffActor), null));
         lst.addActionBinding(new ActionBinding(testSw.getLeftBottomButton(), new SwitchOffAction(testingLeftOnOffActor), null));
 
+        List<WebSocketHandler> wsHandlers = new ArrayList<>();
         // page handlers
         Page floorsPage = new StaticPage("/", "/floorPlan.html", "Mapa");
         List<Page> pages = new ArrayList<>();
@@ -779,7 +781,7 @@ public class PiConfigurator extends AbstractConfigurator {
         handlers.add(new ServletActionHandler(servletActions));
         handlers.addAll(deviceRestHandlers);
         handlers.add(new AllStatusHandler(deviceRestHandlers));
-        servlet = new Servlet(handlers, floorsPage.getPath());
+        servlet = new Servlet(handlers, floorsPage.getPath(), wsHandlers);
 
 //        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);
 //        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));

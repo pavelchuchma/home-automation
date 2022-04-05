@@ -13,6 +13,8 @@ dependencies {
 
     implementation 'ch.qos.logback:logback-classic'
     implementation group: 'org.eclipse.jetty', name: 'jetty-server'
+    implementation group: 'org.eclipse.jetty.websocket', name: 'websocket-api'
+    implementation group: 'org.eclipse.jetty.websocket', name: 'websocket-server'
     implementation group: 'org.apache.commons', name: 'commons-lang3'
     implementation 'org.chuma.hvac-controller:hvac-controller'
 
