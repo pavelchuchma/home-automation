@@ -8,6 +8,9 @@ class WaterPumpItem extends BaseItem {
         this.lastPeriodRecCount = undefined;
         this.lastRecords = undefined;
 
+        document.getElementById('pumpCanvas').addEventListener("click", (function () {
+            this.onClick();
+        }).bind(this));
     }
 
     update(item) {
@@ -28,5 +31,9 @@ class WaterPumpItem extends BaseItem {
             lastRecordDuration = this.lastRecords[this.lastRecords.length - 1].duration;
         }
         ctx.fillText('Poslední: ' + Math.round(lastRecordDuration * 10.0) / 10.0 + ' s', 5, 35);
+    }
+
+    onClick() {
+        window.location = '/nodes'
     }
 }
