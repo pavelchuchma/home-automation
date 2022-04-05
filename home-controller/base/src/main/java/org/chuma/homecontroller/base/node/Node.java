@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,13 +99,40 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     public void addDevice(ConnectedDevice device) {
         for (ConnectedDevice d : devices) {
             if (d.getConnectorNumber() == device.getConnectorNumber()) {
-                throw new IllegalArgumentException(String.format("Cannot add device %s on connector position %d because" +
-                        " it is already used by %s", device, device.getConnectorNumber(), d));
+                throw new NodeConfigurationException(String.format("Cannot add device %s on connector position %d because" +
+                        " it is already used by %s", device, device.getConnectorNumber(), d), "ConnectorAlreadyUsed");
             }
-            // TODO: Check that device masks don't overlap - each device has distinct set of pins
         }
+        if ((device.getEventMask() & device.getOutputMasks()) != 0) {
+            throw new NodeConfigurationException(String.format("Event and output masks of device %s are not disjunctive: %s vs. %s",
+                    device, intAsBinaryString(device.getEventMask()), intAsBinaryString(device.getOutputMasks())), "DeviceEventOutputClash");
+        }
+
+        validatePortMask(device, ConnectedDevice::getEventMask, "event", ConnectedDevice::getEventMask, "event", "ConflictingEventMask");
+        validatePortMask(device, ConnectedDevice::getOutputMasks, "output", ConnectedDevice::getOutputMasks, "output", "ConflictingOutputMask");
+        validatePortMask(device, ConnectedDevice::getEventMask, "event", ConnectedDevice::getOutputMasks, "output", "DeviceEventMaskConflictsExistingOutputMasks");
+        validatePortMask(device, ConnectedDevice::getOutputMasks, "output", ConnectedDevice::getEventMask, "event", "DeviceOutputMaskConflictsExistingEventMasks");
+
         devices.add(device);
     }
+
+    private void validatePortMask(ConnectedDevice device,
+                                  Function<ConnectedDevice, Integer> deviceMaskGetter, String deviceMaskName,
+                                  Function<ConnectedDevice, Integer> existingMaskGetter, String existingMaskName,
+                                  String errorCode) {
+        int existingMask = aggregatePortMask(existingMaskGetter);
+        final int deviceMask = deviceMaskGetter.apply(device);
+        if ((deviceMask & existingMask) != 0) {
+            throw new NodeConfigurationException(String.format("Cannot add device %s on node %s because its %s mask [%s] " +
+                            "conflicts with aggregated %s mask [%s] of already registered devices on this node.", device, this,
+                    deviceMaskName, intAsBinaryString(deviceMask), existingMaskName, intAsBinaryString(existingMask)), errorCode);
+        }
+    }
+
+    String intAsBinaryString(int n) {
+        return String.join(" ", String.format("%32s", Integer.toBinaryString(n)).replace(' ', '0').split("(?<=\\G.{8})"));
+    }
+
 
     @Override
     public String toString() {
@@ -156,6 +184,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
      *
      * @return original byte value before write or -1 if response not received within timeout
      */
+    @SuppressWarnings("unused")
     public synchronized int writeMemory(int address, int mask, int value) throws IOException {
         log.debug("writeMemory: {}(&{})={}", Pic.toString(address), Integer.toBinaryString(mask), value);
         Packet req = Packet.createMsgWriteRamRequest(nodeId, address, mask, value);
@@ -191,7 +220,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         return ((response != null) ? response.data[1] : -1);
     }
 
-    void setPortValueNoWait(char port, int valueMask, int value) throws IOException {
+    public void setPortValueNoWait(char port, int valueMask, int value) throws IOException {
         log.debug("setPortValueNoWait");
         packetUartIO.send(Packet.createMsgSetPort(nodeId, port, valueMask, value, -1, -1));
         log.debug("setPortValueNoWait: done.");
@@ -265,7 +294,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
      * <p>
      * Not used, not tested very well.
      */
-    synchronized boolean enablePwm(int cpuFrequency, int canBaudRatePrescaler, int value) throws IOException {
+    public synchronized boolean enablePwm(int cpuFrequency, int canBaudRatePrescaler, int value) throws IOException {
         log.debug("enablePwm");
         Packet req = Packet.createMsgEnablePwmRequest(nodeId, cpuFrequency, canBaudRatePrescaler, value);
         Packet response = packetUartIO.send(req, MessageType.MSG_EnablePwmResponse, SLOW_RESPONSE_TIMEOUT);
@@ -325,7 +354,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     public synchronized boolean setFrequency(CpuFrequency cpuFrequency) throws IOException {
         log.debug("setFrequency");
         if (cpuFrequency == CpuFrequency.unknown)
-            throw new IllegalArgumentException("Unsupported frequency value: " + cpuFrequency);
+            throw new NodeConfigurationException("Unsupported frequency value: " + cpuFrequency, "InvalidFrequency");
         Packet req = Packet.createMsgSetFrequency(nodeId, cpuFrequency.getValue());
         Packet response = packetUartIO.send(req, MessageType.MSG_SetFrequencyResponse, FAST_RESPONSE_TIMEOUT);
         if (response == null) return false;
@@ -403,24 +432,20 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     public void initialize() {
         log.info("Initialization of node: {} started", this);
 
-        int commonOutputMask = 0;
-        int commonEventMask = 0;
-        int commonInitialOutputValues = 0;
+        int aggregatedOutputMask = aggregatePortMask(ConnectedDevice::getOutputMasks);
+        int aggregatedEventMask = aggregatePortMask(ConnectedDevice::getEventMask);
+        int aggregatedInitialOutputValues = aggregatePortMask(ConnectedDevice::getInitialOutputValues);
         CpuFrequency reqFrequency = CpuFrequency.unknown;
 
         // convert all 4 ports into 32-bit values
         for (ConnectedDevice device : devices) {
-            commonOutputMask |= device.getOutputMasks();
-            commonEventMask |= device.getEventMask();
-            commonInitialOutputValues |= device.getInitialOutputValues();
-
             if (reqFrequency == CpuFrequency.unknown) {
                 reqFrequency = device.getRequiredCpuFrequency();
             }
         }
 
         for (int attempt = 0; attempt < 20; attempt++) {
-            if (doInitialization(commonOutputMask, commonEventMask, commonInitialOutputValues, reqFrequency)) {
+            if (doInitialization(aggregatedOutputMask, aggregatedEventMask, aggregatedInitialOutputValues, reqFrequency)) {
                 log.info("Initialization of node: {} succeeded", this);
                 return;
             }
@@ -429,16 +454,27 @@ public class Node implements PacketUartIO.PacketReceivedListener {
         //todo: reboot device and try it again in case of failure!
     }
 
-    private boolean doInitialization(int commonOutputMask, int commonEventMask, int commonInitialOutputValues, CpuFrequency reqFrequency) {
+    /**
+     * Returns aggregated bit masks for all ports (A-D)
+     */
+    private int aggregatePortMask(Function<ConnectedDevice, Integer> maskGetter) {
+        int value = 0;
+        for (ConnectedDevice device : devices) {
+            value |= maskGetter.apply(device);
+        }
+        return value;
+    }
+
+    private boolean doInitialization(int aggregatedOutputMask, int aggregatedEventMask, int aggregatedInitialOutputValues, CpuFrequency reqFrequency) {
         synchronized (typeInitializationLock) {
             try {
                 setHeartBeatPeriod(HEART_BEAT_PERIOD);
 
                 for (int port = 0; port < 4; port++) {
-                    int valueMask = (commonOutputMask >> port * 8) & 0xFF;
+                    int valueMask = (aggregatedOutputMask >> port * 8) & 0xFF;
                     int trisMask = (valueMask ^ 0xFF) & 0xFF;
-                    int eventMask = (commonEventMask >> port * 8) & 0xFF;
-                    int value = (commonInitialOutputValues >> port * 8) & 0xFF;
+                    int eventMask = (aggregatedEventMask >> port * 8) & 0xFF;
+                    int value = (aggregatedInitialOutputValues >> port * 8) & 0xFF;
 
                     if (valueMask != 0 || eventMask != 0) {
                         if (port == 1) {
@@ -448,7 +484,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
                             trisMask = trisMask & 0xF3 | 0x08; //11110011 | 00001000;
                         }
                         if (setPortValue((char) ('A' + port), valueMask, value, eventMask, trisMask) == null) {
-                            //todo: validate response value. Existence of response need not be enough
+                            //todo: validate response value. Existence of response does not need to be enough
                             log.error("Setting of port {} of node {} failed", (char) ('A' + port), this);
                             return false;
                         }
@@ -484,6 +520,7 @@ public class Node implements PacketUartIO.PacketReceivedListener {
     /**
      * Reads 4 bytes of PIC program memory on given address.
      */
+    @SuppressWarnings("unused")
     public int[] readProgramMemory(int address) throws IOException {
         Packet response = packetUartIO.send(
                 Packet.createMsgReadProgramMemory(getNodeId(), address),
