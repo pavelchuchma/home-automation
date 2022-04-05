@@ -13,7 +13,7 @@ import org.chuma.homecontroller.app.servlet.Servlet;
 import org.chuma.homecontroller.base.packet.IPacketUartIO;
 import org.chuma.homecontroller.base.packet.PacketUartIO;
 import org.chuma.homecontroller.base.packet.PacketUartIOException;
-import org.chuma.homecontroller.base.packet.PacketUartIOMock;
+import org.chuma.homecontroller.base.packet.simulation.SimulatedPacketUartIO;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 
 public class Main {
@@ -27,7 +27,7 @@ public class Main {
                 packetUartIO = new PacketUartIO(port, 19200);
             } catch (Exception | Error e) {
                 if (System.getenv("COMPUTERNAME") != null) {
-                    packetUartIO = new PacketUartIOMock();
+                    packetUartIO = new SimulatedPacketUartIO();
                 } else {
                     throw e;
                 }
