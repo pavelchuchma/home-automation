@@ -1,0 +1,68 @@
+table {
+    border-collapse: collapse;
+}
+
+table.hidden {
+    display: none;
+}
+
+td {
+    vertical-align: middle;
+}
+
+td.title {
+    text-align: center;
+    padding-bottom: 0.5em;
+}
+
+td.changed {
+    background-color: cyan;
+}
+
+td.name {
+    width: 3em;
+}
+
+tr.top td.name {
+    border-top: 2px solid;
+}
+
+tr.bottom td.name {
+    border-bottom: 2px solid;
+}
+
+td.name.left {
+    border-right: none;
+    padding-left: 5px;
+    padding-right: 10px;
+    border-left: 2px solid;
+}
+
+td.name.right {
+    text-align: right;
+    border-left: none;
+    padding-right: 5px;
+    padding-left: 10px;
+    border-right: 2px solid;
+}
+
+td.dir {
+    text-align: center;
+    width: 1em;
+    font-size: 2em;
+}
+
+td.dir.left.out span::before, td.dir.right.in span::before {
+    content: "\2190";
+}
+
+td.dir.left.in span::before, td.dir.right.out span::before {
+    content: "\2192";
+}
+
+td.value {
+    text-align: center;
+    width: 4em;
+    cursor: pointer;
+    /* not-allowed */
+}

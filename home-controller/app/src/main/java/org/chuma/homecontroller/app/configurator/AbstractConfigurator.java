@@ -10,7 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.chuma.homecontroller.app.servlet.Servlet;
+import org.chuma.homecontroller.app.servlet.pages.Page;
+import org.chuma.homecontroller.app.servlet.simulation.SimulationPage;
+import org.chuma.homecontroller.app.servlet.simulation.SimulationWebSocketHandler;
+import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
 import org.chuma.homecontroller.base.node.NodePin;
+import org.chuma.homecontroller.base.packet.IPacketUartIO;
+import org.chuma.homecontroller.base.packet.simulation.SimulatedPacketUartIO;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.PirStatus;
 import org.chuma.homecontroller.controller.action.Action;
@@ -24,6 +30,7 @@ import org.chuma.homecontroller.controller.controller.LouversController;
 import org.chuma.homecontroller.controller.device.LddBoardDevice;
 import org.chuma.homecontroller.controller.device.SwitchIndicator;
 import org.chuma.homecontroller.controller.device.WallSwitch;
+import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
 
@@ -161,5 +168,24 @@ public abstract class AbstractConfigurator {
             lst.addActionBinding(new ActionBinding(pirPin, activateActionArray, deactivateActionArray));
         }
         pirStatusList.add(status);
+    }
+
+    /**
+     * Configure simulator into list of pages and web socket handlers if using {@link SimulatedPacketUartIO}.
+     *
+     * @param initFromRegistry initialize simulated nodes from {@link NodeInfoRegistry}
+     */
+    protected void configureSimulator(List<Page> pages, List<WebSocketHandler> wsHandlers, boolean initFromRegistry) {
+        IPacketUartIO packetUartIO = nodeInfoRegistry.getPacketUartIO();
+        if (packetUartIO instanceof SimulatedPacketUartIO) {
+            SimulatedPacketUartIO sim = (SimulatedPacketUartIO) packetUartIO;
+            if (initFromRegistry) {
+                for (NodeInfo node : nodeInfoRegistry.getNodeInfos()) {
+                    sim.registerNode(node.getNode());
+                }
+            }
+            pages.add(new SimulationPage(pages, sim));
+            wsHandlers.add(new SimulationWebSocketHandler(sim));
+        }
     }
 }
