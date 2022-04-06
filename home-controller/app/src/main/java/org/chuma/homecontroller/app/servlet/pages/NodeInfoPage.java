@@ -1,25 +1,21 @@
 package org.chuma.homecontroller.app.servlet.pages;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.eclipse.jetty.server.Request;
 
 import org.chuma.homecontroller.app.servlet.ServletAction;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 
 public class NodeInfoPage extends AbstractPage {
-    final List<ServletAction> rootActions;
+    final List<ServletAction> servletActions;
     final NodeInfoRegistry nodeInfoRegistry;
 
-    public NodeInfoPage(NodeInfoRegistry nodeInfoRegistry, Iterable<Page> links, Collection<ServletAction> rootActions) {
+    public NodeInfoPage(NodeInfoRegistry nodeInfoRegistry, Iterable<Page> links, Collection<ServletAction> servletActions) {
         super("/nodes", "Node Info", "Nodes", "favicon.png", links);
         this.nodeInfoRegistry = nodeInfoRegistry;
-        this.rootActions = new ArrayList<>(rootActions);
+        this.servletActions = new ArrayList<>(servletActions);
     }
 
     @Override
@@ -41,14 +37,11 @@ public class NodeInfoPage extends AbstractPage {
 
     @Override
     public void appendContent(StringBuilder builder) {
-        int i = 1;
-        boolean rootActionAdded = false;
-        for (ServletAction action : rootActions) {
-            builder.append("<a href='").append(getPath()).append("/a").append(i++).append("'>")
-                    .append(action.name).append("</a>&nbsp;&nbsp;&nbsp;&nbsp;");
-            rootActionAdded = true;
+        for (ServletAction action : servletActions) {
+            builder.append("<a href='' onClick=\"performServletAction('").append(action.getId()).append("')\">")
+                    .append(action.getLabel()).append("</a>&nbsp;&nbsp;&nbsp;&nbsp;");
         }
-        if (rootActionAdded) {
+        if (!servletActions.isEmpty()) {
             builder.append("<br/>");
         }
 
@@ -62,14 +55,5 @@ public class NodeInfoPage extends AbstractPage {
         }
 
         builder.append("</table>");
-    }
-
-    @Override
-    public void handle(String target, Request request, HttpServletResponse response) throws IOException {
-        int actionIndex = tryTargetMatchAndParseArg(target, getPath() + "/a");
-        if (actionIndex > 0 && actionIndex <= rootActions.size()) {
-            rootActions.get(actionIndex - 1).action.perform(-1);
-        }
-        super.handle(target, request, response);
     }
 }

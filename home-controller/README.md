@@ -9,6 +9,7 @@
 * [x] refactor IOnOfActor.switchOn percent parameter from int to double
 * [x] !!! refactor `LouverControllerImpl.setPosition()` percent parameter from int to double
 * [x] use `Validate.inclusiveBetween` whenever possible
+* [x] Fix Bzucak & Garaz actions
 * [ ] Merge Nodes & System pages
 * [ ] Rename Node.Listener method: Replace ButtonUp/Down by State High/Low...
 * [ ] Rename SwitchListener to something more generic

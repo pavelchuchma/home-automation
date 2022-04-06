@@ -3,11 +3,25 @@ package org.chuma.homecontroller.app.servlet;
 import org.chuma.homecontroller.controller.action.Action;
 
 public class ServletAction {
-    final public String name;
-    final public Action action;
+    private final String id;
+    private final String label;
+    private final Action action;
 
-    public ServletAction(String name, Action action) {
-        this.name = name;
+    public ServletAction(String id, String label, Action action) {
+        this.id = id;
+        this.label = label;
         this.action = action;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public Action getAction() {
+        return action;
     }
 }

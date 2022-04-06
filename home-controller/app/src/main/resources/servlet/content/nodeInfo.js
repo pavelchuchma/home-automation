@@ -42,3 +42,8 @@ function formatTime(id, time) {
     const td = document.getElementById(id);
     td.innerHTML = (time != null) ? time : '-';
 }
+
+function performServletAction(id) {
+    const path = `/rest/servletActions/action?id=${id}&action=perform`;
+    BaseItem._send(path);
+}

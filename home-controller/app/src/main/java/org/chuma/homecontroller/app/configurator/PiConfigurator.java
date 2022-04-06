@@ -27,6 +27,7 @@ import org.chuma.homecontroller.app.servlet.rest.LouversHandler;
 import org.chuma.homecontroller.app.servlet.rest.NodeHandler;
 import org.chuma.homecontroller.app.servlet.rest.PirHandler;
 import org.chuma.homecontroller.app.servlet.rest.PwmLightsHandler;
+import org.chuma.homecontroller.app.servlet.rest.ServletActionHandler;
 import org.chuma.homecontroller.app.servlet.rest.StatusHandler;
 import org.chuma.homecontroller.app.servlet.rest.WaterPumpHandler;
 import org.chuma.homecontroller.base.node.Node;
@@ -738,9 +739,9 @@ public class PiConfigurator extends AbstractConfigurator {
         InputDevice cidlaRozvadec = new InputDevice("cidlaRozvadec", rozvadecDole, 3);
         setupMagneticSensor(lst, cidlaRozvadec.getIn1AndActivate(), "mgntCrpd", "Cerpadlo", waterPumpMonitor.getOnAction(), waterPumpMonitor.getOffAction());
 
-        List<ServletAction> rootActions = new ArrayList<>();
-        rootActions.add(new ServletAction("Bzučák", bzucakAction));
-        rootActions.add(new ServletAction("Garáž", ovladacGarazAction));
+        List<ServletAction> servletActions = new ArrayList<>();
+        servletActions.add(new ServletAction("openDoor", "Bzučák", bzucakAction));
+        servletActions.add(new ServletAction("openGarage", "Garáž", ovladacGarazAction));
 
         //test wall switch application
         WallSwitch testSw = new WallSwitch("testSwA", switchTestNode50, 1);
@@ -761,7 +762,7 @@ public class PiConfigurator extends AbstractConfigurator {
                 new LightsPage(pwmActors, pages),
                 new LouversPage(louversControllers, pages),
                 new PirPage(pirStatusList, pages),
-                new NodeInfoPage(nodeInfoRegistry, pages, rootActions),
+                new NodeInfoPage(nodeInfoRegistry, pages, servletActions),
                 new SystemPage(nodeInfoRegistry, pages)));
         // rest handlers
         List<StatusHandler> deviceRestHandlers = Arrays.asList(
@@ -775,6 +776,7 @@ public class PiConfigurator extends AbstractConfigurator {
         List<Handler> handlers = new ArrayList<>(pages);
         handlers.add(new StaticPage(VIRTUAL_CONFIGURATION_JS_FILENAME, "/configuration-pi.js", null));
         handlers.add(new NodeHandler(nodeInfoRegistry));
+        handlers.add(new ServletActionHandler(servletActions));
         handlers.addAll(deviceRestHandlers);
         handlers.add(new AllStatusHandler(deviceRestHandlers));
         servlet = new Servlet(handlers, floorsPage.getPath());
