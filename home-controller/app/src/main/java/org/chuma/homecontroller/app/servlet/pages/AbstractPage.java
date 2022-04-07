@@ -2,6 +2,8 @@ package org.chuma.homecontroller.app.servlet.pages;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
 
 import org.eclipse.jetty.server.Request;
 
@@ -18,7 +20,7 @@ public abstract class AbstractPage implements Page {
         this.title = title;
         this.linkTitle = linkTitle;
         this.favicon = favicon;
-        this.links = links;
+        this.links = (links != null) ? links : new ArrayList<>();
     }
 
     @Override
@@ -97,12 +99,12 @@ public abstract class AbstractPage implements Page {
         return -1;
     }
 
-    protected abstract void appendContent(StringBuilder builder);
+    protected abstract void appendContent(StringBuilder builder, Map<String, String[]> requestParameters);
 
     @Override
     public void handle(String target, Request request, HttpServletResponse response) throws IOException {
         StringBuilder builder = beginHtlDocument();
-        appendContent(builder);
+        appendContent(builder, request.getParameterMap());
         builder.append("</body></html>");
         sendOkResponse(request, response, builder.toString());
     }

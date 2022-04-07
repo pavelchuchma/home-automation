@@ -3,6 +3,7 @@ package org.chuma.homecontroller.app.servlet.pages;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.chuma.homecontroller.app.servlet.ServletAction;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
@@ -36,7 +37,7 @@ public class NodeInfoPage extends AbstractPage {
     }
 
     @Override
-    public void appendContent(StringBuilder builder) {
+    public void appendContent(StringBuilder builder, Map<String, String[]> requestParameters) {
         for (ServletAction action : servletActions) {
             builder.append("<a href='' onClick=\"performServletAction('").append(action.getId()).append("')\">")
                     .append(action.getLabel()).append("</a>&nbsp;&nbsp;&nbsp;&nbsp;");

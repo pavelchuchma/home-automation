@@ -47,4 +47,14 @@ public class NodeHandler extends AbstractRestHandler<NodeInfo> {
     void writeIdImpl(Map.Entry<String, NodeInfo> entry, JsonWriter objectWriter) {
         objectWriter.addAttribute("id", Integer.parseInt(entry.getKey()));
     }
+
+    @Override
+    void processAction(NodeInfo nodeInfo, Map<String, String[]> requestParameters) throws Exception {
+        String action = getMandatoryStringParam(requestParameters, "action");
+        if ("reset".equals(action)) {
+            nodeInfo.getNode().reset();
+            return;
+        }
+        throw new IllegalArgumentException("Unknown action '" + action + "'");
+    }
 }

@@ -58,7 +58,7 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
         return values[0];
     }
 
-    static int getMandatoryIntParam(Map<String, String[]> requestParams, String name) {
+    public static int getMandatoryIntParam(Map<String, String[]> requestParams, String name) {
         return Integer.parseInt(getMandatoryStringParam(requestParams, name));
     }
 
@@ -134,7 +134,7 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
     void writeJsonItemValues(JsonWriter jw, T item, HttpServletRequest request) {
     }
 
-    void processAction(T instance, Map<String, String[]> requestParameters) {
+    void processAction(T instance, Map<String, String[]> requestParameters) throws Exception {
     }
 
     T getItemById(Map<String, String[]> requestParams) {

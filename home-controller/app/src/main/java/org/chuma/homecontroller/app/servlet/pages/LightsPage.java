@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.app.servlet.pages;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.chuma.homecontroller.app.servlet.Servlet.currentValueFormatter;
 
@@ -32,7 +33,7 @@ public class LightsPage extends AbstractPage {
     }
 
     @Override
-    public void appendContent(StringBuilder builder) {
+    public void appendContent(StringBuilder builder, Map<String, String[]> requestParameters) {
         builder.append("<br/><br/><table class='lightsTable'>");
         for (PwmActor actor : pwmActors) {
             builder.append("<tr>");

@@ -15,6 +15,7 @@ import org.chuma.homecontroller.app.servlet.Servlet;
 import org.chuma.homecontroller.app.servlet.ServletAction;
 import org.chuma.homecontroller.app.servlet.pages.LightsPage;
 import org.chuma.homecontroller.app.servlet.pages.LouversPage;
+import org.chuma.homecontroller.app.servlet.pages.NodeInfoDetailPage;
 import org.chuma.homecontroller.app.servlet.pages.NodeInfoPage;
 import org.chuma.homecontroller.app.servlet.pages.Page;
 import org.chuma.homecontroller.app.servlet.pages.PirPage;
@@ -776,7 +777,9 @@ public class PiConfigurator extends AbstractConfigurator {
                 new HvacHandler(Collections.singleton(hvacActor)));
         configureSimulator(pages, wsHandlers, false);
         // rest/all handler
-        List<Handler> handlers = new ArrayList<>(pages);
+        List<Handler> handlers = new ArrayList<>();
+        handlers.add(new NodeInfoDetailPage(nodeInfoRegistry));
+        handlers.addAll(pages);
         handlers.add(new StaticPage(VIRTUAL_CONFIGURATION_JS_FILENAME, "/configuration-pi.js", null));
         handlers.add(new NodeHandler(nodeInfoRegistry));
         handlers.add(new ServletActionHandler(servletActions));

@@ -21,7 +21,7 @@ function updateAll() {
 
 function updateValue(item) {
     const id = item.id;
-    document.getElementById('name' + id).innerHTML = `${item.id}-${item.name}`;
+    document.getElementById('name' + id).innerHTML = `<a href='/nodes/detail?id=${item.id}'>${item.id}-${item.name}</a>`;
 
     const age = document.getElementById('pa' + id);
     age.innerHTML = (item.lastPingAge >= 0) ? `${item.lastPingAge}` : '-';

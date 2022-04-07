@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.app.servlet.simulation;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import org.chuma.homecontroller.app.servlet.pages.AbstractPage;
 import org.chuma.homecontroller.app.servlet.pages.Page;
@@ -36,7 +37,7 @@ public class SimulationPage extends AbstractPage {
     }
 
     @Override
-    protected void appendContent(StringBuilder sb) {
+    protected void appendContent(StringBuilder sb, Map<String, String[]> requestParameters) {
         for (SimulatedNode simNode : simulator.getSimulatedNodes()) {
             int id = simNode.getId();
             Node node = simNode.getNode();

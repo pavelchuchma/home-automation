@@ -3,6 +3,7 @@ package org.chuma.homecontroller.app.servlet.pages;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jetty.server.Request;
 
@@ -204,6 +205,6 @@ public class SystemPage extends AbstractPage {
     }
 
     @Override
-    protected void appendContent(StringBuilder builder) {
+    protected void appendContent(StringBuilder builder, Map<String, String[]> requestParameters) {
     }
 }

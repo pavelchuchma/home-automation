@@ -1,5 +1,7 @@
 package org.chuma.homecontroller.app.servlet.pages;
 
+import java.util.Map;
+
 import org.chuma.homecontroller.controller.controller.LouversController;
 
 public class LouversPage extends AbstractPage {
@@ -28,7 +30,7 @@ public class LouversPage extends AbstractPage {
     }
 
     @Override
-    public void appendContent(StringBuilder builder) {
+    public void appendContent(StringBuilder builder, Map<String, String[]> requestParameters) {
         for (int i = 0; i < louversControllers.length; i += 4) {
             int count = (i + 8 < louversControllers.length) ? 4 : louversControllers.length - i;
             builder.append(getLouversTable(i, count));
