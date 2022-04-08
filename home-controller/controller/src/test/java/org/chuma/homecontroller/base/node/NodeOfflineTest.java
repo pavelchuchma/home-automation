@@ -95,6 +95,11 @@ public class NodeOfflineTest {
         }
 
         @Override
+        public String getId() {
+            return "42";
+        }
+
+        @Override
         public CpuFrequency getRequiredCpuFrequency() {
             return CpuFrequency.unknown;
         }

@@ -1,24 +1,27 @@
 package org.chuma.homecontroller.app.servlet.pages;
 
+import java.util.Comparator;
 import java.util.Map;
 
 import org.apache.commons.lang3.Validate;
 
 import org.chuma.homecontroller.app.servlet.rest.AbstractRestHandler;
+import org.chuma.homecontroller.base.node.ConnectedDevice;
+import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 
 public class NodeInfoDetailPage extends AbstractPage {
     final NodeInfoRegistry nodeInfoRegistry;
 
-    public NodeInfoDetailPage(NodeInfoRegistry nodeInfoRegistry) {
-        super("/nodes/detail", "Node Detail", "Node Detail", "favicon.png", null);
+    public NodeInfoDetailPage(NodeInfoRegistry nodeInfoRegistry, Iterable<Page> links) {
+        super("/nodes/detail", "Node Detail", "Node Detail", "favicon.png", links);
         this.nodeInfoRegistry = nodeInfoRegistry;
     }
 
     @Override
     public String[] getStylesheets() {
-        return new String[]{"commons.css", "nodeInfo.css"};
+        return new String[]{"commons.css", "nodeInfoDetail.css"};
     }
 
     @Override
@@ -28,6 +31,8 @@ public class NodeInfoDetailPage extends AbstractPage {
                 "status.js",
                 "items/baseItem.js",
                 "items/nodeInfoItem.js",
+                VIRTUAL_CONFIGURATION_JS_FILENAME,
+                "nodeInfoDetail.js",
         };
     }
 
@@ -37,11 +42,16 @@ public class NodeInfoDetailPage extends AbstractPage {
         NodeInfo nodeInfo = nodeInfoRegistry.getNodeInfo(id);
         Validate.notNull(nodeInfo, "no item with id '" + id + "' found");
 
-//        builder.append("<table class='nodeTable'>\n" +
-//                "<tr><th class=''>Node #<th class=''>Ping Age<th class=''>Boot Time<th class=''>Build Time<th class=''>MessageLog");
+        Node node = nodeInfo.getNode();
+        builder.append("<div class=title>#").append(node.getNodeId()).append(" ").append(node.getName()).append("</div><br/>");
 
-        builder.append(nodeInfo.getNode().getName());
+        if (nodeInfo.isResetSupported()) {
+            builder.append("<button onClick=\"resetNode('").append(id).append("')\">Reset</button>");
+        }
+        builder.append("<div class=devicesTitle>Connected devices:</div><ul>\n");
 
-//        builder.append("</table>");
+        node.getDevices().stream().sorted(Comparator.comparing(ConnectedDevice::getConnectorNumber))
+                .forEachOrdered(d -> builder.append("<li>").append(d.getConnectorNumber()).append(" - ").append(d.getId()).append("</li>\n"));
+        builder.append("</ul>");
     }
 }

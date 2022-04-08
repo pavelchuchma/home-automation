@@ -56,12 +56,12 @@ public abstract class AbstractPage implements Page {
                 "<head>\n" +
                 "    <meta charset='UTF-8'>\n");
         builder.append("    <title>").append(getTitle()).append("</title>\n" +
-                "    <link href='").append(getFavicon()).append("' rel='icon' type='image/png'>\n");
+                "    <link href='/").append(getFavicon()).append("' rel='icon' type='image/png'>\n");
         for (String stylesheet : getStylesheets()) {
-            builder.append("    <link href='").append(stylesheet).append("' rel='stylesheet' type='text/css'/>\n");
+            builder.append("    <link href='/").append(stylesheet).append("' rel='stylesheet' type='text/css'/>\n");
         }
         for (String script : getScripts()) {
-            builder.append("    <script src='").append(script).append("'></script>\n");
+            builder.append("    <script src='/").append(script).append("'></script>\n");
         }
         builder.append("</head>\n<body>\n<p id='error'></p>\n");
 

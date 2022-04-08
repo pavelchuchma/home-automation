@@ -89,7 +89,7 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
 
     @Override
     public String toString() {
-        return String.format("%s(%s)", getClass().getSimpleName(), id);
+        return String.format("%s(%s)", getClass().getSimpleName(), getId());
     }
 
     @Override
@@ -97,6 +97,7 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
         return connectorNumber;
     }
 
+    @Override
     public String getId() {
         return id;
     }

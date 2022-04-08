@@ -39,8 +39,8 @@ public class NodeInfoPage extends AbstractPage {
     @Override
     public void appendContent(StringBuilder builder, Map<String, String[]> requestParameters) {
         for (ServletAction action : servletActions) {
-            builder.append("<a href='' onClick=\"performServletAction('").append(action.getId()).append("')\">")
-                    .append(action.getLabel()).append("</a>&nbsp;&nbsp;&nbsp;&nbsp;");
+            builder.append("<button onClick=\"performServletAction('").append(action.getId()).append("')\">")
+                    .append(action.getLabel()).append("</button>&nbsp;&nbsp;&nbsp;&nbsp;");
         }
         if (!servletActions.isEmpty()) {
             builder.append("<br/>");

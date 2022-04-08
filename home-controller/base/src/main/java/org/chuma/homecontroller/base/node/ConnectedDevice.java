@@ -11,6 +11,11 @@ public interface ConnectedDevice {
     int getConnectorNumber();
 
     /**
+     * Device id
+     */
+    String getId();
+
+    /**
      * PIC CPU frequency required by device.
      */
     CpuFrequency getRequiredCpuFrequency();
