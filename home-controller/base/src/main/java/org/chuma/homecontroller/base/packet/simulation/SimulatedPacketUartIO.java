@@ -30,8 +30,8 @@ import org.chuma.homecontroller.base.packet.PacketUartIO;
  * Implementation of {@link PacketUartIO} which simulates the actual system.
  */
 public class SimulatedPacketUartIO extends AbstractPacketUartIO {
-    public static final int[] TRIS_ADDRESS = new int[] { Pic.TRISA, Pic.TRISB, Pic.TRISC };
-    public static final int[] PORT_ADDRESS = new int[] { Pic.PORTA, Pic.PORTB, Pic.PORTC };
+    public static final int[] TRIS_ADDRESS = new int[] { Pic.TRISA, Pic.TRISB, Pic.TRISC, Pic.TRISD, Pic.TRISE };
+    public static final int[] PORT_ADDRESS = new int[] { Pic.PORTA, Pic.PORTB, Pic.PORTC, Pic.PORTD, Pic.PORTE };
 
     private ConcurrentMap<Integer, SimulatedNode> nodes = new ConcurrentHashMap<>();
     private AggregateListener listener = new AggregateListener();

@@ -37,9 +37,13 @@ public class SimulatedNode {
         memory.put(Pic.TRISA, 0xff);
         memory.put(Pic.TRISB, 0xff);
         memory.put(Pic.TRISC, 0xff);
+        memory.put(Pic.TRISD, 0xff);
+        memory.put(Pic.TRISE, 0xff);
         memory.put(Pic.PORTA, 0);
         memory.put(Pic.PORTB, 0);
         memory.put(Pic.PORTC, 0);
+        memory.put(Pic.PORTD, 0);
+        memory.put(Pic.PORTE, 0);
         // Initialize PWM to -1 - not enabled on pin
         for (int i = 0; i < pwm.length; i++) {
             for (int j = 0; j < pwm[i].length; j++) {

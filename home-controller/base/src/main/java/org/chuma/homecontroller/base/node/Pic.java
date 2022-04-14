@@ -340,17 +340,22 @@ public class Pic {
     public static final int PORTA = 0x0F80;
     public static final int PORTB = 0x0F81;
     public static final int PORTC = 0x0F82;
+    public static final int PORTD = 0x0F83;
     public static final int PORTE = 0x0F84;
     public static final int TMR4 = 0x0F87;
     public static final int T4CON = 0x0F88;
     public static final int LATA = 0x0F89;
     public static final int LATB = 0x0F8A;
     public static final int LATC = 0x0F8B;
+    public static final int LATD = 0x0F8C;
+    public static final int LATE = 0x0F8D;
     public static final int SLRCON = 0x0F90;
     public static final int ODCON = 0x0F91;
     public static final int TRISA = 0x0F92;
     public static final int TRISB = 0x0F93;
     public static final int TRISC = 0x0F94;
+    public static final int TRISD = 0x0F95;
+    public static final int TRISE = 0x0F96;
     public static final int CCPTMRS = 0x0F99;
     public static final int REFOCON = 0x0F9A;
     public static final int OSCTUNE = 0x0F9B;
@@ -1142,6 +1147,8 @@ public class Pic {
                 return "PORTB";
             case PORTC:
                 return "PORTC";
+            case PORTD:
+                return "PORTD";
             case PORTE:
                 return "PORTE";
             case TMR4:
@@ -1154,6 +1161,10 @@ public class Pic {
                 return "LATB";
             case LATC:
                 return "LATC";
+            case LATD:
+                return "LATD";
+            case LATE:
+                return "LATE";
             case SLRCON:
                 return "SLRCON";
             case ODCON:
@@ -1164,6 +1175,10 @@ public class Pic {
                 return "TRISB";
             case TRISC:
                 return "TRISC";
+            case TRISD:
+                return "TRISD";
+            case TRISE:
+                return "TRISE";
             case CCPTMRS:
                 return "CCPTMRS";
             case REFOCON:
