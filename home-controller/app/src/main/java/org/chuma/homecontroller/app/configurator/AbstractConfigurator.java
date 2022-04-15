@@ -181,7 +181,10 @@ public abstract class AbstractConfigurator {
             SimulatedPacketUartIO sim = (SimulatedPacketUartIO) packetUartIO;
             if (initFromRegistry) {
                 for (NodeInfo node : nodeInfoRegistry.getNodeInfos()) {
-                    sim.registerNode(node.getNode());
+                    if (sim.getSimulatedNode(node.getNode().getNodeId()) == null) {
+                        // Do not register already registered nodes - user might have already registered and initialized some simulated nodes
+                        sim.registerNode(node.getNode());
+                    }
                 }
             }
             pages.add(new SimulationPage(pages, sim));

@@ -203,6 +203,9 @@ public class SimulatedPacketUartIO extends AbstractPacketUartIO {
      * the node won't send OnReboot message and won't be initialized.
      */
     public void registerNode(Node node) {
+        if (nodes.containsKey(node.getNodeId())) {
+            throw new IllegalStateException("Node with ID " + node.getNodeId() + " is already registered");
+        }
         nodes.put(node.getNodeId(), newSimulatedNode(node.getNodeId(), node, listener));
     }
 
