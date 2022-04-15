@@ -11,11 +11,11 @@ import org.chuma.homecontroller.controller.device.AbstractConnectedDevice;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 
-public class TrainPage extends AbstractPage {
+public class GenericControlPage extends AbstractPage {
     private NodeInfoRegistry nodeInfoRegistry;
     
-    public TrainPage(NodeInfoRegistry nodeInfoRegistry, Iterable<Page> links) {
-        super("/train", "Train Control", "Train", "favicon.png", links);
+    public GenericControlPage(NodeInfoRegistry nodeInfoRegistry, Iterable<Page> links) {
+        super("/generic-control", "Generic Control", "GenCtrl", "favicon.png", links);
         this.nodeInfoRegistry = nodeInfoRegistry;
     }
 
@@ -31,7 +31,7 @@ public class TrainPage extends AbstractPage {
     public String[] getScripts() {
         String[] orig = super.getScripts();
         String[] result = Arrays.copyOf(orig, orig.length + 1);
-        result[orig.length] = "train.js";
+        result[orig.length] = "generic-control.js";
         return result;
     }
 

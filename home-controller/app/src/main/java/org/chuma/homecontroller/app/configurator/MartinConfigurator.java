@@ -10,8 +10,8 @@ import org.chuma.homecontroller.app.servlet.pages.NodeInfoPage;
 import org.chuma.homecontroller.app.servlet.pages.Page;
 import org.chuma.homecontroller.app.servlet.pages.StaticPage;
 import org.chuma.homecontroller.app.servlet.pages.SystemPage;
-import org.chuma.homecontroller.app.servlet.pages.TrainPage;
-import org.chuma.homecontroller.app.servlet.pages.TrainWebSocketHandler;
+import org.chuma.homecontroller.app.servlet.pages.GenericControlPage;
+import org.chuma.homecontroller.app.servlet.pages.GenericControlWebSocketHandler;
 import org.chuma.homecontroller.app.servlet.rest.NodeHandler;
 import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
 import org.chuma.homecontroller.base.node.Node;
@@ -101,10 +101,10 @@ public class MartinConfigurator extends AbstractConfigurator {
 
 
         List<WebSocketHandler> wsHandlers = new ArrayList<>();
-        wsHandlers.add(new TrainWebSocketHandler(nodeInfoRegistry));
+        wsHandlers.add(new GenericControlWebSocketHandler(nodeInfoRegistry));
         List<ServletAction> rootActions = new ArrayList<>();
         List<Page> pages = new ArrayList<>();
-        pages.add(new TrainPage(nodeInfoRegistry, pages));
+        pages.add(new GenericControlPage(nodeInfoRegistry, pages));
         pages.add(new NodeInfoPage(nodeInfoRegistry, pages, rootActions));
         pages.add(new SystemPage(nodeInfoRegistry, pages));
         configureSimulator(pages, wsHandlers, true);

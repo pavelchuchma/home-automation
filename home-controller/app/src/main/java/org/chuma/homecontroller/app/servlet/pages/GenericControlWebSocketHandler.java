@@ -17,13 +17,13 @@ import org.chuma.homecontroller.base.node.Pin;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 
-public class TrainWebSocketHandler extends AbstractWebSocketHandler implements Node.Listener {
+public class GenericControlWebSocketHandler extends AbstractWebSocketHandler implements Node.Listener {
     private NodeInfoRegistry nodeInfoRegistry;
     // Connected clients
     private Set<Adapter> clients = ConcurrentHashMap.newKeySet();
 
-    public TrainWebSocketHandler(NodeInfoRegistry nodeInfoRegistry) {
-        super("/train");
+    public GenericControlWebSocketHandler(NodeInfoRegistry nodeInfoRegistry) {
+        super("/generic-control");
         this.nodeInfoRegistry = nodeInfoRegistry;
         for (NodeInfo nodeInfo : nodeInfoRegistry.getNodeInfos()) {
             nodeInfo.getNode().addListener(this);
