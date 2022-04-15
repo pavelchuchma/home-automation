@@ -104,9 +104,15 @@ public class SimulatedNode {
         int old = memory.get(PORT_ADDRESS[port]);
         int v = old;
         switch (value) {
-            case 0: v &= 0xff & ~mask;
-            case 1: v |= 0xff & mask;
-            case -1: v ^= 0xff & mask; 
+            case 0:
+                v &= 0xff & ~mask;
+                break;
+            case 1:
+                v |= 0xff & mask;
+                break;
+            case -1:
+                v ^= 0xff & mask;
+                break;
         }
         if (v != old) {
             // Something to set - cannot use writeRam() as it checks TRIS
