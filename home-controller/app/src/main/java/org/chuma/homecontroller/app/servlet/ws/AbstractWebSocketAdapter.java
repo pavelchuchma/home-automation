@@ -29,7 +29,7 @@ public class AbstractWebSocketAdapter extends WebSocketAdapter {
     /**
      * Send message to client.
      */
-    public void sendText(String message) {
+    public synchronized void sendText(String message) {
         if (session != null && session.isOpen()) {
             try {
                 session.getRemote().sendString(message);
