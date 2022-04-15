@@ -42,7 +42,6 @@ function changeDir(id, value) {
 }
 
 function clicked(node, pin) {
-    const e = document.getElementById("pic." + node + "." + pin + ".value");
     ws.send(`${node}.${pin}`);
 }
 
