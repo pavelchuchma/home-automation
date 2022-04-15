@@ -36,7 +36,7 @@ public class SimulationWebSocketHandler extends AbstractWebSocketHandler impleme
         for (Iterator<Adapter> it = clients.iterator(); it.hasNext();) {
             Adapter a = it.next();
             if (a.isConnected()) {
-                action.accept(a);
+                new Thread(() -> action.accept(a)).start();
             } else {
                 it.remove();
             }
