@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
@@ -43,7 +41,7 @@ public class Node implements PacketReceivedListener {
     private static final Object typeInitializationLock = new Object();
     private static final Logger log = LoggerFactory.getLogger(Node.class.getName());
 
-    private final Queue<Listener> listeners = new ConcurrentLinkedQueue<>();
+    private final ListenerManager<Listener> listenerManager = new ListenerManager<>();
     private final long[] lastChangeTimes = new long[32];
     private final int nodeId;
     private final String name;
@@ -79,7 +77,7 @@ public class Node implements PacketReceivedListener {
      */
     public void addListener(Listener listener) {
         log.debug("addListener: {}", listener);
-        listeners.add(listener);
+        listenerManager.add(listener);
     }
 
     /**
@@ -406,15 +404,11 @@ public class Node implements PacketReceivedListener {
                     if ((pinMask & eventValue) != 0) {
                         //button UP
                         log.info("button '{}' UP ({}ms)", pin, timeSinceChange);
-                        for (Listener listener : listeners) {
-                            listener.onButtonUp(this, pin, (int) timeSinceChange);
-                        }
+                        listenerManager.callListeners(listener -> listener.onButtonUp(this, pin, (int) timeSinceChange));
                     } else {
                         //button DOWN
                         log.info("button '{}' DOWN ({}ms)", pin, timeSinceChange);
-                        for (Listener listener : listeners) {
-                            listener.onButtonDown(this, pin, (int) timeSinceChange);
-                        }
+                        listenerManager.callListeners(listener -> listener.onButtonDown(this, pin, (int) timeSinceChange));
                     }
                 }
             }
@@ -422,9 +416,7 @@ public class Node implements PacketReceivedListener {
         } else if (packet.messageType == MessageType.MSG_OnReboot) {
             log.info("#{}: Reboot received", nodeId);
             try {
-                for (Listener listener : listeners) {
-                    listener.onReboot(this, packet.data[0], packet.data[1]);
-                }
+                listenerManager.callListenersWithException(listener -> listener.onReboot(this, packet.data[0], packet.data[1]));
                 setInitializationFinished();
                 listenerManager.callListenersWithException(listener -> listener.onInitialized(this));
             } catch (RuntimeException e) {

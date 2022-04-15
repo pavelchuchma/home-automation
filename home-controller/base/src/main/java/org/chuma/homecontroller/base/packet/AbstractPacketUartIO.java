@@ -1,15 +1,14 @@
 package org.chuma.homecontroller.base.packet;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.chuma.homecontroller.base.node.ListenerManager;
 import org.chuma.homecontroller.base.node.MessageType;
 
 /**
@@ -23,9 +22,9 @@ public abstract class AbstractPacketUartIO implements IPacketUartIO {
     protected static Logger log = LoggerFactory.getLogger(PacketUartIO.class.getName());
     protected static Logger msgLog = LoggerFactory.getLogger(PacketUartIO.class.getName() + ".msg");
 
-    private Collection<PacketReceivedListener> receivedListeners = new ConcurrentLinkedQueue<>();
+    private ListenerManager<PacketReceivedListener> receivedListeners = new ListenerManager<>();
     private ConcurrentHashMap<String, PacketReceivedListener> specificReceivedListeners = new ConcurrentHashMap<>();
-    private Collection<PacketSentListener> sentListeners = new ConcurrentLinkedQueue<>();
+    private ListenerManager<PacketSentListener> sentListeners = new ListenerManager<>();
     private ExecutorService threadPool = Executors.newFixedThreadPool(40);
 
     /**
@@ -67,9 +66,7 @@ public abstract class AbstractPacketUartIO implements IPacketUartIO {
         processPacketByListener(packet, specificListener, "listenerNode");
 
         // callbacks for all messages
-        for (PacketReceivedListener listener : receivedListeners) {
-            processPacketByListener(packet, listener, "listenerAll");
-        }
+        receivedListeners.callListeners(listener -> processPacketByListener(packet, listener, "listenerAll"));
     }
 
     @Override
@@ -110,9 +107,7 @@ public abstract class AbstractPacketUartIO implements IPacketUartIO {
             msgLog.debug(" < {}", packet);
             sendImpl(packet);
         }
-        for (PacketSentListener listener : sentListeners) {
-            listener.packetSent(packet);
-        }
+        sentListeners.callListeners(listener -> listener.packetSent(packet));
     }
 
     @Override
