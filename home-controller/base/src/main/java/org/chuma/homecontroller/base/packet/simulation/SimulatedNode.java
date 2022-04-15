@@ -156,7 +156,7 @@ public class SimulatedNode {
 
     public void setEventMask(int port, int mask) {
         int tris = readRam(TRIS_ADDRESS[port]);
-        if ((tris & mask) != 0) {
+        if ((tris & mask) != mask) {
             listener.logMessage(this, Level.WARN, "wrong event mask %s for port %s - TRIS is %s", Node.asBinary(mask), (char)(port + 'A'), Node.asBinary(tris));
         }
         eventMask[port] = mask;
