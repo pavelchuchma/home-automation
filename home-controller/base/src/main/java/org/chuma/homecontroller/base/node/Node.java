@@ -426,6 +426,7 @@ public class Node implements PacketReceivedListener {
                     listener.onReboot(this, packet.data[0], packet.data[1]);
                 }
                 setInitializationFinished();
+                listenerManager.callListenersWithException(listener -> listener.onInitialized(this));
             } catch (RuntimeException e) {
                 log.error("Exception caught from onReboot call of node #" + nodeId, e);
             }
@@ -568,5 +569,10 @@ public class Node implements PacketReceivedListener {
          * PIC rebooting - asks for initialization.
          */
         void onReboot(Node node, int pingCounter, int rconValue) throws IOException;
+
+        /**
+         * PIC initialized after reboot.
+         */
+        void onInitialized(Node node);
     }
 }

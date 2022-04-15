@@ -84,4 +84,9 @@ public class SwitchListener extends AbstractNodeListener {
     public void onReboot(Node node, int pingCounter, int rconValue) {
         node.initialize();
     }
+
+    @Override
+    public void onInitialized(Node node) {
+        // TODO: Here we should call some listeners but we don't have any interface for them yet. Or, we can read registered input pins and call registered listeners.
+    }
 }

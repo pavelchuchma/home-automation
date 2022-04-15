@@ -255,6 +255,10 @@ public class NodeTest {
                 node.setPortValue('B', Bits.bit7, 0x00, 0x00, 0xFF ^ Bits.bit7 ^ Bits.bit0);
                 node.setHeartBeatPeriod(10);
             }
+
+            @Override
+            public void onInitialized(Node node) {
+            }
         });
 
         node2.addListener(new Node.Listener() {
@@ -352,6 +356,10 @@ public class NodeTest {
                 //todo: 62.5 khz. CPU frequency 4 instead of 16 MHz!!!
                 //node.enablePwm(16, 3, 0); //62.5 khz
                 //node2.setPwmValue(pwmValue);
+            }
+
+            @Override
+            public void onInitialized(Node node) {
             }
         });
         while (true) {
@@ -416,6 +424,10 @@ public class NodeTest {
                 node.setPortValue('B', Bits.bit7, 0x00, 0x00, 0xFF ^ Bits.bit7 ^ Bits.bit0);
                 node.setHeartBeatPeriod(10);
             }
+
+            @Override
+            public void onInitialized(Node node) {
+            }
         });
 
         node2.addListener(new Node.Listener() {
@@ -513,6 +525,10 @@ public class NodeTest {
                 //todo: 62.5 khz. CPU frequency 4 instead of 16 MHz!!!
                 //node.enablePwm(16, 3, 0); //62.5 khz
                 //node2.setPwmValue(pwmValue);
+            }
+
+            @Override
+            public void onInitialized(Node node) {
             }
         });
         while (true) {
