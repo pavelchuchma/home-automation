@@ -3,6 +3,8 @@ package org.chuma.homecontroller.app.configurator;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.event.Level;
+
 import org.chuma.homecontroller.app.servlet.Handler;
 import org.chuma.homecontroller.app.servlet.Servlet;
 import org.chuma.homecontroller.app.servlet.ServletAction;
@@ -12,9 +14,19 @@ import org.chuma.homecontroller.app.servlet.pages.StaticPage;
 import org.chuma.homecontroller.app.servlet.pages.SystemPage;
 import org.chuma.homecontroller.app.servlet.pages.GenericControlPage;
 import org.chuma.homecontroller.app.servlet.pages.GenericControlWebSocketHandler;
+import org.chuma.homecontroller.app.servlet.pages.LinkablePage;
 import org.chuma.homecontroller.app.servlet.rest.NodeHandler;
 import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
+import org.chuma.homecontroller.app.train.RailPowerAndDetectors;
+import org.chuma.homecontroller.app.train.TrainSwitch;
+import org.chuma.homecontroller.app.train.TrainWebSocketHandler;
 import org.chuma.homecontroller.base.node.Node;
+import org.chuma.homecontroller.base.node.NodePin;
+import org.chuma.homecontroller.base.node.Pic;
+import org.chuma.homecontroller.base.node.Pin;
+import org.chuma.homecontroller.base.packet.simulation.SimulatedNode;
+import org.chuma.homecontroller.base.packet.simulation.SimulatedNodeListener;
+import org.chuma.homecontroller.base.packet.simulation.SimulatedPacketUartIO;
 import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.controller.LouversController;
 import org.chuma.homecontroller.controller.controller.LouversControllerImpl;
@@ -66,23 +78,14 @@ public class MartinConfigurator extends AbstractConfigurator {
         inputOnly.getIn6AndActivate();
         }
 
-        new AbstractConnectedDevice("TrainControl", node37, 1, new String[] { "speed", "pass", "dir1", "-", "dir2", "-" }) {
-            @Override
-            public int getInitialOutputValues() {
-                return 0;
-            }
+        RailPowerAndDetectors rpd = new RailPowerAndDetectors("RailPowerAndDetectors", node37, 1, 1);
+        RelayBoardDevice tsr = new RelayBoardDevice("TrainSwitchRelay", node37, 2);
+        InputDevice tsi = new InputDevice("TrainSwitchInput", node37, 3);
+        NodePin tsLeftIndicator = tsi.getIn1AndActivate();
+        NodePin tsRightIndicator = tsi.getIn2AndActivate();
 
-            @Override
-            public int getEventMask() {
-                return createMask(pins[1]);
-            }
-
-            @Override
-            public int getOutputMasks() {
-                return createMask(pins[0], pins[2], pins[4], /* added also remaining pins - we don't want them input */ pins[3], pins[5]);
-            }
-        };
-
+        TrainSwitch vyhybka = new TrainSwitch("Vyhybka", lst, tsr.getRelay1(), tsr.getRelay2(), tsi.getIn1AndActivate(), tsi.getIn2AndActivate());
+        
         // (vyhybky)
 //        LouversController vyhybka01;
 //        LouversController vyhybka02;
@@ -95,16 +98,17 @@ public class MartinConfigurator extends AbstractConfigurator {
 //        };
 
 
+
 //        configureLouvers(lst, switchASw, WallSwitch.Side.LEFT, vyhybka01);
 //        configureLouvers(lst, switchASw, WallSwitch.Side.RIGHT, vyhybka02);
 //        configureLouvers(lst, switchBSw, WallSwitch.Side.LEFT, vyhybka03);
 
-
         List<WebSocketHandler> wsHandlers = new ArrayList<>();
-        wsHandlers.add(new GenericControlWebSocketHandler(nodeInfoRegistry));
+//        wsHandlers.add(new GenericControlWebSocketHandler(nodeInfoRegistry));
+        wsHandlers.add(new TrainWebSocketHandler(vyhybka));
         List<ServletAction> rootActions = new ArrayList<>();
         List<Page> pages = new ArrayList<>();
-        pages.add(new GenericControlPage(nodeInfoRegistry, pages));
+//        pages.add(new GenericControlPage(nodeInfoRegistry, pages));
         pages.add(new NodeInfoPage(nodeInfoRegistry, pages, rootActions));
         pages.add(new SystemPage(nodeInfoRegistry, pages));
         configureSimulator(pages, wsHandlers, true);
@@ -112,5 +116,61 @@ public class MartinConfigurator extends AbstractConfigurator {
         handlers.add(new StaticPage(VIRTUAL_CONFIGURATION_JS_FILENAME, "/configuration-martin.js", null));
         handlers.add(new NodeHandler(nodeInfoRegistry));
         servlet = new Servlet(handlers, "/system", wsHandlers);
+
+        if (nodeInfoRegistry.getPacketUartIO() instanceof SimulatedPacketUartIO) {
+            // Simulation - set initial state of train switch (one direction must be set)
+            SimulatedPacketUartIO sim = (SimulatedPacketUartIO)nodeInfoRegistry.getPacketUartIO();
+            SimulatedNode n = sim.getSimulatedNode(node37.getNodeId());
+            // We set turn pin to 1 and straight leave in 0 => switch is set to straight
+            Pin pin = vyhybka.getIndicatorTurnPin().getPin();
+            int v = (n.readRam(Pic.PORTA + pin.getPortIndex()) & ~pin.getBitMask()) | pin.getBitMask();
+            n.initializePort(pin.getPortIndex(), v);
+            sim.addListener(new SimulatedNodeListener() {
+                @Override
+                public void onSetTris(SimulatedNode node, int port, int value) {
+                }
+                
+                @Override
+                public void onSetPort(SimulatedNode node, int port, int value) {
+                    // When switch is in direction, indicator pin is 0 == down
+                    handleSwitchPin(node, port, value, vyhybka.getSwitchTurnPin(), vyhybka.getIndicatorStraightPin(), vyhybka.getIndicatorTurnPin());
+                    handleSwitchPin(node, port, value, vyhybka.getSwitchStraightPin(), vyhybka.getIndicatorTurnPin(), vyhybka.getIndicatorStraightPin());
+                }
+                
+                private void handleSwitchPin(SimulatedNode node, int port, int value, NodePin onPin, NodePin up, NodePin down) {
+                    if (node.getId() == onPin.getNode().getNodeId()) {
+                        // Simulate train switch behavior
+                        Pin p = onPin.getPin();
+                        if (port == p.getPortIndex() && (value & p.getBitMask()) != 0) {
+                            // Out pin is set - change state of signal pins
+                            try {
+                                sim.getSimulatedNode(down.getNode().getNodeId()).setInputPin(down.getPin(), 0);
+                                sim.getSimulatedNode(up.getNode().getNodeId()).setInputPin(up.getPin(), 1);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onSetManualPwm(SimulatedNode node, int port, int pin, int value) {
+                }
+                
+                @Override
+                public void onSetEventMask(SimulatedNode node, int port, int mask) {
+                }
+                
+                @Override
+                public void logMessage(SimulatedNode node, Level level, String messageFormat, Object... args) {
+                }
+            });
+        }
+
+
+        // TODO:
+        // - manual control - speed, direction, switch
+        // - indicators - train above sensor, switch position
+        // - auto - with stop
     }
 }

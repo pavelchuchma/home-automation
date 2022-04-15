@@ -1,0 +1,43 @@
+table {
+  border-collapse: collapse;
+}
+
+td.rail {
+  padding: 0px;
+}
+
+td.buffer {
+  background-color: black;
+  width: 10px;
+}
+
+td.rail div {
+  border-top: 2px solid;
+  border-bottom: 2px solid;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  height: 10px;
+}
+
+td.rail.in div {
+  width: 200px;
+}
+
+td.rail.out div {
+  width: 100px;
+}
+
+td.rail.sensor div {
+  width: 20px;
+  border-left: 1px dashed;
+  border-right: 1px dashed;
+}
+
+td.switch {
+  width: 40px;
+}
+
+button {
+    width: 60px;
+    height: 40px;
+}
