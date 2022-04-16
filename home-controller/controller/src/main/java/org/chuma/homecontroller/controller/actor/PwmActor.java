@@ -76,8 +76,16 @@ public class PwmActor extends AbstractPinActor implements IOnOffActor {
     private boolean setPwmValue(NodePin nodePin, int pwmValue) {
         Validate.inclusiveBetween(0, maxPwmValue, pwmValue,
                 String.format("Invalid PWM value: %d. It must be <= %d", pwmValue, maxPwmValue));
+        if (setPinPwmValueImpl(nodePin, pwmValue, AbstractPinActor.RETRY_COUNT)) {
+            currentPwmValue = pwmValue;
+            initializedPwmValue = true;
+            return true;
+        }
+        return false;
+    }
 
-        for (int i = 0; i < AbstractPinActor.RETRY_COUNT; i++) {
+    public static boolean setPinPwmValueImpl(NodePin nodePin, int pwmValue, int retryCount) {
+        for (int i = 0; i < retryCount; i++) {
             try {
                 log.debug("Setting pwm {} to: {}", nodePin, pwmValue);
                 Packet response = nodePin.getNode().setManualPwmValue(nodePin.getPin(), pwmValue);
@@ -92,8 +100,6 @@ public class PwmActor extends AbstractPinActor implements IOnOffActor {
                     throw new IOException(String.format("Unexpected response code (%d): %s", response.data[0], response));
                 }
 
-                currentPwmValue = pwmValue;
-                initializedPwmValue = true;
                 log.info("PWM of {} set to: {}", nodePin, pwmValue);
                 return true;
 
