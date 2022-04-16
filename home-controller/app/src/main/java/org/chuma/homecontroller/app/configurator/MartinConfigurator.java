@@ -18,6 +18,8 @@ import org.chuma.homecontroller.app.servlet.pages.LinkablePage;
 import org.chuma.homecontroller.app.servlet.rest.NodeHandler;
 import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
 import org.chuma.homecontroller.app.train.RailPowerAndDetectors;
+import org.chuma.homecontroller.app.train.TrainControl;
+import org.chuma.homecontroller.app.train.TrainPassSensor;
 import org.chuma.homecontroller.app.train.TrainSwitch;
 import org.chuma.homecontroller.app.train.TrainWebSocketHandler;
 import org.chuma.homecontroller.base.node.Node;
@@ -85,6 +87,10 @@ public class MartinConfigurator extends AbstractConfigurator {
         NodePin tsRightIndicator = tsi.getIn2AndActivate();
 
         TrainSwitch vyhybka = new TrainSwitch("Vyhybka", lst, tsr.getRelay1(), tsr.getRelay2(), tsi.getIn1AndActivate(), tsi.getIn2AndActivate());
+        TrainControl vlak = new TrainControl("vlak", rpd.getLeftEnablePin(), rpd.getRightEnablePin(), rpd.getPowerPin());
+        TrainPassSensor sensorA = new TrainPassSensor("sensor-A", lst, rpd.getPassDetectorA()).withTrainPosition(vlak);
+        TrainPassSensor sensorB = new TrainPassSensor("sensor-B", lst, rpd.getPassDetectorB()).withTrainPosition(vlak);
+        TrainPassSensor sensorC = new TrainPassSensor("sensor-C", lst, rpd.getPassDetectorC()).withTrainPosition(vlak);
         
         // (vyhybky)
 //        LouversController vyhybka01;
@@ -105,7 +111,7 @@ public class MartinConfigurator extends AbstractConfigurator {
 
         List<WebSocketHandler> wsHandlers = new ArrayList<>();
 //        wsHandlers.add(new GenericControlWebSocketHandler(nodeInfoRegistry));
-        wsHandlers.add(new TrainWebSocketHandler(vyhybka));
+        wsHandlers.add(new TrainWebSocketHandler(vyhybka, vlak));
         List<ServletAction> rootActions = new ArrayList<>();
         List<Page> pages = new ArrayList<>();
 //        pages.add(new GenericControlPage(nodeInfoRegistry, pages));
@@ -122,9 +128,12 @@ public class MartinConfigurator extends AbstractConfigurator {
             SimulatedPacketUartIO sim = (SimulatedPacketUartIO)nodeInfoRegistry.getPacketUartIO();
             SimulatedNode n = sim.getSimulatedNode(node37.getNodeId());
             // We set turn pin to 1 and straight leave in 0 => switch is set to straight
-            Pin pin = vyhybka.getIndicatorTurnPin().getPin();
-            int v = (n.readRam(Pic.PORTA + pin.getPortIndex()) & ~pin.getBitMask()) | pin.getBitMask();
-            n.initializePort(pin.getPortIndex(), v);
+            n.initializePin(vyhybka.getIndicatorTurnPin().getPin(), 1);
+            // We set train pass sensors to 1 - inactive (no train)
+            n.initializePin(rpd.getPassDetectorA().getPin(), 1);
+            n.initializePin(rpd.getPassDetectorB().getPin(), 1);
+            n.initializePin(rpd.getPassDetectorC().getPin(), 1);
+
             sim.addListener(new SimulatedNodeListener() {
                 @Override
                 public void onSetTris(SimulatedNode node, int port, int value) {
