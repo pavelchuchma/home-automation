@@ -12,6 +12,7 @@ import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
 import org.chuma.homecontroller.app.servlet.ws.AbstractWebSocketAdapter;
 import org.chuma.homecontroller.app.servlet.ws.AbstractWebSocketHandler;
 import org.chuma.homecontroller.app.train.TrainControl.Listener;
+import org.chuma.homecontroller.app.train.TrainPassSensor.TrainPosition;
 
 public class TrainWebSocketHandler extends AbstractWebSocketHandler {
     private static final int SPEED_MIN = 60;
@@ -22,7 +23,7 @@ public class TrainWebSocketHandler extends AbstractWebSocketHandler {
     // Connected clients
     private Set<Adapter> clients = ConcurrentHashMap.newKeySet();
 
-    public TrainWebSocketHandler(TrainSwitch trainSwitch, TrainControl trainControl) {
+    public TrainWebSocketHandler(TrainSwitch trainSwitch, TrainControl trainControl, TrainPassSensor ... trainPassSensor) {
         super("/train");
         this.trainSwitch = trainSwitch;
         this.trainControl = trainControl;
@@ -40,6 +41,20 @@ public class TrainWebSocketHandler extends AbstractWebSocketHandler {
                 processEvent(a -> a.sendDirectionChange(dir));
             }
         });
+        for (int i = 0; i < trainPassSensor.length; i++) {
+            char id = (char)('A' + i);
+            trainPassSensor[i].addListener(new TrainPassSensor.Listener() {
+                @Override
+                public void trainArrived() {
+                    // Do nothing - we don't handle these events in UI
+                }
+
+                @Override
+                public void positionChanged(TrainPosition position) {
+                    processEvent(a -> a.sendTrainPosition(id, position));
+                }
+            });
+        }
     }
 
     private void processEvent(Consumer<Adapter> action) {
@@ -101,7 +116,6 @@ public class TrainWebSocketHandler extends AbstractWebSocketHandler {
                             break;
                         case "pwm":
                             int speed = trainControl.getSpeed();
-                            System.out.println("OLD: " + speed + " - " + value);
                             if (speed == 0 && value > 0) {
                                 speed = SPEED_MIN;
                             } else {
@@ -113,7 +127,6 @@ public class TrainWebSocketHandler extends AbstractWebSocketHandler {
                             if (speed < SPEED_MIN) {
                                 speed = 0;
                             }
-                            System.out.println("NEW: " + speed);
                             trainControl.setSpeed(speed);
                             break;
                         case "auto":
@@ -155,6 +168,36 @@ public class TrainWebSocketHandler extends AbstractWebSocketHandler {
             w.startObject();
             w.addAttribute("action", "dir");
             w.addAttribute("dir", dir);
+            w.close();
+            sendText(w.toString());
+        }
+
+        public void sendTrainPosition(char railId, TrainPosition position) {
+            JsonWriter w = new JsonWriter(false);
+            w.startObject();
+            w.addAttribute("action", "position");
+            w.startArrayAttribute("on");
+            if (position == TrainPosition.LEFT || position == TrainPosition.GOING_LEFT) {
+                w.addAttribute(null, railId + "left");
+            }
+            if (position == TrainPosition.GOING_LEFT || position == TrainPosition.ABOVE || position == TrainPosition.GOING_RIGHT) {
+                w.addAttribute(null, railId + "sensor");
+            }
+            if (position == TrainPosition.RIGHT || position == TrainPosition.GOING_RIGHT) {
+                w.addAttribute(null, railId + "right");
+            }
+            w.close();
+            w.startArrayAttribute("off");
+            if (!(position == TrainPosition.LEFT || position == TrainPosition.GOING_LEFT)) {
+                w.addAttribute(null, railId + "left");
+            }
+            if (!(position == TrainPosition.GOING_LEFT || position == TrainPosition.ABOVE || position == TrainPosition.GOING_RIGHT)) {
+                w.addAttribute(null, railId + "sensor");
+            }
+            if (!(position == TrainPosition.RIGHT || position == TrainPosition.GOING_RIGHT)) {
+                w.addAttribute(null, railId + "right");
+            }
+            w.close();
             w.close();
             sendText(w.toString());
         }

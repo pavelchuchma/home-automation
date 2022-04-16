@@ -25,6 +25,10 @@ ws.onmessage = function(event) {
                 e.innerText = content.value + '%';
             }
             break;
+        case "position":
+            for (const id of content.on) addClass(id, cssActive);
+            for (const id of content.off) removeClass(id, cssActive);
+            break;
     }
 };
 // TODO: Keep alive timeout and recreate connection on close - handles also server restart
