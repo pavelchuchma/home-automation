@@ -94,6 +94,13 @@ public class TrainPassSensor {
         return sensorActive;
     }
 
+    /**
+     * Get current train position. Note that it is a best guess, not exact position.
+     */
+    public TrainPosition getTrainPosition() {
+        return trainPosition;
+    }
+
     private void onSensorActive(int previousDurationMs) {
         sensorActive = true;
         boolean notifyPosition = updateTrainPosition();

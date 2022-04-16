@@ -20,6 +20,7 @@ public class TrainWebSocketHandler extends AbstractWebSocketHandler {
 
     private TrainSwitch trainSwitch;
     private TrainControl trainControl;
+    private TrainPassSensor[] trainPassSensor;
     // Connected clients
     private Set<Adapter> clients = ConcurrentHashMap.newKeySet();
 
@@ -27,6 +28,7 @@ public class TrainWebSocketHandler extends AbstractWebSocketHandler {
         super("/train");
         this.trainSwitch = trainSwitch;
         this.trainControl = trainControl;
+        this.trainPassSensor = trainPassSensor;
         trainSwitch.addListener(ts -> {
             processEvent(a -> a.sendSwitchState(ts));
         });
@@ -83,6 +85,10 @@ public class TrainWebSocketHandler extends AbstractWebSocketHandler {
             sendSwitchState(trainSwitch);
             sendDirectionChange(trainControl.getDirection());
             sendSpeedChange(trainControl.getSpeed());
+            for (int i = 0; i < trainPassSensor.length; i++) {
+                char id = (char)('A' + i);
+                sendTrainPosition(id, trainPassSensor[i].getTrainPosition());
+            }
         }
 
         @Override
