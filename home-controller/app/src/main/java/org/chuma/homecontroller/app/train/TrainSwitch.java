@@ -82,17 +82,17 @@ public class TrainSwitch {
     }
 
     private synchronized void switchImpl(NodePin pin, boolean expStraight, boolean expectedTurn) {
-        log.debug("%s: switching to state straight = %s, turn = %s", id, expStraight, expectedTurn);
+        log.debug("{}: switching to state straight = {}, turn = {}", id, expStraight, expectedTurn);
         // Power on relay - will switch the train switch
         if (!AbstractPinActor.setPinValueImpl(pin, 1, RETRY_COUNT)) {
             // Command not acknowledged
-            log.debug("%s: failed to activate relay pin", id);
+            log.debug("{}: failed to activate relay pin", id);
             return;
         }
         // Wait until switched - but only for limited time
         synchronized (stateLock) {
             if (isStraight != expStraight || isTurn != expectedTurn) {
-                log.debug("%s: waiting for switch state change", id);
+                log.debug("{}: waiting for switch state change", id);
                 try {
                     // Can wait just once since we will be notified when BOTH pins are changed
                     stateLock.wait(SWITCH_WAIT_TIME);
@@ -101,7 +101,7 @@ public class TrainSwitch {
         }
         // Turn off relay pin (regardless of state)
         AbstractPinActor.setPinValueImpl(pin, 0, RETRY_COUNT);
-        log.debug("%s: switching finished", id);
+        log.debug("{}: switching finished", id);
     }
 
     /**
@@ -144,7 +144,7 @@ public class TrainSwitch {
             r.run();
             if (isStraight ^ isTurn) {
                 // Notify only when both changed state
-                log.debug("%s: switch state changed: straight = %s, turn = %s", id, isStraight, isTurn);
+                log.debug("{}: switch state changed: straight = {}, turn = {}", id, isStraight, isTurn);
                 stateLock.notifyAll();
                 notify = true;
             }

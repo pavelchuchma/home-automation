@@ -71,7 +71,7 @@ public class TrainControl {
             return true;
         }
         synchronized (this) {
-            log.debug("%s: dir change to %s", id, newDir == 0 ? "stop" : newDir < 0 ? "left" : "right");
+            log.debug("{}: dir change to {}", id, newDir == 0 ? "stop" : newDir < 0 ? "left" : "right");
             if (dir != 0) {
                 // Stop first
                 if (!AbstractPinActor.setPinValueImpl(dir < 0 ? dirLeftPin : dirRightPin, 0, RETRY_COUNT)) {
@@ -104,7 +104,7 @@ public class TrainControl {
         }
         // TODO: Gradual increase here?
         synchronized (this) {
-            log.debug("%s: speed change to %d%%", id, newSpeed);
+            log.debug("{}: speed change to {}%", id, newSpeed);
             if (!PwmActor.setPinPwmValueImpl(speedPin, newSpeed * 48 / 100, RETRY_COUNT)) {
                 return false;
             }
