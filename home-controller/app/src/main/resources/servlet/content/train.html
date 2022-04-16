@@ -8,19 +8,35 @@
 <table>
 <tr><td>
 <table>
-<tr class="rail"><td class="buffer"><td id="r1o" class="rail out left"><div></div><td id="s1" class="rail sensor"><div></div><td id="r1i" class="rail in"><div></div><td id="switch" class="switch" rowspan="2"><canvas id="switchCanvas" width="100px" height="80px" onclick="ws.send('switch:0');"></canvas><td colspan="3"></tr>
-<tr class="rail"><td class="buffer"><td id="r2o" class="rail out left"><div></div><td id="s2" class="rail sensor"><div></div><td id="r2i" class="rail in"><div></div><td id="r3i" class="rail in"><div></div><td id="s3" class="rail sensor"><div></div><td id="r3o" class="rail out right"><div></div><td class="buffer"></tr>
+    <tr class="rail">
+        <td class="buffer">
+        <td id="r1o" class="rail out left"><div></div>
+        <td id="s1" class="rail sensor"><div></div>
+        <td id="r1i" class="rail in"><div></div>
+        <td id="switch" class="switch" rowspan="2"><canvas id="switchCanvas" width="100px" height="80px" onclick="ws.send('switch:0');"></canvas>
+        <td colspan="3">
+    </tr>
+    <tr class="rail">
+        <td class="buffer">
+        <td id="r2o" class="rail out left"><div></div>
+        <td id="s2" class="rail sensor"><div></div>
+        <td id="r2i" class="rail in"><div></div>
+        <td id="r3i" class="rail in"><div></div>
+        <td id="s3" class="rail sensor"><div></div>
+        <td id="r3o" class="rail out right"><div></div>
+        <td class="buffer">
+    </tr>
 </table>
 </td></tr>
 <tr><td style="height: 20px"></tr>
 <tr><td>
 <table style="margin: auto">
 <tr>
-    <td><button id="powerLeft" type="button" onclick="ws.send('power:-1');">&lt;--</button></td>
+    <td><button id="powerLeft" type="button" onclick="ws.send('dir:-1');">&lt;--</button></td>
     <td><button id="powerMinus" type="button" onclick="ws.send('pwm:-1');">-</button></td>
-    <td><button id="powerZero" type="button" onclick="ws.send('power:0');">0</button></td>
-    <td><button id="powerPlus" type="button" onclick="ws.send('pwm:-1');">+</button></td>
-    <td><button id="powerRight" type="button" onclick="ws.send('power:1');">--&gt;</button></td>
+    <td><button id="powerZero" type="button" onclick="ws.send('dir:0');">0</button></td>
+    <td><button id="powerPlus" type="button" onclick="ws.send('pwm:1');">+</button></td>
+    <td><button id="powerRight" type="button" onclick="ws.send('dir:1');">--&gt;</button></td>
 </tr>
 <tr>
     <td colspan="2"><td><button id="auto" type="button" onclick="ws.send('auto:0');">AUTO</button></td><td colspan="2">

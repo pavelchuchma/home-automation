@@ -2,6 +2,14 @@ table {
   border-collapse: collapse;
 }
 
+.active {
+  background-color: #ffbbbb;
+}
+
+#powerZero.active {
+  text-decoration: line-through;	
+}
+
 td.rail {
   padding: 0px;
 }
