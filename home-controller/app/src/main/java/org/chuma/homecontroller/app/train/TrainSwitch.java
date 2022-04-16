@@ -1,16 +1,14 @@
 package org.chuma.homecontroller.app.train;
 
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.chuma.homecontroller.base.node.ListenerManager;
 import org.chuma.homecontroller.base.node.NodePin;
-import org.chuma.homecontroller.controller.ActionBinding;
-import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.actor.AbstractPinActor;
-import org.chuma.homecontroller.controller.actor.Actor;
 import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
 
 /**
@@ -45,8 +43,8 @@ public class TrainSwitch {
         this.switchTurn = switchTurn;
         this.indicatorStraight = indicatorStraight;
         this.indicatorTurn = indicatorTurn;
-        listener.addActionBinding(new ActionBinding(indicatorStraight, action(() -> isStraight = true), action(() -> isStraight = false)));
-        listener.addActionBinding(new ActionBinding(indicatorTurn, action(() -> isTurn = true), action(() -> isTurn = false)));
+        listener.addActionBinding(new SimpleActionBinding(indicatorStraight, action(() -> isStraight = true), action(() -> isStraight = false)));
+        listener.addActionBinding(new SimpleActionBinding(indicatorTurn, action(() -> isTurn = true), action(() -> isTurn = false)));
     }
 
     public String getId() {
@@ -179,17 +177,7 @@ public class TrainSwitch {
         listenerManager.callListeners(l -> l.accept(TrainSwitch.this));
     }
 
-    private Action action(Runnable r) {
-        return new Action() {
-            @Override
-            public void perform(int previousDurationMs) {
-                onIndicatorChange(r);
-            }
-
-            @Override
-            public Actor getActor() {
-                return null;
-            }
-        };
+    private IntConsumer action(Runnable r) {
+        return (tm) -> onIndicatorChange(r);
     }
 }
