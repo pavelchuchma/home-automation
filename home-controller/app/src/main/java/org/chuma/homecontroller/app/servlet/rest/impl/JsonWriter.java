@@ -55,6 +55,12 @@ public class JsonWriter implements AutoCloseable {
         return this;
     }
 
+    public JsonWriter startArray() {
+        appendCommaIfNeeded();
+        startEntry('[', ']');
+        return this;
+    }
+
     public JsonWriter addAttribute(String name, String value) {
         appendAttrName(name);
         if (value != null) {
@@ -89,9 +95,17 @@ public class JsonWriter implements AutoCloseable {
         return this;
     }
 
+    public JsonWriter startObjectAttribute(String name) {
+        appendAttrName(name);
+        startEntry('{', '}');
+        return this;
+    }
+
     private void appendAttrName(String name) {
         appendCommaIfNeeded();
-        sb.append("\"").append(name).append("\":");
+        if (name != null) {
+            sb.append("\"").append(name).append("\":");
+        }
     }
 
     public String toString() {
