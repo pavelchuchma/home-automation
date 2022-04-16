@@ -74,6 +74,21 @@ public class SimulatedNode {
     }
 
     /**
+     * Initialize value of single pin without any checks. Should be called before real simulation starts.
+     */
+    public void initializePin(Pin pin, int value) {
+        int addr = PORT_ADDRESS[pin.getPortIndex()];
+        int mask = pin.getBitMask();
+        int v = memory.get(addr);
+        if (value == 0) {
+            v &= 0xff & ~mask;
+        } else {
+            v |= 0xff & mask;
+        }
+        memory.put(addr, v);
+    }
+
+    /**
      * Check if address represents known port.
      * 
      * @return port (0 == A) or -1 if none
