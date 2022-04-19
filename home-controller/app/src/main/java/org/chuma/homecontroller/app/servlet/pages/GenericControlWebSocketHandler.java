@@ -58,7 +58,12 @@ public class GenericControlWebSocketHandler extends AbstractWebSocketHandler imp
     @Override
     public void onReboot(Node node, int pingCounter, int rconValue) throws IOException {
     }
-    
+
+    @Override
+    public void onInitialized(Node node) {
+        // TODO: Read current node values
+    }
+
     @Override
     public WebSocketAdapter newAdapter() {
         return new Adapter();
