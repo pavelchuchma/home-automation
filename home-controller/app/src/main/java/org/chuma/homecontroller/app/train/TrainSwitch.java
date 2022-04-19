@@ -6,6 +6,7 @@ import java.util.function.IntConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.chuma.homecontroller.base.node.AsyncListenerManager;
 import org.chuma.homecontroller.base.node.ListenerManager;
 import org.chuma.homecontroller.base.node.NodePin;
 import org.chuma.homecontroller.controller.actor.AbstractPinActor;
@@ -25,7 +26,7 @@ public class TrainSwitch {
     private static Logger log = LoggerFactory.getLogger(TrainSwitch.class.getName());
 
     private String id;
-    private ListenerManager<Consumer<TrainSwitch>> listenerManager = new ListenerManager<>();
+    private ListenerManager<Consumer<TrainSwitch>> listenerManager = new AsyncListenerManager<>();
     private NodePin switchStraight;
     private NodePin switchTurn;
     private NodePin indicatorStraight;

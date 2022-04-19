@@ -3,6 +3,7 @@ package org.chuma.homecontroller.app.train;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.chuma.homecontroller.base.node.AsyncListenerManager;
 import org.chuma.homecontroller.base.node.ListenerManager;
 import org.chuma.homecontroller.base.node.NodePin;
 import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
@@ -22,7 +23,7 @@ public class TrainPassSensor {
     private static Logger log = LoggerFactory.getLogger(TrainPassSensor.class.getName());
 
     private String id;
-    private ListenerManager<Listener> listenerManager = new ListenerManager<>();
+    private ListenerManager<Listener> listenerManager = new AsyncListenerManager<>();
     private NodePin sensorPin;
     private TrainControl trainControl;
     private int firePeriod;
