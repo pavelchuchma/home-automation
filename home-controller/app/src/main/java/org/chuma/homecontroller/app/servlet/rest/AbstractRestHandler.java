@@ -140,7 +140,7 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
     T getItemById(Map<String, String[]> requestParams) {
         String id = getMandatoryStringParam(requestParams, "id");
         T item = itemMap.get(id);
-        Validate.notNull(item, "no item with id '" + id + "' found");
+        Validate.isTrue(item != null, "no item with id '" + id + "' found");
         return item;
     }
 }
