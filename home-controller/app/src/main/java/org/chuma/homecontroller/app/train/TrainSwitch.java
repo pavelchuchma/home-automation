@@ -6,6 +6,7 @@ import java.util.function.IntConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.chuma.homecontroller.app.configurator.Options;
 import org.chuma.homecontroller.base.node.AsyncListenerManager;
 import org.chuma.homecontroller.base.node.ListenerManager;
 import org.chuma.homecontroller.base.node.NodePin;
@@ -19,14 +20,13 @@ import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
  */
 public class TrainSwitch {
     private static final int RETRY_COUNT = 3;
-    // How long to wait until switch is correctly switched (max relay activation time)
-    private static final int SWITCH_WAIT_TIME = 500;
-    // How long to wait for correct state change before sending notification
-    private static final int STATE_CHECK_TIME = 100;
+    private static final String PROP_SWITCH_WAIT_TIME = "train.switch.wait_time";
+    private static final String PROP_STATE_CHECK_TIME = "train.switch.state_check_time";
     private static Logger log = LoggerFactory.getLogger(TrainSwitch.class.getName());
 
     private String id;
     private ListenerManager<Consumer<TrainSwitch>> listenerManager = new AsyncListenerManager<>();
+    private Options options;
     private NodePin switchStraight;
     private NodePin switchTurn;
     private NodePin indicatorStraight;
@@ -38,9 +38,10 @@ public class TrainSwitch {
     // There is also instance lock used to guard reading incomplete state while switching.
     // The instance lock must be always entered before stateLock to avoid deadlock.
 
-    public TrainSwitch(String id, SwitchListener listener, NodePin switchStraight, NodePin switchTurn, NodePin indicatorStraight, NodePin indicatorTurn) {
+    public TrainSwitch(String id, SwitchListener listener, Options options, NodePin switchStraight, NodePin switchTurn, NodePin indicatorStraight, NodePin indicatorTurn) {
         this.id = id;
         this.switchStraight = switchStraight;
+        this.options = options;
         this.switchTurn = switchTurn;
         this.indicatorStraight = indicatorStraight;
         this.indicatorTurn = indicatorTurn;
@@ -96,7 +97,7 @@ public class TrainSwitch {
                 log.debug("{}: waiting for switch state change", id);
                 try {
                     // Can wait just once since we will be notified when BOTH pins are changed
-                    stateLock.wait(SWITCH_WAIT_TIME);
+                    stateLock.wait(options.getInt(PROP_SWITCH_WAIT_TIME));
                 } catch (InterruptedException e) {}
             }
         }
@@ -163,7 +164,7 @@ public class TrainSwitch {
         synchronized (stateLock) {
             try {
                 // Wait some time - or we may be notified when other pin is changed and switch is in correct state
-                stateLock.wait(STATE_CHECK_TIME);
+                stateLock.wait(options.getInt(PROP_STATE_CHECK_TIME));
             } catch (InterruptedException e) {
             }
             if (!(isStraight ^ isTurn)) {

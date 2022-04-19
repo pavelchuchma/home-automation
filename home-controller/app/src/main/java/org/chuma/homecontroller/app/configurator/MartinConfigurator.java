@@ -9,6 +9,7 @@ import org.chuma.homecontroller.app.servlet.Handler;
 import org.chuma.homecontroller.app.servlet.Servlet;
 import org.chuma.homecontroller.app.servlet.ServletAction;
 import org.chuma.homecontroller.app.servlet.pages.NodeInfoPage;
+import org.chuma.homecontroller.app.servlet.pages.OptionsPage;
 import org.chuma.homecontroller.app.servlet.pages.Page;
 import org.chuma.homecontroller.app.servlet.pages.StaticPage;
 import org.chuma.homecontroller.app.servlet.pages.SystemPage;
@@ -80,17 +81,21 @@ public class MartinConfigurator extends AbstractConfigurator {
         inputOnly.getIn6AndActivate();
         }
 
-        RailPowerAndDetectors rpd = new RailPowerAndDetectors("RailPowerAndDetectors", node37, 1, 1);
+        RailPowerAndDetectors rpd = new RailPowerAndDetectors("RailPowerAndDetectors", node37, 1, 3);
         RelayBoardDevice tsr = new RelayBoardDevice("TrainSwitchRelay", node37, 2);
         InputDevice tsi = new InputDevice("TrainSwitchInput", node37, 3);
         NodePin tsLeftIndicator = tsi.getIn1AndActivate();
         NodePin tsRightIndicator = tsi.getIn2AndActivate();
 
-        TrainSwitch vyhybka = new TrainSwitch("Vyhybka", lst, tsr.getRelay1(), tsr.getRelay2(), tsi.getIn1AndActivate(), tsi.getIn2AndActivate());
-        TrainControl vlak = new TrainControl("vlak", rpd.getLeftEnablePin(), rpd.getRightEnablePin(), rpd.getPowerPin());
-        TrainPassSensor sensorA = new TrainPassSensor("sensor-A", lst, rpd.getPassDetectorA()).withTrainPosition(vlak);
-        TrainPassSensor sensorB = new TrainPassSensor("sensor-B", lst, rpd.getPassDetectorB()).withTrainPosition(vlak);
-        TrainPassSensor sensorC = new TrainPassSensor("sensor-C", lst, rpd.getPassDetectorC()).withTrainPosition(vlak);
+        
+        // TODO: Configure to different location on PI? Where? Probably via instanceof SimulatedPacketUartIO
+        Options options = new Options("/tmp/train.properties", "train.properties");
+
+        TrainSwitch vyhybka = new TrainSwitch("Vyhybka", lst, options, tsr.getRelay1(), tsr.getRelay2(), tsi.getIn1AndActivate(), tsi.getIn2AndActivate());
+        TrainControl vlak = new TrainControl("vlak", options, rpd.getLeftEnablePin(), rpd.getRightEnablePin(), rpd.getPowerPin());
+        TrainPassSensor sensorA = new TrainPassSensor("sensor-A", lst, options, rpd.getPassDetectorA()).withTrainPosition(vlak);
+        TrainPassSensor sensorB = new TrainPassSensor("sensor-B", lst, options, rpd.getPassDetectorB()).withTrainPosition(vlak);
+        TrainPassSensor sensorC = new TrainPassSensor("sensor-C", lst, options, rpd.getPassDetectorC()).withTrainPosition(vlak);
         
         // (vyhybky)
 //        LouversController vyhybka01;
@@ -111,12 +116,13 @@ public class MartinConfigurator extends AbstractConfigurator {
 
         List<WebSocketHandler> wsHandlers = new ArrayList<>();
 //        wsHandlers.add(new GenericControlWebSocketHandler(nodeInfoRegistry));
-        wsHandlers.add(new TrainWebSocketHandler(vyhybka, vlak));
+        wsHandlers.add(new TrainWebSocketHandler(vyhybka, vlak, sensorA, sensorB, sensorC));
         List<ServletAction> rootActions = new ArrayList<>();
         List<Page> pages = new ArrayList<>();
 //        pages.add(new GenericControlPage(nodeInfoRegistry, pages));
         pages.add(new NodeInfoPage(nodeInfoRegistry, pages, rootActions));
         pages.add(new SystemPage(nodeInfoRegistry, pages));
+        pages.add(new OptionsPage(options, pages, rootActions));
         configureSimulator(pages, wsHandlers, true);
         List<Handler> handlers = new ArrayList<>(pages);
         handlers.add(new StaticPage(VIRTUAL_CONFIGURATION_JS_FILENAME, "/configuration-martin.js", null));

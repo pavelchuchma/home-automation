@@ -3,6 +3,7 @@ package org.chuma.homecontroller.app.train;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.chuma.homecontroller.app.configurator.Options;
 import org.chuma.homecontroller.base.node.AsyncListenerManager;
 import org.chuma.homecontroller.base.node.ListenerManager;
 import org.chuma.homecontroller.base.node.NodePin;
@@ -17,17 +18,19 @@ import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
  * when whole train passed the sensor.
  */
 public class TrainPassSensor {
-    public static final int DEFAULT_FIRE_PERIOD = 5000;
-    public static final int DEFAULT_TRAIN_PASSED_PERIOD = 1000;
-
-    private static Logger log = LoggerFactory.getLogger(TrainPassSensor.class.getName());
+    public static final String PROP_FIRE_PERIOD = "train.sensor.fire_period";
+    public static final String PROP_TRAIN_PASSED_PERIOD = "train.sensor.train_passed_period";
+    private static final Logger log = LoggerFactory.getLogger(TrainPassSensor.class.getName());
 
     private String id;
     private ListenerManager<Listener> listenerManager = new AsyncListenerManager<>();
+    private Options options;
     private NodePin sensorPin;
     private TrainControl trainControl;
     private int firePeriod;
+    private boolean optionsFirePeriod;
     private int trainPassedPeriod;
+    private boolean optionsTrainPassedPeriod;
     private volatile boolean sensorActive;
     private volatile TrainPosition trainPosition = TrainPosition.UNKNOWN;
     // How long the sensor is inactive - used to determine if train passed it
@@ -38,26 +41,37 @@ public class TrainPassSensor {
     /**
      * Train sensor with default fire period.
      */
-    public TrainPassSensor(String id, SwitchListener listener, NodePin sensorPin) {
-        this(id, listener, sensorPin, DEFAULT_FIRE_PERIOD);
+    public TrainPassSensor(String id, SwitchListener listener, Options options, NodePin sensorPin) {
+        this(id, listener, options, sensorPin, options.getInt(PROP_FIRE_PERIOD));
+        optionsFirePeriod = true;
     }
 
     /**
-     * Fire period is minimum time (in millisecods) the sensor must detect "no train"
+     * Fire period is minimum time (in milliseconds) the sensor must detect "no train"
      * before it fires {@link Listener#trainArrived()} when train arrives.
      */
-    public TrainPassSensor(String id, SwitchListener listener, NodePin sensorPin, int firePeriod) {
+    public TrainPassSensor(String id, SwitchListener listener, Options options, NodePin sensorPin, int firePeriod) {
         this.id = id;
+        this.options = options;
         this.sensorPin = sensorPin;
         this.firePeriod = firePeriod;
         listener.addActionBinding(new SimpleActionBinding(sensorPin, this::onSensorActive, this::onSensorInactive));
+        options.addListener((k, v) -> {
+            if (optionsFirePeriod) {
+                this.firePeriod = options.getInt(PROP_FIRE_PERIOD);
+            }
+            if (optionsTrainPassedPeriod) {
+                trainPassedPeriod = options.getInt(PROP_TRAIN_PASSED_PERIOD);
+            }
+        });
     }
 
     /**
      * Configure train position detector with default trainPassedPeriod. See {@link #withTrainPosition(TrainControl, int)}.
      */
     public TrainPassSensor withTrainPosition(TrainControl trainControl) {
-        return withTrainPosition(trainControl, DEFAULT_TRAIN_PASSED_PERIOD);
+        optionsTrainPassedPeriod = true;
+        return withTrainPosition(trainControl, options.getInt(PROP_TRAIN_PASSED_PERIOD));
     }
 
     /**

@@ -3,6 +3,7 @@ package org.chuma.homecontroller.app.train;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.chuma.homecontroller.app.configurator.Options;
 import org.chuma.homecontroller.base.node.AsyncListenerManager;
 import org.chuma.homecontroller.base.node.ListenerManager;
 import org.chuma.homecontroller.base.node.NodePin;
@@ -14,12 +15,12 @@ import org.chuma.homecontroller.controller.actor.PwmActor;
  */
 public class TrainControl {
     private static final int RETRY_COUNT = 3;
-    // How long to wait when changing direction. First goes to stop, than wait this time and then sets new direction.
-    private static final int DIR_CHANGE_TIMEOUT = 500;
+    private static final String PROP_DIR_CHANGE_STOP = "train.control.dir_change_stop";
     private static Logger log = LoggerFactory.getLogger(TrainControl.class.getName());
 
     private String id;
     private ListenerManager<Listener> listenerManager = new AsyncListenerManager<>();
+    private Options options;
     private NodePin dirLeftPin;
     private NodePin dirRightPin;
     private NodePin speedPin;
@@ -28,8 +29,9 @@ public class TrainControl {
     // Speed 0-100% (gets converted to "correct" PWM value when passed to PIC)
     private volatile int speed;
 
-    public TrainControl(String id, NodePin dirLeftPin, NodePin dirRightPin, NodePin speedPin) {
+    public TrainControl(String id, Options options, NodePin dirLeftPin, NodePin dirRightPin, NodePin speedPin) {
         this.id = id;
+        this.options = options;
         this.dirLeftPin = dirLeftPin;
         this.dirRightPin = dirRightPin;
         this.speedPin = speedPin;
@@ -73,7 +75,7 @@ public class TrainControl {
         }
         synchronized (this) {
             log.debug("{}: dir change to {}", id, newDir == 0 ? "stop" : newDir < 0 ? "left" : "right");
-            if (dir != 0) {
+            if (dir != 0 && speed > 0) {
                 // Stop first
                 if (!AbstractPinActor.setPinValueImpl(dir < 0 ? dirLeftPin : dirRightPin, 0, RETRY_COUNT)) {
                     return false;
@@ -82,7 +84,7 @@ public class TrainControl {
                 listenerManager.callListeners(l -> l.directionChanged(dir));
                 // Wait some time before setting new direction
                 try {
-                    Thread.sleep(DIR_CHANGE_TIMEOUT);
+                    Thread.sleep(options.getInt(PROP_DIR_CHANGE_STOP));
                 } catch(InterruptedException e) {}
             }
             // Set desired direction
