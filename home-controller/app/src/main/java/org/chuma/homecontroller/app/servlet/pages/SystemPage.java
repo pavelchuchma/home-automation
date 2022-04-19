@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.eclipse.jetty.server.Request;
 
-import org.chuma.homecontroller.app.servlet.NodeTestRunner;
+import org.chuma.homecontroller.app.servlet.rest.impl.NodeTestRunner;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.Pic;
 import org.chuma.homecontroller.base.node.Pin;
@@ -15,6 +15,7 @@ import org.chuma.homecontroller.controller.device.AbstractConnectedDevice;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 
+@SuppressWarnings("DuplicatedCode")
 public class SystemPage extends AbstractPage {
     public static final String TARGET_SYSTEM_INFO = "/system/i";
     public static final String TARGET_SYSTEM_RESET = "/system/r";

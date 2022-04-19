@@ -1,5 +1,6 @@
 'use strict';
 
+// noinspection DuplicatedCode
 class NodeInfoItem extends AbstractItem {
     constructor(id, name) {
         super(id)
@@ -7,6 +8,7 @@ class NodeInfoItem extends AbstractItem {
         this.lastPingAge = undefined;
         this.buildTime = undefined;
         this.bootTime = undefined;
+        this.testMode = undefined;
         this.messages = [];
     }
 
@@ -15,6 +17,7 @@ class NodeInfoItem extends AbstractItem {
         this.lastPingAge = item.lastPingAge;
         this.buildTime = item.buildTime;
         this.bootTime = item.bootTime;
+        this.testMode = item.testMode;
         this.messages = item.messages;
     }
 

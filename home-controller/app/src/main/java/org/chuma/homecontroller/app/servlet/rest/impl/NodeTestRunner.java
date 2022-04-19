@@ -1,14 +1,14 @@
-package org.chuma.homecontroller.app.servlet;
+package org.chuma.homecontroller.app.servlet.rest.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.chuma.homecontroller.base.node.ConnectedDevice;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.Pin;
 import org.chuma.homecontroller.controller.device.OutputDevice;
@@ -20,7 +20,6 @@ public class NodeTestRunner extends Thread {
     private final Node node;
     Mode mode = Mode.cycle;
     boolean modeApplied = false;
-    List<ConnectedDevice> oldDevices;
 
     public NodeTestRunner(NodeInfo nodeInfo) {
         this.nodeInfo = nodeInfo;
@@ -36,14 +35,13 @@ public class NodeTestRunner extends Thread {
         modeApplied = false;
     }
 
+    @SuppressWarnings("BusyWait")
     public void run() {
-        oldDevices = node.getDevices();
-        node.removeDevices();
-
+        Validate.isTrue(node.getDevices().isEmpty(), "Cannot run test on node %s because it has bound devices", node.getName());
         final Pin[] devPins = getPins();
 
         try {
-            final Date oldBootTime = node.getBuildTime();
+            final Date oldBootTime = nodeInfo.getBootTime();
             node.reset();
 
             for (int i = 0; i < 10 && nodeInfo.getBootTime() == oldBootTime; i++) {
@@ -65,8 +63,8 @@ public class NodeTestRunner extends Thread {
                         }
                     } else if (mode == Mode.fullOn || mode == Mode.fullOff) {
                         if (!modeApplied) {
-                            for (int i = 0; i < devPins.length; i++) {
-                                node.setPinValue(devPins[i], (mode == Mode.fullOn) ? 0 : 1);
+                            for (Pin devPin : devPins) {
+                                node.setPinValue(devPin, (mode == Mode.fullOn) ? 0 : 1);
                             }
                             modeApplied = true;
                         } else {
@@ -88,9 +86,6 @@ public class NodeTestRunner extends Thread {
     private void restoreNode() {
         // restore previous devices
         node.removeDevices();
-        for (ConnectedDevice d : oldDevices) {
-            node.addDevice(d);
-        }
         try {
             node.reset();
         } catch (IOException e) {
@@ -100,9 +95,10 @@ public class NodeTestRunner extends Thread {
 
     private Pin[] getPins() {
         final OutputDevice[] devs = new OutputDevice[]{
-                new OutputDevice("TestOutputDevice Conn" + 1, node, 1),
+                new OutputDevice("TestOutputDevice Conn1", node, 1),
                 new OutputDevice("TestOutputDevice Conn2", node, 2),
-                new OutputDevice("TestOutputDevice Conn3", node, 3)};
+                new OutputDevice("TestOutputDevice Conn3", node, 3)
+        };
 
         final Pin[][] devPins = new Pin[3][];
         for (int i = 0; i < 3; i++) {

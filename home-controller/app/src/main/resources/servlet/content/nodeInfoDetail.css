@@ -7,3 +7,33 @@ div.devicesTitle {
     font-size: 1.1em;
     font-weight: bold;
 }
+
+td.connectorTable {
+    text-align: center;
+}
+
+td.pinCell, td.pinCellVss {
+    border: 1px solid black;
+    text-align: center;
+}
+
+td.pinCellVdd {
+    border: 3px solid black;
+    text-align: center;
+}
+
+td.connectorIdCell {
+    text-align: center;
+}
+
+td.connectorNameCell {
+    text-align: center;
+}
+
+div.deviceClass {
+    font-family: monospace;
+}
+
+div.deviceName {
+    font-weight: bold;
+}
