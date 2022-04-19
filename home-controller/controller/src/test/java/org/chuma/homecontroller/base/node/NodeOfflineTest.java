@@ -1,18 +1,13 @@
 package org.chuma.homecontroller.base.node;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
-import org.junit.rules.ExpectedException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 import org.chuma.homecontroller.base.packet.PacketUartIOMock;
 
 public class NodeOfflineTest {
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     private static void assertNodeConfigException(ThrowingRunnable f, String expectedCode) {
         NodeConfigurationException e = assertThrows(NodeConfigurationException.class, f);
         assertEquals(expectedCode, e.getCode());
@@ -49,6 +44,7 @@ public class NodeOfflineTest {
                 () -> a.addDevice(new TestDevice(2, 0x01000000, 0xE000)),
                 "ConflictingEventMask");
     }
+
     @Test
     public void addDeviceFailConflictingOutputMask() {
         Node a = new Node(33, "testA", new PacketUartIOMock());
@@ -58,6 +54,7 @@ public class NodeOfflineTest {
                 () -> a.addDevice(new TestDevice(2, 0xFEFD_00E0, 0x8000)),
                 "ConflictingOutputMask");
     }
+
     @Test
     public void addDeviceFailDeviceEventMaskConflictsExistingOutputMasks() {
         Node a = new Node(33, "testA", new PacketUartIOMock());
