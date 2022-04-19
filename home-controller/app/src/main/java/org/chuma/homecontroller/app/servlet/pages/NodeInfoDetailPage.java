@@ -47,7 +47,7 @@ public class NodeInfoDetailPage extends AbstractPage {
     public void appendContent(StringBuilder builder, Map<String, String[]> requestParameters) {
         int id = AbstractRestHandler.getMandatoryIntParam(requestParameters, "id");
         NodeInfo nodeInfo = nodeInfoRegistry.getNodeInfo(id);
-        Validate.notNull(nodeInfo, "no item with id '" + id + "' found");
+        Validate.isTrue(nodeInfo != null, "no item with id '" + id + "' found");
 
         Node node = nodeInfo.getNode();
         builder.append("<div class=title>#").append(node.getNodeId()).append(" ").append(node.getName()).append("</div><br/>");
