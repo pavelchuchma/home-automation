@@ -22,6 +22,9 @@ public class NodeHandler extends AbstractRestHandler<NodeInfo> {
                 nodeInfo -> String.valueOf(nodeInfo.getNode().getNodeId()));
 
         this.testRunners = new NodeTestRunners();
+        nodeInfoRegistry.registerAddNodeListener(
+                info -> NodeHandler.this.addMapItem(
+                        info, nodeInfo -> String.valueOf(nodeInfo.getNode().getNodeId())));
     }
 
     private static String dateAsString(Date date) {

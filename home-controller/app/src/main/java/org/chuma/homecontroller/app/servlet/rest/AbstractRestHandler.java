@@ -28,18 +28,18 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
         statusPath = rootPath + "/status";
         actionPath = rootPath + "/action";
         this.statusJsonArrayName = statusJsonArrayName;
-        this.itemMap = buildIdMap(items, getId);
+
+        itemMap = new TreeMap<>();
+        for (T i : items) {
+            addMapItem(i, getId);
+        }
     }
 
-    private static <T> Map<String, T> buildIdMap(Iterable<T> items, Function<T, String> getId) {
-        Map<String, T> itemMap = new TreeMap<>();
-        for (T i : items) {
-            String id = getId.apply(i);
-            if (itemMap.put(id, i) != null) {
-                throw new RuntimeException("Item with id '" + id + "' is not unique");
-            }
+    void addMapItem(T item, Function<T, String> getId) {
+        String id = getId.apply(item);
+        if (itemMap.put(id, item) != null) {
+            throw new RuntimeException("Item with id '" + id + "' is not unique");
         }
-        return itemMap;
     }
 
     static String getMandatoryStringParam(Map<String, String[]> requestParams, String name) {
@@ -62,7 +62,7 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
         return Integer.parseInt(getMandatoryStringParam(requestParams, name));
     }
 
-    static double getMandatoryDoubleParam(Map<String, String[]> requestParams, String name) {
+    public static double getMandatoryDoubleParam(Map<String, String[]> requestParams, String name) {
         return Double.parseDouble(getMandatoryStringParam(requestParams, name));
     }
 

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -20,11 +21,10 @@ import org.chuma.homecontroller.base.packet.Packet;
  */
 public class NodeInfoRegistry {
     static Logger log = LoggerFactory.getLogger(NodeInfoRegistry.class.getName());
-
     final IPacketUartIO packetUartIO;
     final Map<Integer, NodeInfo> nodeInfoMap = new HashMap<>();
     final SwitchListener switchListener = new SwitchListener();
-
+    final List<AddNodeListener> addNodeListeners = new ArrayList<>();
     public NodeInfoRegistry(final IPacketUartIO packetUartIO) {
         this.packetUartIO = packetUartIO;
     }
@@ -106,6 +106,9 @@ public class NodeInfoRegistry {
         }
         node.addListener(switchListener);
         log.debug("Node #{} added", nodeId);
+        for (AddNodeListener listener : addNodeListeners) {
+            listener.nodeAdded(nodeInfo);
+        }
         return nodeInfo;
     }
 
@@ -149,5 +152,13 @@ public class NodeInfoRegistry {
      */
     public synchronized NodeInfo getNodeInfo(int nodeId) {
         return nodeInfoMap.get(nodeId);
+    }
+
+    public synchronized void registerAddNodeListener(AddNodeListener listener) {
+        addNodeListeners.add(listener);
+    }
+
+    public interface AddNodeListener {
+        void nodeAdded(NodeInfo nodeInfo);
     }
 }
