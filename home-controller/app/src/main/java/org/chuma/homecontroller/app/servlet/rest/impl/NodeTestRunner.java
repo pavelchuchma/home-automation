@@ -31,6 +31,7 @@ public class NodeTestRunner extends Thread {
     }
 
     public void setMode(Mode mode) {
+        Validate.isTrue(mode != Mode.testReady, "Mode 'Mode.testReady' is not supported.");
         this.mode = mode;
         modeApplied = false;
     }
@@ -129,6 +130,7 @@ public class NodeTestRunner extends Thread {
         cycle,
         fullOn,
         fullOff,
-        endTest
+        endTest, // set this mode to terminate the test
+        testReady // node is able to run the test
     }
 }

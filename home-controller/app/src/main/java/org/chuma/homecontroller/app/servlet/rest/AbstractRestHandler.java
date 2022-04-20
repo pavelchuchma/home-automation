@@ -35,6 +35,9 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
         }
     }
 
+    /**
+     * Adds single item with unique ID to the internal map.
+     */
     void addMapItem(T item, Function<T, String> getId) {
         String id = getId.apply(item);
         if (itemMap.put(id, item) != null) {

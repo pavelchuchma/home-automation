@@ -10,7 +10,8 @@ public class NodeTestRunners {
 
     public synchronized NodeTestRunner.Mode getTestMode(NodeInfo nodeInfo) {
         NodeTestRunner testRunner = runners.get(nodeInfo);
-        return (testRunner != null) ? testRunner.getMode() : null;
+        return (testRunner != null) ? testRunner.getMode() :
+                (nodeInfo.getNode().getDevices().isEmpty()) ? NodeTestRunner.Mode.testReady : null;
     }
 
     public synchronized void startNodeTest(NodeInfo nodeInfo, NodeTestRunner.Mode mode) {
