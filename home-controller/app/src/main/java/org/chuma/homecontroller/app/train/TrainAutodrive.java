@@ -81,6 +81,7 @@ public class TrainAutodrive  {
             if (lastSensor == 0) {
                 if (switchStraight) {
                     // Must be in turn - because we probably go from 0 to 2 through switch
+                    log.debug("{}: cannot start autodrive, switch position wrong", id);
                     return false;
                 }
                 expectedSensor = 2;
@@ -88,6 +89,7 @@ public class TrainAutodrive  {
             } else if (lastSensor == 1) {
                 if (!switchStraight) {
                     // Must be in strainght - because we probably go from 1 to 2 through switch
+                    log.debug("{}: cannot start autodrive, switch position wrong", id);
                     return false;
                 }
                 expectedSensor = 2;
@@ -101,7 +103,9 @@ public class TrainAutodrive  {
                 }
                 dir = -1;
             }
-            // Now determine state according to speed
+            // Now determine state according to direction and speed
+            // We also need to save current speed so we can determine if we are slowing down/speeding up
+            lastSpeed = trainControl.getSpeed();
             int realDir = trainControl.getDirection();
             if (realDir == 0) {
                 // Is stopped - make sure speed is 0
@@ -110,7 +114,7 @@ public class TrainAutodrive  {
                 state = 2;
             } else if (realDir == dir) {
                 // Direction set - speed up
-                if (trainControl.getSpeed() > 0) {
+                if (lastSpeed > 0) {
                     // Already going - keep going
                     state = 4;
                 } else {
@@ -119,12 +123,13 @@ public class TrainAutodrive  {
                 }
             } else {
                 // Direction wrong - do not enable auto
+                log.debug("{}: cannot start autodrive, direction wrong", id);
                 return false;
             }
             // Enable and notify
             autodriving = true;
             listenerManager.callListeners(l -> l.accept(true));
-            log.debug("{}: autodrive initialized to state {}, dir was {}, going to sensor {}", id, realDir, expectedSensor);
+            log.debug("{}: autodrive initialized to state {}, dir was {}, going to sensor {}", id, state, realDir, expectedSensor);
             // Just to correct method according to state
             if (state == 2) {
                 onSwitchChanged();
@@ -160,11 +165,11 @@ public class TrainAutodrive  {
                 if (dir == expDir) {
                     // Speed up
                     state = 4;
-                    log.debug("{}: switched to {}, speeding up", id, switchStraight ? "straight" : "turn");
+                    log.debug("{}: direction changed to {}, speeding up", id, dir);
                     trainControl.setSpeed(options.getInt(PROP_TOP_SPEED)); // TODO: speed up
                 } else {
                     // Wrong direction - just cancel as the train is stopped
-                    log.debug("{}: unexpected change of direction - cancelling autodrive", id);
+                    log.debug("{}: unexpected change of direction {} (expected {}) - cancelling autodrive", id, dir, expDir);
                     cancelAutodrive();
                 }
             } else {
@@ -181,7 +186,7 @@ public class TrainAutodrive  {
                 // Slowing down
                 if (speed >= lastSpeed) {
                     // Not slowing down - stop
-                    log.debug("{}: not slowing down - STOP", id);
+                    log.debug("{}: not slowing down (now {}, before {}) - STOP", id, speed, lastSpeed);
                     emergencyStop();
                 } else {
                     lastSpeed = speed;
@@ -189,18 +194,27 @@ public class TrainAutodrive  {
                         // Stopped - select next sensor and set train switch
                         state = 2;
                         switch (lastSensor) {
-                            case 0: switchStraight = false; break;
-                            case 1: switchStraight = true; break;
-                            case 2: switchStraight = !trainSwitch.switchStraight(); break;
+                            case 0:
+                                switchStraight = false;
+                                expectedSensor = 2;
+                                break;
+                            case 1:
+                                switchStraight = true;
+                                expectedSensor = 2;
+                                break;
+                            case 2:
+                                switchStraight = !trainSwitch.isStraight();
+                                expectedSensor = switchStraight ? 1 : 0;
+                                break;
                         }
                         log.debug("{}: stopped, setting switch to {}", id, switchStraight ? "straight" : "turn");
                         if (trainSwitch.isStraight() == switchStraight) {
                             // Already switched - continue by invoking onSwitchChanged()
                             onSwitchChanged();
                         } else if (switchStraight) {
-                            trainSwitch.switchTurn();
-                        } else {
                             trainSwitch.switchStraight();
+                        } else {
+                            trainSwitch.switchTurn();
                         }
                     }
                 }
@@ -227,7 +241,7 @@ public class TrainAutodrive  {
                 trainControl.setSpeed(0); // TODO: slow down
             } else {
                 // Unexpected sensor or in unexpected state - something is wrong
-                log.debug("{}: hit unexpected sensor {} - STOP", id, (char)('A' + sensor));
+                log.debug("{}: hit unexpected sensor {} (expected {}) - STOP", id, (char)('A' + sensor), (char)('A' + expectedSensor));
                 emergencyStop();
             }
         } else {
@@ -241,7 +255,7 @@ public class TrainAutodrive  {
                 // Switched to expected state - change direction
                 state = 3;
                 int dir = lastSensor < 2 ? 1 : -1;
-                log.debug("{}: switched, changing direction to {}", dir);
+                log.debug("{}: switched, changing direction to {}", id, dir);
                 trainControl.setDirection(dir);                        
             } else {
                 // Switch to wrong position - stop
