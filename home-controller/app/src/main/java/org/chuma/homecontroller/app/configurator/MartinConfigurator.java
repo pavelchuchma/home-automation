@@ -19,6 +19,7 @@ import org.chuma.homecontroller.app.servlet.pages.LinkablePage;
 import org.chuma.homecontroller.app.servlet.rest.NodeHandler;
 import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
 import org.chuma.homecontroller.app.train.RailPowerAndDetectors;
+import org.chuma.homecontroller.app.train.TrainAutodrive;
 import org.chuma.homecontroller.app.train.TrainControl;
 import org.chuma.homecontroller.app.train.TrainPassSensor;
 import org.chuma.homecontroller.app.train.TrainSwitch;
@@ -96,6 +97,7 @@ public class MartinConfigurator extends AbstractConfigurator {
         TrainPassSensor sensorA = new TrainPassSensor("sensor-A", lst, options, rpd.getPassDetectorA()).withTrainPosition(vlak);
         TrainPassSensor sensorB = new TrainPassSensor("sensor-B", lst, options, rpd.getPassDetectorB()).withTrainPosition(vlak);
         TrainPassSensor sensorC = new TrainPassSensor("sensor-C", lst, options, rpd.getPassDetectorC()).withTrainPosition(vlak);
+        TrainAutodrive autodrive = new TrainAutodrive("autodrive", options, vlak, vyhybka, sensorA, sensorB, sensorC);
         
         // (vyhybky)
 //        LouversController vyhybka01;
@@ -116,7 +118,7 @@ public class MartinConfigurator extends AbstractConfigurator {
 
         List<WebSocketHandler> wsHandlers = new ArrayList<>();
 //        wsHandlers.add(new GenericControlWebSocketHandler(nodeInfoRegistry));
-        wsHandlers.add(new TrainWebSocketHandler(vyhybka, vlak, sensorA, sensorB, sensorC));
+        wsHandlers.add(new TrainWebSocketHandler(autodrive, vyhybka, vlak, sensorA, sensorB, sensorC));
         List<ServletAction> rootActions = new ArrayList<>();
         List<Page> pages = new ArrayList<>();
 //        pages.add(new GenericControlPage(nodeInfoRegistry, pages));

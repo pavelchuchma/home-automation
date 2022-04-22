@@ -18,17 +18,22 @@ public class TrainWebSocketHandler extends AbstractWebSocketHandler {
     private static final int SPEED_MIN = 60;
     private static final int SPEED_STEP = 10;
 
+    private TrainAutodrive autodrive;
     private TrainSwitch trainSwitch;
     private TrainControl trainControl;
     private TrainPassSensor[] trainPassSensor;
     // Connected clients
     private Set<Adapter> clients = ConcurrentHashMap.newKeySet();
 
-    public TrainWebSocketHandler(TrainSwitch trainSwitch, TrainControl trainControl, TrainPassSensor ... trainPassSensor) {
+    public TrainWebSocketHandler(TrainAutodrive autodrive, TrainSwitch trainSwitch, TrainControl trainControl, TrainPassSensor ... trainPassSensor) {
         super("/train");
+        this.autodrive = autodrive;
         this.trainSwitch = trainSwitch;
         this.trainControl = trainControl;
         this.trainPassSensor = trainPassSensor;
+        autodrive.addListener(auto -> {
+            processEvent(a -> a.sendAutodriving(auto));
+        });
         trainSwitch.addListener(ts -> {
             processEvent(a -> a.sendSwitchState(ts));
         });
@@ -100,7 +105,6 @@ public class TrainWebSocketHandler extends AbstractWebSocketHandler {
 
         @Override
         public void onWebSocketText(String message) {
-            // TODO: HANDLE AUTO HERE - in case of auto, allow only stopping!
             super.onWebSocketText(message);
             // Receives message in format "function:value"
             int i = message.indexOf(':');
@@ -136,13 +140,27 @@ public class TrainWebSocketHandler extends AbstractWebSocketHandler {
                             trainControl.setSpeed(speed);
                             break;
                         case "auto":
-                            System.out.println("COMMAND: " + action + " -> " + value); // TODO
+                            if (autodrive.isAutodriving()) {
+                                autodrive.stopAutodrive();
+                            } else {
+                                autodrive.startAutodrive();
+                            }
+                            break;
                     }
                 } catch (NumberFormatException e) {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
+        }
+
+        public void sendAutodriving(boolean isAuto) {
+            JsonWriter w = new JsonWriter(false);
+            w.startObject();
+            w.addAttribute("action", "auto");
+            w.addAttribute("state", isAuto);
+            w.close();
+            sendText(w.toString());
         }
 
         public void sendSwitchState(TrainSwitch trainSwitch) {
