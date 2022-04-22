@@ -296,6 +296,6 @@ public class TrainPassSensor {
          * Position of train has changed. Note that passed position could be obsolete so it is
          * probably better to read one from the sensor instance.
          */
-        void positionChanged(TrainPosition position);
+        default void positionChanged(TrainPosition position) {};
     }
 }
