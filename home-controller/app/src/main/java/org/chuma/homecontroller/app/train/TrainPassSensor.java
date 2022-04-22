@@ -119,8 +119,8 @@ public class TrainPassSensor {
     private void onSensorActive(int previousDurationMs) {
         sensorActive = true;
         boolean notifyPosition = updateTrainPosition();
-        if (previousDurationMs >= firePeriod) {
-            // Was inactive for a long time - fire
+        if (previousDurationMs >= firePeriod || previousDurationMs < 0) {
+            // Was inactive for a long time - fire (-1 is notification for the first time - also fire)
             log.debug("{}: notify TRAIN ARRIVED", id);
             listenerManager.callListeners(l -> l.trainArrived());
         }
