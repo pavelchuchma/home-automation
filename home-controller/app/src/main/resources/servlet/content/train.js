@@ -4,9 +4,8 @@ const cssActive = 'active';
 
 // Open web socket connection to send/receive changes
 const url = "ws://" + new URL(window.location.href).host + "/web-socket/train";
-const ws = new WebSocket(url);
-ws.onmessage = function(event) {
-    const content = JSON.parse(event.data);
+const ws = new SimpleWebSocket(url);
+ws.onmessage = function(content) {
     switch (content.action) {
         case "switch": drawSwitch(content.dir); break;
         case "dir":
