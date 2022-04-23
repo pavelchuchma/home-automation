@@ -31,8 +31,9 @@ public class SimulationPage extends AbstractPage {
     @Override
     public String[] getScripts() {
         String[] orig = super.getScripts();
-        String[] result = Arrays.copyOf(orig, orig.length + 1);
-        result[orig.length] = "simulation.js";
+        String[] result = Arrays.copyOf(orig, orig.length + 2);
+        result[orig.length] = "websocket.js";
+        result[orig.length + 1] = "simulation.js";
         return result;
     }
 
