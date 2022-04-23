@@ -57,8 +57,8 @@ public class NodeHandler extends AbstractRestHandler<NodeInfo> {
     }
 
     @Override
-    void writeIdImpl(Map.Entry<String, NodeInfo> entry, JsonWriter objectWriter) {
-        objectWriter.addAttribute("id", Integer.parseInt(entry.getKey()));
+    void writeIdImpl(String id, JsonWriter objectWriter) {
+        objectWriter.addAttribute("id", Integer.parseInt(id));
     }
 
     @Override

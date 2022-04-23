@@ -35,16 +35,6 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
         }
     }
 
-    /**
-     * Adds single item with unique ID to the internal map.
-     */
-    void addMapItem(T item, Function<T, String> getId) {
-        String id = getId.apply(item);
-        if (itemMap.put(id, item) != null) {
-            throw new RuntimeException("Item with id '" + id + "' is not unique");
-        }
-    }
-
     static String getMandatoryStringParam(Map<String, String[]> requestParams, String name) {
         String val = getStringParam(requestParams, name);
         if (val == null) {
@@ -77,6 +67,16 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
         return Integer.parseInt(val);
     }
 
+    /**
+     * Adds single item with unique ID to the internal map.
+     */
+    void addMapItem(T item, Function<T, String> getId) {
+        String id = getId.apply(item);
+        if (itemMap.put(id, item) != null) {
+            throw new RuntimeException("Item with id '" + id + "' is not unique");
+        }
+    }
+
     @Override
     public String getPath() {
         return rootPath;
@@ -105,7 +105,7 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
             request.setHandled(true);
         } else if (target.startsWith(actionPath)) {
             final Map<String, String[]> requestParameters = request.getParameterMap();
-            T item = getItemById(requestParameters);
+            T item = getItemById(getMandatoryStringParam(requestParameters, "id"));
             new Thread(() -> {
                 try {
                     processAction(item, requestParameters);
@@ -121,17 +121,28 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
 
     public void writeStatusJson(JsonWriter writer, HttpServletRequest request) {
         try (JsonWriter arrayWriter = writer.startArrayAttribute(statusJsonArrayName)) {
-            for (Map.Entry<String, T> entry : itemMap.entrySet()) {
-                try (JsonWriter objectWriter = arrayWriter.startObject()) {
-                    writeIdImpl(entry, objectWriter);
-                    writeJsonItemValues(objectWriter, entry.getValue(), request);
+            String id = getStringParam(request.getParameterMap(), "id");
+            if (id != null) {
+                // returning only item requested by id param
+                writeStatusJsonItem(request, arrayWriter, id, getItemById(id));
+            } else {
+                // returning complete collection
+                for (Map.Entry<String, T> entry : itemMap.entrySet()) {
+                    writeStatusJsonItem(request, arrayWriter, entry.getKey(), entry.getValue());
                 }
             }
         }
     }
 
-    void writeIdImpl(Map.Entry<String, T> entry, JsonWriter objectWriter) {
-        objectWriter.addAttribute("id", entry.getKey());
+    private void writeStatusJsonItem(HttpServletRequest request, JsonWriter arrayWriter, String id, T item) {
+        try (JsonWriter objectWriter = arrayWriter.startObject()) {
+            writeIdImpl(id, objectWriter);
+            writeJsonItemValues(objectWriter, item, request);
+        }
+    }
+
+    void writeIdImpl(String id, JsonWriter objectWriter) {
+        objectWriter.addAttribute("id", id);
     }
 
     void writeJsonItemValues(JsonWriter jw, T item, HttpServletRequest request) {
@@ -140,8 +151,7 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
     void processAction(T instance, Map<String, String[]> requestParameters) throws Exception {
     }
 
-    T getItemById(Map<String, String[]> requestParams) {
-        String id = getMandatoryStringParam(requestParams, "id");
+    T getItemById(String id) {
         T item = itemMap.get(id);
         Validate.isTrue(item != null, "no item with id '" + id + "' found");
         return item;
