@@ -1,5 +1,7 @@
 package org.chuma.homecontroller.app.servlet.simulation;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -133,7 +135,14 @@ public class SimulationWebSocketHandler extends AbstractWebSocketHandler impleme
         }
 
         void logMessage(SimulatedNode node, Level level, String messageFormat, Object... args) {
-            // TODO
+            JsonWriter w = new JsonWriter(false);
+            w.startObject();
+            w.startObjectAttribute("log");
+            w.addAttribute("node", node.getId());
+            w.addAttribute("message", String.format("%s: %5s: %s", new SimpleDateFormat("HH:mm:ss.SSS").format(new Date()), level, String.format(messageFormat, args)));
+            w.close();
+            w.close();
+            sendText(w.toString());
         }
 
         void onSetPort(SimulatedNode node, int port, int value) {

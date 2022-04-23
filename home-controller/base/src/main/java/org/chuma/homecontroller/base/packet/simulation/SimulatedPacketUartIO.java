@@ -16,6 +16,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 
 import org.chuma.homecontroller.base.node.MessageType;
@@ -32,6 +34,7 @@ import org.chuma.homecontroller.base.packet.PacketUartIO;
 public class SimulatedPacketUartIO extends AbstractPacketUartIO {
     public static final int[] TRIS_ADDRESS = new int[] { Pic.TRISA, Pic.TRISB, Pic.TRISC, Pic.TRISD, Pic.TRISE };
     public static final int[] PORT_ADDRESS = new int[] { Pic.PORTA, Pic.PORTB, Pic.PORTC, Pic.PORTD, Pic.PORTE };
+    private static Logger log = LoggerFactory.getLogger(SimulatedPacketUartIO.class.getName());
 
     private ConcurrentMap<Integer, SimulatedNode> nodes = new ConcurrentHashMap<>();
     private AggregateListener listener = new AggregateListener();
@@ -271,11 +274,17 @@ public class SimulatedPacketUartIO extends AbstractPacketUartIO {
             for (SimulatedNodeListener l : listeners) {
                 l.logMessage(node, level, messageFormat, args);
             }
-            Object[] nargs = new Object[args.length + 2];
-            nargs[0] = level;
-            nargs[1] = node.getId();
-            System.arraycopy(args, 0, nargs, 2, args.length);
-            System.out.printf("%5s: %d: " + messageFormat + "\n", nargs); // TODO
+            String nFormat = "%d: " + messageFormat;
+            Object[] nargs = new Object[args.length + 1];
+            nargs[0] = node.getId();
+            System.arraycopy(args, 0, nargs, 1, args.length);
+            switch (level) {
+                case TRACE: log.trace(nFormat, nargs); break;
+                case DEBUG: log.debug(nFormat, nargs); break;
+                case INFO: log.info(nFormat, nargs); break;
+                case WARN: log.warn(nFormat, nargs); break;
+                case ERROR: log.error(nFormat, nargs); break;
+            }
         }
 
         @Override

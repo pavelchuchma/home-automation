@@ -6,7 +6,15 @@ table.hidden {
     display: none;
 }
 
-td {
+table.node-table tr:first-of-type {
+    height: 40%;
+}
+
+table.node-table td {
+    vertical-align: top;
+}
+
+table.dip td {
     vertical-align: middle;
 }
 

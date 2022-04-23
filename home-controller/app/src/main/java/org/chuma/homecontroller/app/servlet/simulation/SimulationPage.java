@@ -48,22 +48,24 @@ public class SimulationPage extends AbstractPage {
                 sb.append(": ").append(node.getName());
             }
             sb.append("</h1>\n");
-            sb.append("<table id=\"node.").append(id).append("\"><tr>\n");
+            sb.append("<table class=\"node-table\" id=\"node.").append(id).append("\"><tr>\n");
             // PIC view
-            sb.append("<td>\n");
+            sb.append("<td rowspan=\"2\">\n");
             generatePic(sb, simNode);
             sb.append("</td>\n");
             // Devices
             generateConnector(sb, simNode, 1);
             generateConnector(sb, simNode, 2);
             generateConnector(sb, simNode, 3);
-            sb.append("</tr></table>\n");
+            sb.append("</tr><tr><td colspan=\"3\">\n");
+            sb.append("<ul id=\"msg.").append(id).append("\"></ul>");
+            sb.append("</td></tr></table>\n");
             sb.append("</div>\n");
         }
     }
     
     private void generatePic(StringBuilder sb, SimulatedNode simNode) {
-        sb.append("<table>\n");
+        sb.append("<table class=\"dip\">\n");
         ChipGenerator g = new ChipGenerator(sb, simNode, "pic");
         g.addPin(-1, 1, "MCLR"); g.addPin(Pin.pinB7, "B7/un");
         g.addPin(Pin.pinA0); g.addPin(Pin.pinB6, "B6/un");
@@ -92,7 +94,7 @@ public class SimulationPage extends AbstractPage {
                 if (d.getConnectorNumber() == connectorId && d instanceof AbstractConnectedDevice) {
                     AbstractConnectedDevice device = (AbstractConnectedDevice)d;
                     Pin[] layout = AbstractConnectedDevice.layout[connectorId - 1];
-                    sb.append("<table>\n");
+                    sb.append("<table class=\"dip\">\n");
                     sb.append("<tr><td colspan=\"6\" class=\"title\">Conn #").append(connectorId).append("</td></tr>\n");
                     sb.append("<tr><td colspan=\"6\" class=\"title\">");
                     if (device.getId() != null) {

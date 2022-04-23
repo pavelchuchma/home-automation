@@ -5,13 +5,23 @@ const changeTimeout = 2000;
 const url = "ws://" + new URL(window.location.href).host + "/web-socket/simulation";
 const ws = new SimpleWebSocket(url);
 ws.onmessage = function(content) {
-    for (const change of content.changes) {
-        if (change.what == "value") {
-            changeText("pic." + change.id + ".value", change.value);
-            changeText("conn." + change.id + ".value", change.value);
-        } else if (change.what == "dir") {
-            changeDir("pic." + change.id + ".dir", change.value);
-            changeDir("conn." + change.id + ".dir", change.value);
+    if (content.changes) {
+        for (const change of content.changes) {
+            if (change.what == "value") {
+                changeText("pic." + change.id + ".value", change.value);
+                changeText("conn." + change.id + ".value", change.value);
+            } else if (change.what == "dir") {
+                changeDir("pic." + change.id + ".dir", change.value);
+                changeDir("conn." + change.id + ".dir", change.value);
+            }
+        }
+    } else if (content.log) {
+        var ul = document.getElementById("msg." + content.log.node);
+        var li = document.createElement("li");
+        li.appendChild(document.createTextNode(content.log.message));
+        ul.insertBefore(li, ul.firstChild);
+        if (ul.children.length > 16) {
+            ul.lastChild.remove();
         }
     }
 };
