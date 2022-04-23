@@ -13,6 +13,7 @@ import org.chuma.homecontroller.base.node.ListenerManager;
 public class TrainAutodrive  {
     // TODO: Methods should be synchronized but MUST NOT be locked when calling other controls - so best to return "action" which gets executed after the (synchronized) method call finishes
     private static final String PROP_TOP_SPEED = "train.autodrive.top_speed";
+    private static final String PROP_DIR_CHANGE_WAIT = "train.autodrive.dir_change_wait";
     private static final Logger log = LoggerFactory.getLogger(TrainAutodrive.class.getName());
 
     private String id;
@@ -23,19 +24,19 @@ public class TrainAutodrive  {
     private boolean autodriving;
 
     // Which sensor we hit the last time (gives info what to do next)
-    private int lastSensor;
+    private volatile int lastSensor;
     // Sensor to which we should arrive
-    private int expectedSensor;
+    private volatile int expectedSensor;
     // Last speed - used to detect if slowing down/speeding up as requested
-    private int lastSpeed;
+    private volatile int lastSpeed;
     // Required switch position - to check when switching (true = straight, false = turn)
-    private boolean switchStraight;
+    private volatile boolean switchStraight;
     // State - what command was issued and we await its completion
     // - 1: stop (slow down & stop)
     // - 2: switch train switch if needed
     // - 3: switch direction (via dir 0)
     // - 4: start (speed up) and going - wait for correct sensor, ignore previous sensor (going from opposite direction)
-    private int state;
+    private volatile int state;
 
     public TrainAutodrive(String id, Options options, TrainControl trainControl, TrainSwitch trainSwitch, TrainPassSensor ... passSensors) {
         Validate.isTrue(passSensors.length == 3, "Exactly 3 sensors expected");
@@ -164,9 +165,13 @@ public class TrainAutodrive  {
                 int expDir = lastSensor < 2 ? 1 : -1;
                 if (dir == expDir) {
                     // Speed up
-                    state = 4;
-                    log.debug("{}: direction changed to {}, speeding up", id, dir);
-                    trainControl.setSpeed(options.getInt(PROP_TOP_SPEED)); // TODO: speed up
+                    schedule(options.getInt(PROP_DIR_CHANGE_WAIT), () -> {
+                        if (autodriving) {
+                            state = 4;
+                            log.debug("{}: direction changed to {}, speeding up", id, dir);
+                            trainControl.changeSpeed(options.getInt(PROP_TOP_SPEED));
+                        }
+                    });
                 } else {
                     // Wrong direction - just cancel as the train is stopped
                     log.debug("{}: unexpected change of direction {} (expected {}) - cancelling autodrive", id, dir, expDir);
@@ -174,10 +179,20 @@ public class TrainAutodrive  {
                 }
             } else {
                 // Change direction 
-                log.debug("{}: unexpected change of direction - STOP", id);
+                log.debug("{}: unexpected change of direction (state {}, dir {}) - STOP", id, state, dir);
                 emergencyStop();
             }
         }
+    }
+
+    private void schedule(int timeout, Runnable run) {
+        new Thread(() -> {
+            try {
+                Thread.sleep(timeout);
+                run.run();
+            } catch (InterruptedException e) {
+            }
+        }).start();
     }
 
     private void onSpeedChanged(int speed) {
@@ -223,7 +238,7 @@ public class TrainAutodrive  {
                 lastSpeed = speed;
             } else {
                 // Someone is messing with speed - cancel autodrive but don't stop
-                log.debug("{}: unexpected speed change - cancel autodrive", id);
+                log.debug("{}: unexpected speed change (state {}, speed {}, last {}) - cancel autodrive", id, state, speed, lastSpeed);
                 cancelAutodrive();
             }
         }
@@ -238,7 +253,7 @@ public class TrainAutodrive  {
                 state = 1;
                 lastSensor = sensor;
                 log.debug("{}: hit expected sensor {}, stop", id, (char)('A' + sensor));
-                trainControl.setSpeed(0); // TODO: slow down
+                trainControl.changeSpeed(0);
             } else {
                 // Unexpected sensor or in unexpected state - something is wrong
                 log.debug("{}: hit unexpected sensor {} (expected {}) - STOP", id, (char)('A' + sensor), (char)('A' + expectedSensor));
