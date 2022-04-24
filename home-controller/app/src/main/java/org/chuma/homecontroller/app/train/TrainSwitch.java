@@ -45,8 +45,12 @@ public class TrainSwitch {
         this.switchTurn = switchTurn;
         this.indicatorStraight = indicatorStraight;
         this.indicatorTurn = indicatorTurn;
-        listener.addActionBinding(new SimpleActionBinding(indicatorStraight, action(() -> isStraight = true), action(() -> isStraight = false)));
-        listener.addActionBinding(new SimpleActionBinding(indicatorTurn, action(() -> isTurn = true), action(() -> isTurn = false)));
+        SimpleActionBinding abStraight = new SimpleActionBinding(indicatorStraight, action(() -> isStraight = true), action(() -> isStraight = false));
+        SimpleActionBinding abTurn = new SimpleActionBinding(indicatorTurn, action(() -> isTurn = true), action(() -> isTurn = false));
+        listener.addActionBinding(abStraight);
+        listener.addActionBinding(abTurn);
+        listener.addOnInitializedActionBinding(abStraight);
+        listener.addOnInitializedActionBinding(abTurn);
     }
 
     public String getId() {
