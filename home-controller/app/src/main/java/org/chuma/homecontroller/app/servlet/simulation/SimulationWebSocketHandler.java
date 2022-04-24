@@ -91,19 +91,39 @@ public class SimulationWebSocketHandler extends AbstractWebSocketHandler impleme
         @Override
         public void onWebSocketConnect(Session session) {
             super.onWebSocketConnect(session);
-            // Connected - remember current state so we can detect when to notify
+            // Connected - send and remember current state so we can detect when to notify
+            JsonWriter w = new JsonWriter(false);
+            w.startObject();
+            w.startArrayAttribute("changes");
             for (SimulatedNode n : simulator.getSimulatedNodes()) {
                 NodeData data = new NodeData(n);
-                for (int i = 0; i < PORT_ADDRESS.length; i++) {
-                    data.port[i] = n.readRam(PORT_ADDRESS[i]);
+                for (int port = 0; port < PORT_ADDRESS.length; port++) {
+                    data.port[port] = n.readRam(PORT_ADDRESS[port]);
+                    // Check if any of pin is in PWM - send PWM state instead
+                    int mask = 0;
+                    for (int pin = 0; pin < 8; pin++) {
+                        int pwm = n.getManualPwm(port, pin);
+                        if (pwm >= 0) {
+                            addPwmChange(w, n, port, pin, pwm);
+                        } else {
+                            mask |= 1 << pin;
+                        }
+                    }
+                    // Send remaining pins (those in mask)
+                    addChanges(w, n, "value", port, data.port[port], mask);
                 }
                 for (int i = 0; i < TRIS_ADDRESS.length; i++) {
                     data.tris[i] = n.readRam(TRIS_ADDRESS[i]);
+                    addChanges(w, n, "dir", i, data.port[i], 0xff);
                 }
                 nodes.put(n.getId(), data);
             }
+            w.close();
+            w.close();
             // Register itself to parent for events
             clients.add(this);
+            // Send current state
+            sendText(w.toString());
         }
 
         @Override
@@ -167,11 +187,7 @@ public class SimulationWebSocketHandler extends AbstractWebSocketHandler impleme
             JsonWriter w = new JsonWriter(false);
             w.startObject();
             w.startArrayAttribute("changes");
-            w.startObject();
-            w.addAttribute("id", node.getId() + "." + (char)(port + 'A') + Integer.toString(pin));
-            w.addAttribute("what", "value");
-            w.addAttribute("value", (int)(value * 100 / 48) + "%");
-            w.close();
+            addPwmChange(w, node, port, pin, value);
             w.close();
             w.close();
             sendText(w.toString());
@@ -186,18 +202,30 @@ public class SimulationWebSocketHandler extends AbstractWebSocketHandler impleme
                 JsonWriter w = new JsonWriter(false);
                 w.startObject();
                 w.startArrayAttribute("changes");
-                for (int i = 0; i < 8; i++, changed >>= 1, value >>= 1) {
-                    if ((changed & 1) == 1) {
-                        w.startObject();
-                        w.addAttribute("id", node.getId() + "." + (char)(port + 'A') + Integer.toString(i));
-                        w.addAttribute("what", what);
-                        w.addAttribute("value", Integer.toString(value & 1));
-                        w.close();
-                    }
-                }
+                addChanges(w, node, what, port, value, changed);
                 w.close();
                 w.close();
                 sendText(w.toString());
+            }
+        }
+
+        private void addPwmChange(JsonWriter w, SimulatedNode node, int port, int pin, int value) {
+            w.startObject();
+            w.addAttribute("id", node.getId() + "." + (char)(port + 'A') + Integer.toString(pin));
+            w.addAttribute("what", "value");
+            w.addAttribute("value", (int)(value * 100 / 48) + "%");
+            w.close();
+        }
+
+        private void addChanges(JsonWriter w, SimulatedNode node, String what, int port, int value, int changed) {
+            for (int i = 0; i < 8; i++, changed >>= 1, value >>= 1) {
+                if ((changed & 1) == 1) {
+                    w.startObject();
+                    w.addAttribute("id", node.getId() + "." + (char)(port + 'A') + Integer.toString(i));
+                    w.addAttribute("what", what);
+                    w.addAttribute("value", Integer.toString(value & 1));
+                    w.close();
+                }
             }
         }
     }
