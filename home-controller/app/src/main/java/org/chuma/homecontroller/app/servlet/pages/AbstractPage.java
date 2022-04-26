@@ -49,7 +49,10 @@ public abstract class AbstractPage implements Page {
         return new String[]{};
     }
 
-    StringBuilder beginHtlDocument() {
+    public void appendAdditionalHtmlHeaders(StringBuilder builder, Map<String, String[]> requestParameters) {
+    }
+
+    StringBuilder beginHtlDocument(Map<String, String[]> requestParameters) {
         StringBuilder builder = new StringBuilder();
         builder.append("<!DOCTYPE html>\n" +
                 "<html>\n" +
@@ -63,6 +66,7 @@ public abstract class AbstractPage implements Page {
         for (String script : getScripts()) {
             builder.append("    <script src='/").append(script).append("'></script>\n");
         }
+        appendAdditionalHtmlHeaders(builder, requestParameters);
         builder.append("</head>\n<body>\n<p id='error'></p>\n");
 
         for (Page page : links) {
@@ -103,7 +107,7 @@ public abstract class AbstractPage implements Page {
 
     @Override
     public void handle(String target, Request request, HttpServletResponse response) throws IOException {
-        StringBuilder builder = beginHtlDocument();
+        StringBuilder builder = beginHtlDocument(request.getParameterMap());
         appendContent(builder, request.getParameterMap());
         builder.append("</body></html>");
         sendOkResponse(request, response, builder.toString());

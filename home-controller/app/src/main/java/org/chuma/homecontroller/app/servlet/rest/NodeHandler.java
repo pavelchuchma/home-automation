@@ -69,12 +69,8 @@ public class NodeHandler extends AbstractRestHandler<NodeInfo> {
                 nodeInfo.getNode().reset();
                 return;
             case "test":
-                String testMode = getStringParam(requestParameters, "mode");
-                if (testMode == null || "stop".equals(testMode)) {
-                    testRunners.stopNodeTest(nodeInfo);
-                } else {
-                    testRunners.startNodeTest(nodeInfo, NodeTestRunner.Mode.valueOf(testMode));
-                }
+                String testMode = getMandatoryStringParam(requestParameters, "mode");
+                testRunners.setTestMode(nodeInfo, NodeTestRunner.Mode.valueOf(testMode));
                 return;
         }
         throw new IllegalArgumentException("Unknown action '" + action + "'");

@@ -20,7 +20,6 @@ import org.chuma.homecontroller.app.servlet.pages.NodeInfoPage;
 import org.chuma.homecontroller.app.servlet.pages.Page;
 import org.chuma.homecontroller.app.servlet.pages.PirPage;
 import org.chuma.homecontroller.app.servlet.pages.StaticPage;
-import org.chuma.homecontroller.app.servlet.pages.SystemPage;
 import org.chuma.homecontroller.app.servlet.rest.AirValveHandler;
 import org.chuma.homecontroller.app.servlet.rest.AllStatusHandler;
 import org.chuma.homecontroller.app.servlet.rest.HvacHandler;
@@ -765,8 +764,7 @@ public class PiConfigurator extends AbstractConfigurator {
                 new LightsPage(pwmActors, pages),
                 new LouversPage(louversControllers, pages),
                 new PirPage(pirStatusList, pages),
-                new NodeInfoPage(nodeInfoRegistry, pages, servletActions),
-                new SystemPage(nodeInfoRegistry, pages)));
+                new NodeInfoPage(nodeInfoRegistry, pages, servletActions)));
         // rest handlers
         List<StatusHandler> deviceRestHandlers = Arrays.asList(
                 new LouversHandler(Arrays.asList(louversControllers)),

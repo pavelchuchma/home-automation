@@ -146,6 +146,14 @@ public class Node implements PacketReceivedListener {
         return nodeId;
     }
 
+    /**
+     * Is CAN Bus/UART bridge node?
+     */
+    public boolean isBridgeNode() {
+        // node with ID == 1 is a CAN/UART bridge
+        return nodeId == 1;
+    }
+
     public String getName() {
         return name;
     }

@@ -11,7 +11,7 @@ window.onload = function () {
     } catch (e) {
         printException(e);
     }
-};
+}
 
 function updateAll() {
     for (const item of status.componentMap.values()) {
@@ -21,7 +21,11 @@ function updateAll() {
 
 function updateValue(item) {
     const id = item.id;
-    document.getElementById('name' + id).innerHTML = `<a href='/nodes/detail?id=${item.id}'>${item.id}-${item.name}</a>`;
+    const nameElement = document.getElementById('name' + id);
+    if (nameElement === null) {
+        return;
+    }
+    nameElement.innerHTML = `<a href='/nodes/detail?id=${item.id}'>${item.id}-${item.name}</a>`;
 
     const age = document.getElementById('pa' + id);
     age.innerHTML = (item.lastPingAge >= 0) ? `${item.lastPingAge}` : '-';

@@ -39,6 +39,7 @@ public class NodeTestRunner extends Thread {
     @SuppressWarnings("BusyWait")
     public void run() {
         Validate.isTrue(node.getDevices().isEmpty(), "Cannot run test on node %s because it has bound devices", node.getName());
+        Validate.isTrue(!node.isBridgeNode(), "Cannot run test on the bridge node %s", node.getName());
         final Pin[] devPins = getPins();
 
         try {

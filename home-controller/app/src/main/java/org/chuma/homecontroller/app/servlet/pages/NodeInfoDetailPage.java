@@ -44,6 +44,12 @@ public class NodeInfoDetailPage extends AbstractPage {
     }
 
     @Override
+    public void appendAdditionalHtmlHeaders(StringBuilder builder, Map<String, String[]> requestParameters) {
+        int id = AbstractRestHandler.getMandatoryIntParam(requestParameters, "id");
+        builder.append("    <script>window.onload = function () {onLoad('").append(id).append("');}</script>");
+    }
+
+    @Override
     public void appendContent(StringBuilder builder, Map<String, String[]> requestParameters) {
         int id = AbstractRestHandler.getMandatoryIntParam(requestParameters, "id");
         NodeInfo nodeInfo = nodeInfoRegistry.getNodeInfo(id);
@@ -53,10 +59,22 @@ public class NodeInfoDetailPage extends AbstractPage {
         builder.append("<div class=title>#").append(node.getNodeId()).append(" ").append(node.getName()).append("</div><br/>");
 
         if (nodeInfo.isResetSupported()) {
-            builder.append("<button onClick=\"resetNode('").append(id).append("')\">Reset</button>");
+            appendButton(builder, "btnReset", "Reset", "resetNode('" + id + "')", false);
         }
+        appendButton(builder, "btnTestCycle", "Test Cycle", "testNode('" + id + "', '" + NodeTestRunner.Mode.cycle + "')", true);
+        appendButton(builder, "btnTestOn", "Test All On", "testNode('" + id + "', '" + NodeTestRunner.Mode.fullOn + "')", true);
+        appendButton(builder, "btnTestOff", "Test All Off", "testNode('" + id + "', '" + NodeTestRunner.Mode.fullOff + "')", true);
+        appendButton(builder, "btnEndTest", "End Test", "testNode('" + id + "', '" + NodeTestRunner.Mode.endTest + "')", true);
 
         appendNodeDebugInfo(builder, id);
+    }
+
+    private void appendButton(StringBuilder builder, String id, String title, String onClick, boolean hidden) {
+        builder.append("<button ");
+        if (hidden) {
+            builder.append("hidden='true' ");
+        }
+        builder.append("id='").append(id).append("' onClick=\"").append(onClick).append("\">").append(title).append("</button>");
     }
 
     private void appendNodeDebugInfo(StringBuilder builder, int debugNodeId) {
