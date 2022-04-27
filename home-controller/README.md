@@ -10,7 +10,8 @@
 * [x] !!! refactor `LouverControllerImpl.setPosition()` percent parameter from int to double
 * [x] use `Validate.inclusiveBetween` whenever possible
 * [x] Fix Bzucak & Garaz actions
-* [ ] Merge Nodes & System pages including testNode
+* [x] Merge Nodes & System pages including testNode
+* [ ] use Options to store js baseUrl value
 * [ ] Rename Node.Listener method: Replace ButtonUp/Down by State High/Low...
 * [ ] Rename SwitchListener to something more generic
 * [ ] BUG: Mem leak - Missing periodic message log clean in NodeInfo
