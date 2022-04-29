@@ -10,7 +10,7 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>out/app-%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
             <totalSizeCap>2GB</totalSizeCap>
-            <maxFileSize>10MB</maxFileSize>
+            <maxFileSize>100MB</maxFileSize>
             <maxHistory>90</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -22,7 +22,7 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <fileNamePattern>out/messages-%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
             <totalSizeCap>2GB</totalSizeCap>
-            <maxFileSize>10MB</maxFileSize>
+            <maxFileSize>100MB</maxFileSize>
             <maxHistory>90</maxHistory>
         </rollingPolicy>
         <encoder>
