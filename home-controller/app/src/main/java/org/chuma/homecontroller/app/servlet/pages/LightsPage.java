@@ -27,6 +27,7 @@ public class LightsPage extends AbstractPage {
                 "status.js",
                 "items/baseItem.js",
                 "items/pwmLightItem.js",
+                GetBackendUrlJs.PATH,
                 VIRTUAL_CONFIGURATION_JS_FILENAME,
                 "lights.js"
         };

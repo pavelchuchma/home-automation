@@ -49,7 +49,7 @@ public abstract class AbstractPage implements Page {
         return new String[]{};
     }
 
-    public void appendAdditionalHtmlHeaders(StringBuilder builder, Map<String, String[]> requestParameters) {
+    void appendAdditionalHtmlHeaders(StringBuilder builder, Map<String, String[]> requestParameters) {
     }
 
     StringBuilder beginHtlDocument(Map<String, String[]> requestParameters) {
@@ -90,17 +90,6 @@ public abstract class AbstractPage implements Page {
         response.setStatus(HttpServletResponse.SC_OK);
         baseRequest.setHandled(true);
         response.getWriter().println(body);
-    }
-
-    int tryTargetMatchAndParseArg(String target, String pattern) {
-        if (target.startsWith(pattern)) {
-            try {
-                return Integer.parseInt(target.substring(pattern.length()));
-            } catch (NumberFormatException e) {
-                //ignore
-            }
-        }
-        return -1;
     }
 
     protected abstract void appendContent(StringBuilder builder, Map<String, String[]> requestParameters);

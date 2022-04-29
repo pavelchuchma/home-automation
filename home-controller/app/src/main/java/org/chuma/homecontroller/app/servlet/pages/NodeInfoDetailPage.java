@@ -38,13 +38,14 @@ public class NodeInfoDetailPage extends AbstractPage {
                 "status.js",
                 "items/baseItem.js",
                 "items/nodeInfoItem.js",
+                GetBackendUrlJs.PATH,
                 VIRTUAL_CONFIGURATION_JS_FILENAME,
                 "nodeInfoDetail.js",
         };
     }
 
     @Override
-    public void appendAdditionalHtmlHeaders(StringBuilder builder, Map<String, String[]> requestParameters) {
+    void appendAdditionalHtmlHeaders(StringBuilder builder, Map<String, String[]> requestParameters) {
         int id = AbstractRestHandler.getMandatoryIntParam(requestParameters, "id");
         builder.append("    <script>window.onload = function () {onLoad('").append(id).append("');}</script>");
     }

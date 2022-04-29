@@ -1,12 +1,5 @@
 'use strict';
 
-function getBaseUrl() {
-    // const s = new URL("/", new URL(window.location.href)).toString();
-    // Strip trailing slash
-    // return s.substring(0, s.length - 1);
-    return 'http://192.168.68.150';
-}
-
 function getFloorIds() {
     return ['1stFloor', '2ndFloor'];
 }

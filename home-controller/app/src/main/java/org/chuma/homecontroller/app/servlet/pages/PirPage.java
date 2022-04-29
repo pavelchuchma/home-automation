@@ -25,6 +25,7 @@ public class PirPage extends AbstractPage {
                 "status.js",
                 "items/baseItem.js",
                 "items/pirItem.js",
+                GetBackendUrlJs.PATH,
                 VIRTUAL_CONFIGURATION_JS_FILENAME,
                 "sensors.js"
         };

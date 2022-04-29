@@ -2,20 +2,18 @@ package org.chuma.homecontroller.app.servlet.pages;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.chuma.homecontroller.app.configurator.Options;
-import org.chuma.homecontroller.app.servlet.ServletAction;
 
 /**
- * Page for changing "options". 
+ * Page for changing "options".
  */
 public class OptionsPage extends AbstractPage {
-    private Options options;
+    private final Options options;
 
-    public OptionsPage(Options options, Iterable<Page> links, Collection<ServletAction> servletActions) {
+    public OptionsPage(Options options, Iterable<Page> links) {
         super("/options", "Options", "Options", "favicon.png", links);
         this.options = options;
     }

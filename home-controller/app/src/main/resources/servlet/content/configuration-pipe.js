@@ -1,7 +1,3 @@
-function getBaseUrl() {
-    return 'http://10.0.0.160';
-}
-
 function getComponents() {
     return [
         //id, x, y, floor

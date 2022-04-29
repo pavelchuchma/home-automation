@@ -15,5 +15,8 @@
         </value>
       </option>
     </JavaCodeStyleSettings>
+    <codeStyleSettings language="JAVA">
+      <option name="SPACE_AFTER_TYPE_CAST" value="false" />
+    </codeStyleSettings>
   </code_scheme>
 </component>

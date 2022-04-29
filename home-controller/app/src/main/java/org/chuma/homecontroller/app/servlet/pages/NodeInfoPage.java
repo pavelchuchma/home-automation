@@ -31,6 +31,7 @@ public class NodeInfoPage extends AbstractPage {
                 "status.js",
                 "items/baseItem.js",
                 "items/nodeInfoItem.js",
+                GetBackendUrlJs.PATH,
                 VIRTUAL_CONFIGURATION_JS_FILENAME,
                 "nodeInfo.js"
         };

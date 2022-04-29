@@ -1,9 +1,3 @@
-function getBaseUrl() {
-    var s = new URL("/", new URL(window.location.href)).toString();
-    // Strip trailing slash
-    return s.substring(0, s.length - 1);
-}
-
 function getComponents() {
     return [
         //id, x, y, floor

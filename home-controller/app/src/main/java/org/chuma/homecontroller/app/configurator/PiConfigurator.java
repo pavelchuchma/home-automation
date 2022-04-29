@@ -13,10 +13,12 @@ import static org.chuma.homecontroller.app.servlet.pages.AbstractPage.VIRTUAL_CO
 import org.chuma.homecontroller.app.servlet.Handler;
 import org.chuma.homecontroller.app.servlet.Servlet;
 import org.chuma.homecontroller.app.servlet.ServletAction;
+import org.chuma.homecontroller.app.servlet.pages.GetBackendUrlJs;
 import org.chuma.homecontroller.app.servlet.pages.LightsPage;
 import org.chuma.homecontroller.app.servlet.pages.LouversPage;
 import org.chuma.homecontroller.app.servlet.pages.NodeInfoDetailPage;
 import org.chuma.homecontroller.app.servlet.pages.NodeInfoPage;
+import org.chuma.homecontroller.app.servlet.pages.OptionsPage;
 import org.chuma.homecontroller.app.servlet.pages.Page;
 import org.chuma.homecontroller.app.servlet.pages.PirPage;
 import org.chuma.homecontroller.app.servlet.pages.StaticPage;
@@ -69,7 +71,7 @@ import org.chuma.homecontroller.extensions.actor.RadioOnOffActor;
 import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
 import org.chuma.hvaccontroller.device.HvacDevice;
 
-@SuppressWarnings({"unused", "DuplicatedCode"})
+@SuppressWarnings({"unused", "DuplicatedCode", "SpellCheckingInspection"})
 public class PiConfigurator extends AbstractConfigurator {
 
     static Logger log = LoggerFactory.getLogger(PiConfigurator.class.getName());
@@ -80,6 +82,7 @@ public class PiConfigurator extends AbstractConfigurator {
 
     @Override
     public void configure() {
+        OptionsSingleton.createInstance("cfg/app.properties", "default-pi.properties");
 
         Node bridge = nodeInfoRegistry.createNode(1, "Bridge");
         Node zadveri = nodeInfoRegistry.createNode(2, "Zadveri");
@@ -682,7 +685,7 @@ public class PiConfigurator extends AbstractConfigurator {
         lst.addActionBinding(new ActionBinding(getBottomButton(kuchynLSw1, WallSwitch.Side.LEFT),
                 SwitchAllOffWithMemory.createSwitchOffActions(svetlaDoleVzadu), null));
 
-        RadioOnOffActor radioActor = new RadioOnOffActor("192.168.68.150", "http://icecast8.play.cz/cro1-128.mp3");
+        RadioOnOffActor radioActor = new RadioOnOffActor(OptionsSingleton.get("mpd.radio.ip"), OptionsSingleton.get("mpd.radio.stream.url"));
         lst.addActionBinding(new ActionBinding(getUpperButton(kuchynLSw1, WallSwitch.Side.LEFT),
                 new InvertAction(radioActor), null));
 
@@ -764,7 +767,8 @@ public class PiConfigurator extends AbstractConfigurator {
                 new LightsPage(pwmActors, pages),
                 new LouversPage(louversControllers, pages),
                 new PirPage(pirStatusList, pages),
-                new NodeInfoPage(nodeInfoRegistry, pages, servletActions)));
+                new NodeInfoPage(nodeInfoRegistry, pages, servletActions),
+                new OptionsPage(OptionsSingleton.getInstance(), pages)));
         // rest handlers
         List<StatusHandler> deviceRestHandlers = Arrays.asList(
                 new LouversHandler(Arrays.asList(louversControllers)),
@@ -779,6 +783,7 @@ public class PiConfigurator extends AbstractConfigurator {
         handlers.add(new NodeInfoDetailPage(nodeInfoRegistry, pages));
         handlers.addAll(pages);
         handlers.add(new StaticPage(VIRTUAL_CONFIGURATION_JS_FILENAME, "/configuration-pi.js", null));
+        handlers.add(new GetBackendUrlJs());
         handlers.add(new NodeHandler(nodeInfoRegistry));
         handlers.add(new ServletActionHandler(servletActions));
         handlers.addAll(deviceRestHandlers);
