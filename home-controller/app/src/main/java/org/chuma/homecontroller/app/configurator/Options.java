@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.Set;
@@ -39,10 +40,10 @@ import org.chuma.homecontroller.base.node.ListenerManager;
  * </ul>
  */
 public class Options {
-    private Properties properties = new Properties();
-    private Properties comments = new Properties();
-    private File file;
-    private ListenerManager<OptionChangeListener> listenerManager = new ListenerManager<>();
+    private final Properties properties = new Properties();
+    private final Properties comments = new Properties();
+    private final File file;
+    private final ListenerManager<OptionChangeListener> listenerManager = new ListenerManager<>();
 
     public Options(String persistenceFile, String defaultResource) {
         file = new File(persistenceFile);
@@ -127,6 +128,9 @@ public class Options {
      * Save properties to file specified in constructor.
      */
     public void save() throws IOException {
+        if (!file.getParentFile().exists()) {
+            Files.createDirectories(file.getParentFile().toPath());
+        }
         try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
             String[] keys = getNames().toArray(new String[0]);
             Arrays.sort(keys);
@@ -148,7 +152,7 @@ public class Options {
     private void loadFrom(InputStream inputStream) throws IOException {
         try (BufferedReader r = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String lastComment = null;
-            for (String line; (line = r.readLine()) != null;) {
+            for (String line; (line = r.readLine()) != null; ) {
                 line = line.trim();
                 if (line.length() == 0) {
                     lastComment = null;
@@ -165,7 +169,8 @@ public class Options {
                     if (key.length() != 0) {
                         properties.put(key, value);
                         if (lastComment != null) {
-                            for (i = 1; i < lastComment.length() && (lastComment.charAt(i) == '#' || Character.isWhitespace(lastComment.charAt(i))); i++);
+                            for (i = 1; i < lastComment.length() && (lastComment.charAt(i) == '#' || Character.isWhitespace(lastComment.charAt(i))); i++)
+                                ;
                             lastComment = lastComment.substring(i);
                             if (lastComment.length() > 0) {
                                 comments.put(key, lastComment);
