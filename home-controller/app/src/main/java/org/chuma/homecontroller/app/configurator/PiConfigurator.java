@@ -64,7 +64,7 @@ import org.chuma.homecontroller.controller.device.RelayBoardDevice;
 import org.chuma.homecontroller.controller.device.SwitchIndicator;
 import org.chuma.homecontroller.controller.device.WallSwitch;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
-import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
+import org.chuma.homecontroller.controller.nodeinfo.NodeListener;
 import org.chuma.homecontroller.extensions.action.condition.SunCondition;
 import org.chuma.homecontroller.extensions.actor.HvacActor;
 import org.chuma.homecontroller.extensions.actor.RadioOnOffActor;
@@ -228,7 +228,7 @@ public class PiConfigurator extends AbstractConfigurator {
         OnOffActor bzucakDvere = new OnOffActor("bzucakDvere", "Bzucak Dvere", rele12.getRelay1(), 0, 1);
         OnOffActor malyStromek = new OnOffActor("malyStromek", "Stromek pred dvermi", rele12.getRelay3(), 0, 1);
 
-        SwitchListener lst = nodeInfoRegistry.getSwitchListener();
+        NodeListener lst = nodeInfoRegistry.getNodeListener();
 
         // zaluzie
         RelayBoardDevice rele3ZaluzieAPort1 = new RelayBoardDevice("rele3ZaluzieAPort1", zaluzieA, 1);

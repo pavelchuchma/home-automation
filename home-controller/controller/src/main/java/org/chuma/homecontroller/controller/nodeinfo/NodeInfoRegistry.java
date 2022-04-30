@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.chuma.homecontroller.base.node.ListenerManager;
 import org.chuma.homecontroller.base.node.MessageType;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.packet.IPacketUartIO;
@@ -23,8 +23,8 @@ public class NodeInfoRegistry {
     static Logger log = LoggerFactory.getLogger(NodeInfoRegistry.class.getName());
     final IPacketUartIO packetUartIO;
     final Map<Integer, NodeInfo> nodeInfoMap = new HashMap<>();
-    final SwitchListener switchListener = new SwitchListener();
-    final List<AddNodeListener> addNodeListeners = new ArrayList<>();
+    final NodeListener nodeListener = new NodeListener();
+    final ListenerManager<AddNodeListener> addNodeListeners = new ListenerManager<>();
     public NodeInfoRegistry(final IPacketUartIO packetUartIO) {
         this.packetUartIO = packetUartIO;
     }
@@ -34,11 +34,11 @@ public class NodeInfoRegistry {
     }
 
     /**
-     * Get switch listener registered to each added node. This switch listener
+     * Get node listener registered to each added node. This listener
      * will receive all events from the nodes.
      */
-    public SwitchListener getSwitchListener() {
-        return switchListener;
+    public NodeListener getNodeListener() {
+        return nodeListener;
     }
 
     /**
@@ -97,17 +97,21 @@ public class NodeInfoRegistry {
     public synchronized NodeInfo addNode(Node node) {
         final Integer nodeId = node.getNodeId();
 
+        final NodeInfo nodeInfo = getOrCreateNodeInfo(node, nodeId);
+        node.addListener(nodeListener);
+        log.debug("Node #{} added", nodeId);
+
+        addNodeListeners.callListeners(l -> l.nodeAdded(nodeInfo));
+        return nodeInfo;
+    }
+
+    private NodeInfo getOrCreateNodeInfo(Node node, Integer nodeId) {
         NodeInfo nodeInfo = nodeInfoMap.get(nodeId);
         if (nodeInfo != null) {
             nodeInfo.setNode(node);
         } else {
             nodeInfo = new NodeInfo(node);
             nodeInfoMap.put(nodeId, nodeInfo);
-        }
-        node.addListener(switchListener);
-        log.debug("Node #{} added", nodeId);
-        for (AddNodeListener listener : addNodeListeners) {
-            listener.nodeAdded(nodeInfo);
         }
         return nodeInfo;
     }

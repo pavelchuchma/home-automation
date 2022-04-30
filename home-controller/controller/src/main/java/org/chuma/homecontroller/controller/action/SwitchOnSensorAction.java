@@ -26,7 +26,7 @@ public class SwitchOnSensorAction extends AbstractSensorAction {
     }
 
     @Override
-    public void perform(int previousDurationMs) {
-        super.perform(previousDurationMs);
+    public void perform(int timeSinceLastAction) {
+        super.perform(timeSinceLastAction);
     }
 }

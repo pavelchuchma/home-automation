@@ -35,9 +35,9 @@ public class AbstractSensorAction extends AbstractAction {
     }
 
     @Override
-    public void perform(int previousDurationMs) {
+    public void perform(int timeSinceLastAction) {
         if (condition != null) {
-            if (condition.isTrue(previousDurationMs)) {
+            if (condition.isTrue(timeSinceLastAction)) {
                 log.debug("doing action - condition " + condition + " is true");
             } else {
                 log.debug("no action - condition " + condition + " is false");

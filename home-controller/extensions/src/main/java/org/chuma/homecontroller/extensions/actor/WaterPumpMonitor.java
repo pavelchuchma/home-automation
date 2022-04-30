@@ -12,18 +12,18 @@ public class WaterPumpMonitor implements IReadableOnOff {
     private boolean isOn;
     private final AbstractActionWithoutActor onAction = new AbstractActionWithoutActor() {
         @Override
-        public void perform(int previousDurationMs) {
+        public void perform(int timeSinceLastAction) {
             isOn = true;
         }
     };
 
     private final AbstractActionWithoutActor offAction = new AbstractActionWithoutActor() {
         @Override
-        public void perform(int previousDurationMs) {
+        public void perform(int timeSinceLastAction) {
             isOn = false;
-            if (previousDurationMs > 0) {
+            if (timeSinceLastAction > 0) {
                 synchronized (records) {
-                    records.add(new Record(new Date(System.currentTimeMillis() - previousDurationMs), previousDurationMs/1000.0));
+                    records.add(new Record(new Date(System.currentTimeMillis() - timeSinceLastAction), timeSinceLastAction /1000.0));
                 }
             }
         }

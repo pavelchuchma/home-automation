@@ -10,7 +10,7 @@ import org.chuma.homecontroller.controller.controller.ValveController;
 import org.chuma.homecontroller.controller.device.RelayBoardDevice;
 import org.chuma.homecontroller.controller.device.WallSwitch;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
-import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
+import org.chuma.homecontroller.controller.nodeinfo.NodeListener;
 
 public class MartinConfigurator extends AbstractConfigurator {
 
@@ -20,7 +20,7 @@ public class MartinConfigurator extends AbstractConfigurator {
 
     @Override
     public void configure() {
-        SwitchListener lst = nodeInfoRegistry.getSwitchListener();
+        NodeListener lst = nodeInfoRegistry.getNodeListener();
         ArrayList<Action> lightsActions = new ArrayList<>();
 
         Node bridge = nodeInfoRegistry.createNode(1, "Bridge");

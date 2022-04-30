@@ -12,12 +12,12 @@ import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.Action;
 
 /**
- * Switch listener is registered by {@link NodeInfoRegistry} to all nodes to receive all notifications.
+ * Node listener is registered by {@link NodeInfoRegistry} to all nodes to receive all notifications.
  * It dispatches notification to registered {@link Action} instances which are bound to single node pin
  * via {@link ActionBinding}.
  */
-public class SwitchListener extends AbstractNodeListener {
-    private static final Logger log = LoggerFactory.getLogger(SwitchListener.class.getName());
+public class NodeListener extends AbstractNodeListener {
+    private static final Logger log = LoggerFactory.getLogger(NodeListener.class.getName());
     private final ConcurrentHashMap<String, ActionBinding> switchMap = new ConcurrentHashMap<>();
 
     public static String createNodePinKey(int nodeId, Pin pin) {
@@ -34,43 +34,43 @@ public class SwitchListener extends AbstractNodeListener {
             throw new IllegalArgumentException("Node #" + binding.getTrigger().getNode().getNodeId() + ":" + binding.getTrigger().getPin().name() + " already bound");
         }
         log.info("ActionBinding '{}' added", binding);
-        if (binding.getButtonDownActions() != null) {
-            log.info(" buttonDown");
-            for (Action a : binding.getButtonDownActions()) {
+        if (binding.getOnInputLowActions() != null) {
+            log.info(" inputLow");
+            for (Action a : binding.getOnInputLowActions()) {
                 log.info("  - {}", a);
             }
         }
-        if (binding.getButtonUpActions() != null) {
-            log.info(" buttonUp");
-            for (Action a : binding.getButtonUpActions()) {
+        if (binding.getOnInputHighActions() != null) {
+            log.info(" InputHigh");
+            for (Action a : binding.getOnInputHighActions()) {
                 log.info("  - {}", a);
             }
         }
     }
 
     @Override
-    public void onButtonDown(Node node, Pin pin, int upTime) {
-        onButtonEvent(node, pin, true, upTime);
+    public void onInputLow(Node node, Pin pin, int highDuration) {
+        onInputChange(node, pin, true, highDuration);
     }
 
     @Override
-    public void onButtonUp(Node node, Pin pin, int downTime) {
-        onButtonEvent(node, pin, false, downTime);
+    public void onInputHigh(Node node, Pin pin, int lowDuration) {
+        onInputChange(node, pin, false, lowDuration);
     }
 
-    private void onButtonEvent(Node node, Pin pin, boolean buttonDown, final int previousDurationMs) {
+    private void onInputChange(Node node, Pin pin, boolean lowState, final int timeSinceChange) {
         String swKey = createNodePinKey(node.getNodeId(), pin);
         final ActionBinding sw = switchMap.get(swKey);
         if (sw != null) {
             log.debug("Executing ActionBinding: {}", sw);
-            Action[] actions = (buttonDown) ? sw.getButtonDownActions() : sw.getButtonUpActions();
+            Action[] actions = (lowState) ? sw.getOnInputLowActions() : sw.getOnInputHighActions();
             if (actions != null) {
                 for (final Action a : actions) {
                     log.debug("-> action: {} of action type {}", (a.getActor() != null) ? a.getActor().getId() : "{null}", a.getClass().getSimpleName());
                     // TODO: Use executor?
                     new Thread(() -> {
                         try {
-                            a.perform(previousDurationMs);
+                            a.perform(timeSinceChange);
                         } catch (Exception e) {
                             log.error("Failed to perform actions of " + sw, e);
                         }

@@ -37,7 +37,7 @@ public class PirStatus {
     public Action getActivateAction() {
         return new Action() {
             @Override
-            public void perform(int previousDurationMs) {
+            public void perform(int timeSinceLastAction) {
                 active = true;
                 lastActivate = new Date();
             }
@@ -52,7 +52,7 @@ public class PirStatus {
     public Action getDeactivateAction() {
         return new Action() {
             @Override
-            public void perform(int previousDurationMs) {
+            public void perform(int timeSinceLastAction) {
                 active = false;
             }
 

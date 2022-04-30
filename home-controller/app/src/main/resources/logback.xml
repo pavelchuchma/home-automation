@@ -39,7 +39,7 @@
         <appender-ref ref="applicationLog"/>
     </logger>
 
-    <logger name="org.chuma.homecontroller.controller.nodeinfo.SwitchListener" level="DEBUG" additivity="false">
+    <logger name="org.chuma.homecontroller.controller.nodeinfo.NodeListener" level="DEBUG" additivity="false">
         <appender-ref ref="applicationLog"/>
     </logger>
 

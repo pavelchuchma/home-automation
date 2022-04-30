@@ -17,8 +17,8 @@ public class SwitchOffAction extends AbstractAction {
     }
 
     @Override
-    public void perform(int previousDurationMs) {
-        if (condition != null && !condition.isTrue(previousDurationMs)) {
+    public void perform(int timeSinceLastAction) {
+        if (condition != null && !condition.isTrue(timeSinceLastAction)) {
             return;
         }
 

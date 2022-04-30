@@ -17,7 +17,7 @@ public class InvertAction extends AbstractAction {
     }
 
     @Override
-    public void perform(int previousDurationMs) {
+    public void perform(int timeSinceLastAction) {
         IOnOffActor onOffActor = (IOnOffActor) actor;
         if (onOffActor.isOn()) {
             onOffActor.switchOff(null);

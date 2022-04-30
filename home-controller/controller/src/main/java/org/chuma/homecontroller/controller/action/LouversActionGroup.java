@@ -114,9 +114,9 @@ public class LouversActionGroup {
 
     private class UpReleased extends MuteableButtonReleaseLAction {
         @Override
-        public void perform(int previousDurationMs) {
+        public void perform(int timeSinceLastAction) {
             upButtonIsDown = false;
-            super.perform(previousDurationMs);
+            super.perform(timeSinceLastAction);
         }
 
         @Override
@@ -149,9 +149,9 @@ public class LouversActionGroup {
 
     private class DownReleased extends MuteableButtonReleaseLAction {
         @Override
-        public void perform(int previousDurationMs) {
+        public void perform(int timeSinceLastAction) {
             downButtonIsDown = false;
-            super.perform(previousDurationMs);
+            super.perform(timeSinceLastAction);
         }
 
         @Override

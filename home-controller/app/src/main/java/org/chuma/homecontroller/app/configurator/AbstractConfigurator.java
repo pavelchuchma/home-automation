@@ -32,7 +32,7 @@ import org.chuma.homecontroller.controller.device.SwitchIndicator;
 import org.chuma.homecontroller.controller.device.WallSwitch;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
-import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
+import org.chuma.homecontroller.controller.nodeinfo.NodeListener;
 
 public abstract class AbstractConfigurator {
     static Logger log = LoggerFactory.getLogger(AbstractConfigurator.class.getName());
@@ -44,11 +44,11 @@ public abstract class AbstractConfigurator {
         this.nodeInfoRegistry = nodeInfoRegistry;
     }
 
-    protected static void configurePwmLights(SwitchListener lst, WallSwitch wallSwitch, WallSwitch.Side side, double switchOnValue, PwmActor... pwmActors) {
+    protected static void configurePwmLights(NodeListener lst, WallSwitch wallSwitch, WallSwitch.Side side, double switchOnValue, PwmActor... pwmActors) {
         configurePwmLightsImpl(lst, wallSwitch, side, switchOnValue, pwmActors, null);
     }
 
-    protected static void configurePwmLightsImpl(SwitchListener lst, WallSwitch wallSwitch, WallSwitch.Side side, double switchOnValue, PwmActor[] pwmActors, IOnOffActor[] switchOffOnlyActors) {
+    protected static void configurePwmLightsImpl(NodeListener lst, WallSwitch wallSwitch, WallSwitch.Side side, double switchOnValue, PwmActor[] pwmActors, IOnOffActor[] switchOffOnlyActors) {
         List<Action> upperButtonUpActions = new ArrayList<>();
         List<Action> upperButtonDownActions = new ArrayList<>();
         List<Action> downButtonUpActions = new ArrayList<>();
@@ -89,7 +89,7 @@ public abstract class AbstractConfigurator {
         return pwmActor;
     }
 
-    static void configureLouvers(SwitchListener lst, WallSwitch wallSwitch, WallSwitch.Side side, LouversController... louversControllers) {
+    static void configureLouvers(NodeListener lst, WallSwitch wallSwitch, WallSwitch.Side side, LouversController... louversControllers) {
         Action[] upButtonDownAction = new Action[louversControllers.length];
         Action[] upButtonUpAction = new Action[louversControllers.length];
         Action[] downButtonDownAction = new Action[louversControllers.length];
@@ -142,23 +142,23 @@ public abstract class AbstractConfigurator {
         return servlet;
     }
 
-    protected void setupPir(SwitchListener lst, NodePin pirPin, String id, String name, Action[] activateActions, Action[] deactivateActions) {
+    protected void setupPir(NodeListener lst, NodePin pirPin, String id, String name, Action[] activateActions, Action[] deactivateActions) {
         setupSensor(lst, pirPin, id, name, activateActions, deactivateActions, true);
     }
 
-    protected void setupPir(SwitchListener lst, NodePin pirPin, String id, String name, Action activateAction, Action deactivateAction) {
+    protected void setupPir(NodeListener lst, NodePin pirPin, String id, String name, Action activateAction, Action deactivateAction) {
         setupPir(lst, pirPin, id, name, toArray(activateAction), toArray(deactivateAction));
     }
 
-    protected void setupMagneticSensor(SwitchListener lst, NodePin pirPin, String id, String name, Action[] activateActions, Action[] deactivateActions) {
+    protected void setupMagneticSensor(NodeListener lst, NodePin pirPin, String id, String name, Action[] activateActions, Action[] deactivateActions) {
         setupSensor(lst, pirPin, id, name, activateActions, deactivateActions, false);
     }
 
-    protected void setupMagneticSensor(SwitchListener lst, NodePin pirPin, String id, String name, Action activateAction, Action deactivateAction) {
+    protected void setupMagneticSensor(NodeListener lst, NodePin pirPin, String id, String name, Action activateAction, Action deactivateAction) {
         setupMagneticSensor(lst, pirPin, id, name, toArray(activateAction), toArray(deactivateAction));
     }
 
-    private void setupSensor(SwitchListener lst, NodePin pirPin, String id, String name, Action[] activateActions, Action[] deactivateActions, boolean logicalOneIsActivate) {
+    private void setupSensor(NodeListener lst, NodePin pirPin, String id, String name, Action[] activateActions, Action[] deactivateActions, boolean logicalOneIsActivate) {
         PirStatus status = new PirStatus(id, name);
         Action[] activateActionArray = ArrayUtils.addAll(activateActions, status.getActivateAction());
         Action[] deactivateActionArray = ArrayUtils.addAll(deactivateActions, status.getDeactivateAction());

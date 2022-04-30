@@ -15,7 +15,7 @@ import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.device.InputDevice;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
-import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
+import org.chuma.homecontroller.controller.nodeinfo.NodeListener;
 
 public class NodeTest {
     static Logger log = LoggerFactory.getLogger(NodeTest.class.getName());
@@ -243,11 +243,11 @@ public class NodeTest {
 
         node1.addListener(new Node.Listener() {
             @Override
-            public void onButtonDown(Node node, Pin pin, int upTime) {
+            public void onInputLow(Node node, Pin pin, int highDuration) {
             }
 
             @Override
-            public void onButtonUp(Node node, Pin pin, int downTime) {
+            public void onInputHigh(Node node, Pin pin, int lowDuration) {
             }
 
             @Override
@@ -266,7 +266,7 @@ public class NodeTest {
             int step = 8;
 
             @Override
-            public void onButtonDown(Node node, Pin pin, int upTime) {
+            public void onInputLow(Node node, Pin pin, int highDuration) {
                 try {
                     switch (pin) {
                         case pinA0:
@@ -319,7 +319,7 @@ public class NodeTest {
             }
 
             @Override
-            public void onButtonUp(Node node, Pin pin, int downTime) {
+            public void onInputHigh(Node node, Pin pin, int lowDuration) {
                 try {
                     switch (pin) {
                         case pinC1:
@@ -412,11 +412,11 @@ public class NodeTest {
 
         node1.addListener(new Node.Listener() {
             @Override
-            public void onButtonDown(Node node, Pin pin, int upTime) {
+            public void onInputLow(Node node, Pin pin, int highDuration) {
             }
 
             @Override
-            public void onButtonUp(Node node, Pin pin, int downTime) {
+            public void onInputHigh(Node node, Pin pin, int lowDuration) {
             }
 
             @Override
@@ -435,7 +435,7 @@ public class NodeTest {
             int step = 8;
 
             @Override
-            public void onButtonDown(Node node, Pin pin, int upTime) {
+            public void onInputLow(Node node, Pin pin, int highDuration) {
                 try {
                     switch (pin) {
                         case pinA0:
@@ -488,7 +488,7 @@ public class NodeTest {
             }
 
             @Override
-            public void onButtonUp(Node node, Pin pin, int downTime) {
+            public void onInputHigh(Node node, Pin pin, int lowDuration) {
                 try {
                     switch (pin) {
                         case pinC1:
@@ -599,7 +599,7 @@ public class NodeTest {
         PacketUartIO packetUartIO = new PacketUartIO(port, 19200);
         NodeInfoRegistry nodeInfoRegistry = new NodeInfoRegistry(packetUartIO);
 
-        SwitchListener lst = nodeInfoRegistry.getSwitchListener();
+        NodeListener lst = nodeInfoRegistry.getNodeListener();
 
         Node pirNodeA = nodeInfoRegistry.createNode(7, "PirNodeA");
         InputDevice pirA1Prizemi = new InputDevice("PirA1Prizemi", pirNodeA, 3);

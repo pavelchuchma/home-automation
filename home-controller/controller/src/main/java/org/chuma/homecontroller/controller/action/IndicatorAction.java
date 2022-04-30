@@ -7,8 +7,8 @@ public class IndicatorAction implements IReadableOnOff {
     private final ActorListener indicator;
     private boolean isOn;
 
-    private Action onAction = new ActionImpl(true);
-    private Action offAction = new ActionImpl(false);
+    private final Action onAction = new ActionImpl(true);
+    private final Action offAction = new ActionImpl(false);
 
     public IndicatorAction(ActorListener indicator) {
         this.indicator = indicator;
@@ -36,12 +36,9 @@ public class IndicatorAction implements IReadableOnOff {
         }
 
         @Override
-        public void perform(int previousDurationMs) {
+        public void perform(int timeSinceLastAction) {
             isOn = value;
-            if (indicator != null) {
-                indicator.onAction(IndicatorAction.this, null);
-            }
+            indicator.onAction(IndicatorAction.this, null);
         }
     }
-
 }

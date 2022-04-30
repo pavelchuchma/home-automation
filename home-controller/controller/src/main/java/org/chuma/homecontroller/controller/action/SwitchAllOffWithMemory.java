@@ -24,7 +24,7 @@ public class SwitchAllOffWithMemory implements Action {
     }
 
     @Override
-    public void perform(int previousDurationMs) {
+    public void perform(int timeSinceLastAction) {
         if (isAllOff()) {
             for (int i = 0; i < actors.length; i++) {
                 if (lastValues[i] != actors[i].getValue()) {

@@ -403,12 +403,12 @@ public class Node implements PacketReceivedListener {
 
                     if ((pinMask & eventValue) != 0) {
                         //button UP
-                        log.info("button '{}' UP ({}ms)", pin, timeSinceChange);
-                        listenerManager.callListeners(listener -> listener.onButtonUp(this, pin, (int) timeSinceChange));
+                        log.info("input '{}' HIGH ({}ms)", pin, timeSinceChange);
+                        listenerManager.callListeners(listener -> listener.onInputHigh(this, pin, (int) timeSinceChange));
                     } else {
                         //button DOWN
-                        log.info("button '{}' DOWN ({}ms)", pin, timeSinceChange);
-                        listenerManager.callListeners(listener -> listener.onButtonDown(this, pin, (int) timeSinceChange));
+                        log.info("input '{}' LOW ({}ms)", pin, timeSinceChange);
+                        listenerManager.callListeners(listener -> listener.onInputLow(this, pin, (int) timeSinceChange));
                     }
                 }
             }
@@ -537,25 +537,21 @@ public class Node implements PacketReceivedListener {
 
     /**
      * Listener called when PIC reported state change.
-     * <p>
-     * The methods are named according to the HW implementation. When button is not preset (up state),
-     * there is high voltage on input pin (logical 1). When it gets pressed, the pin goes to logical 0.
-     * So button down means pin state goes to 0 and button up means pin goes to 1.
      */
     public interface Listener {
         /**
-         * Pin changed to down state (0).
+         * Pin changed to low state (logical zero).
          *
-         * @param upTime how long the pin was in up state (1), -1 if first state change
+         * @param highDuration how long the pin was in high state (1), -1 if first state change.
          */
-        void onButtonDown(Node node, Pin pin, int upTime);
+        void onInputLow(Node node, Pin pin, int highDuration);
 
         /**
-         * Pin changed to up state (1).
+         * Pin changed to high state (logical one).
          *
-         * @param downTime how long the pin was in down state (0), -1 if first state change
+         * @param lowDuration how long the pin was in low state (0), -1 if first state change.
          */
-        void onButtonUp(Node node, Pin pin, int downTime);
+        void onInputHigh(Node node, Pin pin, int lowDuration);
 
         /**
          * PIC rebooting - asks for initialization.

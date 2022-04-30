@@ -51,7 +51,7 @@ public class AudioAction implements Action {
     }
 
     @Override
-    public void perform(int previousDurationMs) {
+    public void perform(int timeSinceLastAction) {
         try {
             playSound(true);
 //            playSound(false);
