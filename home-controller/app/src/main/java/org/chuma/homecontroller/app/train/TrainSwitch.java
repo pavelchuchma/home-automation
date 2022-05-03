@@ -11,7 +11,7 @@ import org.chuma.homecontroller.base.node.AsyncListenerManager;
 import org.chuma.homecontroller.base.node.ListenerManager;
 import org.chuma.homecontroller.base.node.NodePin;
 import org.chuma.homecontroller.controller.actor.AbstractPinActor;
-import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
+import org.chuma.homecontroller.controller.nodeinfo.NodeListener;
 
 /**
  * Train/rail switch controller. It uses two relay for switching direction
@@ -38,7 +38,7 @@ public class TrainSwitch {
     // There is also instance lock used to guard reading incomplete state while switching.
     // The instance lock must be always entered before stateLock to avoid deadlock.
 
-    public TrainSwitch(String id, SwitchListener listener, Options options, NodePin switchStraight, NodePin switchTurn, NodePin indicatorStraight, NodePin indicatorTurn) {
+    public TrainSwitch(String id, NodeListener listener, Options options, NodePin switchStraight, NodePin switchTurn, NodePin indicatorStraight, NodePin indicatorTurn) {
         this.id = id;
         this.switchStraight = switchStraight;
         this.options = options;

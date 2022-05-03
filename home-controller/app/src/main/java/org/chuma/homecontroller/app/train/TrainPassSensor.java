@@ -7,7 +7,7 @@ import org.chuma.homecontroller.app.configurator.Options;
 import org.chuma.homecontroller.base.node.AsyncListenerManager;
 import org.chuma.homecontroller.base.node.ListenerManager;
 import org.chuma.homecontroller.base.node.NodePin;
-import org.chuma.homecontroller.controller.nodeinfo.SwitchListener;
+import org.chuma.homecontroller.controller.nodeinfo.NodeListener;
 
 // TODO: Wrong detection of initial state, or at least when train stands right upon the sensor, trainArrived() is not signalled because there is too short previousDurationMs (at least when fired artificially on init from SwitchListener)
 /**
@@ -41,7 +41,7 @@ public class TrainPassSensor {
     /**
      * Train sensor with default fire period.
      */
-    public TrainPassSensor(String id, SwitchListener listener, Options options, NodePin sensorPin) {
+    public TrainPassSensor(String id, NodeListener listener, Options options, NodePin sensorPin) {
         this(id, listener, options, sensorPin, options.getInt(PROP_FIRE_PERIOD));
         optionsFirePeriod = true;
     }
@@ -50,7 +50,7 @@ public class TrainPassSensor {
      * Fire period is minimum time (in milliseconds) the sensor must detect "no train"
      * before it fires {@link Listener#trainArrived()} when train arrives.
      */
-    public TrainPassSensor(String id, SwitchListener listener, Options options, NodePin sensorPin, int firePeriod) {
+    public TrainPassSensor(String id, NodeListener listener, Options options, NodePin sensorPin, int firePeriod) {
         this.id = id;
         this.options = options;
         this.sensorPin = sensorPin;

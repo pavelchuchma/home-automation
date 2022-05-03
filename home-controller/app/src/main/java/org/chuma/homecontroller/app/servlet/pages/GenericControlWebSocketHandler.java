@@ -42,14 +42,14 @@ public class GenericControlWebSocketHandler extends AbstractWebSocketHandler imp
     }
 
     @Override
-    public void onButtonDown(Node node, Pin pin, int upTime) {
+    public void onInputLow(Node node, Pin pin, int upTime) {
         processEvent(a -> {
             a.sendPinChange(node, pin, 0);
         });
     }
 
     @Override
-    public void onButtonUp(Node node, Pin pin, int downTime) {
+    public void onInputHigh(Node node, Pin pin, int downTime) {
         processEvent(a -> {
             a.sendPinChange(node, pin, 1);
         });
