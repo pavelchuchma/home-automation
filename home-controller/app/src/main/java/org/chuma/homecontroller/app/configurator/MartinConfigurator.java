@@ -122,20 +122,21 @@ public class MartinConfigurator extends AbstractConfigurator {
 //        wsHandlers.add(new GenericControlWebSocketHandler(nodeInfoRegistry));
         wsHandlers.add(new TrainWebSocketHandler(autodrive, vyhybka, vlak, sensorA, sensorB, sensorC));
         List<ServletAction> servletActions = new ArrayList<>();
+        Page trainPage = new StaticPage("/", "/train.html", "Train");
         List<Page> pages = new ArrayList<>();
-//        pages.add(new GenericControlPage(nodeInfoRegistry, pages));
+        pages.add(trainPage);
+//      pages.add(new GenericControlPage(nodeInfoRegistry, pages));
         pages.add(new NodeInfoPage(nodeInfoRegistry, pages, servletActions));
         pages.add(new OptionsPage(options, pages));
         configureSimulator(pages, wsHandlers, true);
-        List<Handler> handlers = new ArrayList<>(pages);
+        List<Handler> handlers = new ArrayList<>();
         handlers.add(new NodeInfoDetailPage(nodeInfoRegistry, pages));
         handlers.addAll(pages);
         handlers.add(new StaticPage(VIRTUAL_CONFIGURATION_JS_FILENAME, "/configuration-martin.js", null));
-        handlers.add(new NodeHandler(nodeInfoRegistry));
         handlers.add(new GetBackendUrlJs());
         handlers.add(new NodeHandler(nodeInfoRegistry));
         handlers.add(new ServletActionHandler(servletActions));
-        servlet = new Servlet(handlers, "/system", wsHandlers);
+        servlet = new Servlet(handlers, trainPage.getPath(), wsHandlers);
 
         if (nodeInfoRegistry.getPacketUartIO() instanceof SimulatedPacketUartIO) {
             // Simulation - set initial state of train switch (one direction must be set)
