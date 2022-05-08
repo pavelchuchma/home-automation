@@ -87,7 +87,7 @@ public class MartinConfigurator extends AbstractConfigurator {
             public int getInitialOutputValues() { return 0; }
         };
         RelayBoardDevice tsr = new RelayBoardDevice("TrainSwitchRelay", node37, 2);
-        InputDevice in = new InputDevice("Status", node37, 3, new String[] { "swStr", "passA", "swTurn", "passB", "dir2", "n/a" });
+        InputDevice in = new InputDevice("Status", node37, 3, new String[] { "swStr", "passA", "swTurn", "passB", "n/a", "passC" });
         NodePin passA = in.getIn2AndActivate();
         NodePin passB = in.getIn4AndActivate();
         NodePin passC = in.getIn6AndActivate();
