@@ -20,7 +20,6 @@ import org.chuma.homecontroller.app.servlet.pages.NodeInfoDetailPage;
 import org.chuma.homecontroller.app.servlet.rest.NodeHandler;
 import org.chuma.homecontroller.app.servlet.rest.ServletActionHandler;
 import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
-import org.chuma.homecontroller.app.train.RailPowerAndDetectors;
 import org.chuma.homecontroller.app.train.TrainAutodrive;
 import org.chuma.homecontroller.app.train.TrainControl;
 import org.chuma.homecontroller.app.train.TrainPassSensor;
@@ -84,21 +83,23 @@ public class MartinConfigurator extends AbstractConfigurator {
         inputOnly.getIn6AndActivate();
         }
 
-        RailPowerAndDetectors rpd = new RailPowerAndDetectors("RailPowerAndDetectors", node37, 1, 3);
+        OutputDevice out = new OutputDevice("Power", node37, 1, new String[] { "speedA", "speedB", "dirALeft", "dirBLeft", "dirARight", "dirBRight" }) {
+            public int getInitialOutputValues() { return 0; }
+        };
         RelayBoardDevice tsr = new RelayBoardDevice("TrainSwitchRelay", node37, 2);
-        InputDevice tsi = new InputDevice("TrainSwitchInput", node37, 3);
-        NodePin tsLeftIndicator = tsi.getIn1AndActivate();
-        NodePin tsRightIndicator = tsi.getIn2AndActivate();
+        InputDevice in = new InputDevice("Status", node37, 3, new String[] { "swStr", "passA", "swTurn", "passB", "dir2", "n/a" });
+        NodePin passA = in.getIn2AndActivate();
+        NodePin passB = in.getIn4AndActivate();
+        NodePin passC = in.getIn6AndActivate();
 
-        
         // TODO: Configure to different location on PI? Where? Probably via instanceof SimulatedPacketUartIO
         Options options = new Options("/tmp/train.properties", "train.properties");
 
-        TrainSwitch vyhybka = new TrainSwitch("Vyhybka", lst, options, tsr.getRelay1(), tsr.getRelay2(), tsi.getIn1AndActivate(), tsi.getIn2AndActivate());
-        TrainControl vlak = new TrainControl("vlak", options, rpd.getLeftEnablePin(), rpd.getRightEnablePin(), rpd.getPowerPin());
-        TrainPassSensor sensorA = new TrainPassSensor("sensor-A", lst, options, rpd.getPassDetectorA()).withTrainPosition(vlak);
-        TrainPassSensor sensorB = new TrainPassSensor("sensor-B", lst, options, rpd.getPassDetectorB()).withTrainPosition(vlak);
-        TrainPassSensor sensorC = new TrainPassSensor("sensor-C", lst, options, rpd.getPassDetectorC()).withTrainPosition(vlak);
+        TrainSwitch vyhybka = new TrainSwitch("Vyhybka", lst, options, tsr.getRelay1(), tsr.getRelay2(), in.getIn1AndActivate(), in.getIn3AndActivate());
+        TrainControl vlak = new TrainControl("vlak", options, out.getOut3(), out.getOut5(), out.getOut1());
+        TrainPassSensor sensorA = new TrainPassSensor("sensor-A", lst, options, passA).withTrainPosition(vlak);
+        TrainPassSensor sensorB = new TrainPassSensor("sensor-B", lst, options, passB).withTrainPosition(vlak);
+        TrainPassSensor sensorC = new TrainPassSensor("sensor-C", lst, options, passC).withTrainPosition(vlak);
         TrainAutodrive autodrive = new TrainAutodrive("autodrive", options, vlak, vyhybka, sensorA, sensorB, sensorC);
         
         // (vyhybky)
@@ -145,9 +146,9 @@ public class MartinConfigurator extends AbstractConfigurator {
             // We set turn pin to 1 and straight leave in 0 => switch is set to straight
             n.initializePin(vyhybka.getIndicatorTurnPin().getPin(), 1);
             // We set train pass sensors to 1 - inactive (no train)
-            n.initializePin(rpd.getPassDetectorA().getPin(), 1);
-            n.initializePin(rpd.getPassDetectorB().getPin(), 1);
-            n.initializePin(rpd.getPassDetectorC().getPin(), 1);
+            n.initializePin(passA.getPin(), 1);
+            n.initializePin(passB.getPin(), 1);
+            n.initializePin(passC.getPin(), 1);
 
             sim.addListener(new SimulatedNodeListener() {
                 @Override
