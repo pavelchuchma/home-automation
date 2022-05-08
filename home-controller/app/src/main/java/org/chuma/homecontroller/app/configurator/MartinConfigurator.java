@@ -95,7 +95,7 @@ public class MartinConfigurator extends AbstractConfigurator {
         // TODO: Configure to different location on PI? Where? Probably via instanceof SimulatedPacketUartIO
         Options options = new Options("/tmp/train.properties", "train.properties");
 
-        TrainSwitch vyhybka = new TrainSwitch("Vyhybka", lst, options, tsr.getRelay1(), tsr.getRelay2(), in.getIn1AndActivate(), in.getIn3AndActivate());
+        TrainSwitch vyhybka = new TrainSwitch("Vyhybka", lst, options, tsr.getRelay6(), tsr.getRelay5(), in.getIn1AndActivate(), in.getIn3AndActivate());
         TrainControl vlak = new TrainControl("vlak", options, out.getOut3(), out.getOut5(), out.getOut1());
         TrainPassSensor sensorA = new TrainPassSensor("sensor-A", lst, options, passA).withTrainPosition(vlak);
         TrainPassSensor sensorB = new TrainPassSensor("sensor-B", lst, options, passB).withTrainPosition(vlak);
