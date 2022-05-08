@@ -81,17 +81,19 @@ public class TrainControl {
                 return true;
             }
             log.debug("{}: dir change to {}", id, newDir == 0 ? "stop" : newDir < 0 ? "left" : "right");
-            if (dir != 0 && speed > 0) {
+            if (dir != 0) {
                 // Stop first
                 if (!AbstractPinActor.setPinValueImpl(dir < 0 ? dirLeftPin : dirRightPin, 0, RETRY_COUNT)) {
                     return false;
                 }
                 dir = 0;
                 listenerManager.callListeners(l -> l.directionChanged(dir));
-                // Wait some time before setting new direction
-                try {
-                    Thread.sleep(options.getInt(PROP_DIR_CHANGE_STOP));
-                } catch(InterruptedException e) {}
+                // Wait some time before setting new direction if was running
+                if (speed > 0) {
+                    try {
+                        Thread.sleep(options.getInt(PROP_DIR_CHANGE_STOP));
+                    } catch(InterruptedException e) {}
+                }
             }
             // Set desired direction
             if (newDir != 0 && !AbstractPinActor.setPinValueImpl(newDir < 0 ? dirLeftPin : dirRightPin, 1, RETRY_COUNT)) {
