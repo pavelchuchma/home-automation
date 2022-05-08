@@ -114,7 +114,7 @@ public class SimulationWebSocketHandler extends AbstractWebSocketHandler impleme
                 }
                 for (int i = 0; i < TRIS_ADDRESS.length; i++) {
                     data.tris[i] = n.readRam(TRIS_ADDRESS[i]);
-                    addChanges(w, n, "dir", i, data.port[i], 0xff);
+                    addChanges(w, n, "dir", i, data.tris[i], 0xff);
                 }
                 nodes.put(n.getId(), data);
             }
