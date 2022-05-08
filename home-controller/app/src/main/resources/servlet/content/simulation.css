@@ -29,6 +29,7 @@ td.changed {
 
 td.name {
     width: 3em;
+    position: relative;
 }
 
 tr.top td.name {
@@ -52,6 +53,29 @@ td.name.right {
     padding-right: 5px;
     padding-left: 10px;
     border-right: 2px solid;
+}
+
+td.name .tooltip {
+    visibility: hidden;
+    background-color: white;
+    position: absolute;
+    top: 10px;
+    z-index: 1;
+}
+
+td.name.left .tooltip {
+    left: 5px;
+    right: 0px;
+}
+
+td.name.right .tooltip {
+    text-align: right;
+    left: 0px;
+    right: 5px;
+}
+
+td.name:hover .tooltip {
+    visibility: visible;
 }
 
 td.dir {

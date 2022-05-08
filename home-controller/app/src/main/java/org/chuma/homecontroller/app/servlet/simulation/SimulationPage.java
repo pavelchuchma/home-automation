@@ -7,6 +7,7 @@ import org.chuma.homecontroller.app.servlet.pages.AbstractPage;
 import org.chuma.homecontroller.app.servlet.pages.Page;
 import org.chuma.homecontroller.base.node.ConnectedDevice;
 import org.chuma.homecontroller.base.node.Node;
+import org.chuma.homecontroller.base.node.NodePin;
 import org.chuma.homecontroller.base.node.Pin;
 import org.chuma.homecontroller.base.packet.simulation.SimulatedNode;
 import org.chuma.homecontroller.base.packet.simulation.SimulatedPacketUartIO;
@@ -93,7 +94,7 @@ public class SimulationPage extends AbstractPage {
             for (ConnectedDevice d : node.getDevices()) {
                 if (d.getConnectorNumber() == connectorId && d instanceof AbstractConnectedDevice) {
                     AbstractConnectedDevice device = (AbstractConnectedDevice)d;
-                    Pin[] layout = AbstractConnectedDevice.layout[connectorId - 1];
+                    NodePin[] pins = device.getPins();
                     sb.append("<table class=\"dip\">\n");
                     sb.append("<tr><td colspan=\"6\" class=\"title\">Conn #").append(connectorId).append("</td></tr>\n");
                     sb.append("<tr><td colspan=\"6\" class=\"title\">");
@@ -102,9 +103,9 @@ public class SimulationPage extends AbstractPage {
                     }
                     sb.append("</td></tr>\n");
                     ChipGenerator g = new ChipGenerator(sb, simNode, "conn");
-                    g.addPin(layout, 5); g.addPin(layout, 4);
-                    g.addPin(layout, 3); g.addPin(layout, 2);
-                    g.addPin(layout, 1); g.addPin(layout, 0);
+                    g.addPin(pins, 5); g.addPin(pins, 4);
+                    g.addPin(pins, 3); g.addPin(pins, 2);
+                    g.addPin(pins, 1); g.addPin(pins, 0);
                     g.lastRow();
                     g.addPin(-1, 0, "GND"); g.addPin(-1, 0, "+5V");
                     sb.append("</table>\n");
@@ -129,20 +130,30 @@ public class SimulationPage extends AbstractPage {
             left = true;
         }
 
-        public void addPin(Pin[] layout, int pin) {
-            String name = layout[pin].getPort() + Integer.toString(layout[pin].getPinIndex());
-            addPin(layout[pin], left ? pin + "&nbsp;/&nbsp;" + name : name + "&nbsp;/&nbsp;" + pin);
+        public void addPin(NodePin[] pins, int pin) {
+            Pin p = pins[pin].getPin();
+            String name = pins[pin].getName();
+            String pinId = p.getPort() + Integer.toString(p.getPinIndex());
+            addPin(p, name, left ? pin + "&nbsp;/&nbsp;" + pinId : pinId + "&nbsp;/&nbsp;" + pin);
         }
 
         public void addPin(Pin pin) {
-            addPin(pin, null);
+            addPin(pin, null, null);
         }
 
         public void addPin(Pin pin, String name) {
-            addPin(pin.getPortIndex(), pin.getPinIndex(), name);
+            addPin(pin, name, null);
+        }
+
+        public void addPin(Pin pin, String name, String toolTip) {
+            addPin(pin.getPortIndex(), pin.getPinIndex(), name, toolTip);
         }
 
         public void addPin(int port, int pin, String name) {
+            addPin(port, pin, name, null);
+        }
+
+        public void addPin(int port, int pin, String name, String toolTip) {
             if (name == null && port >= 0) {
                 name = (char)(port + 'A') + Integer.toString(pin);
             }
@@ -180,11 +191,11 @@ public class SimulationPage extends AbstractPage {
                 sb.append("<tr class=\"").append(rowState == 0 ? "top" : rowState == 2 ? "bottom" : "").append("\">");
                 value(pinId, value);
                 direction(pinId, out ? "out": "in");
-                pinName(name);
+                pinName(name, toolTip);
                 left = false;
             } else {
                 // Write right pin - also close row
-                pinName(name);
+                pinName(name, toolTip);
                 direction(pinId, out ? "out" : "in");
                 value(pinId, value);
                 sb.append("</tr>\n");
@@ -215,8 +226,12 @@ public class SimulationPage extends AbstractPage {
             sb.append("><span></td>");
         }
 
-        private void pinName(String name) {
-            sb.append("<td class=\"name ").append(left ? "left" : "right").append("\">").append(name).append("</td>");  
+        private void pinName(String name, String toolTip) {
+            sb.append("<td class=\"name ").append(left ? "left" : "right").append("\">").append(name);
+            if (toolTip != null) {
+                  sb.append("<span class=\"tooltip\">").append(toolTip).append("</span>");
+            }
+            sb.append("</td>");
         }
     }
 }
