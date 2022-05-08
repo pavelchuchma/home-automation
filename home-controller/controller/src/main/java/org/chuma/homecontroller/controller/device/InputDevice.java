@@ -11,7 +11,11 @@ public class InputDevice extends AbstractConnectedDevice {
     private int eventMask;
 
     public InputDevice(String id, Node node, int connectorPosition) {
-        super(id, node, connectorPosition, new String[]{"in1", "in2", "in3", "in4", "in5", "in6"});
+        this(id, node, connectorPosition, new String[]{"in1", "in2", "in3", "in4", "in5", "in6"});
+    }
+
+    public InputDevice(String id, Node node, int connectorPosition, String[] names) {
+        super(id, node, connectorPosition, names);
     }
 
     /**

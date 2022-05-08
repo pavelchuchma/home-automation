@@ -11,7 +11,11 @@ public class OutputDevice extends AbstractConnectedDevice {
     private static final String[] PIN_NAMES = new String[]{"out1", "out2", "out3", "out4", "out5", "out6"};
 
     public OutputDevice(String id, Node node, int connectorPosition) {
-        super(id, node, connectorPosition, PIN_NAMES);
+        this(id, node, connectorPosition, PIN_NAMES);
+    }
+
+    public OutputDevice(String id, Node node, int connectorPosition, String[] names) {
+        super(id, node, connectorPosition, names);
     }
 
     public NodePin getOut1() {
