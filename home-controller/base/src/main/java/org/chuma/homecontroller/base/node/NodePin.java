@@ -5,11 +5,19 @@ package org.chuma.homecontroller.base.node;
  */
 public class NodePin {
     private String id;
+    private String name;
     private final Node node;
     private final Pin pin;
 
-    public NodePin(String id, Node node, Pin pin) {
+    /**
+     * @param id pin ID, should be globally unique although not required
+     * @param name pin name inside its "parent" device
+     * @param node node pin is connected to
+     * @param pin pin in node
+     */
+    public NodePin(String id, String name, Node node, Pin pin) {
         this.id = id;
+        this.name = name;
         this.node = node;
         this.pin = pin;
     }
@@ -28,5 +36,9 @@ public class NodePin {
 
     public String getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
     }
 }
