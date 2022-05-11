@@ -4,15 +4,19 @@ import org.chuma.homecontroller.controller.actor.ActorListener;
 import org.chuma.homecontroller.controller.actor.IReadableOnOff;
 
 public class IndicatorAction implements IReadableOnOff {
-    private final ActorListener indicator;
+    private final Action onAction;
+    private final Action offAction;
     private boolean isOn;
 
-    private final Action onAction = new ActionImpl(true);
-    private final Action offAction = new ActionImpl(false);
-
     public IndicatorAction(ActorListener indicator) {
-        this.indicator = indicator;
         indicator.addSource(this);
+        onAction = new GenericCodeAction(timeSinceLastAction -> performAction(indicator, true));
+        offAction = new GenericCodeAction(timeSinceLastAction -> performAction(indicator, false));
+    }
+
+    private void performAction(ActorListener indicator, boolean value) {
+        isOn = value;
+        indicator.onAction(IndicatorAction.this, null);
     }
 
     public Action getOnAction() {
@@ -26,19 +30,5 @@ public class IndicatorAction implements IReadableOnOff {
     @Override
     public boolean isOn() {
         return isOn;
-    }
-
-    private class ActionImpl extends AbstractActionWithoutActor {
-        private final boolean value;
-
-        private ActionImpl(boolean value) {
-            this.value = value;
-        }
-
-        @Override
-        public void perform(int timeSinceLastAction) {
-            isOn = value;
-            indicator.onAction(IndicatorAction.this, null);
-        }
     }
 }
