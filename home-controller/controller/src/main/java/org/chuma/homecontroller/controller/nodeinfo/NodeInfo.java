@@ -1,25 +1,25 @@
 package org.chuma.homecontroller.controller.nodeinfo;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.LinkedList;
 
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.packet.Packet;
+import org.chuma.homecontroller.controller.nodeinfo.impl.MessageBuffer;
 
 /**
  * Represents {@link Node} in system with additional information like build time,
  * boot time, last ping time and message log (list of log messages).
  */
 public class NodeInfo {
-    private static final Date resetSupportedSince = new GregorianCalendar(2014, 7, 1).getTime();
+    private static final Date resetSupportedSince = new GregorianCalendar(2014, Calendar.AUGUST, 1).getTime();
 
     private Node node;
     private Date buildTime;
     private Date bootTime;
     private Date lastPingTime;
-    private LinkedList<LogMessage> messageLog = new LinkedList<LogMessage>();
+    private final MessageBuffer messageLog = new MessageBuffer(256);
 
     public NodeInfo(Node node) {
         this.node = node;
@@ -65,39 +65,21 @@ public class NodeInfo {
      * Log sent message.
      */
     public void addSentLogMessage(Packet packet) {
-        synchronized (messageLog) {
-            messageLog.addFirst(new LogMessage(packet, false));
-        }
+        messageLog.addEntry(new LogMessage(packet, false));
     }
 
     /**
      * Log received message.
      */
     public void addReceivedSentMessage(Packet packet) {
-        synchronized (messageLog) {
-            messageLog.addFirst(new LogMessage(packet, true));
-        }
+        messageLog.addEntry(new LogMessage(packet, true));
     }
 
     /**
-     * Get messages logged in last 5 seconds, oldest first. Clears all older messages.
+     * Gets messages logged according to max age or buffer size. Ordered from the oldest message.
      */
-    public LogMessage[] getMessageLog() {
-        synchronized (messageLog) {
-            long threshold = System.currentTimeMillis() - 5_000;
-            Iterator<LogMessage> i = messageLog.descendingIterator();
-
-            // TODO: There should be some other log cleaner ensure cleaning when this method in never called
-            while (i.hasNext()) {
-                LogMessage m = i.next();
-                if (m.receivedDate < threshold) {
-                    i.remove();
-                } else {
-                    break;
-                }
-            }
-            return messageLog.toArray(new LogMessage[messageLog.size()]);
-        }
+    public LogMessage[] getMessageLog(int maxAgeMs) {
+        return messageLog.getMessageLog(maxAgeMs);
     }
 
     /**

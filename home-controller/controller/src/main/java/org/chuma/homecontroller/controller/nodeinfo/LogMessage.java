@@ -8,11 +8,11 @@ import org.chuma.homecontroller.base.packet.Packet;
 public class LogMessage {
     public final boolean received;
     public final Packet packet;
-    public final long receivedDate;
+    public final long timestamp;
 
     public LogMessage(Packet packet, boolean received) {
         this.received = received;
         this.packet = packet;
-        receivedDate = System.currentTimeMillis();
+        timestamp = System.currentTimeMillis();
     }
 }

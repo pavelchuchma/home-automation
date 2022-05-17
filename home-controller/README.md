@@ -15,7 +15,7 @@
 * [x] Rename Node.Listener method: Replace ButtonUp/Down by State High/Low...
 * [x] Rename SwitchListener to something more generic
 * [x] Replace AbstractActionWithoutActor by GenericCodeActor
-* [ ] BUG: Mem leak - Missing periodic message log clean in NodeInfo
+* [x] BUG: Mem leak - Missing periodic message log clean in NodeInfo
 * [ ] Use executors instead of explicit thread creation. See todo in SwitchListener
 * [ ] Lights in basement and bathroom heater on web app
 * [ ] refactor web config

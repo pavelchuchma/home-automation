@@ -33,6 +33,9 @@ public class NodeHandler extends AbstractRestHandler<NodeInfo> {
 
     @Override
     void writeJsonItemValues(JsonWriter jw, NodeInfo info, HttpServletRequest request) {
+        final Map<String, String[]> parameterMap = request.getParameterMap();
+        int maxAgeMs = getIntParam(parameterMap, "maxAgeMs", 5_000);
+
         final Node node = info.getNode();
         jw.addAttribute("name", node.getName());
         long lastPingAge = (info.getLastPingTime() != null) ? (new Date().getTime() - info.getLastPingTime().getTime()) / 1000 : -1;
@@ -45,7 +48,7 @@ public class NodeHandler extends AbstractRestHandler<NodeInfo> {
         }
 
         try (JsonWriter arrayWriter = jw.startArrayAttribute("messages")) {
-            for (LogMessage m : info.getMessageLog()) {
+            for (LogMessage m : info.getMessageLog(maxAgeMs)) {
                 try (JsonWriter objectWriter = arrayWriter.startObject()) {
                     objectWriter.addAttribute("dir", (m.received) ? "r" : "s");
                     objectWriter.addAttribute("type", m.packet.messageType);
