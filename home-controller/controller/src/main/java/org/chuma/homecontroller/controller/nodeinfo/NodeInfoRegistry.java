@@ -25,6 +25,7 @@ public class NodeInfoRegistry {
     final Map<Integer, NodeInfo> nodeInfoMap = new HashMap<>();
     final NodeListener nodeListener = new NodeListener();
     final ListenerManager<AddNodeListener> addNodeListeners = new ListenerManager<>();
+
     public NodeInfoRegistry(final IPacketUartIO packetUartIO) {
         this.packetUartIO = packetUartIO;
     }
@@ -63,7 +64,8 @@ public class NodeInfoRegistry {
 
                 // Check if build time is set.
                 // But do it in double-checked section to prevent parallel getBuildTime calls to one node.
-                if (nodeInfo.getBuildTime() == null && packet.messageType == MessageType.MSG_OnHeartBeat) {
+                if (nodeInfo.getBuildTime() == null
+                        && (packet.messageType == MessageType.MSG_OnHeartBeat || packet.messageType == MessageType.MSG_OnReboot)) {
                     //noinspection SynchronizationOnLocalVariableOrMethodParameter
                     synchronized (nodeInfo) {
                         if (nodeInfo.getBuildTime() == null) {
@@ -79,7 +81,7 @@ public class NodeInfoRegistry {
                 // Last ping is last time something was received from the node
                 nodeInfo.setLastPingTime(new Date());
                 // Log received message
-                nodeInfo.addReceivedSentMessage(packet);
+                nodeInfo.logReceivedMessage(packet);
             }
 
             @Override
@@ -88,7 +90,7 @@ public class NodeInfoRegistry {
         });
 
         // Register sent packet listener to automatically register unknown nodes and log messages
-        packetUartIO.addSentPacketListener(packet -> getOrCreateNodeInfo(packet).addSentLogMessage(packet));
+        packetUartIO.addSentPacketListener(packet -> getOrCreateNodeInfo(packet).logSentMessage(packet));
     }
 
     /**

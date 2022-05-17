@@ -64,14 +64,14 @@ public class NodeInfo {
     /**
      * Log sent message.
      */
-    public void addSentLogMessage(Packet packet) {
+    public void logSentMessage(Packet packet) {
         messageLog.addEntry(new LogMessage(packet, false));
     }
 
     /**
      * Log received message.
      */
-    public void addReceivedSentMessage(Packet packet) {
+    public void logReceivedMessage(Packet packet) {
         messageLog.addEntry(new LogMessage(packet, true));
     }
 
