@@ -15,17 +15,17 @@ import org.chuma.homecontroller.base.node.MessageType;
  * Abstract base class for {@link IPacketUartIO} implementations. Provides listener registrations
  * and packet dispatching to listeners. Subclasses need to implement {@link #sendImpl(Packet)}
  * to actually send the message and {@link #start()}, {@link #close()} methods to initialize and
- * terminate the receive loop. Received messages should be passed to {@link #processPacket(Packet)}
+ * terminate the reception loop. Received messages should be passed to {@link #processPacket(Packet)}
  * to log them and deliver them to listeners.
  */
 public abstract class AbstractPacketUartIO implements IPacketUartIO {
     protected static Logger log = LoggerFactory.getLogger(PacketUartIO.class.getName());
     protected static Logger msgLog = LoggerFactory.getLogger(PacketUartIO.class.getName() + ".msg");
 
-    private ListenerManager<PacketReceivedListener> receivedListeners = new ListenerManager<>();
-    private ConcurrentHashMap<String, PacketReceivedListener> specificReceivedListeners = new ConcurrentHashMap<>();
-    private ListenerManager<PacketSentListener> sentListeners = new ListenerManager<>();
-    private ExecutorService threadPool = Executors.newFixedThreadPool(40);
+    private final ListenerManager<PacketReceivedListener> receivedListeners = new ListenerManager<>();
+    private final ConcurrentHashMap<String, PacketReceivedListener> specificReceivedListeners = new ConcurrentHashMap<>();
+    private final ListenerManager<PacketSentListener> sentListeners = new ListenerManager<>();
+    private final ExecutorService executor = Executors.newCachedThreadPool();
 
     /**
      * Log and process received packet by registered listeners in separate thread.
@@ -39,7 +39,7 @@ public abstract class AbstractPacketUartIO implements IPacketUartIO {
 
         // process each packet in new thread
         // todo: replace threads by producer/consumer pattern
-        threadPool.execute(() -> processPacketImpl(packet));
+        executor.execute(() -> processPacketImpl(packet));
     }
 
     private void processPacketByListener(Packet packet, PacketReceivedListener listener, String listenerType) {
@@ -120,7 +120,7 @@ public abstract class AbstractPacketUartIO implements IPacketUartIO {
         // hack to force output write
 //        send(Packet.createMsgEchoRequest(49, 1, 2));
 
-        // TODO: This will kill any existing (user-defined) specific listener. Also remains registed when finished - although noone can use it any more
+        // TODO: This will kill any existing (user-defined) specific listener. Also remains registered when finished - although none can use it any more
         Packet response = responseWrapper.waitForResponse(timeout);
         log.debug("resp (in {} of {}ms) {}", (System.currentTimeMillis() - begin), timeout, response);
         if (response == null) log.error("No response for {}, {}", packet, MessageType.toString(responseType));

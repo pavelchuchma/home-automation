@@ -1,5 +1,7 @@
 package org.chuma.homecontroller.base.node;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -10,31 +12,32 @@ import org.slf4j.LoggerFactory;
  * Does not wait for their completion.
  */
 public class AsyncListenerManager<T> extends ListenerManager<T> {
-    private static Logger log = LoggerFactory.getLogger(AsyncListenerManager.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(AsyncListenerManager.class.getName());
+    private final ExecutorService executor = Executors.newCachedThreadPool();
 
     @Override
     public void callListeners(Consumer<T> call) {
         for (T listener : listeners) {
-            new Thread(() -> {
+            executor.execute(() -> {
                 try {
                     call.accept(listener);
                 } catch  (Exception e) {
                     log.warn("Exception while executing listener", e);
                 }
-            }).start();
+            });
         }
     }
 
     @Override
-    public <E extends Exception> void callListenersWithException(ConsumerWithException<T, E> call) throws E {
+    public <E extends Exception> void callListenersWithException(ConsumerWithException<T, E> call) {
         for (T listener : listeners) {
-            new Thread(() -> {
+            executor.execute(() -> {
                 try {
                     call.accept(listener);
                 } catch  (Exception e) {
                     log.warn("Exception while executing listener", e);
                 }
-            }).start();
+            });
         }
     }
 }

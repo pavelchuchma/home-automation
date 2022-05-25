@@ -3,6 +3,8 @@ package org.chuma.homecontroller.controller.nodeinfo;
 import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,26 +25,10 @@ public class NodeListener extends AbstractNodeListener {
     private static final Logger log = LoggerFactory.getLogger(NodeListener.class.getName());
     private final ConcurrentHashMap<String, ActionBinding> switchMap = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, ActionBinding> onInitializedMap = new ConcurrentHashMap<>();
+    private final ExecutorService executor = Executors.newCachedThreadPool();
 
     public static String createNodePinKey(int nodeId, Pin pin) {
         return String.format("%d:%s", nodeId, pin);
-    }
-
-    /**
-     * Register action.
-     */
-    public void addActionBinding(ActionBinding binding) {
-        addActionBinding(switchMap, binding, "");
-    }
-
-    /**
-     * Register action called after node initialization. These actions are called each time the node
-     * gets initialized. You can use the same binding as for {@link #addActionBinding(ActionBinding)}.
-     * Note however, that this action does not indicate it happened now, just that pin is currently
-     * in given state.
-     */
-    public void addOnInitializedActionBinding(ActionBinding binding) {
-        addActionBinding(onInitializedMap, binding, "OnInit");
     }
 
     private static void addActionBinding(ConcurrentHashMap<String, ActionBinding> map, ActionBinding binding, String debugInfo) {
@@ -66,6 +52,23 @@ public class NodeListener extends AbstractNodeListener {
         }
     }
 
+    /**
+     * Register action.
+     */
+    public void addActionBinding(ActionBinding binding) {
+        addActionBinding(switchMap, binding, "");
+    }
+
+    /**
+     * Register action called after node initialization. These actions are called each time the node
+     * gets initialized. You can use the same binding as for {@link #addActionBinding(ActionBinding)}.
+     * Note however, that this action does not indicate it happened now, just that pin is currently
+     * in given state.
+     */
+    public void addOnInitializedActionBinding(ActionBinding binding) {
+        addActionBinding(onInitializedMap, binding, "OnInit");
+    }
+
     @Override
     public void onInputLow(Node node, Pin pin, int highDuration) {
         onInputChange(switchMap, node, pin, true, highDuration, "");
@@ -76,7 +79,7 @@ public class NodeListener extends AbstractNodeListener {
         onInputChange(switchMap, node, pin, false, lowDuration, "");
     }
 
-    private static void onInputChange(ConcurrentHashMap<String, ActionBinding> map, Node node, Pin pin, boolean lowState, final int timeSinceChange, String debugInfo) {
+    private void onInputChange(ConcurrentHashMap<String, ActionBinding> map, Node node, Pin pin, boolean lowState, final int timeSinceChange, String debugInfo) {
         String swKey = createNodePinKey(node.getNodeId(), pin);
         final ActionBinding sw = map.get(swKey);
         if (sw != null) {
@@ -85,14 +88,13 @@ public class NodeListener extends AbstractNodeListener {
             if (actions != null) {
                 for (final Action a : actions) {
                     log.debug("-> action: {} of action type {}", (a.getActor() != null) ? a.getActor().getId() : "{null}", a.getClass().getSimpleName());
-                    // TODO: Use executor?
-                    new Thread(() -> {
+                    executor.execute(() -> {
                         try {
                             a.perform(timeSinceChange);
                         } catch (Exception e) {
                             log.error("Failed to perform actions of " + sw, e);
                         }
-                    }).start();
+                    });
                 }
             }
         }

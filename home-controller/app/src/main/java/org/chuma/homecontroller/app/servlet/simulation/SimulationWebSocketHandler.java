@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import org.eclipse.jetty.websocket.api.Session;
@@ -24,9 +26,10 @@ import static org.chuma.homecontroller.base.packet.simulation.SimulatedPacketUar
 import static org.chuma.homecontroller.base.packet.simulation.SimulatedPacketUartIO.TRIS_ADDRESS;
 
 public class SimulationWebSocketHandler extends AbstractWebSocketHandler implements SimulatedNodeListener {
-    private SimulatedPacketUartIO simulator;
+    private final SimulatedPacketUartIO simulator;
     // Connected clients
-    private Set<Adapter> clients = ConcurrentHashMap.newKeySet();
+    private final Set<Adapter> clients = ConcurrentHashMap.newKeySet();
+    private final ExecutorService executor = Executors.newCachedThreadPool();
 
     public SimulationWebSocketHandler(SimulatedPacketUartIO simulator) {
         super("/simulation");
@@ -38,7 +41,7 @@ public class SimulationWebSocketHandler extends AbstractWebSocketHandler impleme
         for (Iterator<Adapter> it = clients.iterator(); it.hasNext();) {
             Adapter a = it.next();
             if (a.isConnected()) {
-                new Thread(() -> action.accept(a)).start();
+                executor.execute(() -> action.accept(a));
             } else {
                 it.remove();
             }

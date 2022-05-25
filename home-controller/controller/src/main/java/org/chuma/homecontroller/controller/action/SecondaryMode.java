@@ -1,6 +1,10 @@
 package org.chuma.homecontroller.controller.action;
 
 import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,13 +18,13 @@ public class SecondaryMode {
     private final int timeout;
     private final ActorListener indicator;
     private final IReadableOnOff indicatorSource;
-    Thread timeoutThread;
-    private boolean active;
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private ScheduledFuture<?> deactivateFuture;
     private long lastAccessTime = 0;
 
-    public SecondaryMode(int timeout, ActorListener indicator) {
-        this.timeout = timeout;
-        indicatorSource = () -> isActive(now());
+    public SecondaryMode(int timeoutMs, ActorListener indicator) {
+        this.timeout = timeoutMs;
+        indicatorSource = this::isActive;
         this.indicator = indicator;
         this.indicator.addSource(indicatorSource);
     }
@@ -28,64 +32,55 @@ public class SecondaryMode {
     /**
      * @return Activity state after switch
      */
-    public boolean switchState() {
+    public synchronized boolean switchState() {
         // call isActive() to apply timeout if occurred
-        isActiveAndTouch();
-        if (active) {
+        if (isActiveAndTouch()) {
             deactivate();
         } else {
             activate();
         }
-        return active;
+        return isActive();
     }
 
     private synchronized void activate() {
-        active = true;
-        lastAccessTime = now();
+        lastAccessTime = nowMs();
+        endOrProlongActivation();
         indicator.onAction(indicatorSource, null);
-        // create guard thread for indicator
-        timeoutThread = new Thread(() -> {
-            long now;
-            while ((now = now()) < lastAccessTime + timeout) {
-                try {
-                    Thread.sleep(lastAccessTime + timeout - now);
-                } catch (InterruptedException e) {
-                    return;
-                }
-            }
-            deactivate();
-        });
-        timeoutThread.start();
         log.debug("SecondaryMode activated");
     }
 
-    private synchronized void deactivate() {
-        active = false;
-        lastAccessTime = 0;
-        log.debug("SecondaryMode deactivated");
-        indicator.onAction(indicatorSource, null);
-        if (timeoutThread != null) {
-            timeoutThread.interrupt();
-        }
-    }
-
-    public boolean isActiveAndTouch() {
-        long now = now();
-        log.debug("isActive(" + now + ")");
-        if (isActive(now)) {
-            lastAccessTime = now;
+    private synchronized void endOrProlongActivation() {
+        long remainingMs = lastAccessTime + timeout - nowMs();
+        if (remainingMs > 0) {
+            deactivateFuture = scheduler.schedule(this::endOrProlongActivation,
+                    remainingMs, TimeUnit.MILLISECONDS);
         } else {
-            active = false;
+            deactivate();
         }
-        log.debug("  isActive() returns " + active);
-        return active;
     }
 
-    private boolean isActive(long now) {
-        return active && (lastAccessTime + timeout > now);
+    private synchronized void deactivate() {
+        log.debug("SecondaryMode deactivated");
+        if (deactivateFuture != null) {
+            deactivateFuture.cancel(false);
+            deactivateFuture = null;
+        }
+        indicator.onAction(indicatorSource, null);
     }
 
-    private long now() {
+    public synchronized boolean isActiveAndTouch() {
+        if (isActive()) {
+            lastAccessTime = nowMs();
+        }
+        log.debug("  isActive() returns {}", isActive());
+        return isActive();
+    }
+
+    private boolean isActive() {
+        return deactivateFuture != null;
+    }
+
+    private long nowMs() {
         return new Date().getTime();
     }
 }

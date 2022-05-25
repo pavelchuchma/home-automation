@@ -11,7 +11,7 @@ import org.chuma.homecontroller.controller.actor.IOnOffActor;
 import org.chuma.homecontroller.controller.actor.OnOffActor;
 
 public class LouversControllerImpl implements LouversController {
-    public static final double DOWN_POSITION_RESERVE = 0.08;
+    public static final double UP_POSITION_RESERVE = 0.08;
     static Logger log = LoggerFactory.getLogger(LouversControllerImpl.class.getName());
     LouversPosition louversPosition;
     IOnOffActor upActor;
@@ -37,7 +37,7 @@ public class LouversControllerImpl implements LouversController {
         this.name = name;
         this.upActor = upActor;
         this.downActor = downActor;
-        louversPosition = new LouversPosition(downPositionMs, maxOffsetMs, (int) (downPositionMs * DOWN_POSITION_RESERVE));
+        louversPosition = new LouversPosition(downPositionMs, maxOffsetMs, (int) (downPositionMs * UP_POSITION_RESERVE));
     }
 
     @Override

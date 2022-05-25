@@ -16,7 +16,7 @@
 * [x] Rename SwitchListener to something more generic
 * [x] Replace AbstractActionWithoutActor by GenericCodeActor
 * [x] BUG: Mem leak - Missing periodic message log clean in NodeInfo
-* [ ] Use executors instead of explicit thread creation. See todo in SwitchListener
+* [x] Use executors instead of explicit thread creation. See todo in SwitchListener
 * [ ] Lights in basement and bathroom heater on web app
 * [ ] refactor web config
 * [ ] fix tests

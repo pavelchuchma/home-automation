@@ -5,6 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.Validate;
@@ -17,6 +19,7 @@ import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
 
 public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
     private static final Logger log = LoggerFactory.getLogger(AbstractRestHandler.class);
+    private final ExecutorService executor = Executors.newCachedThreadPool();
     final String rootPath;
     final String statusPath;
     final String actionPath;
@@ -106,13 +109,13 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
         } else if (target.startsWith(actionPath)) {
             final Map<String, String[]> requestParameters = request.getParameterMap();
             T item = getItemById(getMandatoryStringParam(requestParameters, "id"));
-            new Thread(() -> {
+            executor.execute(() -> {
                 try {
                     processAction(item, requestParameters);
                 } catch (Exception e) {
                     log.error("Failed to handle action: " + target, e);
                 }
-            }).start();
+            });
             response.setHeader("Access-Control-Allow-Origin", "*");
             response.setHeader("Access-Control-Allow-Headers", "*");
             response.setStatus(HttpServletResponse.SC_ACCEPTED);

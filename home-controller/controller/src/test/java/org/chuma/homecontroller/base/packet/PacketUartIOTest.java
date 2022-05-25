@@ -1,5 +1,10 @@
 package org.chuma.homecontroller.base.packet;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -42,25 +47,21 @@ public class PacketUartIOTest {
         Packet request = Packet.createMsgGetBuildTime(123);
         final Packet expResp1OK = new Packet(123, MessageType.MSG_GetBuildTimeResponse, new int[]{1, 2, 3, 4, 5});
         final Packet expResp2Bad = new Packet(100, MessageType.MSG_GetBuildTimeResponse, new int[]{1, 2, 3, 4, 5});
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                log.debug("Thread started");
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                }
-                packetUartIO.processPacket(expResp2Bad);
-                packetUartIO.processPacket(expResp1OK);
-                packetUartIO.processPacket(expResp2Bad);
-                log.debug("Thread ended");
-            }
-        }).start();
+
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        final ScheduledFuture<?> future = scheduler.schedule(() -> {
+            log.debug("Thread started");
+            packetUartIO.processPacket(expResp2Bad);
+            packetUartIO.processPacket(expResp1OK);
+            packetUartIO.processPacket(expResp2Bad);
+            log.debug("Thread ended");
+        }, 500, TimeUnit.MILLISECONDS);
 
         Packet response = packetUartIO.send(request, MessageType.MSG_GetBuildTimeResponse, 2000);
 
         log.debug("Response: " + response);
         Assert.assertEquals(response, expResp1OK);
+        Assert.assertNull(future.get());
     }
 
     @Test

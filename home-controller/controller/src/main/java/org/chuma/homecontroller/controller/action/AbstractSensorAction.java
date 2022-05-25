@@ -1,5 +1,8 @@
 package org.chuma.homecontroller.controller.action;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,7 @@ public class AbstractSensorAction extends AbstractAction {
     private final ICondition condition;
     int timeoutMs;
     boolean canSwitchOn;
+    private final ExecutorService executor = Executors.newCachedThreadPool();
 
     protected AbstractSensorAction(IOnOffActor actor, int timeoutSec, boolean canSwitchOn, double switchOnValue, Priority priority, ICondition condition) {
         super(actor);
@@ -46,7 +50,7 @@ public class AbstractSensorAction extends AbstractAction {
         }
 
         // run body in extra thread because it can be blocking
-        new Thread(this::performImpl).start();
+        executor.execute(this::performImpl);
     }
 
     private void performImpl() {

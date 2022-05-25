@@ -10,10 +10,10 @@ import org.chuma.homecontroller.controller.controller.LouversController;
 
 
 public class LouversActionGroup {
-    public static final int TUNING_MODE_DURATION = 5000;
+    public static final int TUNING_MODE_DURATION = 5_000;
     public static final int LOUVERS_SHADOW_HOLD_TIME = 500;
-    // limit button down time to max 5s to don't panic after switch reboot or reconnect
-    public static final int MAX_BUTTON_DOWN_DURATION = 5000;
+    // limit button downtime to max 5s to don't panic after switch reboot or reconnect
+    public static final int MAX_BUTTON_DOWN_DURATION = 5_000;
     static Logger log = LoggerFactory.getLogger(LouversActionGroup.class.getName());
 
     Action upPressed;

@@ -6,25 +6,26 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class ValveControllerImplTest extends AbstractControllerTest {
+    final int valveSwitchDuration = 1_000;
     Actor openActor = new Actor("OPEN");
     Actor closeActor = new Actor("CLOSE");
 
     @Test
     public void testValveClose() {
-        ValveController vc = new ValveControllerImpl("vc", "LC", openActor, closeActor, 1000);
+        ValveController vc = new ValveControllerImpl("vc", "LC", openActor, closeActor, valveSwitchDuration);
 
         vc.close();
 
         Iterator<ActionItem> iterator = actions.iterator();
         Assert.assertEquals(new ActionItem(openActor, "off", 0), iterator.next());
         Assert.assertEquals(new ActionItem(closeActor, "on", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(closeActor, "off", 1000, 20), iterator.next());
+        Assert.assertEquals(new ActionItem(closeActor, "off", valveSwitchDuration, 20), iterator.next());
         Assert.assertFalse(iterator.hasNext());
     }
 
     @Test
     public void testValveManipulation() {
-        ValveController vc = new ValveControllerImpl("vc", "LC", openActor, closeActor, 1000);
+        ValveController vc = new ValveControllerImpl("vc", "LC", openActor, closeActor, valveSwitchDuration);
 
         vc.close();
         vc.setPosition(1);
@@ -36,22 +37,22 @@ public class ValveControllerImplTest extends AbstractControllerTest {
 //        vc.setPosition(1);
         Assert.assertEquals(new ActionItem(openActor, "off", 0), iterator.next());
         Assert.assertEquals(new ActionItem(closeActor, "on", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(closeActor, "off", 1000, 20), iterator.next());
+        Assert.assertEquals(new ActionItem(closeActor, "off", valveSwitchDuration, 20), iterator.next());
 
 //        vc.setPosition(0.5);
         Assert.assertEquals(new ActionItem(closeActor, "off", 0), iterator.next());
         Assert.assertEquals(new ActionItem(openActor, "on", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(openActor, "off", 500, 20), iterator.next());
+        Assert.assertEquals(new ActionItem(openActor, "off", (int)(0.5 * valveSwitchDuration), 20), iterator.next());
 
 //        vc.setPosition(0.7);
         Assert.assertEquals(new ActionItem(openActor, "off", 0), iterator.next());
         Assert.assertEquals(new ActionItem(closeActor, "on", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(closeActor, "off", 200, 20), iterator.next());
+        Assert.assertEquals(new ActionItem(closeActor, "off", (int)(0.2 * valveSwitchDuration), 20), iterator.next());
 
 //        vc.open();
         Assert.assertEquals(new ActionItem(closeActor, "off", 0), iterator.next());
         Assert.assertEquals(new ActionItem(openActor, "on", 0), iterator.next());
-        Assert.assertEquals(new ActionItem(openActor, "off", 700 + up1000Reserve, 20), iterator.next());
+        Assert.assertEquals(new ActionItem(openActor, "off", (int)((0.7 + LouversControllerImpl.UP_POSITION_RESERVE) * valveSwitchDuration), 20), iterator.next());
 
         Assert.assertFalse(iterator.hasNext());
     }

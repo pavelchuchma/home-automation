@@ -8,8 +8,6 @@ import org.chuma.homecontroller.controller.actor.IOnOffActor;
 
 public class AbstractControllerTest {
     List<ActionItem> actions = new ArrayList<>();
-    int up100Reserve = (int) (100 * LouversControllerImpl.DOWN_POSITION_RESERVE);
-    int up1000Reserve = (int) (1000 * LouversControllerImpl.DOWN_POSITION_RESERVE);
 
     static class ActionItem {
         IOnOffActor actor;
@@ -42,12 +40,7 @@ public class AbstractControllerTest {
 
         @Override
         public String toString() {
-            return "ActionItem{" +
-                    "actor=" + actor +
-                    ", actionName='" + actionName + '\'' +
-                    ", value=" + value +
-                    "(" + tolerance + ")" +
-                    '}';
+            return String.format("ActionItem{actor=%s, actionName='%s', value=%d(%d)}", actor, actionName, value, tolerance);
         }
     }
 
