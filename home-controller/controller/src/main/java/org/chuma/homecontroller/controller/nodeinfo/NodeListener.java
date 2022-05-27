@@ -81,10 +81,10 @@ public class NodeListener extends AbstractNodeListener {
 
     private void onInputChange(ConcurrentHashMap<String, ActionBinding> map, Node node, Pin pin, boolean lowState, final int timeSinceChange, String debugInfo) {
         String swKey = createNodePinKey(node.getNodeId(), pin);
-        final ActionBinding sw = map.get(swKey);
-        if (sw != null) {
-            log.debug("Executing {}ActionBinding: {}", debugInfo, sw);
-            Action[] actions = (lowState) ? sw.getOnInputLowActions() : sw.getOnInputHighActions();
+        final ActionBinding actionBinding = map.get(swKey);
+        if (actionBinding != null) {
+            log.debug("Executing {}ActionBinding: {}", debugInfo, actionBinding);
+            Action[] actions = (lowState) ? actionBinding.getOnInputLowActions() : actionBinding.getOnInputHighActions();
             if (actions != null) {
                 for (final Action a : actions) {
                     log.debug("-> action: {} of action type {}", (a.getActor() != null) ? a.getActor().getId() : "{null}", a.getClass().getSimpleName());
@@ -92,7 +92,7 @@ public class NodeListener extends AbstractNodeListener {
                         try {
                             a.perform(timeSinceChange);
                         } catch (Exception e) {
-                            log.error("Failed to perform actions of " + sw, e);
+                            log.error("Failed to perform actions of " + actionBinding, e);
                         }
                     });
                 }
