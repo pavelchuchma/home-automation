@@ -80,12 +80,12 @@ public class LouversActionGroup {
             muteNextAction = true;
         }
 
-        protected abstract void performImpl(int buttonDownDuration);
+        protected abstract void performImpl(int timeSinceLastAction);
 
         @Override
-        public void perform(int buttonDownDuration) {
+        public void perform(int timeSinceLastAction) {
             log.debug("{}.perform(mute:{})", this.getClass().getSimpleName(), muteNextAction);
-            if (buttonDownDuration < 0 || buttonDownDuration > MAX_BUTTON_DOWN_DURATION) {
+            if (timeSinceLastAction < 0 || timeSinceLastAction > MAX_BUTTON_DOWN_DURATION) {
                 return;
             }
             if (muteNextAction) {
@@ -93,14 +93,13 @@ public class LouversActionGroup {
                 return;
             }
             // ignore button up after too long time
-            performImpl(buttonDownDuration);
-
+            performImpl(timeSinceLastAction);
         }
     }
 
     private class UpPressed extends LAction {
         @Override
-        public void perform(int buttonUpDuration) {
+        public void perform(int timeSinceLastAction) {
             upButtonIsDown = true;
             if (downButtonIsDown) {
                 switchTuningModeState();
@@ -120,7 +119,7 @@ public class LouversActionGroup {
         }
 
         @Override
-        protected void performImpl(int buttonDownDuration) {
+        protected void performImpl(int timeSinceLastAction) {
             if (tuningMode.isActiveAndTouch()) {
                 louversController.stop();
             } else {
@@ -135,7 +134,7 @@ public class LouversActionGroup {
 
     private class DownPressed extends LAction {
         @Override
-        public void perform(int buttonDownDuration) {
+        public void perform(int timeSinceLastAction) {
             downButtonIsDown = true;
             if (upButtonIsDown) {
                 switchTuningModeState();
@@ -155,11 +154,11 @@ public class LouversActionGroup {
         }
 
         @Override
-        protected void performImpl(int buttonDownDuration) {
+        protected void performImpl(int timeSinceLastAction) {
             if (tuningMode.isActiveAndTouch()) {
                 louversController.stop();
             } else {
-                if (buttonDownDuration > LOUVERS_SHADOW_HOLD_TIME) {
+                if (timeSinceLastAction > LOUVERS_SHADOW_HOLD_TIME) {
                     louversController.outshine(0);
                 } else {
                     if (louversController.getActivity() == Activity.movingDown) {
