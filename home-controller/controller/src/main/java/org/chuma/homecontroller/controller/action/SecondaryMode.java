@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.controller.actor.ActorListener;
 import org.chuma.homecontroller.controller.actor.IReadableOnOff;
 
+/**
+ * Holds "secondary-mode" flag for specified time.
+ */
 public class SecondaryMode {
     static Logger log = LoggerFactory.getLogger(LouversActionGroup.class.getName());
     // in ms
@@ -68,6 +71,9 @@ public class SecondaryMode {
         indicator.onAction(indicatorSource, null);
     }
 
+    /**
+     * Gets activation state and prolongs termination if it is active at the time of call
+     */
     public synchronized boolean isActiveAndTouch() {
         if (isActive()) {
             lastAccessTime = nowMs();

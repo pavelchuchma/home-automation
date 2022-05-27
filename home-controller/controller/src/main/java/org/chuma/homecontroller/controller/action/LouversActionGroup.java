@@ -17,9 +17,9 @@ public class LouversActionGroup {
     static Logger log = LoggerFactory.getLogger(LouversActionGroup.class.getName());
 
     Action upPressed;
-    MuteableButtonReleaseLAction upReleased;
+    MutableButtonReleaseLAction upReleased;
     Action downPressed;
-    MuteableButtonReleaseLAction downReleased;
+    MutableButtonReleaseLAction downReleased;
     LouversController louversController;
 
     transient boolean upButtonIsDown;
@@ -73,7 +73,7 @@ public class LouversActionGroup {
         }
     }
 
-    private abstract class MuteableButtonReleaseLAction extends LAction {
+    private abstract class MutableButtonReleaseLAction extends LAction {
         private boolean muteNextAction;
 
         public void muteNextAction() {
@@ -112,7 +112,7 @@ public class LouversActionGroup {
         }
     }
 
-    private class UpReleased extends MuteableButtonReleaseLAction {
+    private class UpReleased extends MutableButtonReleaseLAction {
         @Override
         public void perform(int timeSinceLastAction) {
             upButtonIsDown = false;
@@ -147,7 +147,7 @@ public class LouversActionGroup {
         }
     }
 
-    private class DownReleased extends MuteableButtonReleaseLAction {
+    private class DownReleased extends MutableButtonReleaseLAction {
         @Override
         public void perform(int timeSinceLastAction) {
             downButtonIsDown = false;
