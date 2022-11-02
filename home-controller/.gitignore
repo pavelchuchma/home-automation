@@ -11,3 +11,5 @@ build
 .project
 .settings
 /app/cfg/
+/.idea/deployment.xml
+/out/
