@@ -18,8 +18,9 @@ dependencies {
 
     implementation 'ch.qos.logback:logback-classic'
 
-    implementation 'org.chuma.hvac-controller:hvac-controller'
+    implementation 'com.github.cliftonlabs:json-simple'
+    implementation 'com.luckycatlabs:SunriseSunsetCalculator'
     implementation 'net.thejavashop:javampd'
     implementation 'org.apache.commons:commons-lang3'
-    implementation 'com.luckycatlabs:SunriseSunsetCalculator'
+    implementation 'org.chuma.hvac-controller:hvac-controller'
 }

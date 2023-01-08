@@ -1,0 +1,66 @@
+package org.chuma.homecontroller.extensions.external.inverter;
+
+public interface InverterState {
+    long getTimestamp();
+
+    String getVersion();
+
+    String getMode();
+
+    /**
+     * Voltage on AC Power, phase 1
+     */
+    double getGrid1Voltage();
+
+    double getGrid2Voltage();
+
+    double getGrid3Voltage();
+
+    /**
+     * AC Power in W (Inverter output to house excluding battery), phase 1
+     */
+    int getGrid1Power();
+
+    int getGrid2Power();
+
+    int getGrid3Power();
+
+    /**
+     * Photovoltaic power, panel 1
+     */
+    int getPv1Power();
+
+    int getPv2Power();
+
+    /**
+     * Positive value means feeding energy to the public grid
+     */
+    int getFeedInPower();
+
+    /**
+     * Positive value means battery charging
+     */
+    int getBatteryPower();
+
+    double getYieldTotal();
+
+    double getYieldToday();
+
+    double getFeedInEnergyTotal();
+
+    double getConsumedEnergyTotal();
+
+    double getConsumedEnergyToday();
+
+    /**
+     * Battery state of charge in percent
+     */
+    int getBatterySoc();
+
+    /**
+     * Battery temperature in C
+     */
+    int getBatteryTemp();
+
+    double getBatteryVoltage();
+}

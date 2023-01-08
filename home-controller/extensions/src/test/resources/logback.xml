@@ -1,0 +1,15 @@
+<configuration>
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{"yyyy-MM-dd'T'HH:mm:ss,SSS", Europe/Prague} [%thread] %p %c{1} [%t] %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.chuma.homecontroller.extensions.external.inverter" level="TRACE" additivity="false">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+
+    <root level="info">
+        <appender-ref ref="consoleAppender" additivity="false"/>
+    </root>
+</configuration>

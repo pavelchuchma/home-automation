@@ -13,3 +13,5 @@ build
 /app/cfg/
 /.idea/deployment.xml
 /out/
+/cfg/
+/app/src/main/resources/servlet/content/configuration.js

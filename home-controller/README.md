@@ -17,6 +17,8 @@
 * [x] Replace AbstractActionWithoutActor by GenericCodeActor
 * [x] BUG: Mem leak - Missing periodic message log clean in NodeInfo
 * [x] Use executors instead of explicit thread creation. See todo in SwitchListener
+* [x] Add Solax inverter support
+* [ ] Denon AVR support (using denon4j)
 * [ ] Lights in basement and bathroom heater on web app
 * [ ] refactor web config
 * [ ] fix tests

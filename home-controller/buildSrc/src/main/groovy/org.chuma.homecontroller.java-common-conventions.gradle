@@ -30,12 +30,13 @@ dependencies {
         def logbackVersion = '1.2.10'
         implementation "ch.qos.logback:logback-classic:$logbackVersion"
 
-        implementation group: 'com.luckycatlabs', name: 'SunriseSunsetCalculator', version: '1.2'
-        implementation group: 'net.thejavashop', name: 'javampd', version: '5.0.3'
-        implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
-        implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.1.6.v20160112'
-        implementation group: 'org.eclipse.jetty.websocket', name: 'websocket-api', version: '9.1.6.v20160112'
-        implementation group: 'org.eclipse.jetty.websocket', name: 'websocket-server', version: '9.1.6.v20160112'
+        implementation 'com.github.cliftonlabs:json-simple:4.0.1'
+        implementation 'com.luckycatlabs:SunriseSunsetCalculator:1.2'
+        implementation 'net.thejavashop:javampd:5.0.3'
+        implementation 'org.apache.commons:commons-lang3:3.12.0'
+        implementation 'org.eclipse.jetty.websocket:websocket-api:9.1.6.v20160112'
+        implementation 'org.eclipse.jetty.websocket:websocket-server:9.1.6.v20160112'
+        implementation 'org.eclipse.jetty:jetty-server:9.1.6.v20160112'
 
         implementation 'org.chuma.hvac-controller:hvac-controller:0.2.0-SNAPSHOT'
     }

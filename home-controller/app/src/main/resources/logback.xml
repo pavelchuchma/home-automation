@@ -1,7 +1,7 @@
 <configuration>
     <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>ZZZ %d{"yyyy-MM-dd'T'HH:mm:ss,SSSXXX", Europe/Prague} [%thread] %p %c{1} [%t] %m%n</pattern>
+            <pattern>%d{"yyyy-MM-dd'T'HH:mm:ss,SSSXXX", Europe/Prague} [%thread] %p %c{1} [%t] %m%n</pattern>
         </encoder>
     </appender>
 
@@ -52,6 +52,10 @@
     </logger>
 
     <logger name="org.chuma.homecontroller.extensions.external" level="DEBUG" additivity="false">
+        <appender-ref ref="applicationLog"/>
+    </logger>
+
+    <logger name="org.chuma.homecontroller.extensions.external.inverter" level="INFO" additivity="false">
         <appender-ref ref="applicationLog"/>
     </logger>
 

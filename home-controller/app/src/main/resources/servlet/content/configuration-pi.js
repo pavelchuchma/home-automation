@@ -141,7 +141,8 @@ function getComponents() {
         new AirValveItem('vlKoupH', 450, 515, 1),
 
         new HvacItem('hvac', 0, 0, 0),
-        new WaterPumpItem('wpump', 0, 0, 0)
+        new WaterPumpItem('wpump', 0, 0, 0),
+        new InverterItem('inverter', 0, 0, 0),
     ].concat(getLouversComponents(), getPwmLightComponents(), getSensorComponents());
 }
 
