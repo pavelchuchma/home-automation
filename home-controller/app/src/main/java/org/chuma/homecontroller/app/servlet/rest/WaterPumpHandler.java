@@ -8,24 +8,26 @@ import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
 import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
 
 public class WaterPumpHandler extends AbstractRestHandler<WaterPumpMonitor> {
-    public WaterPumpHandler(Iterable<WaterPumpMonitor> pirStatuses) {
-        super("wpump", "wpump", pirStatuses, (o) -> "wpump");
+    public WaterPumpHandler(Iterable<WaterPumpMonitor> monitors) {
+        super("wpump", "wpump", monitors, (o) -> "wpump");
     }
 
     @Override
-    void writeJsonItemValues(JsonWriter jw, WaterPumpMonitor mon, HttpServletRequest request) {
+    void writeJsonItemValues(JsonWriter jw, WaterPumpMonitor monitor, HttpServletRequest request) {
         final Map<String, String[]> parameterMap = request.getParameterMap();
         int lastHours = getIntParam(parameterMap, "lastHours", 24);
-        int recordCount = getIntParam(parameterMap, "recordCount", 10);
+        int recordCount = getIntParam(parameterMap, "recordCount", 5);
 
-        jw.addAttribute("on", mon.isOn());
-        jw.addAttribute("recCount", mon.getRecordCount());
-        jw.addAttribute("lastPeriodRecCount", mon.getRecordCountInLastHours(lastHours));
-        try (JsonWriter arr = jw.startArrayAttribute("lastRecords")) {
-            for (WaterPumpMonitor.Record r : mon.getLastRecords(recordCount)) {
-                try (JsonWriter rw = arr.startObject()) {
-                    rw.addAttribute("time", r.time.toString());
-                    rw.addAttribute("duration", r.duration);
+        jw.addAttribute("on", monitor.isOn());
+        jw.addAttribute("recCount", monitor.getRecordCount());
+        jw.addAttribute("lastPeriodRecCount", monitor.getRecordCountInLastHours(lastHours));
+        if (recordCount > 0) {
+            try (JsonWriter arr = jw.startArrayAttribute("lastRecords")) {
+                for (WaterPumpMonitor.Record r : monitor.getLastRecords(recordCount)) {
+                    try (JsonWriter rw = arr.startObject()) {
+                        rw.addAttribute("time", r.time.toString());
+                        rw.addAttribute("duration", r.duration);
+                    }
                 }
             }
         }
