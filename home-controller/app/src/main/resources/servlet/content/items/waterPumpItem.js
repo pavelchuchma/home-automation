@@ -25,12 +25,19 @@ class WaterPumpItem extends BaseItem {
 
         ctx.fillStyle = 'black';
         ctx.font = "12px Arial";
-        ctx.fillText('Cykly: ' + this.lastPeriodRecCount + '/' + this.recCount, 5, 20);
+        let y = 0;
+        const step = 17;
+
+        ctx.fillText(' ⟳ ' + this.lastPeriodRecCount + '/' + this.recCount, 5, y += step);
         let lastRecordDuration = -1;
         if (this.lastRecords !== undefined && this.lastRecords.length > 0) {
             lastRecordDuration = this.lastRecords[this.lastRecords.length - 1].duration;
         }
-        ctx.fillText('Poslední: ' + Math.round(lastRecordDuration * 10.0) / 10.0 + ' s', 5, 35);
+        let lastDuration = Math.round(lastRecordDuration * 10.0) / 10.0;
+        if (lastDuration < 15) {
+            ctx.fillStyle = 'red';
+        }
+        ctx.fillText('⏱ ' + lastDuration + ' s', 5, y += step);
     }
 
     onClick() {
