@@ -33,6 +33,7 @@ public class SolaxInverterLocalClient {
         try {
             conn = (HttpURLConnection)new URL(url).openConnection();
             conn.setRequestMethod("POST");
+            conn.setReadTimeout(10_000);
             byte[] postDataBytes = ("optType=ReadRealTimeData&pwd=" + password).getBytes(StandardCharsets.UTF_8);
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));

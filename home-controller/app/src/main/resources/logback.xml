@@ -55,7 +55,7 @@
         <appender-ref ref="applicationLog"/>
     </logger>
 
-    <logger name="org.chuma.homecontroller.extensions.external.inverter" level="INFO" additivity="false">
+    <logger name="org.chuma.homecontroller.extensions.external.inverter" level="TRACE" additivity="false">
         <appender-ref ref="applicationLog"/>
     </logger>
 

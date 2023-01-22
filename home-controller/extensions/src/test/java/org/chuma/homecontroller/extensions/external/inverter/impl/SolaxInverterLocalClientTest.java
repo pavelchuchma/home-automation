@@ -23,7 +23,7 @@ public class SolaxInverterLocalClientTest extends TestCase {
         throw new IllegalStateException("Cannot get file from config file");
     }
 
-    public void testInit() throws Exception {
+    public void testGetState() throws Exception {
         SolaxInverterLocalClient s = new SolaxInverterLocalClient("http://192.168.68.159", getPassword());
 
         final SolaxInverterState state = s.getState();

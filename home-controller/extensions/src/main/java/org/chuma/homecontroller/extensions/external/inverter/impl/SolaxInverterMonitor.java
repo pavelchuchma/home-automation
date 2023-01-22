@@ -78,7 +78,7 @@ public class SolaxInverterMonitor implements InverterMonitor {
             lastRefreshAttemptTime = System.currentTimeMillis();
             log.debug("refreshing solax state");
             state = client.getState();
-            log.trace("done in {} ms", System.currentTimeMillis() - lastRefreshAttemptTime);
+            log.trace("done in {} ms, inverter state {}", System.currentTimeMillis() - lastRefreshAttemptTime, state.mode);
         } catch (Exception e) {
             log.error("Failed to refresh SolaxInverter state from " + client.getUrl(), e);
             state = null;

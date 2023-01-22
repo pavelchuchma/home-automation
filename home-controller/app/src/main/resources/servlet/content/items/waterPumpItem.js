@@ -28,7 +28,7 @@ class WaterPumpItem extends BaseItem {
         let y = 0;
         const step = 17;
 
-        ctx.fillText(' ⟳ ' + this.lastPeriodRecCount + '/' + this.recCount, 5, y += step);
+        ctx.fillText('⟳ ' + this.lastPeriodRecCount + '/' + this.recCount, 5, y += step);
         let lastRecordDuration = -1;
         if (this.lastRecords !== undefined && this.lastRecords.length > 0) {
             lastRecordDuration = this.lastRecords[this.lastRecords.length - 1].duration;
