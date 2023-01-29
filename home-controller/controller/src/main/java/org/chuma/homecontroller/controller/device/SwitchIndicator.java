@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.chuma.homecontroller.base.node.NodePin;
+import org.chuma.homecontroller.base.node.OutputNodePin;
 import org.chuma.homecontroller.controller.action.condition.SensorDimCounter;
 import org.chuma.homecontroller.controller.actor.AbstractPinActor;
 import org.chuma.homecontroller.controller.actor.ActorListener;
@@ -14,12 +14,12 @@ import org.chuma.homecontroller.controller.actor.IReadableOnOff;
 public class SwitchIndicator implements ActorListener {
     private static final int RETRY_COUNT = 2;
     static Logger log = LoggerFactory.getLogger(SwitchIndicator.class.getName());
+    final OutputNodePin pin;
     Mode mode;
-    NodePin pin;
     ArrayList<IReadableOnOff> sources = new ArrayList<>();
     private int lastSetValue = -1;
 
-    public SwitchIndicator(NodePin pin, Mode mode) {
+    public SwitchIndicator(OutputNodePin pin, Mode mode) {
         this.pin = pin;
         this.mode = mode;
     }
@@ -41,7 +41,7 @@ public class SwitchIndicator implements ActorListener {
 
 //        log.debug("  " + pin + " val: " + val + ", lastSetValue: " + lastSetValue);
         if (actionData instanceof SensorDimCounter && sources.size() == 1) {
-            val ^= (((SensorDimCounter) actionData).getCount() % 2 == 1);
+            val ^= (((SensorDimCounter)actionData).getCount() % 2 == 1);
         }
         int resultValue = (val) ? 0 : 1;
         if (resultValue != lastSetValue) {

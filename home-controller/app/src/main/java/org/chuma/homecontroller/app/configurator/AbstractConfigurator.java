@@ -25,6 +25,7 @@ import org.chuma.homecontroller.controller.action.PwmActionGroup;
 import org.chuma.homecontroller.controller.action.SwitchOffAction;
 import org.chuma.homecontroller.controller.actor.ActorListener;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
+import org.chuma.homecontroller.controller.actor.LddActor;
 import org.chuma.homecontroller.controller.actor.PwmActor;
 import org.chuma.homecontroller.controller.controller.LouversController;
 import org.chuma.homecontroller.controller.device.LddBoardDevice;
@@ -74,19 +75,19 @@ public abstract class AbstractConfigurator {
     }
 
     /**
-     * @param pwmActors
+     * @param lddActors
      * @param id
      * @param label
      * @param pin
-     * @param maxCurrentAmp  Maximal current in Amperes for light
+     * @param maxLightCurrent  Maximal current in Amperes for light
      * @param actorListeners
      * @return
      */
-    static PwmActor addLddLight(List<PwmActor> pwmActors, String id, String label, LddBoardDevice.LddNodePin pin, double maxCurrentAmp, ActorListener... actorListeners) {
-        log.debug("Adding LDD Light: {}, {}, {}, {}, {}, {}", pin.getDeviceName(), pin.getPin().getPinIndex(), id, label, pin.getMaxLddCurrent(), maxCurrentAmp);
-        PwmActor pwmActor = new PwmActor(id, label, pin, maxCurrentAmp, actorListeners);
-        pwmActors.add(pwmActor);
-        return pwmActor;
+    static LddActor addLddLight(List<LddActor> lddActors, String id, String label, LddBoardDevice.LddNodePin pin, double maxLightCurrent, ActorListener... actorListeners) {
+        log.debug("Adding LDD Light: {}, {}, {}, {}, {}, {}", pin.getDeviceName(), pin.getPin().getPinIndex(), id, label, pin.getMaxLddCurrent(), maxLightCurrent);
+        LddActor lddActor = new LddActor(id, label, pin, maxLightCurrent, actorListeners);
+        lddActors.add(lddActor);
+        return lddActor;
     }
 
     static void configureLouvers(NodeListener lst, WallSwitch wallSwitch, WallSwitch.Side side, LouversController... louversControllers) {

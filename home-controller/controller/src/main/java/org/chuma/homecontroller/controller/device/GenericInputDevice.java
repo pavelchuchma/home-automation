@@ -7,15 +7,19 @@ import org.chuma.homecontroller.base.node.NodePin;
  * Device with all six pins configured as input. The actually active pins are selected
  * by calling one of {@link #getIn1AndActivate()} methods.
  */
-public class InputDevice extends AbstractConnectedDevice {
+public class GenericInputDevice extends AbstractConnectedDevice {
+    private static final String[] PIN_NAMES = {"in1", "in2", "in3", "in4", "in5", "in6"};
     private int eventMask;
 
-    public InputDevice(String id, Node node, int connectorPosition) {
-        this(id, node, connectorPosition, new String[]{"in1", "in2", "in3", "in4", "in5", "in6"});
+    public GenericInputDevice(String id, Node node, int connectorNumber) {
+        this(id, node, connectorNumber, PIN_NAMES);
     }
 
-    public InputDevice(String id, Node node, int connectorPosition, String[] names) {
-        super(id, node, connectorPosition, names);
+    public GenericInputDevice(String id, Node node, int connectorNumber, String[] names) {
+        super(id, node, connectorNumber,false);
+
+        createPins(names);
+        finishInit();
     }
 
     /**
@@ -56,12 +60,12 @@ public class InputDevice extends AbstractConnectedDevice {
     }
 
     @Override
-    public int getOutputMasks() {
+    public int getOutputMask() {
         return 0;
     }
 
     @Override
-    public int getInitialOutputValues() {
-        return getOutputMasks();
+    protected byte getDevicePinOutputMask() {
+        return 0;
     }
 }

@@ -6,20 +6,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.chuma.homecontroller.base.node.NodePin;
+import org.chuma.homecontroller.base.node.OutputNodePin;
 import org.chuma.homecontroller.base.packet.Packet;
 
 public abstract class AbstractPinActor extends AbstractActor {
     protected static final int RETRY_COUNT = 5;
     static Logger log = LoggerFactory.getLogger(AbstractPinActor.class.getName());
 
-    NodePin outputPin;
+    OutputNodePin outputPin;
 
-    public AbstractPinActor(String id, String label, NodePin outputPin, ActorListener... actorListeners) {
+    public AbstractPinActor(String id, String label, OutputNodePin outputPin, ActorListener... actorListeners) {
         super(id, label, actorListeners);
         this.outputPin = outputPin;
     }
 
-    public static boolean setPinValueImpl(NodePin nodePin, int value, int retryCount) {
+    public static boolean setPinValueImpl(OutputNodePin nodePin, int value, int retryCount) {
         if (value != 0 && value != 1) {
             throw new IllegalArgumentException(String.format("Cannot set value %d to pin %s. Pin value can be 0 or 1 only.", value, nodePin));
         }
@@ -57,7 +58,7 @@ public abstract class AbstractPinActor extends AbstractActor {
      * @param retryCount count of retries if no valid response is received
      * @return true if pin was set
      */
-    protected boolean setPinValue(NodePin nodePin, int value, int retryCount) {
+    protected boolean setPinValue(OutputNodePin nodePin, int value, int retryCount) {
         return setPinValueImpl(nodePin, value, retryCount);
     }
 

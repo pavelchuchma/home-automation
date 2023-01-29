@@ -1,6 +1,6 @@
 package org.chuma.homecontroller.controller.controller;
 
-import org.chuma.homecontroller.base.node.NodePin;
+import org.chuma.homecontroller.base.node.OutputNodePin;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
 
 public class ValveControllerImpl implements ValveController {
@@ -10,7 +10,7 @@ public class ValveControllerImpl implements ValveController {
         impl = new LouversControllerImpl(id, name, upActor, downActor, downPositionMs, 0);
     }
 
-    public ValveControllerImpl(String id, String name, NodePin relayUp, NodePin relayDown, int downPositionMs) {
+    public ValveControllerImpl(String id, String name, OutputNodePin relayUp, OutputNodePin relayDown, int downPositionMs) {
         impl = new LouversControllerImpl(id, name, relayUp, relayDown, downPositionMs, 0);
     }
 

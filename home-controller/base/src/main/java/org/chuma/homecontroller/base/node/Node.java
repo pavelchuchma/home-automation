@@ -104,15 +104,15 @@ public class Node implements PacketReceivedListener {
                         " it is already used by %s", device, device.getConnectorNumber(), d), "ConnectorAlreadyUsed");
             }
         }
-        if ((device.getEventMask() & device.getOutputMasks()) != 0) {
+        if ((device.getEventMask() & device.getOutputMask()) != 0) {
             throw new NodeConfigurationException(String.format("Event and output masks of device %s are not disjunctive: %s vs. %s",
-                    device, intAsBinaryString(device.getEventMask()), intAsBinaryString(device.getOutputMasks())), "DeviceEventOutputClash");
+                    device, intAsBinaryString(device.getEventMask()), intAsBinaryString(device.getOutputMask())), "DeviceEventOutputClash");
         }
 
         validatePortMask(device, ConnectedDevice::getEventMask, "event", ConnectedDevice::getEventMask, "event", "ConflictingEventMask");
-        validatePortMask(device, ConnectedDevice::getOutputMasks, "output", ConnectedDevice::getOutputMasks, "output", "ConflictingOutputMask");
-        validatePortMask(device, ConnectedDevice::getEventMask, "event", ConnectedDevice::getOutputMasks, "output", "DeviceEventMaskConflictsExistingOutputMasks");
-        validatePortMask(device, ConnectedDevice::getOutputMasks, "output", ConnectedDevice::getEventMask, "event", "DeviceOutputMaskConflictsExistingEventMasks");
+        validatePortMask(device, ConnectedDevice::getOutputMask, "output", ConnectedDevice::getOutputMask, "output", "ConflictingOutputMask");
+        validatePortMask(device, ConnectedDevice::getEventMask, "event", ConnectedDevice::getOutputMask, "output", "DeviceEventMaskConflictsExistingOutputMasks");
+        validatePortMask(device, ConnectedDevice::getOutputMask, "output", ConnectedDevice::getEventMask, "event", "DeviceOutputMaskConflictsExistingEventMasks");
 
         devices.add(device);
     }
@@ -436,7 +436,7 @@ public class Node implements PacketReceivedListener {
     public void initialize() {
         log.info("Initialization of node: {} started", this);
 
-        int aggregatedOutputMask = aggregatePortMask(ConnectedDevice::getOutputMasks);
+        int aggregatedOutputMask = aggregatePortMask(ConnectedDevice::getOutputMask);
         int aggregatedEventMask = aggregatePortMask(ConnectedDevice::getEventMask);
         int aggregatedInitialOutputValues = aggregatePortMask(ConnectedDevice::getInitialOutputValues);
         CpuFrequency reqFrequency = CpuFrequency.unknown;

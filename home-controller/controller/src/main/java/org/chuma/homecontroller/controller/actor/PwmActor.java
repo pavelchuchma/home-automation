@@ -7,81 +7,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-import static org.chuma.homecontroller.base.packet.Packet.MAX_PWM_VALUE;
 
 import org.chuma.homecontroller.base.node.NodePin;
+import org.chuma.homecontroller.base.node.PwmOutputNodePin;
 import org.chuma.homecontroller.base.packet.Packet;
-import org.chuma.homecontroller.controller.device.LddBoardDevice;
 
-public class PwmActor extends AbstractPinActor implements IOnOffActor {
+
+public class PwmActor extends AbstractActor implements IOnOffActor {
     static Logger log = LoggerFactory.getLogger(PwmActor.class.getName());
 
-    final int maxPwmValue;
+    private final PwmOutputNodePin pwmOutputNodePin;
     boolean initializedPwmValue = false;
     int currentPwmValue = 0;
     double currentValue = 0;
 
-    public PwmActor(String name, String label, LddBoardDevice.LddNodePin outputPin, double maxCurrentAmp, ActorListener... actorListeners) {
-        super(name, label, outputPin, actorListeners);
-        double maxLoad = maxCurrentAmp / outputPin.getMaxLddCurrent();
-        Validate.inclusiveBetween(0, 1, maxLoad,
-                String.format("Invalid maxLoad value: %s. Bound output %s is not enough for %.2f A",
-                        maxLoad, outputPin.getDeviceName(), maxCurrentAmp));
-
-        this.maxPwmValue = (int) (MAX_PWM_VALUE * maxLoad);
-    }
-
-    @Override
-    public synchronized boolean setValue(double newValue, Object actionData) {
-        Validate.inclusiveBetween(0, 1, newValue);
-
-        int newPwmValue = (int) (newValue * maxPwmValue);
-        if (newValue > 0 && newPwmValue == 0) {
-            // nonzero percent -> set pwm at least to 1
-            newPwmValue = 1;
-        }
-
-        if ((newPwmValue == currentPwmValue && initializedPwmValue) || setPwmValue(outputPin, newPwmValue)) {
-            currentValue = newValue;
-            callListenersAndSetActionData(actionData);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isOn() {
-        return currentPwmValue > 0;
-    }
-
-    public boolean increasePwm(double delta, Object actionData) {
-        double val = max(min(getValue() + delta, 1), 0);
-        return setValue(val, actionData);
-    }
-
-    public boolean decreasePwm(double delta, Object actionData) {
-        double val = min(max(getValue() - delta, 0), 1);
-        return setValue(val, actionData);
-    }
-
-    @Override
-    public boolean switchOn(double value, Object actionData) {
-        return setValue(value, actionData);
-    }
-
-    @Override
-    public boolean switchOff(Object actionData) {
-        return setValue(0, actionData);
-    }
-
-    private boolean setPwmValue(NodePin nodePin, int pwmValue) {
-        Validate.inclusiveBetween(0, maxPwmValue, pwmValue,
-                String.format("Invalid PWM value: %d. It must be <= %d", pwmValue, maxPwmValue));
-        if (setPinPwmValueImpl(nodePin, pwmValue, AbstractPinActor.RETRY_COUNT)) {
-            currentPwmValue = pwmValue;
-            initializedPwmValue = true;
-            return true;
-        }
-        return false;
+    public PwmActor(String name, String label, PwmOutputNodePin pwmOutputNodePin, ActorListener... actorListeners) {
+        super(name, label, actorListeners);
+        this.pwmOutputNodePin = pwmOutputNodePin;
     }
 
     public static boolean setPinPwmValueImpl(NodePin nodePin, int pwmValue, int retryCount) {
@@ -110,8 +52,57 @@ public class PwmActor extends AbstractPinActor implements IOnOffActor {
         return false;
     }
 
-    public int getMaxPwmValue() {
-        return maxPwmValue;
+    @Override
+    public synchronized boolean setValue(double newValue, Object actionData) {
+        Validate.inclusiveBetween(0, 1, newValue);
+
+        int newPwmValue = (int)(newValue * pwmOutputNodePin.getMaxPwmValue());
+        if (newValue > 0 && newPwmValue == 0) {
+            // nonzero percent -> set pwm at least to 1
+            newPwmValue = 1;
+        }
+
+        if ((newPwmValue == currentPwmValue && initializedPwmValue) || setPwmValue(pwmOutputNodePin, newPwmValue)) {
+            currentValue = newValue;
+            callListenersAndSetActionData(actionData);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isOn() {
+        return currentPwmValue > 0;
+    }
+
+    public void increasePwm(double delta, Object actionData) {
+        double val = max(min(getValue() + delta, 1), 0);
+        setValue(val, actionData);
+    }
+
+    public void decreasePwm(double delta, Object actionData) {
+        double val = min(max(getValue() - delta, 0), 1);
+        setValue(val, actionData);
+    }
+
+    @Override
+    public boolean switchOn(double value, Object actionData) {
+        return setValue(value, actionData);
+    }
+
+    @Override
+    public boolean switchOff(Object actionData) {
+        return setValue(0, actionData);
+    }
+
+    private boolean setPwmValue(PwmOutputNodePin nodePin, int pwmValue) {
+        Validate.inclusiveBetween(0, pwmOutputNodePin.getMaxPwmValue(), pwmValue,
+                String.format("Invalid PWM value: %d. It must be <= %d", pwmValue, pwmOutputNodePin.getMaxPwmValue()));
+        if (setPinPwmValueImpl(nodePin, pwmValue, AbstractPinActor.RETRY_COUNT)) {
+            currentPwmValue = pwmValue;
+            initializedPwmValue = true;
+            return true;
+        }
+        return false;
     }
 
     public int getCurrentPwmValue() {
@@ -123,15 +114,8 @@ public class PwmActor extends AbstractPinActor implements IOnOffActor {
         return currentValue;
     }
 
-    public double getOutputCurrent() {
-        return (double) currentPwmValue / MAX_PWM_VALUE * getLddOutput().getMaxLddCurrent();
-    }
 
-    public double getMaxOutputCurrent() {
-        return (double) maxPwmValue / MAX_PWM_VALUE * getLddOutput().getMaxLddCurrent();
-    }
-
-    public LddBoardDevice.LddNodePin getLddOutput() {
-        return (LddBoardDevice.LddNodePin) outputPin;
+    public PwmOutputNodePin getPwmOutputNodePin() {
+        return pwmOutputNodePin;
     }
 }

@@ -6,7 +6,7 @@ import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.chuma.homecontroller.base.node.NodePin;
+import org.chuma.homecontroller.base.node.OutputNodePin;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
 import org.chuma.homecontroller.controller.actor.OnOffActor;
 
@@ -25,9 +25,9 @@ public class LouversControllerImpl implements LouversController {
         init(id, name, upActor, downActor, downPositionMs, maxOffsetMs);
     }
 
-    public LouversControllerImpl(String id, String name, NodePin relayUp, NodePin relayDown, int downPositionMs, int maxOffsetMs) {
-        IOnOffActor upActor = new OnOffActor(name + " Up", "LABEL", relayUp, 0, 1);
-        IOnOffActor downActor = new OnOffActor(name + " Down", "LABEL", relayDown, 0, 1);
+    public LouversControllerImpl(String id, String name, OutputNodePin relayUp, OutputNodePin relayDown, int downPositionMs, int maxOffsetMs) {
+        IOnOffActor upActor = new OnOffActor(name + " Up", "LABEL", relayUp);
+        IOnOffActor downActor = new OnOffActor(name + " Down", "LABEL", relayDown);
 
         init(id, name, upActor, downActor, downPositionMs, maxOffsetMs);
     }
@@ -37,7 +37,7 @@ public class LouversControllerImpl implements LouversController {
         this.name = name;
         this.upActor = upActor;
         this.downActor = downActor;
-        louversPosition = new LouversPosition(downPositionMs, maxOffsetMs, (int) (downPositionMs * UP_POSITION_RESERVE));
+        louversPosition = new LouversPosition(downPositionMs, maxOffsetMs, (int)(downPositionMs * UP_POSITION_RESERVE));
     }
 
     @Override
@@ -91,8 +91,8 @@ public class LouversControllerImpl implements LouversController {
         Validate.inclusiveBetween(0d, 1d, position);
         Validate.inclusiveBetween(0d, 1d, offset);
 
-        int desiredPositionMs = (int) (position * louversPosition.position.maxPositionMs);
-        int desiredOffsetMs = (int) (offset * louversPosition.offset.maxPositionMs);
+        int desiredPositionMs = (int)(position * louversPosition.position.maxPositionMs);
+        int desiredOffsetMs = (int)(offset * louversPosition.offset.maxPositionMs);
         log.debug("setPosition to: {} ms, offset: {} ms", desiredPositionMs, desiredOffsetMs);
         final Object aData = new Object();
         try {

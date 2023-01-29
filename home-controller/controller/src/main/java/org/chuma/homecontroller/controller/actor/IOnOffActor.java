@@ -2,7 +2,7 @@ package org.chuma.homecontroller.controller.actor;
 
 public interface IOnOffActor extends Actor, IReadableOnOff {
     default boolean switchOn(Object actionData) {
-        return switchOn(1.0, actionData);
+        return switchOn(1d, actionData);
     }
 
     /**

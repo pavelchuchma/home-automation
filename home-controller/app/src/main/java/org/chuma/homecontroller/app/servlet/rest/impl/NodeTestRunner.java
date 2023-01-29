@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.Pin;
-import org.chuma.homecontroller.controller.device.OutputDevice;
+import org.chuma.homecontroller.controller.device.GenericOutputDevice;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
 
 public class NodeTestRunner extends Thread {
@@ -96,10 +96,10 @@ public class NodeTestRunner extends Thread {
     }
 
     private Pin[] getPins() {
-        final OutputDevice[] devs = new OutputDevice[]{
-                new OutputDevice("TestOutputDevice Conn1", node, 1),
-                new OutputDevice("TestOutputDevice Conn2", node, 2),
-                new OutputDevice("TestOutputDevice Conn3", node, 3)
+        final GenericOutputDevice[] devs = new GenericOutputDevice[]{
+                new GenericOutputDevice("TestOutputDevice Conn1", node, 1, false),
+                new GenericOutputDevice("TestOutputDevice Conn2", node, 2, false),
+                new GenericOutputDevice("TestOutputDevice Conn3", node, 3, false)
         };
 
         final Pin[][] devPins = new Pin[3][];
@@ -116,7 +116,7 @@ public class NodeTestRunner extends Thread {
         return res.toArray(new Pin[0]);
     }
 
-    Pin[] getOutputDevicePins(OutputDevice dev) {
+    Pin[] getOutputDevicePins(GenericOutputDevice dev) {
         return new Pin[]{
                 dev.getOut5().getPin(),
                 dev.getOut3().getPin(),

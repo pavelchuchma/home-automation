@@ -34,10 +34,12 @@ public interface ConnectedDevice {
      * <p>
      * The mask consists of 4x8 bits for ports A-D, where bits 0xFF represent port A and 0xFF000000 represent port D
      */
-    int getOutputMasks();
+    int getOutputMask();
 
     /**
      * Initial values for outputs.
+     *
+     * The mask consists of 4x8 bits for ports A-D, where bits 0xFF represent port A and 0xFF000000 represent port D
      */
     int getInitialOutputValues();
 }

@@ -107,7 +107,7 @@ public class NodeOfflineTest {
         }
 
         @Override
-        public int getOutputMasks() {
+        public int getOutputMask() {
             return outputMask;
         }
 

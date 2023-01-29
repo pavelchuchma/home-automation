@@ -13,7 +13,7 @@ import org.chuma.homecontroller.base.packet.PacketUartIO;
 import org.chuma.homecontroller.base.packet.PacketUartIOException;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.Action;
-import org.chuma.homecontroller.controller.device.InputDevice;
+import org.chuma.homecontroller.controller.device.GenericInputDevice;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 import org.chuma.homecontroller.controller.nodeinfo.NodeListener;
 
@@ -602,7 +602,7 @@ public class NodeTest {
         NodeListener lst = nodeInfoRegistry.getNodeListener();
 
         Node pirNodeA = nodeInfoRegistry.createNode(7, "PirNodeA");
-        InputDevice pirA1Prizemi = new InputDevice("PirA1Prizemi", pirNodeA, 3);
+        GenericInputDevice pirA1Prizemi = new GenericInputDevice("PirA1Prizemi", pirNodeA, 3);
         lst.addActionBinding(new ActionBinding(pirA1Prizemi.getIn5AndActivate(), (Action) null, null));
 
         pirNodeA.initialize();

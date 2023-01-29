@@ -2,17 +2,22 @@ package org.chuma.homecontroller.controller.device;
 
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.NodePin;
+import org.chuma.homecontroller.base.node.OutputNodePin;
 
 /**
  * Device consisting of four buttons (input) and two LEDs (lights, output).
  */
 public class WallSwitch extends AbstractConnectedDevice {
 
+    private static final String[] PIN_NAMES = new String[]{"btn1", "btn2", "btn3", "btn4", "greenLed", "redLed"};
     private SwitchIndicator redIndicator;
     private SwitchIndicator greenIndicator;
 
     public WallSwitch(String id, Node node, int connectorPosition) {
-        super(id, node, connectorPosition, new String[]{"btn1", "btn2", "btn3", "btn4", "greenLed", "redLed"});
+        super(id, node, connectorPosition, false);
+
+        createPins(PIN_NAMES);
+        finishInit();
     }
 
     public NodePin getLeftUpperButton() {
@@ -31,12 +36,12 @@ public class WallSwitch extends AbstractConnectedDevice {
         return pins[0];
     }
 
-    public NodePin getGreenLed() {
-        return pins[4];
+    public OutputNodePin getGreenLed() {
+        return (OutputNodePin)pins[4];
     }
 
-    public NodePin getRedLed() {
-        return pins[5];
+    public OutputNodePin getRedLed() {
+        return (OutputNodePin)pins[5];
     }
 
     public SwitchIndicator getGreenLedIndicator(final SwitchIndicator.Mode mode) {
@@ -58,19 +63,13 @@ public class WallSwitch extends AbstractConnectedDevice {
     }
 
     @Override
+    protected byte getDevicePinOutputMask() {
+        return 0b0011_0000;
+    }
+
+    @Override
     public int getEventMask() {
         return createMask(getLeftUpperButton(), getLeftBottomButton(), getRightUpperButton(), getRightBottomButton());
-    }
-
-    @Override
-    public int getOutputMasks() {
-        return createMask(getRedLed(), getGreenLed());
-    }
-
-    @Override
-    public int getInitialOutputValues() {
-        //TODO: initialize in accord with assigned indicators
-        return createMask(getGreenLed(), getRedLed());
     }
 
     public enum Side {

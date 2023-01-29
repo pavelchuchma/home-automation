@@ -3,18 +3,18 @@ package org.chuma.homecontroller.controller.actor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.chuma.homecontroller.base.node.NodePin;
+import org.chuma.homecontroller.base.node.OutputNodePin;
 
 public class OnOffActor extends AbstractPinActor implements IOnOffActor {
     static Logger log = LoggerFactory.getLogger(OnOffActor.class.getName());
 
-    int onValue;
+    final int onValue;
     int value;
 
-    public OnOffActor(String id, String label, NodePin output, int initValue, int onValue, ActorListener... actorListeners) {
+    public OnOffActor(String id, String label, OutputNodePin output, ActorListener... actorListeners) {
         super(id, label, output, actorListeners);
-        this.onValue = onValue;
-        this.value = initValue;
+        this.onValue = (output.isHighValueMeansOn()) ? 1 : 0;
+        this.value = (onValue ^ 1);
     }
 
     @Override

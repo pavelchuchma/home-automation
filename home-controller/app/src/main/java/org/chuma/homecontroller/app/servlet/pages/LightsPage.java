@@ -5,14 +5,14 @@ import java.util.Map;
 
 import static org.chuma.homecontroller.app.servlet.Servlet.currentValueFormatter;
 
-import org.chuma.homecontroller.controller.actor.PwmActor;
+import org.chuma.homecontroller.controller.actor.LddActor;
 
 public class LightsPage extends AbstractPage {
-    final List<PwmActor> pwmActors;
+    final List<LddActor> lddActors;
 
-    public LightsPage(List<PwmActor> pwmActors, Iterable<Page> links) {
+    public LightsPage(List<LddActor> lddActors, Iterable<Page> links) {
         super("/lights", "Světla", "Světla", "favicon.png", links);
-        this.pwmActors = pwmActors;
+        this.lddActors = lddActors;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class LightsPage extends AbstractPage {
     @Override
     public void appendContent(StringBuilder builder, Map<String, String[]> requestParameters) {
         builder.append("<br/><br/><table class='lightsTable'>");
-        for (PwmActor actor : pwmActors) {
+        for (LddActor actor : lddActors) {
             builder.append("<tr>");
             final String id = actor.getId();
             appendClickableRow(builder, id, "toggle", "onOff").append("<img src='img/onOff.png' alt='on/off' class='onOff'/>\n");

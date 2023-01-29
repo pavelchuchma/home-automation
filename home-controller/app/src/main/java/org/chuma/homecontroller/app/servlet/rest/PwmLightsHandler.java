@@ -5,60 +5,60 @@ import java.util.Map;
 
 import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
 import org.chuma.homecontroller.controller.actor.AbstractActor;
-import org.chuma.homecontroller.controller.actor.PwmActor;
+import org.chuma.homecontroller.controller.actor.LddActor;
 
-public class PwmLightsHandler extends AbstractRestHandler<PwmActor> {
-    public PwmLightsHandler(Iterable<PwmActor> actors) {
+public class PwmLightsHandler extends AbstractRestHandler<LddActor> {
+    public PwmLightsHandler(Iterable<LddActor> actors) {
         super("pwmLights", "pwmLights", actors, AbstractActor::getId);
     }
 
     @Override
-    void writeJsonItemValues(JsonWriter jw, PwmActor actor, HttpServletRequest request) {
+    void writeJsonItemValues(JsonWriter jw, LddActor actor, HttpServletRequest request) {
         jw.addAttribute("name", actor.getLabel());
         jw.addAttribute("val", actor.getValue());
         jw.addAttribute("pwmVal", actor.getCurrentPwmValue());
-        jw.addAttribute("maxPwmVal", actor.getMaxPwmValue());
+        jw.addAttribute("maxPwmVal", actor.getLddOutput().getMaxPwmValue());
         jw.addAttribute("curr", actor.getOutputCurrent());
     }
 
     @Override
-    void processAction(PwmActor pwmActor, Map<String, String[]> requestParameters) {
+    void processAction(LddActor lddActor, Map<String, String[]> requestParameters) {
         String action = getStringParam(requestParameters, "action");
         if (action == null) {
             double val = getMandatoryDoubleParam(requestParameters, "val");
-            pwmActor.switchOn(val, null);
+            lddActor.switchOn(val, null);
         } else {
             switch (action) {
                 case "toggle":
-                    if (pwmActor.isOn()) {
-                        pwmActor.switchOff(null);
+                    if (lddActor.isOn()) {
+                        lddActor.switchOff(null);
                     } else {
-                        pwmActor.switchOn(0.75, null);
+                        lddActor.switchOn(0.75, null);
                     }
                     break;
                 case "plus":
-                    if (pwmActor.isOn()) {
-                        pwmActor.increasePwm(.15, null);
+                    if (lddActor.isOn()) {
+                        lddActor.increasePwm(.15, null);
                     } else {
-                        pwmActor.switchOn(0.66, null);
+                        lddActor.switchOn(0.66, null);
                     }
                     break;
                 case "minus":
-                    if (pwmActor.isOn()) {
-                        pwmActor.decreasePwm(.15, null);
+                    if (lddActor.isOn()) {
+                        lddActor.decreasePwm(.15, null);
                     } else {
-                        pwmActor.switchOn(0.01, null);
+                        lddActor.switchOn(0.01, null);
                     }
                     break;
                 case "full":
-                    pwmActor.switchOn(null);
+                    lddActor.switchOn(null);
                     break;
                 case "off":
-                    pwmActor.switchOff(null);
+                    lddActor.switchOff(null);
                     break;
                 case "increase":
                     double val = getMandatoryDoubleParam(requestParameters, "val");
-                    pwmActor.increasePwm(val, null);
+                    lddActor.increasePwm(val, null);
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown action '" + action + "'");
