@@ -25,7 +25,7 @@ public class Relay16BoardDevice {
     /**
      * @param i Relay index from in range <1;16>
      */
-    public OutputNodePin getPin(int i) {
+    public OutputNodePin getRelay(int i) {
         Validate.inclusiveBetween(1, 16, i);
         switch (i) {
             case 1:

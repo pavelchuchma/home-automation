@@ -8,20 +8,15 @@ import org.chuma.homecontroller.base.node.OutputNodePin;
 public class OnOffActor extends AbstractPinActor implements IOnOffActor {
     static Logger log = LoggerFactory.getLogger(OnOffActor.class.getName());
 
-    final int onValue;
-    int value;
+    private boolean isOn = false;
 
     public OnOffActor(String id, String label, OutputNodePin output, ActorListener... actorListeners) {
         super(id, label, output, actorListeners);
-        this.onValue = (output.isHighValueMeansOn()) ? 1 : 0;
-        this.value = (onValue ^ 1);
     }
 
-    @Override
-    public synchronized boolean setValue(double val, Object actionData) {
-        final int newValue = (val == 0) ? 0 : 1;
-        if (setPinValue(outputPin, newValue, RETRY_COUNT)) {
-            this.value = newValue;
+    private synchronized boolean setValue(boolean val, Object actionData) {
+        if (setPinValue(outputPin, val, RETRY_COUNT)) {
+            this.isOn = val;
             callListenersAndSetActionData(actionData);
             return true;
         }
@@ -29,21 +24,19 @@ public class OnOffActor extends AbstractPinActor implements IOnOffActor {
     }
 
     @Override
-    public double getValue() {
-        return value;
-    }
-
-    public boolean switchOn(double value, Object actionData) {
+    public boolean switchOn(Object actionData) {
         log.debug("switchOn: " + this);
-        return setValue(onValue, actionData);
+        return setValue(true, actionData);
     }
 
+    @Override
     public boolean switchOff(Object actionData) {
         log.debug("switchOff: " + this);
-        return setValue((onValue ^ 1) & 1, actionData);
+        return setValue(false, actionData);
     }
 
+    @Override
     public boolean isOn() {
-        return value == onValue;
+        return isOn;
     }
 }

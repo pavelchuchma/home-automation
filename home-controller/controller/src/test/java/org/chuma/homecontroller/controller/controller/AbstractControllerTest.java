@@ -31,7 +31,7 @@ public class AbstractControllerTest {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            ActionItem that = (ActionItem) o;
+            ActionItem that = (ActionItem)o;
 
             if (Math.abs(value - that.value) > tolerance) return false;
             if (!Objects.equals(actionName, that.actionName)) return false;
@@ -60,7 +60,7 @@ public class AbstractControllerTest {
         }
 
         @Override
-        public boolean switchOn(double value, Object actionData) {
+        public boolean switchOn(Object actionData) {
             active = true;
             this.actionData = actionData;
             switchOnTime = System.currentTimeMillis();
@@ -74,7 +74,7 @@ public class AbstractControllerTest {
             this.actionData = actionData;
 
             long duration = (switchOnTime == 0) ? 0 : System.currentTimeMillis() - switchOnTime;
-            actions.add(new ActionItem(this, "off", (int) duration));
+            actions.add(new ActionItem(this, "off", (int)duration));
 
             switchOnTime = 0;
             return !broken;
@@ -96,11 +96,6 @@ public class AbstractControllerTest {
         }
 
         @Override
-        public boolean setValue(double val, Object actionData) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
         public Object getActionData() {
             return actionData;
         }
@@ -108,11 +103,6 @@ public class AbstractControllerTest {
         @Override
         public void setActionData(Object actionData) {
             this.actionData = actionData;
-        }
-
-        @Override
-        public double getValue() {
-            throw new UnsupportedOperationException();
         }
 
         @Override

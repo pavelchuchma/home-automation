@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.controller.ActionBinding;
+import org.chuma.homecontroller.controller.action.ContinuousValueSwitchOnSensorAction;
 import org.chuma.homecontroller.controller.action.SwitchOffAction;
 import org.chuma.homecontroller.controller.action.SwitchOffSensorAction;
 import org.chuma.homecontroller.controller.action.SwitchOnSensorAction;
@@ -48,7 +49,7 @@ public class PiPeConfigurator extends AbstractConfigurator {
         // Zvonek
         OnOffActor zvonekActor = new OnOffActor("zvonek", "Zvonek", rele51.getRelay4(),
                 switchCSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), switchCSw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON));
-        SwitchOnSensorAction zvonekAction = new SwitchOnSensorAction(zvonekActor, 5, 1.0);
+        SwitchOnSensorAction zvonekAction = new SwitchOnSensorAction(zvonekActor, 5);
         SwitchOffAction zvonekStopAction = new SwitchOffAction(zvonekActor);
         lst.addActionBinding(new ActionBinding(switchCSw.getRightUpperButton(), zvonekAction, null));
         lst.addActionBinding(new ActionBinding(switchCSw.getRightBottomButton(), zvonekStopAction, null));
@@ -74,7 +75,7 @@ public class PiPeConfigurator extends AbstractConfigurator {
         // PIR
         GenericInputDevice pirDevice = new GenericInputDevice("pirDevice", pirSensors, 3);
         setupPir(lst, pirDevice.getIn1AndActivate(), "pirZadHVch", "Zadveri hore vchod",
-                new SwitchOnSensorAction(vratnice2PwmActor, 600, 0.05), new SwitchOffSensorAction(vratnice2PwmActor, 10));
+                new ContinuousValueSwitchOnSensorAction(vratnice2PwmActor, 600, 0.05), new SwitchOffSensorAction(vratnice2PwmActor, 10));
 
         // Louvers
         LouversController zaluzieVratnice;

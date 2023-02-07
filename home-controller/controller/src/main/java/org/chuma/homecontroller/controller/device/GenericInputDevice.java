@@ -23,7 +23,7 @@ public class GenericInputDevice extends AbstractConnectedDevice {
     }
 
     /**
-     * Gets input pin and adds returned pin to event mask
+     * Gets input pin and adds returned pin to the event mask
      */
     public NodePin getIn1AndActivate() {
         return getPinAndUpdateEventMask(0);

@@ -2,15 +2,15 @@ package org.chuma.homecontroller.controller.action;
 
 import org.chuma.homecontroller.controller.actor.Actor;
 
-public abstract class AbstractAction implements Action {
-    protected Actor actor;
+public abstract class AbstractAction<A extends Actor> implements Action {
+    protected final A actor;
 
-    public AbstractAction(Actor actor) {
+    public AbstractAction(A actor) {
         this.actor = actor;
     }
 
     @Override
-    public Actor getActor() {
+    public A getActor() {
         return actor;
     }
 

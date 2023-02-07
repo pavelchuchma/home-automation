@@ -13,7 +13,7 @@ import org.chuma.homecontroller.base.node.PwmOutputNodePin;
 import org.chuma.homecontroller.base.packet.Packet;
 
 
-public class PwmActor extends AbstractActor implements IOnOffActor {
+public class PwmActor extends AbstractActor implements IOnOffActor, IContinuousValueActor {
     static Logger log = LoggerFactory.getLogger(PwmActor.class.getName());
 
     private final PwmOutputNodePin pwmOutputNodePin;
@@ -87,6 +87,11 @@ public class PwmActor extends AbstractActor implements IOnOffActor {
     @Override
     public boolean switchOn(double value, Object actionData) {
         return setValue(value, actionData);
+    }
+
+    @Override
+    public boolean switchOn(Object actionData) {
+        throw new IllegalStateException("Use switchOn(double value, Object actionData)");
     }
 
     @Override

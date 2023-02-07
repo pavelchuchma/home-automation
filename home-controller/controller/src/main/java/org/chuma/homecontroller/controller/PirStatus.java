@@ -76,22 +76,12 @@ public class PirStatus {
         }
 
         @Override
-        public boolean setValue(double val, Object actionData) {
-            return true;
-        }
-
-        @Override
         public Object getActionData() {
             return null;
         }
 
         @Override
         public void setActionData(Object actionData) {
-        }
-
-        @Override
-        public double getValue() {
-            return 0;
         }
 
         @Override

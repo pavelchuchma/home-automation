@@ -4,13 +4,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.event.Level;
+import static org.chuma.homecontroller.base.packet.simulation.SimulatedPacketUartIO.PORT_ADDRESS;
+import static org.chuma.homecontroller.base.packet.simulation.SimulatedPacketUartIO.TRIS_ADDRESS;
 
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.Pic;
 import org.chuma.homecontroller.base.node.Pin;
-
-import static org.chuma.homecontroller.base.packet.simulation.SimulatedPacketUartIO.PORT_ADDRESS;
-import static org.chuma.homecontroller.base.packet.simulation.SimulatedPacketUartIO.TRIS_ADDRESS;
 
 /**
  * Implementation of simulated node. Handles memory read/write, PWM setting, event mask and heart beat.
@@ -90,7 +89,7 @@ public class SimulatedNode {
 
     /**
      * Check if address represents known port.
-     * 
+     *
      * @return port (0 == A) or -1 if none
      */
     private int isPortAddress(int address, int[] knownAddresses) {
@@ -105,7 +104,7 @@ public class SimulatedNode {
     /**
      * Set input pin value.
      *
-     * @param pin pin to set
+     * @param pin   pin to set
      * @param value value to set (0, 1) or toggle (-1)
      */
     public void setInputPin(Pin pin, int value) {
@@ -212,6 +211,13 @@ public class SimulatedNode {
      */
     public int getManualPwm(int port, int pin) {
         return pwm[port][pin];
+    }
+
+    /**
+     * Get currently set PWM value for pin. Returns -1 if not in manual PWM mode.
+     */
+    public int getManualPwm(Pin pin) {
+        return pwm[pin.ordinal() / 8][pin.ordinal() % 8];
     }
 
     public void setHeartBeatPeriod(int period) {

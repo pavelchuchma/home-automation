@@ -18,33 +18,27 @@ public class HvacActor extends AbstractActor implements IOnOffActor {
     }
 
     @Override
-    public boolean switchOn(double value, Object actionData) {
-        return setValue(1, actionData);
+    public boolean switchOn(Object actionData) {
+        return setValue(true, actionData);
     }
 
     @Override
     public boolean switchOff(Object actionData) {
-        return setValue(0, actionData);
+        return setValue(false, actionData);
     }
 
-    @Override
-    public boolean setValue(double val, Object actionData) {
+    private boolean setValue(boolean switchOn, Object actionData) {
         if (hvacDevice == null) {
             return false;
         }
         int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
         if (currentMonth >= 6 && currentMonth <= 9) {
-            hvacDevice.set(val == 1, OperatingMode.COOL, FanSpeed.SPEED_1, 25, false, false);
+            hvacDevice.set(switchOn, OperatingMode.COOL, FanSpeed.SPEED_1, 25, false, false);
         } else {
-            hvacDevice.set(val == 1, OperatingMode.HEAT, FanSpeed.SPEED_1, 23, false, false);
+            hvacDevice.set(switchOn, OperatingMode.HEAT, FanSpeed.SPEED_1, 23, false, false);
         }
         callListenersAndSetActionData(actionData);
         return true;
-    }
-
-    @Override
-    public double getValue() {
-        return (isOn()) ? 1 : 0;
     }
 
     @Override

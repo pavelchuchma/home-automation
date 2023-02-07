@@ -12,15 +12,11 @@ public class VoidOnOffActor extends OnOffActor {
     static Node fakeNode = new Node(-1, "fakeNode", new PacketUartIOMock());
 
     public VoidOnOffActor(String id, ActorListener... actorListeners) {
-        this(id, true, actorListeners);
-    }
-
-    public VoidOnOffActor(String id, boolean highValueMeansOn, ActorListener... actorListeners) {
-        super(id, "test_" + id, new OutputNodePin("fake" + id, "fakePin", fakeNode, Pin.pinA0, highValueMeansOn), actorListeners);
+        super(id, "void" + id, new OutputNodePin("void" + id, "fakePin", fakeNode, Pin.pinA0, true), actorListeners);
     }
 
     @Override
-    protected boolean setPinValue(OutputNodePin nodePin, int value, int retryCount) {
+    protected boolean setPinValue(OutputNodePin nodePin, boolean value, int retryCount) {
         return true;
     }
 }

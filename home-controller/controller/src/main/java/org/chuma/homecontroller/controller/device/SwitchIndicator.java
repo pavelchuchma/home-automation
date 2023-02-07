@@ -17,7 +17,7 @@ public class SwitchIndicator implements ActorListener {
     final OutputNodePin pin;
     Mode mode;
     ArrayList<IReadableOnOff> sources = new ArrayList<>();
-    private int lastSetValue = -1;
+    private boolean lastSetValue;
 
     public SwitchIndicator(OutputNodePin pin, Mode mode) {
         this.pin = pin;
@@ -32,22 +32,21 @@ public class SwitchIndicator implements ActorListener {
             throw new IllegalArgumentException("Cannot call onAction() with unregistered source");
         }
 
-        boolean val = false;
+        boolean value = false;
         if (mode == Mode.SIGNAL_ALL_OFF) {
-            val = !isAnyOn();
+            value = !isAnyOn();
         } else if (mode == Mode.SIGNAL_ANY_ON) {
-            val = isAnyOn();
+            value = isAnyOn();
         }
 
-//        log.debug("  " + pin + " val: " + val + ", lastSetValue: " + lastSetValue);
+//        log.debug("  " + pin + " value: " + value + ", lastSetValue: " + lastSetValue);
         if (actionData instanceof SensorDimCounter && sources.size() == 1) {
-            val ^= (((SensorDimCounter)actionData).getCount() % 2 == 1);
+            value ^= (((SensorDimCounter)actionData).getCount() % 2 == 1);
         }
-        int resultValue = (val) ? 0 : 1;
-        if (resultValue != lastSetValue) {
+        if (value != lastSetValue) {
 //            log.debug("  setting " + pin + " to " + resultValue);
-            if (AbstractPinActor.setPinValueImpl(pin, resultValue, RETRY_COUNT)) {
-                lastSetValue = resultValue;
+            if (AbstractPinActor.setPinValueImpl(pin, value, RETRY_COUNT)) {
+                lastSetValue = value;
             }
         }
     }

@@ -36,8 +36,8 @@ import org.chuma.homecontroller.app.servlet.rest.WaterPumpHandler;
 import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.controller.ActionBinding;
-import org.chuma.homecontroller.controller.action.AbstractSensorAction;
 import org.chuma.homecontroller.controller.action.Action;
+import org.chuma.homecontroller.controller.action.ContinuousValueSwitchOnSensorAction;
 import org.chuma.homecontroller.controller.action.IndicatorAction;
 import org.chuma.homecontroller.controller.action.InvertAction;
 import org.chuma.homecontroller.controller.action.InvertActionWithTimer;
@@ -426,9 +426,9 @@ public class PiConfigurator extends AbstractConfigurator {
 
         configureLouvers(lst, koupelnaHoreSw2, WallSwitch.Side.LEFT, zaluzieKoupelna);
         lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightUpperButton(), null, new Action[]{
-                new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900, 1.0, AbstractSensorAction.Priority.LOW, durationInfra),
-                new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900, 1.0, AbstractSensorAction.Priority.LOW, durationInfra),
-                new SwitchOnSensorAction(hvacActor, 1800, 1.0, AbstractSensorAction.Priority.LOW, durationHvac)
+                new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900, durationInfra),
+                new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900, durationInfra),
+                new SwitchOnSensorAction(hvacActor, 1800, durationHvac)
         }));
         lst.addActionBinding(new ActionBinding(koupelnaHoreSw2.getRightBottomButton(), null, new Action[]{
                 new SwitchOffAction(zaricKoupelnaHore1Trubice, durationInfra),
@@ -439,8 +439,8 @@ public class PiConfigurator extends AbstractConfigurator {
         // koupelna u okna
         configureLouvers(lst, koupelnaHoreOknoSw, WallSwitch.Side.LEFT, zaluzieKoupelna);
         lst.addActionBinding(new ActionBinding(koupelnaHoreOknoSw.getRightUpperButton(), new Action[]{
-                new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900, 1.0),
-                new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900, 1.0)}, null));
+                new SwitchOnSensorAction(zaricKoupelnaHore1Trubice, 900),
+                new SwitchOnSensorAction(zaricKoupelnaHore2Trubice, 900)}, null));
         lst.addActionBinding(new ActionBinding(koupelnaHoreOknoSw.getRightBottomButton(), new Action[]{
                 new SwitchOffAction(zaricKoupelnaHore1Trubice), new SwitchOffAction(zaricKoupelnaHore2Trubice)}, null));
 
@@ -710,35 +710,35 @@ public class PiConfigurator extends AbstractConfigurator {
 
         // PIRs
         GenericInputDevice pirA1Prizemi = new GenericInputDevice("pirA1Prizemi", pirNodeA, 1);
-        setupPir(lst, pirA1Prizemi.getIn1AndActivate(), "pirPrdDv", "Pradelna dvere", new SwitchOnSensorAction(pradelna1PwmActor, 600, 0.8), new SwitchOffSensorAction(pradelna1PwmActor, 60));
-        setupPir(lst, pirA1Prizemi.getIn2AndActivate(), "pirPrdPr", "Pradelna pracka", new SwitchOnSensorAction(pradelna1PwmActor, 600, 0.8), new SwitchOffSensorAction(pradelna1PwmActor, 60));
+        setupPir(lst, pirA1Prizemi.getIn1AndActivate(), "pirPrdDv", "Pradelna dvere", new ContinuousValueSwitchOnSensorAction(pradelna1PwmActor, 600, 0.8), new SwitchOffSensorAction(pradelna1PwmActor, 60));
+        setupPir(lst, pirA1Prizemi.getIn2AndActivate(), "pirPrdPr", "Pradelna pracka", new ContinuousValueSwitchOnSensorAction(pradelna1PwmActor, 600, 0.8), new SwitchOffSensorAction(pradelna1PwmActor, 60));
         setupMagneticSensor(lst, pirA1Prizemi.getIn3AndActivate(), "pisD", "Pisoar Dole",
                 new Action[]{new SwitchOnSensorAction(pisoarDole, 3)},
                 new Action[]{new SwitchOnSensorAction(pisoarDole, 7)});
-        setupPir(lst, pirA1Prizemi.getIn4AndActivate(), "pirVchH", "Vchod hore", new SwitchOnSensorAction(vchodHorePwmActor, 600, 0.8, sunCondition), new SwitchOffSensorAction(vchodHorePwmActor, 60));
-        setupPir(lst, pirA1Prizemi.getIn5AndActivate(), "pirSch", "Schodiste", new SwitchOnSensorAction(schodyPwmActor, 600, 0.15, corridorDarkCondition), new SwitchOffSensorAction(schodyPwmActor, 30));
+        setupPir(lst, pirA1Prizemi.getIn4AndActivate(), "pirVchH", "Vchod hore", new ContinuousValueSwitchOnSensorAction(vchodHorePwmActor, 600, 0.8, sunCondition), new SwitchOffSensorAction(vchodHorePwmActor, 60));
+        setupPir(lst, pirA1Prizemi.getIn5AndActivate(), "pirSch", "Schodiste", new ContinuousValueSwitchOnSensorAction(schodyPwmActor, 600, 0.15, corridorDarkCondition), new SwitchOffSensorAction(schodyPwmActor, 30));
         setupMagneticSensor(lst, pirA1Prizemi.getIn6AndActivate(), "pisH", "Pisoar Hore",
                 new Action[]{new SwitchOnSensorAction(pisoarHore, 3)},
                 new Action[]{new SwitchOnSensorAction(pisoarHore, 7)});
         // A6:3 "zadveri venku - spinac puda"
 
         GenericInputDevice pirA2Patro = new GenericInputDevice("pirA2Patro", pirNodeA, 2);
-        setupPir(lst, pirA2Patro.getIn1AndActivate(), "pirChWc", "Chodba pred WC", new SwitchOnSensorAction(schodyPwmActor, 600, 0.15, corridorDarkCondition), new SwitchOffSensorAction(schodyPwmActor, 30));
-        setupPir(lst, pirA2Patro.getIn2AndActivate(), "pirCh", "Chodba", new SwitchOnSensorAction(schodyPwmActor, 600, 0.15, corridorDarkCondition), new SwitchOffSensorAction(schodyPwmActor, 30));
+        setupPir(lst, pirA2Patro.getIn1AndActivate(), "pirChWc", "Chodba pred WC", new ContinuousValueSwitchOnSensorAction(schodyPwmActor, 600, 0.15, corridorDarkCondition), new SwitchOffSensorAction(schodyPwmActor, 30));
+        setupPir(lst, pirA2Patro.getIn2AndActivate(), "pirCh", "Chodba", new ContinuousValueSwitchOnSensorAction(schodyPwmActor, 600, 0.15, corridorDarkCondition), new SwitchOffSensorAction(schodyPwmActor, 30));
         setupPir(lst, pirA2Patro.getIn3AndActivate(), "pirWc", "WC",
-                new Action[]{new SwitchOnSensorAction(wcPwmActor, 600, 1.0, sunCondition)},
+                new Action[]{new ContinuousValueSwitchOnSensorAction(wcPwmActor, 600, 1.0, sunCondition)},
                 new Action[]{new SwitchOffSensorAction(wcPwmActor, 60)});
-        setupPir(lst, pirA2Patro.getIn5AndActivate(), "pirZadHVch", "Zadveri hore vchod", new SwitchOnSensorAction(zadveriPwmActor, 600, 1.0, sunCondition), new SwitchOffSensorAction(zadveriPwmActor, 15));
-        setupPir(lst, pirA2Patro.getIn6AndActivate(), "pirZadHCh", "Zadveri hore chodba", new SwitchOnSensorAction(zadveriPwmActor, 600, 1.0, sunCondition), new SwitchOffSensorAction(zadveriPwmActor, 15));
+        setupPir(lst, pirA2Patro.getIn5AndActivate(), "pirZadHVch", "Zadveri hore vchod", new ContinuousValueSwitchOnSensorAction(zadveriPwmActor, 600, 1.0, sunCondition), new SwitchOffSensorAction(zadveriPwmActor, 15));
+        setupPir(lst, pirA2Patro.getIn6AndActivate(), "pirZadHCh", "Zadveri hore chodba", new ContinuousValueSwitchOnSensorAction(zadveriPwmActor, 600, 1.0, sunCondition), new SwitchOffSensorAction(zadveriPwmActor, 15));
         setupPir(lst, pirA2Patro.getIn4AndActivate(), "pirChMa", "Chodba nad Markem", (Action)null, null);
 
         GenericInputDevice pirA3Prizemi = new GenericInputDevice("pirA3Prizemi", pirNodeA, 3);
         setupPir(lst, pirA3Prizemi.getIn1AndActivate(), "pirJid", "Jidelna", (Action)null, null);
         setupPir(lst, pirA3Prizemi.getIn2AndActivate(), "pirObyv", "Obyvak", (Action)null, null);
-        setupPir(lst, pirA3Prizemi.getIn3AndActivate(), "pirChD", "Chodba dole", new SwitchOnSensorAction(chodbaDolePwmActor, 600, 1.0, sunCondition), new SwitchOffSensorAction(chodbaDolePwmActor, 15));
-        setupPir(lst, pirA3Prizemi.getIn4AndActivate(), "pirKoupD", "Koupelna dole", new SwitchOnSensorAction(koupelnaDolePwmActor, 600, 0.5, sunCondition), new SwitchOffSensorAction(koupelnaDolePwmActor, 60));
-        setupPir(lst, pirA3Prizemi.getIn5AndActivate(), "pirSpa", "Spajza", new SwitchOnSensorAction(spajzPwmActor, 600, 1.0), new SwitchOffSensorAction(spajzPwmActor, 20));
-        setupPir(lst, pirA3Prizemi.getIn6AndActivate(), "pirZadD", "Zadveri dole", new SwitchOnSensorAction(zadveriDolePwmActor, 600, 1.0, new SunCondition(-15, -30)), new SwitchOffSensorAction(zadveriDolePwmActor, 15));
+        setupPir(lst, pirA3Prizemi.getIn3AndActivate(), "pirChD", "Chodba dole", new ContinuousValueSwitchOnSensorAction(chodbaDolePwmActor, 600, 1.0, sunCondition), new SwitchOffSensorAction(chodbaDolePwmActor, 15));
+        setupPir(lst, pirA3Prizemi.getIn4AndActivate(), "pirKoupD", "Koupelna dole", new ContinuousValueSwitchOnSensorAction(koupelnaDolePwmActor, 600, 0.5, sunCondition), new SwitchOffSensorAction(koupelnaDolePwmActor, 60));
+        setupPir(lst, pirA3Prizemi.getIn5AndActivate(), "pirSpa", "Spajza", new ContinuousValueSwitchOnSensorAction(spajzPwmActor, 600, 1.0), new SwitchOffSensorAction(spajzPwmActor, 20));
+        setupPir(lst, pirA3Prizemi.getIn6AndActivate(), "pirZadD", "Zadveri dole", new ContinuousValueSwitchOnSensorAction(zadveriDolePwmActor, 600, 1.0, new SunCondition(-15, -30)), new SwitchOffSensorAction(zadveriDolePwmActor, 15));
 
         GenericInputDevice cidlaGaraz = new GenericInputDevice("cidlaGaraz", garazVzadu, 3);
         setupMagneticSensor(lst, cidlaGaraz.getIn1AndActivate(), "mgntGH", "Garaz hore", (Action)null, null);

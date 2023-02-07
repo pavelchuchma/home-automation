@@ -3,7 +3,7 @@ package org.chuma.homecontroller.controller.action;
 import org.chuma.homecontroller.controller.action.condition.ICondition;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
 
-public class SwitchOffAction extends AbstractAction {
+public class SwitchOffAction extends AbstractAction<IOnOffActor> {
     private final ICondition condition;
 
     public SwitchOffAction(IOnOffActor actor) {
@@ -22,7 +22,6 @@ public class SwitchOffAction extends AbstractAction {
             return;
         }
 
-        IOnOffActor actor = (IOnOffActor) getActor();
         if (actor.isOn()) {
             actor.switchOff(null);
         }

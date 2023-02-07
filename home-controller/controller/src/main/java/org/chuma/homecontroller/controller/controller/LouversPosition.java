@@ -12,12 +12,18 @@ public class LouversPosition {
         this.upReserve = upReserve;
     }
 
+    /**
+     * @return expected count of milliseconds to up position
+     */
     public int startUp() {
         long now = stopImpl();
         offset.startUp(now);
         return position.startUp(now) + upReserve;
     }
 
+    /**
+     * @return expected count of milliseconds to down position
+     */
     public int startDown() {
         long now = stopImpl();
 
@@ -26,10 +32,14 @@ public class LouversPosition {
     }
 
     private long stopImpl() {
-        long now = System.currentTimeMillis();
+        long now = now();
         position.stop(now);
         offset.stop(now);
         return now;
+    }
+
+    private static long now() {
+        return System.currentTimeMillis();
     }
 
     public void stop() {
@@ -37,11 +47,11 @@ public class LouversPosition {
     }
 
     public int getPosition() {
-        return position.getPositionMs(System.currentTimeMillis());
+        return position.getPositionMs(now());
     }
 
     public int getOffset() {
-        return offset.getPositionMs(System.currentTimeMillis());
+        return offset.getPositionMs(now());
     }
 
     public boolean isDown() {

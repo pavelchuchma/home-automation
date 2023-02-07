@@ -1,8 +1,10 @@
 package org.chuma.homecontroller.controller.controller;
 
+/**
+ * Keeps an estimate of a slider position based on its time range and timing of calls of start/stop methods.
+ */
 class Position {
-
-    int maxPositionMs;
+    final int maxPositionMs;
     // current position. Negative means unknown, 0 means up, maxPositionMs means down
     int positionMs = 0;
     boolean positionIsKnown = false;
@@ -14,7 +16,6 @@ class Position {
     }
 
     /**
-     * @param currentTime
      * @return expected count of milliseconds to up position
      */
     int startUp(long currentTime) {
@@ -24,6 +25,9 @@ class Position {
         return (positionIsKnown) ? positionMs : Math.min(maxPositionMs + positionMs, maxPositionMs);
     }
 
+    /**
+     * @return expected count of milliseconds to down position
+     */
     int startDown(long currentTime) {
         stop(currentTime);
         activityStartTime = currentTime;
@@ -64,7 +68,6 @@ class Position {
     }
 
     /**
-     * @param currentTime
      * @return Negative means unknown, 0 means up, maxPositionMs means down
      */
     public int getPositionMs(long currentTime) {

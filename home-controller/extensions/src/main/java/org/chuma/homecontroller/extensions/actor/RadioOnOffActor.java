@@ -15,7 +15,7 @@ public class RadioOnOffActor implements IOnOffActor {
     }
 
     @Override
-    public boolean switchOn(double value, Object actionData) {
+    public boolean switchOn(Object actionData) {
         radio.start();
         return true;
     }
@@ -37,28 +37,16 @@ public class RadioOnOffActor implements IOnOffActor {
     }
 
     @Override
-    public boolean setValue(double val, Object actionData) {
-        return false;
-    }
-
-    @Override
     public Object getActionData() {
         return null;
     }
 
     @Override
     public void setActionData(Object actionData) {
-
-    }
-
-    @Override
-    public double getValue() {
-        return (radio.isPlaying() ? 1 : 0);
     }
 
     @Override
     public void callListenersAndSetActionData(Object actionData) {
-
     }
 
     @Override

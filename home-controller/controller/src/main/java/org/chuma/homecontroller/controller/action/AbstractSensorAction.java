@@ -3,7 +3,6 @@ package org.chuma.homecontroller.controller.action;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,31 +10,28 @@ import org.chuma.homecontroller.controller.action.condition.ICondition;
 import org.chuma.homecontroller.controller.action.condition.SensorDimCounter;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
 
-public class AbstractSensorAction extends AbstractAction {
+public class AbstractSensorAction<A extends IOnOffActor> extends AbstractAction<A> {
     public static final int BLINK_DELAY = 600;
     public static final int MAX_BLINK_DURATION = 10_000;
     static Logger log = LoggerFactory.getLogger(AbstractSensorAction.class.getName());
-    private final double switchOnValue;
+
     private final Priority priority;
     private final ICondition condition;
+    private final ExecutorService executor = Executors.newCachedThreadPool();
     int timeoutMs;
     boolean canSwitchOn;
-    private final ExecutorService executor = Executors.newCachedThreadPool();
 
-    protected AbstractSensorAction(IOnOffActor actor, int timeoutSec, boolean canSwitchOn, double switchOnValue, Priority priority, ICondition condition) {
+    public AbstractSensorAction(A actor, int timeoutSec, boolean canSwitchOn, Priority priority, ICondition condition) {
         super(actor);
-        Validate.inclusiveBetween(0,1, switchOnValue);
-
         this.priority = priority;
         this.condition = condition;
         this.timeoutMs = timeoutSec * 1000;
         this.canSwitchOn = canSwitchOn;
-        this.switchOnValue = switchOnValue;
     }
 
     private boolean canOverwriteState(IOnOffActor act) {
         return act.getActionData() instanceof ActionData
-                && ((ActionData) act.getActionData()).priority.ordinal() <= priority.ordinal();
+                && ((ActionData)act.getActionData()).priority.ordinal() <= priority.ordinal();
     }
 
     @Override
@@ -48,23 +44,20 @@ public class AbstractSensorAction extends AbstractAction {
                 return;
             }
         }
-
         // run body in extra thread because it can be blocking
         executor.execute(this::performImpl);
     }
 
     private void performImpl() {
+        log.debug("Performing actor: " + actor.toString());
         try {
-            IOnOffActor act = (IOnOffActor) getActor();
-            log.debug("Performing actor: " + act.toString());
             ActionData aData = new ActionData(priority);
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (act) {
-                if (act.isOn() && !canOverwriteState(act)) {
+            synchronized (actor) {
+                if (actor.isOn() && !canOverwriteState(actor)) {
                     log.debug("switched on, but by different action type -> do not touch anything");
                     return;
                 }
-                if (!act.isOn() && !canSwitchOn) {
+                if (!actor.isOn() && !canSwitchOn) {
                     log.debug("already switched off, nothing to do for canSwitchOn == false");
                     return;
                 }
@@ -73,41 +66,45 @@ public class AbstractSensorAction extends AbstractAction {
 
                 if (canSwitchOn) {
                     log.debug("switching on, setting my data");
-                    act.switchOn(switchOnValue, aData);
+                    switchOnImpl(aData);
                 } else {
                     log.debug("cannot switch on, setting my data only");
-                    act.setActionData(aData);
+                    actor.setActionData(aData);
                 }
 
                 if (timeoutMs > MAX_BLINK_DURATION) {
                     log.debug("Going to wait for {} ms", timeoutMs - MAX_BLINK_DURATION);
-                    act.wait(timeoutMs - MAX_BLINK_DURATION);
+                    actor.wait(timeoutMs - MAX_BLINK_DURATION);
                     log.debug("Woken up");
                 }
-                if (act.getActionData() != aData) {
+                if (actor.getActionData() != aData) {
                     log.debug("action data modified by other thread, leaving action");
                     return;
                 }
 
                 while (System.currentTimeMillis() < endTime) {
                     aData.incrementCount();
-                    act.callListenersAndSetActionData(aData);
+                    actor.callListenersAndSetActionData(aData);
                     long remains = endTime - System.currentTimeMillis();
                     if (remains > 0) {
-                        act.wait((remains < BLINK_DELAY) ? remains : BLINK_DELAY);
+                        actor.wait((remains < BLINK_DELAY) ? remains : BLINK_DELAY);
                     }
-                    if (act.getActionData() != aData) {
+                    if (actor.getActionData() != aData) {
                         // there was some external modification
                         return;
                     }
                 }
 
                 log.debug("nobody modified actor meanwhile -> can switch off");
-                act.switchOff(null);
+                actor.switchOff(null);
             }
         } catch (Exception e) {
             log.error("perform() method failed", e);
         }
+    }
+
+    protected void switchOnImpl(ActionData aData) {
+        actor.switchOn(aData);
     }
 
     public enum Priority {
