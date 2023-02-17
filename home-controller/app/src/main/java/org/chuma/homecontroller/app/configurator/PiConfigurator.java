@@ -41,6 +41,7 @@ import org.chuma.homecontroller.controller.action.ContinuousValueSwitchOnSensorA
 import org.chuma.homecontroller.controller.action.IndicatorAction;
 import org.chuma.homecontroller.controller.action.InvertAction;
 import org.chuma.homecontroller.controller.action.InvertActionWithTimer;
+import org.chuma.homecontroller.controller.action.Relay16TestLoopAction;
 import org.chuma.homecontroller.controller.action.SwitchAllOffWithMemory;
 import org.chuma.homecontroller.controller.action.SwitchOffAction;
 import org.chuma.homecontroller.controller.action.SwitchOffSensorAction;
@@ -62,6 +63,7 @@ import org.chuma.homecontroller.controller.controller.ValveControllerImpl;
 import org.chuma.homecontroller.controller.device.GenericInputDevice;
 import org.chuma.homecontroller.controller.device.GenericOutputDevice;
 import org.chuma.homecontroller.controller.device.LddBoardDevice;
+import org.chuma.homecontroller.controller.device.Relay16BoardDevice;
 import org.chuma.homecontroller.controller.device.RelayBoardDevice;
 import org.chuma.homecontroller.controller.device.SwitchIndicator;
 import org.chuma.homecontroller.controller.device.TriacBoardDevice;
@@ -126,6 +128,8 @@ public class PiConfigurator extends AbstractConfigurator {
         Node chodbaOkno = nodeInfoRegistry.createNode(39, "ChodbaOkno");
         Node switchTestNode50 = nodeInfoRegistry.createNode(50, "SwitchTestNode50");
         Node switchTestNode41 = nodeInfoRegistry.createNode(41, "SwitchTestNode41");
+        Node relay16testNode45 = nodeInfoRegistry.createNode(45, "Relay16testNode45");
+        Node relay16testNode46 = nodeInfoRegistry.createNode(46, "Relay16testNode46");
 
         WallSwitch chodbaOkno1Sw = new WallSwitch("chodbaOkno1Sw", chodbaOkno, 1);
         WallSwitch chodbaOkno2Sw = new WallSwitch("chodbaOkno2Sw", chodbaOkno, 2);
@@ -766,6 +770,9 @@ public class PiConfigurator extends AbstractConfigurator {
         lst.addActionBinding(new ActionBinding(testSw.getLeftUpperButton(), new SwitchOnAction(testingLeftOnOffActor), null));
         lst.addActionBinding(new ActionBinding(testSw.getLeftBottomButton(), new SwitchOffAction(testingLeftOnOffActor), null));
 
+        servletActions.add(new ServletAction("testRele16-45", "Rele16-45", new Relay16TestLoopAction( new Relay16BoardDevice("test45", relay16testNode45))));
+        servletActions.add(new ServletAction("testRele16-46", "Rele16-46", new Relay16TestLoopAction( new Relay16BoardDevice("test46", relay16testNode46))));
+
         List<WebSocketHandler> wsHandlers = new ArrayList<>();
         // page handlers
         Page floorsPage = new StaticPage("/", "/floorPlan.html", "Mapa");
@@ -814,4 +821,5 @@ public class PiConfigurator extends AbstractConfigurator {
         }
         return hvacDevice;
     }
+
 }
