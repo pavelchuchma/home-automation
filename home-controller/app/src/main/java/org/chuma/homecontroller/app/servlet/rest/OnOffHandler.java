@@ -16,7 +16,7 @@ public class OnOffHandler extends AbstractRestHandler<IOnOffActor> {
     @Override
     void writeJsonItemValues(JsonWriter jw, IOnOffActor actor, HttpServletRequest request) {
         jw.addAttribute("name", actor.getLabel());
-        jw.addAttribute("isOn", actor.isOn());
+        jw.addAttribute("val", (actor.isOn()) ? 1 : 0);
     }
 
     @Override

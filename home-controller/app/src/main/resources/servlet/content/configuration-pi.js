@@ -143,33 +143,36 @@ function getComponents() {
         new HvacItem('hvac', 0, 0, 0),
         new WaterPumpItem('wpump', 0, 0, 0),
         new InverterItem('inverter', 0, 0, 0),
+
+        new LightItem('svSklepLevy', 510, 500,0),
+        new LightItem('svSklepPravy', 565, 500,0),
     ].concat(getLouversComponents(), getPwmLightComponents(), getSensorComponents());
 }
 
 function getToolbarItems() {
     return [
         new ToolBarItem('lightToggle', function (x, y, ctx) {
-            PwmLightItem.drawIcon(x - 10, y, 0, ctx);
-            PwmLightItem.drawIcon(x + 10, y, .75, ctx);
-        }, [PwmLightItem.name, StairsItem.name], 'toggle'),
+            PwmLightItem.drawLightIcon(x - 10, y, 0, ctx);
+            PwmLightItem.drawLightIcon(x + 10, y, .75, ctx);
+        }, [PwmLightItem.name, LightItem.name, StairsItem.name], 'toggle'),
 
         new ToolBarItem('lightPlus', function (x, y, ctx) {
-            PwmLightItem.drawIcon(x, y, .66, ctx);
+            PwmLightItem.drawLightIcon(x, y, .66, ctx);
             drawLightToolSign(x, y, ctx, true);
-        }, [PwmLightItem.name, StairsItem.name], 'plus'),
+        }, [PwmLightItem.name, LightItem.name, StairsItem.name], 'plus'),
 
         new ToolBarItem('lightMinus', function (x, y, ctx) {
-            PwmLightItem.drawIcon(x, y, .25, ctx);
+            PwmLightItem.drawLightIcon(x, y, .25, ctx);
             drawLightToolSign(x, y, ctx, false);
-        }, [PwmLightItem.name, StairsItem.name], 'minus'),
+        }, [PwmLightItem.name, LightItem.name, StairsItem.name], 'minus'),
 
         new ToolBarItem('lightFull', function (x, y, ctx) {
-            PwmLightItem.drawIcon(x, y, 1, ctx);
-        }, [PwmLightItem.name, StairsItem.name], 'full'),
+            PwmLightItem.drawLightIcon(x, y, 1, ctx);
+        }, [PwmLightItem.name, LightItem.name, StairsItem.name], 'full'),
 
         new ToolBarItem('lightOff', function (x, y, ctx) {
-            PwmLightItem.drawIcon(x, y, 0, ctx);
-        }, [PwmLightItem.name, StairsItem.name], 'off'),
+            PwmLightItem.drawLightIcon(x, y, 0, ctx);
+        }, [PwmLightItem.name, LightItem.name, StairsItem.name], 'off'),
 
         new ToolBarItem('louversUp', function (x, y, ctx) {
             LouversItem.drawIcon(x, y, .3, 0, 'stopped', ctx, 50, 60)
