@@ -91,7 +91,7 @@ public class PwmActor extends AbstractActor implements IOnOffActor, IContinuousV
 
     @Override
     public boolean switchOn(Object actionData) {
-        throw new IllegalStateException("Use switchOn(double value, Object actionData)");
+        return setValue(1, actionData);
     }
 
     @Override
