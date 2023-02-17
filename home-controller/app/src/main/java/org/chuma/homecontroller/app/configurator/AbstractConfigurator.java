@@ -2,8 +2,6 @@ package org.chuma.homecontroller.app.configurator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -15,6 +13,7 @@ import org.chuma.homecontroller.app.servlet.simulation.SimulationPage;
 import org.chuma.homecontroller.app.servlet.simulation.SimulationWebSocketHandler;
 import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
 import org.chuma.homecontroller.base.node.NodePin;
+import org.chuma.homecontroller.base.node.OutputNodePin;
 import org.chuma.homecontroller.base.packet.IPacketUartIO;
 import org.chuma.homecontroller.base.packet.simulation.SimulatedPacketUartIO;
 import org.chuma.homecontroller.controller.ActionBinding;
@@ -26,8 +25,10 @@ import org.chuma.homecontroller.controller.action.SwitchOffAction;
 import org.chuma.homecontroller.controller.actor.ActorListener;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
 import org.chuma.homecontroller.controller.actor.LddActor;
+import org.chuma.homecontroller.controller.actor.OnOffActor;
 import org.chuma.homecontroller.controller.actor.PwmActor;
 import org.chuma.homecontroller.controller.controller.LouversController;
+import org.chuma.homecontroller.controller.controller.LouversControllerImpl;
 import org.chuma.homecontroller.controller.device.LddBoardDevice;
 import org.chuma.homecontroller.controller.device.SwitchIndicator;
 import org.chuma.homecontroller.controller.device.WallSwitch;
@@ -37,8 +38,11 @@ import org.chuma.homecontroller.controller.nodeinfo.NodeListener;
 
 public abstract class AbstractConfigurator {
     static Logger log = LoggerFactory.getLogger(AbstractConfigurator.class.getName());
-    protected NodeInfoRegistry nodeInfoRegistry;
-    protected List<PirStatus> pirStatusList = new ArrayList<>();
+    final protected NodeInfoRegistry nodeInfoRegistry;
+    final protected List<PirStatus> pirStatusList = new ArrayList<>();
+    final protected List<IOnOffActor> onOffActors = new ArrayList<>();
+    final protected List<LouversController> louversControllers = new ArrayList<>();
+    final protected List<LddActor> lddActors = new ArrayList<>();
     Servlet servlet;
 
     public AbstractConfigurator(NodeInfoRegistry nodeInfoRegistry) {
@@ -75,15 +79,9 @@ public abstract class AbstractConfigurator {
     }
 
     /**
-     * @param lddActors
-     * @param id
-     * @param label
-     * @param pin
-     * @param maxLightCurrent  Maximal current in Amperes for light
-     * @param actorListeners
-     * @return
+     * @param maxLightCurrent Maximal current in Amperes for light
      */
-    static LddActor addLddLight(List<LddActor> lddActors, String id, String label, LddBoardDevice.LddNodePin pin, double maxLightCurrent, ActorListener... actorListeners) {
+    protected LddActor addLddLight(String id, String label, LddBoardDevice.LddNodePin pin, double maxLightCurrent, ActorListener... actorListeners) {
         log.debug("Adding LDD Light: {}, {}, {}, {}, {}, {}", pin.getDeviceName(), pin.getPin().getPinIndex(), id, label, pin.getMaxLddCurrent(), maxLightCurrent);
         LddActor lddActor = new LddActor(id, label, pin, maxLightCurrent, actorListeners);
         lddActors.add(lddActor);
@@ -127,18 +125,6 @@ public abstract class AbstractConfigurator {
 
     public abstract void configure();
 
-    Iterable<PwmActor> getPwmActors(Iterable<Action> lightActions) {
-        Map<String, PwmActor> pwmActorMap = new TreeMap<>();
-        for (Action lightAction : lightActions) {
-            PwmActor actor = (PwmActor) lightAction.getActor();
-            PwmActor old = pwmActorMap.put(actor.getId(), actor);
-            if (old != null && old != actor) {
-                throw new RuntimeException("Id of actor '" + actor.getId() + "' is not unique");
-            }
-        }
-        return pwmActorMap.values();
-    }
-
     public Servlet getServlet() {
         return servlet;
     }
@@ -159,6 +145,19 @@ public abstract class AbstractConfigurator {
         setupMagneticSensor(lst, pirPin, id, name, toArray(activateAction), toArray(deactivateAction));
     }
 
+    protected IOnOffActor addOnOffActor(String id, String label, OutputNodePin output, ActorListener... actorListeners) {
+        IOnOffActor actor = new OnOffActor(id, label, output, actorListeners);
+        onOffActors.add(actor);
+        return actor;
+    }
+
+    abstract int getLouversMaxOffsetMs();
+    protected LouversController addLouversController(String id, String name, OutputNodePin relayUp, OutputNodePin relayDown, int downPositionMs) {
+        LouversController controller = new LouversControllerImpl(id, name, relayUp, relayDown, downPositionMs, getLouversMaxOffsetMs());
+        louversControllers.add(controller);
+        return controller;
+    }
+
     private void setupSensor(NodeListener lst, NodePin pirPin, String id, String name, Action[] activateActions, Action[] deactivateActions, boolean logicalOneIsActivate) {
         PirStatus status = new PirStatus(id, name);
         Action[] activateActionArray = ArrayUtils.addAll(activateActions, status.getActivateAction());
@@ -176,10 +175,11 @@ public abstract class AbstractConfigurator {
      *
      * @param initFromRegistry initialize simulated nodes from {@link NodeInfoRegistry}
      */
+    @SuppressWarnings("unused")
     protected void configureSimulator(List<Page> pages, List<WebSocketHandler> wsHandlers, boolean initFromRegistry) {
         IPacketUartIO packetUartIO = nodeInfoRegistry.getPacketUartIO();
         if (packetUartIO instanceof SimulatedPacketUartIO) {
-            SimulatedPacketUartIO sim = (SimulatedPacketUartIO) packetUartIO;
+            SimulatedPacketUartIO sim = (SimulatedPacketUartIO)packetUartIO;
             if (initFromRegistry) {
                 for (NodeInfo node : nodeInfoRegistry.getNodeInfos()) {
                     if (sim.getSimulatedNode(node.getNode().getNodeId()) == null) {

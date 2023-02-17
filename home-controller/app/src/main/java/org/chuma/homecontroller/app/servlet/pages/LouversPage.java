@@ -1,13 +1,14 @@
 package org.chuma.homecontroller.app.servlet.pages;
 
+import java.util.List;
 import java.util.Map;
 
 import org.chuma.homecontroller.controller.controller.LouversController;
 
 public class LouversPage extends AbstractPage {
-    final LouversController[] louversControllers;
+    final List<LouversController> louversControllers;
 
-    public LouversPage(LouversController[] louversControllers, Iterable<Page> links) {
+    public LouversPage(List<LouversController> louversControllers, Iterable<Page> links) {
         super("/louvers", "Žaluzie", "Žaluzie", "favicon.png", links);
         this.louversControllers = louversControllers;
     }
@@ -32,8 +33,8 @@ public class LouversPage extends AbstractPage {
 
     @Override
     public void appendContent(StringBuilder builder, Map<String, String[]> requestParameters) {
-        for (int i = 0; i < louversControllers.length; i += 4) {
-            int count = (i + 8 < louversControllers.length) ? 4 : louversControllers.length - i;
+        for (int i = 0; i < louversControllers.size(); i += 4) {
+            int count = (i + 8 < louversControllers.size()) ? 4 : louversControllers.size() - i;
             builder.append(getLouversTable(i, count));
             if (count > 4) {
                 break;
@@ -45,7 +46,7 @@ public class LouversPage extends AbstractPage {
         StringBuilder builder = new StringBuilder();
         builder.append("<br/><br/><table class='buttonTable'>");
         for (int i = startIndex; i < startIndex + count; i++) {
-            LouversController lc = louversControllers[i];
+            LouversController lc = louversControllers.get(i);
 
             builder.append("<td id='").append(lc.getId()).append("' class='louversItem'>\n" +
                     "<table>\n");

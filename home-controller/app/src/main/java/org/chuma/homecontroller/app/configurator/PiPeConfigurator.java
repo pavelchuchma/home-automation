@@ -32,7 +32,6 @@ public class PiPeConfigurator extends AbstractConfigurator {
     @Override
     public void configure() {
         NodeListener lst = nodeInfoRegistry.getNodeListener();
-        ArrayList<LddActor> lddActors = new ArrayList<>();
 
         Node bridge = nodeInfoRegistry.createNode(1, "Bridge");
         Node actor = nodeInfoRegistry.createNode(44, "Actor");
@@ -60,12 +59,12 @@ public class PiPeConfigurator extends AbstractConfigurator {
 
         // LDD5
         LddBoardDevice lddDevice5 = new LddBoardDevice("lddDevice5", actor, 2, .35, .35, 1.0, 1.0, 1.0, 1.0);
-        PwmActor vratnice1PwmActor = addLddLight(lddActors, "pwmVrt1", "Vratnice 1", lddDevice5.getLdd1(), 0.35, vratniceOffIndicator, vratniceOnIndicator); // .6
-        PwmActor vratnice2PwmActor = addLddLight(lddActors, "pwmVrt2", "Vratnice 2", lddDevice5.getLdd2(), 0.35, vratniceOffIndicator, vratniceOnIndicator); // .72
-        PwmActor led3PwmActor = addLddLight(lddActors, "pwmZadH", "Zádveří", lddDevice5.getLdd3(), 0.35); // .36
-        PwmActor led4PwmActor = addLddLight(lddActors, "pwmKpHZrc", "Koupena zrcadla", lddDevice5.getLdd4(), 0.35); // .36
-        PwmActor led5PwmActor = addLddLight(lddActors, "pwmKpH", "Koupelna", lddDevice5.getLdd5(), 0.7); // .72
-        PwmActor led6PwmActor = addLddLight(lddActors, "pwmVchH", "Vchod hore", lddDevice5.getLdd6(), 1.0); // 1.08
+        PwmActor vratnice1PwmActor = addLddLight("pwmVrt1", "Vratnice 1", lddDevice5.getLdd1(), 0.35, vratniceOffIndicator, vratniceOnIndicator); // .6
+        PwmActor vratnice2PwmActor = addLddLight("pwmVrt2", "Vratnice 2", lddDevice5.getLdd2(), 0.35, vratniceOffIndicator, vratniceOnIndicator); // .72
+        PwmActor led3PwmActor = addLddLight("pwmZadH", "Zádveří", lddDevice5.getLdd3(), 0.35); // .36
+        PwmActor led4PwmActor = addLddLight("pwmKpHZrc", "Koupena zrcadla", lddDevice5.getLdd4(), 0.35); // .36
+        PwmActor led5PwmActor = addLddLight("pwmKpH", "Koupelna", lddDevice5.getLdd5(), 0.7); // .72
+        PwmActor led6PwmActor = addLddLight("pwmVchH", "Vchod hore", lddDevice5.getLdd6(), 1.0); // 1.08
 
 
         configurePwmLights(lst, switchASw, WallSwitch.Side.LEFT, 0.6, vratnice1PwmActor);
@@ -97,5 +96,10 @@ public class PiPeConfigurator extends AbstractConfigurator {
 //        Servlet.setValveControllers(valveControllers);
 //        Servlet.setLightActions(lightsActions.toArray(new Action[lightsActions.size()]));
 //        Servlet.pirStatusList = pirStatusList;
+    }
+
+    @Override
+    int getLouversMaxOffsetMs() {
+        return 1600;
     }
 }

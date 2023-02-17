@@ -1,10 +1,9 @@
 package org.chuma.homecontroller.controller.action;
 
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
-import org.chuma.homecontroller.controller.actor.OnOffActor;
 
 public class InvertActionWithTimer extends AbstractSensorAction<IOnOffActor> {
-    public InvertActionWithTimer(OnOffActor actor, int timeoutSec) {
+    public InvertActionWithTimer(IOnOffActor actor, int timeoutSec) {
         super(actor, timeoutSec, true, Priority.LOW, null);
     }
 

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.controller.LouversController;
-import org.chuma.homecontroller.controller.controller.LouversControllerImpl;
 import org.chuma.homecontroller.controller.controller.ValveController;
 import org.chuma.homecontroller.controller.device.RelayBoardDevice;
 import org.chuma.homecontroller.controller.device.WallSwitch;
@@ -36,16 +35,9 @@ public class MartinConfigurator extends AbstractConfigurator {
         RelayBoardDevice rele51 = new RelayBoardDevice("rele51", node37, 1);
 
         // (vyhybky)
-        LouversController vyhybka01;
-        LouversController vyhybka02;
-        LouversController vyhybka03;
-
-        LouversController[] louversControllers = new LouversController[]{
-                vyhybka01 = new LouversControllerImpl("lvVyh01", "Vyhybka 01", rele51.getRelay1(), rele51.getRelay2(), 1000, 10),
-                vyhybka02 = new LouversControllerImpl("lvVyh02", "Vyhybka 02", rele51.getRelay3(), rele51.getRelay4(), 1000, 10),
-                vyhybka03 = new LouversControllerImpl("lvVyh03", "Vyhybka 03", rele51.getRelay5(), rele51.getRelay6(), 1000, 10),
-        };
-
+        LouversController vyhybka01 = addLouversController("lvVyh01", "Vyhybka 01", rele51.getRelay1(), rele51.getRelay2(), 1000);
+        LouversController vyhybka02 = addLouversController("lvVyh02", "Vyhybka 02", rele51.getRelay3(), rele51.getRelay4(), 1000);
+        LouversController vyhybka03 = addLouversController("lvVyh03", "Vyhybka 03", rele51.getRelay5(), rele51.getRelay6(), 1000);
 
         configureLouvers(lst, switchASw, WallSwitch.Side.LEFT, vyhybka01);
         configureLouvers(lst, switchASw, WallSwitch.Side.RIGHT, vyhybka02);
@@ -63,5 +55,10 @@ public class MartinConfigurator extends AbstractConfigurator {
 //        Servlet.setValveControllers(valveControllers);
 //        Servlet.setLightActions(lightsActions.toArray(new Action[lightsActions.size()]));
 //        Servlet.pirStatusList = pirStatusList;
+    }
+
+    @Override
+    int getLouversMaxOffsetMs() {
+        return 10;
     }
 }
