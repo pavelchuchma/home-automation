@@ -5,10 +5,10 @@ import org.junit.Assert;
 
 import org.chuma.homecontroller.controller.actor.VoidOnOffActor;
 
-public class SwitchOnSensorActionTest extends TestCase {
+public class SwitchOnActionWithTimerTest extends TestCase {
     public void testBasic() throws InterruptedException {
         VoidOnOffActor act1 = new VoidOnOffActor("act1");
-        SwitchOnSensorAction action = new SwitchOnSensorAction(act1, 1);
+        SwitchOnActionWithTimer action = new SwitchOnActionWithTimer(act1, 1);
         Assert.assertFalse(act1.isOn());
 
         action.perform(0);
@@ -41,7 +41,7 @@ public class SwitchOnSensorActionTest extends TestCase {
 
     public void testParallelModification() throws InterruptedException {
         VoidOnOffActor act1 = new VoidOnOffActor("act1");
-        SwitchOnSensorAction action = new SwitchOnSensorAction(act1, 1);
+        SwitchOnActionWithTimer action = new SwitchOnActionWithTimer(act1, 1);
         Assert.assertFalse(act1.isOn());
 
         action.perform(0);
@@ -55,5 +55,41 @@ public class SwitchOnSensorActionTest extends TestCase {
 
         Thread.sleep(200);
         Assert.assertTrue("Should be ON after 1100ms because it was switched on by other call", act1.isOn());
+    }
+
+    public void testLowPriorityModification() throws InterruptedException {
+        VoidOnOffActor act1 = new VoidOnOffActor("act1");
+        SwitchOnActionWithTimer action = new SwitchOnActionWithTimer(act1, 1);
+        Assert.assertFalse(act1.isOn());
+
+        Object externalActionData = new Object();
+        act1.switchOn(externalActionData);
+
+        action.perform(0);
+        // wait a moment because switch on is async
+        Thread.sleep(100);
+        Assert.assertTrue(act1.isOn());
+        Assert.assertEquals(externalActionData, act1.getActionData());
+        Thread.sleep(1100);
+        Assert.assertTrue("Should be ON after timeout because it was switched ON by external action", act1.isOn());
+
+        act1.switchOff();
+    }
+
+    public void testHighPriorityModification() throws InterruptedException {
+        VoidOnOffActor act1 = new VoidOnOffActor("act1");
+        SwitchOnActionWithTimer action = new SwitchOnActionWithTimer(act1, 1, AbstractSwitchOnActionWithTimer.Priority.HIGH, null);
+        Assert.assertFalse(act1.isOn());
+
+        Object externalActionData = new Object();
+        act1.switchOn(externalActionData);
+
+        action.perform(0);
+        // wait a moment because switch on is async
+        Thread.sleep(100);
+        Assert.assertTrue(act1.isOn());
+        Assert.assertTrue("action data should be overwritten", act1.getActionData() instanceof AbstractSwitchOnActionWithTimer.ActionData);
+        Thread.sleep(1100);
+        Assert.assertFalse("Should be OFF because it should be overwritten", act1.isOn());
     }
 }

@@ -2,7 +2,7 @@ package org.chuma.homecontroller.controller.action;
 
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
 
-public class InvertActionWithTimer extends AbstractSensorAction<IOnOffActor> {
+public class InvertActionWithTimer extends AbstractSwitchOnActionWithTimer<IOnOffActor> {
     public InvertActionWithTimer(IOnOffActor actor, int timeoutSec) {
         super(actor, timeoutSec, true, Priority.LOW, null);
     }

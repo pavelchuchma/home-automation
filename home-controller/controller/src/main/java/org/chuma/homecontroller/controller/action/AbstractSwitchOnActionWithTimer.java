@@ -10,10 +10,17 @@ import org.chuma.homecontroller.controller.action.condition.ICondition;
 import org.chuma.homecontroller.controller.action.condition.SensorDimCounter;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
 
-public class AbstractSensorAction<A extends IOnOffActor> extends AbstractAction<A> {
-    public static final int BLINK_DELAY = 600;
-    public static final int MAX_BLINK_DURATION = 10_000;
-    static Logger log = LoggerFactory.getLogger(AbstractSensorAction.class.getName());
+/**
+ * Action switching actor on and off after specified timeout.
+ * It switches actor ON only if:
+ * - it is OFF
+ * - it was switched ON by any instance of AbstractSwitchOnActionWithTimer with the same or lower priority
+ * - the action has Priority.HIGH.
+ */
+public class AbstractSwitchOnActionWithTimer<A extends IOnOffActor> extends AbstractAction<A> {
+    public static final int BLINK_DELAY_MS = 600;
+    public static final int MAX_BLINK_DURATION_MS = 10_000;
+    static Logger log = LoggerFactory.getLogger(AbstractSwitchOnActionWithTimer.class.getName());
 
     private final Priority priority;
     private final ICondition condition;
@@ -21,7 +28,13 @@ public class AbstractSensorAction<A extends IOnOffActor> extends AbstractAction<
     int timeoutMs;
     boolean canSwitchOn;
 
-    public AbstractSensorAction(A actor, int timeoutSec, boolean canSwitchOn, Priority priority, ICondition condition) {
+    /**
+     * @param timeoutSec  switch actor of after this time in seconds
+     * @param canSwitchOn is switching on allowed or just switch off after timeout is expected
+     * @param priority    of this action
+     * @param condition   optional condition to disable this action
+     */
+    public AbstractSwitchOnActionWithTimer(A actor, int timeoutSec, boolean canSwitchOn, Priority priority, ICondition condition) {
         super(actor);
         this.priority = priority;
         this.condition = condition;
@@ -30,8 +43,9 @@ public class AbstractSensorAction<A extends IOnOffActor> extends AbstractAction<
     }
 
     private boolean canOverwriteState(IOnOffActor act) {
-        return act.getActionData() instanceof ActionData
-                && ((ActionData)act.getActionData()).priority.ordinal() <= priority.ordinal();
+        return priority == Priority.HIGH
+                || (act.getActionData() instanceof ActionData
+                && ((ActionData)act.getActionData()).priority.ordinal() <= priority.ordinal());
     }
 
     @Override
@@ -72,9 +86,10 @@ public class AbstractSensorAction<A extends IOnOffActor> extends AbstractAction<
                     actor.setActionData(aData);
                 }
 
-                if (timeoutMs > MAX_BLINK_DURATION) {
-                    log.debug("Going to wait for {} ms", timeoutMs - MAX_BLINK_DURATION);
-                    actor.wait(timeoutMs - MAX_BLINK_DURATION);
+                // wait to start blinking
+                if (timeoutMs > MAX_BLINK_DURATION_MS) {
+                    log.debug("Going to wait for {} ms", timeoutMs - MAX_BLINK_DURATION_MS);
+                    actor.wait(timeoutMs - MAX_BLINK_DURATION_MS);
                     log.debug("Woken up");
                 }
                 if (actor.getActionData() != aData) {
@@ -82,12 +97,13 @@ public class AbstractSensorAction<A extends IOnOffActor> extends AbstractAction<
                     return;
                 }
 
+                // wait in the loop with blinking to switch actor off after specified timeout
                 while (System.currentTimeMillis() < endTime) {
                     aData.incrementCount();
                     actor.callListenersAndSetActionData(aData);
                     long remains = endTime - System.currentTimeMillis();
                     if (remains > 0) {
-                        actor.wait((remains < BLINK_DELAY) ? remains : BLINK_DELAY);
+                        actor.wait((remains < BLINK_DELAY_MS) ? remains : BLINK_DELAY_MS);
                     }
                     if (actor.getActionData() != aData) {
                         // there was some external modification
