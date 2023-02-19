@@ -125,6 +125,14 @@ function getSensorComponents() {
     ];
 }
 
+function getInfraHeaters() {
+    let secondaryHeater = new SecondaryInfraHeaterItem('zaricKoupelnaHore2Trubice', 445, 520, 1);
+    return [
+        new InfraHeaterItem('zaricKoupelnaHore1Trubice', secondaryHeater),
+        secondaryHeater
+    ];
+}
+
 function getComponents() {
     return [
         new StairsItem('stairsUp', 127, 690, 0, 1, '▲'),
@@ -146,7 +154,7 @@ function getComponents() {
 
         new LightItem('svSklepLevy', 510, 500,0),
         new LightItem('svSklepPravy', 565, 500,0),
-    ].concat(getLouversComponents(), getPwmLightComponents(), getSensorComponents());
+    ].concat(getLouversComponents(), getPwmLightComponents(), getSensorComponents(), getInfraHeaters());
 }
 
 function getToolbarItems() {
@@ -154,25 +162,25 @@ function getToolbarItems() {
         new ToolBarItem('lightToggle', function (x, y, ctx) {
             PwmLightItem.drawLightIcon(x - 10, y, 0, ctx);
             PwmLightItem.drawLightIcon(x + 10, y, .75, ctx);
-        }, [PwmLightItem.name, LightItem.name, StairsItem.name], 'toggle'),
+        }, [PwmLightItem.name, LightItem.name, InfraHeaterItem.name, StairsItem.name], 'toggle'),
 
         new ToolBarItem('lightPlus', function (x, y, ctx) {
             PwmLightItem.drawLightIcon(x, y, .66, ctx);
             drawLightToolSign(x, y, ctx, true);
-        }, [PwmLightItem.name, LightItem.name, StairsItem.name], 'plus'),
+        }, [PwmLightItem.name, LightItem.name, InfraHeaterItem.name, StairsItem.name], 'plus'),
 
         new ToolBarItem('lightMinus', function (x, y, ctx) {
             PwmLightItem.drawLightIcon(x, y, .25, ctx);
             drawLightToolSign(x, y, ctx, false);
-        }, [PwmLightItem.name, LightItem.name, StairsItem.name], 'minus'),
+        }, [PwmLightItem.name, LightItem.name, InfraHeaterItem.name, StairsItem.name], 'minus'),
 
         new ToolBarItem('lightFull', function (x, y, ctx) {
             PwmLightItem.drawLightIcon(x, y, 1, ctx);
-        }, [PwmLightItem.name, LightItem.name, StairsItem.name], 'full'),
+        }, [PwmLightItem.name, LightItem.name, InfraHeaterItem.name, StairsItem.name], 'full'),
 
         new ToolBarItem('lightOff', function (x, y, ctx) {
             PwmLightItem.drawLightIcon(x, y, 0, ctx);
-        }, [PwmLightItem.name, LightItem.name, StairsItem.name], 'off'),
+        }, [PwmLightItem.name, LightItem.name, InfraHeaterItem.name, StairsItem.name], 'off'),
 
         new ToolBarItem('louversUp', function (x, y, ctx) {
             LouversItem.drawIcon(x, y, .3, 0, 'stopped', ctx, 50, 60)

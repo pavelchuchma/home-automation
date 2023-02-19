@@ -3,10 +3,12 @@
 class Status {
     constructor(statusRefreshPath, refreshIntervalMs, onRefreshFunction, components, baseUrl, factoryMethod) {
         this.statusRefreshPath = statusRefreshPath;
-        this.baseUrl = baseUrl;
-        this.componentMap = new Map();
         this.refreshIntervalMs = refreshIntervalMs;
         this.onRefreshFunction = onRefreshFunction;
+        // keep ordered list of components for drawing order to define possible overlays
+        this.components = components;
+        this.baseUrl = baseUrl;
+        this.componentMap = new Map();
         this.factoryMethod = factoryMethod;
 
         if (components !== undefined) {

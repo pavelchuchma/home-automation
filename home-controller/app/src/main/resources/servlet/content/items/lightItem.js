@@ -10,12 +10,6 @@ class LightItem extends OnOffItem {
     }
 
     doAction(action) {
-        if (action === 'plus' || action === 'full') {
-            action = 'on';
-        } else if (action === 'minus') {
-            action = 'off';
-        }
-        const path = `/rest/onOff/action?id=${this.id}&action=${action}`;
-        BaseItem._send(path);
+        BaseItem._send(`/rest/onOff/action?id=${this.id}&action=${this.simplifyOnOffAction(action)}`);
     }
 }

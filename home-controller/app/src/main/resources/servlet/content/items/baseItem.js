@@ -28,4 +28,14 @@ class BaseItem extends AbstractItem {
         request.open('GET', getBaseUrl() + path, false);
         request.send();
     }
+
+    afterAction(ctx) {
+        // draw changed item as gray
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 15, 0, 2 * Math.PI);
+        ctx.fillStyle = 'gray';
+        ctx.fill();
+        ctx.stroke();
+    }
+
 }

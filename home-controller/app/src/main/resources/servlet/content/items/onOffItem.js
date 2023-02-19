@@ -11,4 +11,13 @@ class OnOffItem extends BaseItem {
         this.name = item.name;
         this.val = item.val;
     }
+
+    simplifyOnOffAction(action) {
+        if (action === 'plus' || action === 'full') {
+            return 'on';
+        } else if (action === 'minus') {
+            return 'off';
+        }
+        return action;
+    }
 }

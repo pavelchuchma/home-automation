@@ -21,7 +21,7 @@ window.onload = function () {
 };
 
 function drawItems() {
-    for (const item of status.componentMap.values()) {
+    for (const item of status.components) {
         if (item.floor === currentFloor || item.floor < 0) {
             item.draw(mainCtx);
         }
@@ -36,8 +36,6 @@ function drawPlanCanvas() {
 }
 
 function onPlanClick(event) {
-    // console.log(`new PwmLightItem('pwm', ${+Math.round(parseFloat(event.offsetX))}, ${Math.round(parseFloat(event.offsetY))}, ${currentFloor}),`);
-    // return;
 
     let selectedToolbar = toolbar.getCurrent();
     const item = findNearestItem(event.offsetX, event.offsetY, status.componentMap.values(),
@@ -49,14 +47,11 @@ function onPlanClick(event) {
         drawItems();
         return;
     }
+    // console.log(`new PwmLightItem('pwm', ${+Math.round(parseFloat(event.offsetX))}, ${Math.round(parseFloat(event.offsetY))}, ${currentFloor}),`);
+    // return;
 
     item.doAction(selectedToolbar.onClickAction);
-
-    // draw changed item as gray
-    mainCtx.beginPath();
-    mainCtx.arc(item.x, item.y, 15, 0, 2 * Math.PI);
-    mainCtx.fillStyle = 'gray';
-    mainCtx.fill();
+    item.afterAction(mainCtx);
 }
 
 function findNearestItem(x, y, items, filter) {
