@@ -21,11 +21,11 @@ public class OptionsSingleton {
         return instance.get(key);
     }
 
-    public int getInt(String key) {
+    public static int getInt(String key) {
         return instance.getInt(key);
     }
 
-    public boolean getBoolean(String key) {
+    public static boolean getBoolean(String key) {
         return instance.getBoolean(key);
     }
 }

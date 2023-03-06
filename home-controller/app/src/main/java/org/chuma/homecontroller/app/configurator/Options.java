@@ -100,11 +100,12 @@ public class Options {
         if (!properties.containsKey(key)) {
             throw new IllegalArgumentException("Property '" + key + "' is unknown");
         }
-        Object old = properties.put(key, value);
+        String old = properties.getProperty(key);
         if (!value.equals(old)) {
-            // Changed - notify
+            // Changed - notify & set if notification didn't fail
             String v = value;
             listenerManager.callListeners(l -> l.optionChanged(key, v));
+            properties.put(key, value);
         }
     }
 
