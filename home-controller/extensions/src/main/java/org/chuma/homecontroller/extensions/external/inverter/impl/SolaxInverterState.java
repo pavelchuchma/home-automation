@@ -11,14 +11,16 @@ import org.chuma.homecontroller.extensions.external.inverter.InverterState;
  * Implementation is based on <a href="https://github.com/squishykid/solax/blob/master/solax/inverters/x3_hybrid_g4.py">squishykid/solax project</a>
  */
 public class SolaxInverterState implements InverterState {
-    private static final String[] MODES = {"Waiting", "Checking", "Normal", "Fault", "Permanent Fault", "Updating", "EPS Check", "EPS Mode", "Self Test", "Idle", "Standby"};
     private static final int INT16_MAX = 0x7FFF;
     private static final int INT32_MAX = 0x7FFFFFFF;
 
     public final long timestamp;
     public final String version;
-    public final String mode;
+    public final String inverterSerialNumber;
+    private final String wifiSerialNumber;
 
+    public final Mode mode;
+    public final BatteryMode batteryMode;
     public final double grid1Voltage;
     public final double grid2Voltage;
     public final double grid3Voltage;
@@ -38,6 +40,47 @@ public class SolaxInverterState implements InverterState {
     public final int batteryTemp;
     public final double batteryVoltage;
 
+    public SolaxInverterState(JsonObject json) {
+        timestamp = System.currentTimeMillis();
+        version = json.get("ver").toString();
+        inverterSerialNumber = ((JsonArray)json.get("Information")).get(2).toString();
+        wifiSerialNumber = json.get("sn").toString();;
+        JsonArray data = (JsonArray)json.get("Data");
+        mode = Mode.values()[data.getInteger(19)];
+        batteryMode = BatteryMode.values()[data.getInteger(168)];
+
+        grid1Voltage =toSigned16(data.getInteger(0)) / 10d;
+        grid2Voltage =toSigned16(data.getInteger(1)) / 10d;
+        grid3Voltage =toSigned16(data.getInteger(2)) / 10d;
+        grid1Power =toSigned16(data.getInteger(6));
+        grid2Power =toSigned16(data.getInteger(7));
+        grid3Power =toSigned16(data.getInteger(8));
+        pv1Power = data.getInteger(14);
+        pv2Power = data.getInteger(15);
+        feedInPower =toSigned32(packU16(data, 34, 35));
+        batteryPower =toSigned16(data.getLong(41));
+        yieldTotal = packU16(data, 68, 69) / 10d;
+        yieldToday = data.getInteger(70) / 10d;
+        feedInEnergyTotal = packU16(data, 86, 87) / 100d;
+        consumedEnergyTotal = packU16(data, 88, 89) / 100d;
+        consumedEnergyToday = data.getInteger(92) / 100d;
+        batterySoc = data.getInteger(103);
+        batteryTemp =toSigned16(data.getInteger(105));
+        batteryVoltage = packU16(data, 169, 170) / 100d;
+    }
+
+    private static long packU16(JsonArray data, int i1, int i2) {
+        return data.getInteger(i1) + (data.getLong(i2) << 16);
+    }
+
+    private static int toSigned32(long val) {
+        return (int)((val > INT32_MAX) ? val - (2L << 31) : val);
+    }
+
+    private static int toSigned16(long val) {
+        return (int)((val > INT16_MAX) ? val - (2L << 15) : val);
+    }
+
     @Override
     public long getTimestamp() {
         return timestamp;
@@ -49,8 +92,23 @@ public class SolaxInverterState implements InverterState {
     }
 
     @Override
-    public String getMode() {
+    public String getInverterSerialNumber() {
+        return inverterSerialNumber;
+    }
+
+    @Override
+    public String getWifiSerialNumber() {
+        return wifiSerialNumber;
+    }
+
+    @Override
+    public Mode getMode() {
         return mode;
+    }
+
+    @Override
+    public BatteryMode getBatteryMode() {
+        return batteryMode;
     }
 
     @Override
@@ -141,43 +199,5 @@ public class SolaxInverterState implements InverterState {
     @Override
     public double getBatteryVoltage() {
         return batteryVoltage;
-    }
-
-     public SolaxInverterState(JsonObject json) {
-        timestamp = System.currentTimeMillis();
-        version = json.get("ver").toString();
-        JsonArray data = (JsonArray)json.get("Data");
-        mode = MODES[data.getInteger(19)];
-        grid1Voltage = (int)toSigned16(data.getInteger(0)) / 10d;
-        grid2Voltage = (int)toSigned16(data.getInteger(1)) / 10d;
-        grid3Voltage = (int)toSigned16(data.getInteger(2)) / 10d;
-        grid1Power = (int)toSigned16(data.getInteger(6));
-        grid2Power = (int)toSigned16(data.getInteger(7));
-        grid3Power = (int)toSigned16(data.getInteger(8));
-        pv1Power = data.getInteger(14);
-        pv2Power = data.getInteger(15);
-        feedInPower = (int)toSigned32(packU16(data, 34, 35));
-        batteryPower = (int)toSigned16(data.getLong(41));
-        yieldTotal = packU16(data, 68, 69) / 10d;
-        yieldToday = data.getInteger(70) / 10d;
-        feedInEnergyTotal = packU16(data, 86, 87) / 100d;
-        consumedEnergyTotal = packU16(data, 88, 89) / 100d;
-        consumedEnergyToday = data.getInteger(92) / 100d;
-        batterySoc = data.getInteger(103);
-        batteryTemp = (int)toSigned16(data.getInteger(105));
-        batteryVoltage = packU16(data, 169, 170) / 100d;
-    }
-
-
-    private static long packU16(JsonArray data, int i1, int i2) {
-        return data.getInteger(i1) + (data.getLong(i2) << 16);
-    }
-
-    private static long toSigned32(long val) {
-        return (val > INT32_MAX) ? val - (2L << 31) : val;
-    }
-
-    private static long toSigned16(long val) {
-        return (val > INT16_MAX) ? val - (2L << 15) : val;
     }
 }

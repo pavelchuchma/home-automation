@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.chuma.homecontroller.extensions.external.inverter.InverterMonitor;
+import org.chuma.homecontroller.extensions.external.inverter.InverterState;
 
 /**
  * Monitoring service of Solax X3-Hybrid G4 Inverter
@@ -15,7 +16,7 @@ import org.chuma.homecontroller.extensions.external.inverter.InverterMonitor;
 public class SolaxInverterMonitor implements InverterMonitor {
     protected static Logger log = LoggerFactory.getLogger(SolaxInverterMonitor.class.getName());
     private static final Object lock = new Object();
-    SolaxInverterState state;
+    InverterState state;
     private boolean running;
     private long lastRefreshAttemptTime;
     private long lastUseTime;
@@ -78,7 +79,7 @@ public class SolaxInverterMonitor implements InverterMonitor {
             lastRefreshAttemptTime = System.currentTimeMillis();
             log.debug("refreshing solax state");
             state = client.getState();
-            log.trace("done in {} ms, inverter state {}", System.currentTimeMillis() - lastRefreshAttemptTime, state.mode);
+            log.trace("done in {} ms, inverter state {}", System.currentTimeMillis() - lastRefreshAttemptTime, state.getMode());
         } catch (Exception e) {
             log.error("Failed to refresh SolaxInverter state from " + client.getUrl(), e);
             state = null;
@@ -98,7 +99,7 @@ public class SolaxInverterMonitor implements InverterMonitor {
      * Get last known state. Can be null in case of the first request or if it was not used longer than maxUnusedRunTimeMs time.
      */
     @Override
-    public synchronized SolaxInverterState getState() {
+    public synchronized InverterState getState() {
         log.trace("getting state");
         if (!running) {
             throw new IllegalStateException("Monitor is not running");

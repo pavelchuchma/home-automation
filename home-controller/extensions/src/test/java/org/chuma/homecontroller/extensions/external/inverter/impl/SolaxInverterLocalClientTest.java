@@ -1,47 +1,33 @@
 package org.chuma.homecontroller.extensions.external.inverter.impl;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-
-import junit.framework.TestCase;
 import org.junit.Assert;
+import org.junit.Test;
 
-public class SolaxInverterLocalClientTest extends TestCase {
+import org.chuma.homecontroller.extensions.external.inverter.InverterState;
 
-    private String getPassword() throws IOException {
-        String s = System.getProperty("user.dir");
-        try (BufferedReader br = new BufferedReader(new FileReader("../cfg/app.properties"))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                final String[] vals = line.split("=");
-                if (vals.length == 2 && "inverter.local.password".equals(vals[0])) {
-                    return vals[1];
-                }
-            }
-        }
-        throw new IllegalStateException("Cannot get file from config file");
-    }
+public class SolaxInverterLocalClientTest extends SolaxInverterTestBase {
+    @Test
+    public void testGetState() {
+        SolaxInverterLocalClient s = new SolaxInverterLocalClient(localUrl, localPassword);
 
-    public void testGetState() throws Exception {
-        SolaxInverterLocalClient s = new SolaxInverterLocalClient("http://192.168.68.159", getPassword());
+        final InverterState state = s.getState();
 
-        final SolaxInverterState state = s.getState();
+        int pv = state.getPv1Power();
+        int grid = state.getGrid1Power() + state.getGrid2Power() + state.getGrid3Power();
+        int battery = state.getBatteryPower();
+        int feedIn = state.getFeedInPower();
 
-        int pv = state.pv1Power;
-        int grid = state.grid1Power + state.grid2Power + state.grid3Power;
-        int battery = state.batteryPower;
-        int feedIn = state.feedInPower;
-
-        System.out.println("Mode: " + state.mode);
+        System.out.println("SN: " + state.getInverterSerialNumber());
+        System.out.println("Mode: " + state.getMode());
+        System.out.println("Battery Mode: " + state.getBatteryMode());
         System.out.println("PV: " + pv + " W");
         System.out.println("AC Power: " + grid + " W");
         System.out.println("FeedIn: " + feedIn + " W");
         System.out.println("Battery: " + battery + " W");
-        System.out.println("Battery SOC: " + state.batterySoc + "%");
+        System.out.println("Battery SOC: " + state.getBatterySoc() + "%");
         System.out.println();
-        System.out.println("Yield today: " + state.yieldToday + " W");
-        System.out.println("Consumed today: " + state.consumedEnergyToday + " W");
+        System.out.println("Yield today: " + state.getYieldToday() + " W");
+        System.out.println("Consumed today: " + state.getConsumedEnergyToday() + " W");
         System.out.println();
         int load = grid - feedIn;
         int diff = pv - (battery + grid);
@@ -49,9 +35,10 @@ public class SolaxInverterLocalClientTest extends TestCase {
         System.out.println("Diff: " + diff + " W");
     }
 
+    @Test
     public void testMonitor() throws Exception {
         SolaxInverterMonitor monitor = new SolaxInverterMonitor(
-                "http://192.168.68.159", getPassword(), 3_000, 8_000);
+                localUrl, localPassword, 3_000, 8_000);
 
         Assert.assertThrows(IllegalStateException.class, monitor::getState);
         System.out.println("Starting");
@@ -63,12 +50,12 @@ public class SolaxInverterLocalClientTest extends TestCase {
         Assert.assertNull(monitor.getState());
         Assert.assertNull("should be still null immediately after the first get", monitor.state);
         Thread.sleep(2_000);
-        final SolaxInverterState s1 = monitor.state;
+        final InverterState s1 = monitor.getState();
         Assert.assertNotNull("should be refreshed after 2s", s1);
-        final SolaxInverterState s2 = monitor.getState();
+        final InverterState s2 = monitor.getState();
         Assert.assertEquals("the same instance expected", s1, s2);
         Thread.sleep(3_000);
-        final SolaxInverterState s3 = monitor.state;
+        final InverterState s3 = monitor.getState();
         Assert.assertNotEquals("a fresh instance expected", s2, s3);
         Assert.assertEquals("the same instance expected", s3, monitor.getState());
         Thread.sleep(10_000);
@@ -79,13 +66,13 @@ public class SolaxInverterLocalClientTest extends TestCase {
         // call getter to restart refresh thread
         Assert.assertNull("null expected", monitor.getState());
         Thread.sleep(5_000);
-        final SolaxInverterState s4 = monitor.getState();
+        final InverterState s4 = monitor.getState();
         Assert.assertNotNull("a fresh instance expected", s4);
 
         System.out.println("Stopping");
         monitor.stop();
         Thread.sleep(4_000);
-        final SolaxInverterState s6 = monitor.state;
+        final InverterState s6 = monitor.state;
         Thread.sleep(4_000);
         Assert.assertEquals("the same instance expected, because it should be stopped", s6, monitor.state);
         Assert.assertThrows(IllegalStateException.class, monitor::getState);

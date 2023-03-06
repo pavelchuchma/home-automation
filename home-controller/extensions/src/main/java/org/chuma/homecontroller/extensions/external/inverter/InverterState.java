@@ -5,7 +5,13 @@ public interface InverterState {
 
     String getVersion();
 
-    String getMode();
+    String getInverterSerialNumber();
+
+    String getWifiSerialNumber();
+
+    Mode getMode();
+
+    BatteryMode getBatteryMode();
 
     /**
      * Voltage on AC Power, phase 1
@@ -63,4 +69,25 @@ public interface InverterState {
     int getBatteryTemp();
 
     double getBatteryVoltage();
+
+    enum Mode {
+        Waiting,
+        Checking,
+        Normal,
+        Fault,
+        PermanentFault,
+        Updating,
+        EPSCheck,
+        EPSMode,
+        SelfTest,
+        Idle,
+        Standby
+    }
+
+    enum BatteryMode {
+        SelfUse,
+        ForceTime,
+        BackUp,
+        FeedInPriority
+    }
 }

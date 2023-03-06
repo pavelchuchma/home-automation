@@ -23,7 +23,7 @@ public class InverterHandler extends AbstractRestHandler<InverterMonitor> {
         int batPower = state.getBatteryPower();
         int feedInPower = state.getFeedInPower();
 
-        jw.addAttribute("mode", state.getMode());
+        jw.addAttribute("mode", state.getMode().toString());
         jw.addAttribute("pvPwr", pv);
         jw.addAttribute("acPwr", acPower);
         jw.addAttribute("feedInPwr", feedInPower);

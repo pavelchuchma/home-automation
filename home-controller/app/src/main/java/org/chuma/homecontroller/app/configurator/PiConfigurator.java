@@ -73,13 +73,18 @@ import org.chuma.homecontroller.extensions.action.condition.SunCondition;
 import org.chuma.homecontroller.extensions.actor.HvacActor;
 import org.chuma.homecontroller.extensions.actor.RadioOnOffActor;
 import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
+import org.chuma.homecontroller.extensions.external.inverter.InverterManager;
 import org.chuma.homecontroller.extensions.external.inverter.InverterMonitor;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterMonitor;
+import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterRemoteClient;
 import org.chuma.hvaccontroller.device.HvacDevice;
 
 @SuppressWarnings({"unused", "DuplicatedCode", "SpellCheckingInspection"})
 public class PiConfigurator extends AbstractConfigurator {
 
+    private static final String CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE = "inverter.manager.high.tariff.battery.reserve";
+    private static final String CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES = "inverter.manager.high.tariff.times";
+    private static final String CFG_INVERTER_MANAGER_MINIMAL_SOC = "inverter.manager.minimal.soc";
     static Logger log = LoggerFactory.getLogger(PiConfigurator.class.getName());
 
     public PiConfigurator(NodeInfoRegistry nodeInfoRegistry) {
@@ -730,6 +735,8 @@ public class PiConfigurator extends AbstractConfigurator {
                 OptionsSingleton.get("inverter.local.url"), OptionsSingleton.get("inverter.local.password"), 5_000, 60_000);
         inverterMonitor.start();
 
+        configureInverterRemoteControl();
+
         List<ServletAction> servletActions = new ArrayList<>();
         servletActions.add(new ServletAction("openDoor", "Bzučák", bzucakAction));
         servletActions.add(new ServletAction("openGarage", "Garáž", ovladacGarazAction));
@@ -744,8 +751,8 @@ public class PiConfigurator extends AbstractConfigurator {
         lst.addActionBinding(new ActionBinding(testSw.getLeftUpperButton(), new SwitchOnAction(testingLeftOnOffActor), null));
         lst.addActionBinding(new ActionBinding(testSw.getLeftBottomButton(), new SwitchOffAction(testingLeftOnOffActor), null));
 
-        servletActions.add(new ServletAction("testRele16-45", "Rele16-45", new Relay16TestLoopAction( new Relay16BoardDevice("test45", relay16testNode45))));
-        servletActions.add(new ServletAction("testRele16-46", "Rele16-46", new Relay16TestLoopAction( new Relay16BoardDevice("test46", relay16testNode46))));
+        servletActions.add(new ServletAction("testRele16-45", "Rele16-45", new Relay16TestLoopAction(new Relay16BoardDevice("test45", relay16testNode45))));
+        servletActions.add(new ServletAction("testRele16-46", "Rele16-46", new Relay16TestLoopAction(new Relay16BoardDevice("test46", relay16testNode46))));
 
         List<WebSocketHandler> wsHandlers = new ArrayList<>();
         // page handlers
@@ -784,6 +791,45 @@ public class PiConfigurator extends AbstractConfigurator {
 
 //        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);
 //        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));
+    }
+
+    private static void configureInverterRemoteControl() {
+        try {
+            final Options options = OptionsSingleton.getInstance();
+            final String remoteUsername = options.get("inverter.remote.username");
+            final String remotePasswordToken = options.get("inverter.remote.password.token");
+            final String basicConfigPin = options.get("inverter.config.pin.basic");
+
+            final String localUrl = options.get("inverter.local.url");
+            final String localPassword = options.get("inverter.local.password");
+
+            final String highTariffTimes = options.get(CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES);
+            final int minimalSoc = options.getInt(CFG_INVERTER_MANAGER_MINIMAL_SOC);
+            final int batteryReserve = options.getInt(CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE);
+
+            SolaxInverterRemoteClient inverterRemoteClient = new SolaxInverterRemoteClient(
+                    localUrl,
+                    localPassword,
+                    remoteUsername,
+                    remotePasswordToken,
+                    basicConfigPin);
+            InverterManager inverterManager = new InverterManager(inverterRemoteClient);
+            inverterManager.setMinimalSoc(minimalSoc);
+            inverterManager.setBatteryReserve(batteryReserve);
+            inverterManager.setHighTariffRanges(highTariffTimes);
+
+            options.addListener((key, value) -> {
+                if (CFG_INVERTER_MANAGER_MINIMAL_SOC.equals(key)) {
+                    inverterManager.setMinimalSoc(Integer.parseInt(value));
+                } else if (CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE.equals(key)) {
+                    inverterManager.setBatteryReserve(Integer.parseInt(value));
+                } else if (CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES.equals(key)) {
+                    inverterManager.setHighTariffRanges(value);
+                }
+            });
+        } catch (Exception e) {
+            log.error("Failed to init inverter manager - mising configuration property", e);
+        }
     }
 
     @Override

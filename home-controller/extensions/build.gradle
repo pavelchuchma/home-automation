@@ -15,6 +15,7 @@ plugins {
 
 dependencies {
     implementation project(':controller')
+    testImplementation project(':app')
 
     implementation 'ch.qos.logback:logback-classic'
 
@@ -23,4 +24,5 @@ dependencies {
     implementation 'net.thejavashop:javampd'
     implementation 'org.apache.commons:commons-lang3'
     implementation 'org.chuma.hvac-controller:hvac-controller'
+    implementation 'it.sauronsoftware.cron4j:cron4j'
 }

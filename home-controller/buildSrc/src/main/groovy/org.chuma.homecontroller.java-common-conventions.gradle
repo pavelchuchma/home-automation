@@ -39,6 +39,7 @@ dependencies {
         implementation 'org.eclipse.jetty:jetty-server:9.1.6.v20160112'
 
         implementation 'org.chuma.hvac-controller:hvac-controller:0.2.0-SNAPSHOT'
+        implementation 'it.sauronsoftware.cron4j:cron4j:2.2.5'
     }
 
     testImplementation 'junit:junit:4.13.2'
