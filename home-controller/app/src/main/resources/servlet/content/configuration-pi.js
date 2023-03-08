@@ -148,9 +148,9 @@ function getComponents() {
         new AirValveItem('vlPata', 450, 726, 1),
         new AirValveItem('vlKoupH', 450, 515, 1),
 
-        new HvacItem('hvac', 0, 0, 0),
-        new WaterPumpItem('wpump', 0, 0, 0),
-        new InverterItem('inverter', 0, 0, 0),
+        new HvacItem('hvac', 0, 0, -1),
+        new WaterPumpItem('wpump', 0, 0, -1),
+        new InverterItem('inverter', 0, 0, -1),
 
         new LightItem('svSklepLevy', 510, 500,0),
         new LightItem('svSklepPravy', 565, 500,0),
