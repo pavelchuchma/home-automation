@@ -37,7 +37,7 @@ public class Main {
 
             String hostName = InetAddress.getLocalHost().getHostName();
             AbstractConfigurator configurator;
-            if (hostName.equalsIgnoreCase("raspberrypi") || hostName.equalsIgnoreCase("pchuchma")) {
+            if (hostName.equalsIgnoreCase("raspberrypi") || hostName.equalsIgnoreCase("CZWW00145")) {
                 configurator = new PiConfigurator(nodeInfoRegistry);
             } else if (hostName.equalsIgnoreCase("martinpi")) {
                 configurator = new MartinConfigurator(nodeInfoRegistry);
