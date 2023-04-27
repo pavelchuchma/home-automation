@@ -42,9 +42,9 @@ void InitApp(void) {
     // clear can receive error counters
     canReceiveLongMsgCount = canReceiveMismatch = 0;
 
-    // setup timer, Prescale value = 4
+    // setup timer, Pre-scale value = 4
     T0CON = 0b10010001; // TMR0ON T08BIT T0CS T0SE PSA T0PS2 T0PS1 T0PS0
-    TMR0 = 0xFF - 1000;
+    TMR0 = (unsigned short) 0xFF - 1000;
 
     // setup IO ports
     ANCON0 = 0x00;
@@ -259,9 +259,9 @@ void setCCP1PwmValue(char value) {
     TRISC2 = 0;
     // set duty cycle and enable PWM
     CCPR1L = value >> 2;
-    CCP1CON = (CCP1CON & 0b00001111) | ((value & 0b00000011) << 4);
+    CCP1CON = (unsigned char) ((CCP1CON & 0b00001111) | ((value & 0b00000011) << 4));
 
-    outPacket.data[1] = ((CCP1CON >> 4) & 0x11) | (CCPR1L << 2);
+    outPacket.data[1] = (unsigned char) (((CCP1CON >> 4) & 0x11) | (CCPR1L << 2));
 }
 
 void processEnablePwmRequest() {
@@ -384,7 +384,7 @@ void processSetManualPwmValueRequest() {
 
     volatile ManualPwmData *pwmData = manualPwmPortData + portIndex;
 
-    char mask = 1 << pin;
+    char mask = (char) (1 << pin);
     pwmData->mask |= mask;
 
     // set all TRIS bits corresponding to the mask to output (0)

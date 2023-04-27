@@ -39,7 +39,7 @@ char digitToBCD(char digit)
 }
 
 void recalculateDisplayValue(void) {
-    __int24 num = displayValue;
+    __int24 num = (__int24)displayValue;
 
     char tmp = 0; // count 100 000s
     while (num > 99999) {
@@ -75,5 +75,5 @@ void recalculateDisplayValue(void) {
         tmp++;
     }
     displaySegments[1] = digitToBCD(tmp);
-    displaySegments[0] = digitToBCD(num);
+    displaySegments[0] = digitToBCD((char)num);
 }
