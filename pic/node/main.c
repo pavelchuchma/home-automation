@@ -34,48 +34,6 @@
 
 /******************************************************************************/
 
-void freshenDisplay() {
-    char val = displaySegments[appFlags.currentSegment];
-    // switch digit selector off
-    PORTA &= 0b00011111;
-    PORTC &= 0b11001111;
-    PORTBbits.RB0 = 0;
-
-    // switch segments off
-    PORTA |= 0b00001111;
-    PORTC |= 0b00001111;
-
-    // switch segments on
-    PORTA &= val | 0b11110000;
-    PORTC &= (val >> 4) | 0b11110000;
-
-    // switch selected digit on
-    switch (appFlags.currentSegment) {
-        case 0:
-            PORTBbits.RB0 = 1;
-            break;
-        case 1:
-            PORTCbits.RC5 = 1;
-            break;
-        case 2:
-            PORTCbits.RC4 = 1;
-            break;
-        case 3:
-            PORTAbits.RA5 = 1;
-            break;
-        case 4:
-            PORTAbits.RA6 = 1;
-            break;
-        case 5:
-            PORTAbits.RA7 = 1;
-            break;
-    }
-
-    if (++appFlags.currentSegment == 6) {
-        appFlags.currentSegment = 0;
-    }
-}
-
 /** Sends outPacket to destination from where receivedPacked was received
  */
 void sendResponse() {
@@ -230,7 +188,7 @@ void main(void) {
                     uart_sendPacket(&receivedPacket);
                 }
                 // increment counter to count of forwarded messages
-                if (++displayValue == 1000000) displayValue = 0;
+                receivedPacketCount++;
             }
         }
 
@@ -267,31 +225,20 @@ void main(void) {
         }
 
         if (nodeId == NODE_ROUTER) {
-            checkUartErrors();
-
             if (loopCounter == 0) {
-                // refresh display
-                if (HAS_ROUTER_DISPLAY) {
-                    freshenDisplay();
+                // update receive packet LED indicator
+                if (switchBridgeLedOffCounter == 0) {
+                    // turn packet LED OFF
+                    PORTBbits.RB1 = 1;
                 } else {
-                    if (switchBridgeLedOffCounter == 0) {
-                        // turn packet led OFF
-                        PORTBbits.RB1 = 1;
-                    } else {
-                        switchBridgeLedOffCounter--;
-                    }
+                    switchBridgeLedOffCounter--;
                 }
 
-                if (displayValue != displayValueOld) {
-                    displayValueOld = displayValue;
-                    if (HAS_ROUTER_DISPLAY) {
-                        //I'm router (have display) and new value to display is ready
-                        recalculateDisplayValue();
-                    } else {
-                        // turn packet length ON
-                        PORTBbits.RB1 = 0;
-                        switchBridgeLedOffCounter = 23; // approx 10 ms
-                    }
+                if (receivedPacketCount != receivedPacketCountOld) {
+                    receivedPacketCountOld = receivedPacketCount;
+                    // turn packet LED ON
+                    PORTBbits.RB1 = 0;
+                    switchBridgeLedOffCounter = 23; // approx 10 ms
                 }
             }
         }
@@ -304,7 +251,7 @@ void main(void) {
                 checkInputChange();
             }
         } else {
-            // nops are here to have bothbranches of this if of the same length. It is necessary for manual PWM.
+            // nops are here to have both branches of this if of the same length. It is necessary for manual PWM.
             asm ("nop");
             asm ("nop");
             asm ("nop");

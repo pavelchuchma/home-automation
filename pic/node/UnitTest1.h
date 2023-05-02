@@ -17,7 +17,6 @@ void testWriteRamRequest();
 void testSetPortRequest();
 void testCheckInputChange();
 void testEnablePwm();
-void testDisplay();
 void testProcessSetManualPwmValueRequest();
 void testButonEvents();
 

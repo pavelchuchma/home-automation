@@ -60,15 +60,8 @@ void InitApp(void) {
 
     // setup USART if NODE_ROUTER
     if (nodeId == NODE_ROUTER) {
-        if (HAS_ROUTER_DISPLAY) {
-            // setup TRIS for display
-            TRISA &= 0b00010000;
-            TRISB0 = 0;
-            TRISC &= 0b11000000;
-        } else {
-            // packet signal led only
-            TRISB1 = 0;
-        }
+        // packet signal LED only
+        TRISB1 = 0;
 
         // 832 (0x0340) for 300 Bauds @ 1 MHz clock (250 kHz clock cycle)
         // 12 (0x000C) for 19230 Bauds @ 1 MHz clock (250 kHz clock cycle)
@@ -89,8 +82,8 @@ void InitApp(void) {
     appFlags.onPingTimer = 1; // to send onReboot message immediately
     heartBeatCounter = 0;
     heartBeatPeriod = 20; // 10s
-    displayValue = 0;
-    displayValueOld = 255;
+    receivedPacketCount = 0;
+    receivedPacketCountOld = 0xFFFFFF;
 
     // init manualPwm
     for (char i = 0; i < 3; i++) {
@@ -99,7 +92,6 @@ void InitApp(void) {
             manualPwmPortData[i].data[--j] = 0;
         }
     }
-
     
     checkInput = 0;
     switchBridgeLedOffCounter = 0;
@@ -114,7 +106,7 @@ void InitApp(void) {
 
     /* Enable interrupts */
 #if(RUN_TESTS)
-    // diable interrupts if running tests
+    // disable interrupts if running tests
     INTCON = 0;
 #endif
 }
@@ -151,7 +143,7 @@ void setupCanBus(char baudRatePrescaller) {
     // set all can buffers as FIFO receive buffers
     BSEL0 = 0b00000000; //B5TXEN B4TXEN B3TXEN B2TXEN B1TXEN B0TXEN ? ?
 
-    // Set CAN to 62.5 kHz (using internal 1Mhz oscilator)
+    // Set CAN to 62.5 kHz (using internal 1MHz oscillator)
     // Synchronized Jump Width = 1 (2 x TQ)
     // Baud Rate Prescaler = 0 (1 TQ)
     BRGCON1 = 0b01000000; //SJW1 SJW0 BRP5 BRP4 BRP3 BRP2 BRP1 BRP0
@@ -176,7 +168,7 @@ void setupCanBus(char baudRatePrescaller) {
     // Filter will only accept standard ID messages (EXIDEN = 0)
     RXF0SIDL = 0x00000000; //SID2 SID1 SID0 ? EXIDEN ? EID17 EID16
 
-    // Assciate Filter0 to RXB0
+    // Associate Filter0 to RXB0
     // 0000 = Filter n is associated with RXB0
     RXFBCON0 = 0x00000000; //F1BP_3 F1BP_2 F1BP_1 F1BP_0 F0BP_3 F0BP_2 F0BP_1 F0BP_0
 
@@ -246,7 +238,7 @@ void processGetBuildTimeRequest() {
     if (tmp1 == 'D') outPacket.data[1] = 12;
 
     //Day
-    outPacket.data[2] = (__DATE__[4] - '0') * 10 + __DATE__[5] - '0';
+    outPacket.data[2] = (char) ((__DATE__[4] - '0') * 10 + __DATE__[5] - '0');
 
     //Hour
     outPacket.data[3] = (__TIME__[0] - '0') * 10 + __TIME__[1] - '0';
@@ -272,7 +264,7 @@ void processEnablePwmRequest() {
 
     // not initialized yet
     if (!appFlags.enabledPwmModules) {
-        // setup timer, Prescale value = 32
+        // setup timer, Pre-scale value = 32
         T0CON = 0b10010100; // TMR0ON T08BIT T0CS T0SE PSA T0PS2 T0PS1 T0PS0
 
         // change CPU frequency

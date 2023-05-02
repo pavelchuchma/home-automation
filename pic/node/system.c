@@ -32,9 +32,8 @@ volatile PortConfig portConfig = {
 
 volatile char heartBeatCounter;
 volatile unsigned short heartBeatPeriod;
-volatile __uint24 displayValue;
-volatile __uint24 displayValueOld;
-volatile char displaySegments[6];
+volatile __uint24 receivedPacketCount;
+volatile __uint24 receivedPacketCountOld;
 
 volatile char canReceiveLongMsgCount;
 volatile char canReceiveMismatch;
@@ -45,7 +44,7 @@ volatile ManualPwmData manualPwmPortData[3];
 volatile char checkInput;
 
 /**
- * Returs CPU Frequecny in MHz
+ * Returns CPU Frequency in MHz
  */
 char getCpuFrequency(void) {
     if ((OSCCON & 0b01110000) == 0b01110000) return 16;
@@ -61,10 +60,9 @@ void configureOscillator(char freqMHz) {
     // setup heart beat period
     heartBeatPeriod = heartBeatPeriod / getCpuFrequency() * freqMHz;
 
-    // Oscilator setup
+    // Oscillator setup
     OSCTUNE = 0b00000000; //INTSRC PLLEN ? TUN4 TUN3 TUN2 TUN1 TUN0
     if (freqMHz == 16) {
-        // todo: Nefunguje!!!, nastavi na 4MHz
         OSCCON = 0b01110010; //IDLEN IRCF2 IRCF1 IRCF0 OSTS IOFS SCS1 SCS0
     } else if (freqMHz == 8) {
         OSCCON = 0b01100010; //IDLEN IRCF2 IRCF1 IRCF0 OSTS IOFS SCS1 SCS0
@@ -85,32 +83,6 @@ void configureOscillator(char freqMHz) {
     /* Typical actions in this function are to tweak the oscillator tuning
     register, select new clock sources, and to wait until new clock sources
     are stable before resuming execution of the main project. */
-}
-
-void checkUartErrors() {
-    // report receiveBufferErrCount
-    if (appFlags.uartReceiveBufferErrCount) {
-        outPacket.messageType = MSG_ErrorReport;
-        outPacket.data[0] = MSG_ERR_UartReceiveBufferErrorCount;
-        outPacket.data[1] = appFlags.uartReceiveBufferErrCount;
-        outPacket.data[2] = receiveQueue.r;
-        outPacket.data[3] = receiveQueue.w;
-        outPacket.data[4] = receiveQueue.packetCount;
-        appFlags.uartReceiveBufferErrCount -= outPacket.data[1]; //thread safe clearing
-        outPacket.length = 7;
-
-        uart_sendPacket(&outPacket);
-    }
-    // report receiveCrcErrCount;
-    if (appFlags.uartReceiveCrcErrCount) {
-        outPacket.messageType = MSG_ErrorReport;
-        outPacket.data[0] = MSG_ERR_UartReceiveCrcErrorCount;
-        outPacket.data[1] = appFlags.uartReceiveCrcErrCount;
-        appFlags.uartReceiveCrcErrCount -= outPacket.data[1]; //thread safe clearing
-        outPacket.length = 4;
-
-        uart_sendPacket(&outPacket);
-    }
 }
 
 void processSetPort() {
@@ -163,7 +135,7 @@ void checkInputChange() {
             // was current bit changed?
             char *currentEventCounter = ((char *) portConfig.eventCounters) + (port << 3) + b;
             if (*currentEventCounter) {
-                // too early, ignore chane, decrement only
+                // too early, ignore change, decrement only
                 (*currentEventCounter)--;
             } else {
                 if (changed & currentBitMask) {
@@ -177,7 +149,7 @@ void checkInputChange() {
             currentBitMask = currentBitMask >> 1;
         }
         if (maskToSend) {
-            // set bitmask of chaned bits
+            // set bit-mask of changed bits
             outPacket.data[0] = maskToSend;
             portConfig.oldValues[port] = (portConfig.oldValues[port] & (maskToSend ^ 0xFF)) | (portValue & maskToSend);
             // set new values of port (+ clear bits outside event mask)

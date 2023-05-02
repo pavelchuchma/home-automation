@@ -27,7 +27,6 @@
 void testRunAll() {
     testButonEvents();
     //testProcessSetManualPwmValueRequest();
-    //    testDisplay();
     //    testEnablePwm();
     //    testSetPortRequest();
     //    testCheckInputChange();
@@ -410,66 +409,6 @@ void testEnablePwm() {
     ASSERT_EQUALS(CCP1CONbits.DC1B0, 0);
     ASSERT_EQUALS(CCP1CONbits.DC1B1, 1);
     ASSERT_EQUALS(CCPR1L, 0b1101);
-}
-
-void freshenDisplay();
-
-void testDisplay() {
-    nodeId = NODE_ROUTER;
-    InitApp();
-
-    appFlags.currentSegment = 0;
-    displayValue = 123;
-
-    //segment 1 - should contain 3
-    recalculateDisplayValue();
-    freshenDisplay();
-
-    ASSERT_EQUALS(PORTBbits.RB0, 1);
-    ASSERT_EQUALS(PORTC & 0x0F, 0b1000);
-    ASSERT_EQUALS(PORTA & 0x0F, 0b0011);
-    ASSERT_EQUALS(appFlags.currentSegment, 1);
-
-    //segment 1 - should contain 2
-    recalculateDisplayValue();
-    freshenDisplay();
-    ASSERT_EQUALS(PORTBbits.RB0, 0);
-    ASSERT_EQUALS(PORTCbits.RC5, 1);
-    ASSERT_EQUALS(PORTC & 0x0F, 0b1000);
-    ASSERT_EQUALS(PORTA & 0x0F, 0b0110);
-    ASSERT_EQUALS(appFlags.currentSegment, 2);
-
-    //segment 2 - should contain 1
-    recalculateDisplayValue();
-    freshenDisplay();
-    ASSERT_EQUALS(PORTBbits.RB0, 0);
-    ASSERT_EQUALS(PORTCbits.RC5, 0);
-    ASSERT_EQUALS(PORTCbits.RC4, 1);
-    ASSERT_EQUALS(PORTAbits.RA5, 0);
-    ASSERT_EQUALS(PORTC & 0x0F, 0b1101);
-    ASSERT_EQUALS(PORTA & 0x0F, 0b1011);
-    ASSERT_EQUALS(appFlags.currentSegment, 3);
-
-    //segment 3 - should contain 0
-    recalculateDisplayValue();
-    freshenDisplay();
-    ASSERT_EQUALS(PORTAbits.RA5, 1);
-    ASSERT_EQUALS(PORTCbits.RC5, 0);
-    ASSERT_EQUALS(PORTC & 0x0F, 0b0001);
-    ASSERT_EQUALS(PORTA & 0x0F, 0b0010);
-    ASSERT_EQUALS(appFlags.currentSegment, 4);
-
-    //segment 4 - should contain 0
-    recalculateDisplayValue();
-    freshenDisplay();
-    ASSERT_EQUALS(appFlags.currentSegment, 5);
-
-    //segment 5 - should contain 0
-    recalculateDisplayValue();
-    freshenDisplay();
-    ASSERT_EQUALS(appFlags.currentSegment, 0);
-
-
 }
 
 void testProcessSetManualPwmValueRequest() {

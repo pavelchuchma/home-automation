@@ -60,7 +60,7 @@ char uart_sendPacket(Packet *source) {
 
 /**
  * Puts char to receiveQueue
- * Intcrements appFlags.receiveBufferErrCount in case of full queue
+ * Increments appFlags.receiveBufferErrCount in case of full queue
  * @param c char to be put
  */
 void uart_putReceiveQueue(char c) {
@@ -81,20 +81,8 @@ void uart_putReceiveQueue(char c) {
 }
 
 /**
- * Pops character from queue
- * @return
- */
-char uart_popReceiveQueue() {
-    // check if empty
-    if (receiveQueue.r == receiveQueue.w) return 0;
-    char c = receiveQueue.buff[receiveQueue.r];
-    receiveQueue.r = ((receiveQueue.r + 1) & 31);
-    return c;
-}
-
-/**
  * Reads one packet from 'receiveQueue' to 'receivedPacket'
- * - If succeded, then receivedPacket.length > 0
+ * - If succeeded, then receivedPacket.length > 0
  * - receivedPacket.length == 0 if there are no data ready
  * - receivedPacket.length == 0 & appFlags.receiveCrcErrCount is incremented in case of error.
  */
@@ -125,7 +113,7 @@ void uart_readPacket() {
         receiveQueue.packetCount--;
 
         char crc = dataLen + eighthBits;
-        // compute crc & set 8th bits
+        // compute CRC & set 8th bits
 
         if (!(eighthBits & 1)) receivedPacket.bytes[0] &= 127;
         crc += receivedPacket.bytes[0];
@@ -155,14 +143,13 @@ void uart_readPacket() {
         crc += receivedPacket.bytes[6];
 
 eighthBitsDone:
-
-        // check crc
+        // check CRC
         if ((crc & 127) == crcByte) {
             receivedPacket.length = dataLen;
             receivedPacket.isUart = 1;
             return;
         } else {
-            //crc failure, report CRC error
+            //CRC failure, report CRC error
             appFlags.uartReceiveCrcErrCount++;
         }
     } else {
@@ -236,7 +223,7 @@ char can_sendPacket(Packet *source) {
     //Select transmit buffer 0
     ECANCON = (ECANCON & 0b11100000) | 0b00000011;
 
-    while (MAPPED_CONbits.MAPPED_TXREQ); // wait for transmitt buffer is ready
+    while (MAPPED_CONbits.MAPPED_TXREQ); // wait for transmit buffer is ready
     RXB0SIDH = source->nodeId;
     RXB0SIDL = 0;
     RXB0D0 = source->messageType;
