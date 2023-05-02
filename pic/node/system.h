@@ -46,7 +46,6 @@ enum NodeId {
     NODE_26 = 26,
     NODE_ALL = 255,
 };
-#define HAS_ROUTER_DISPLAY 0
 
 #define NODE_ID NODE_ROUTER
 #define RUN_TESTS 0
@@ -82,9 +81,8 @@ extern char nodeId;
 extern volatile AppFlags appFlags;
 extern volatile char heartBeatCounter;
 extern volatile unsigned short heartBeatPeriod;
-extern volatile __uint24 displayValue;
-extern volatile __uint24 displayValueOld;
-extern volatile char displaySegments[6];
+extern volatile __uint24 receivedPacketCount;
+extern volatile __uint24 receivedPacketCountOld;
 
 extern volatile char canReceiveLongMsgCount;
 extern volatile char canReceiveMismatch;
@@ -100,10 +98,8 @@ extern volatile char checkInput;
 #define MAPPED_TXREQ	FILHIT3
 
 
-void recalculateDisplayValue(void);
 void configureOscillator(char freqMHz); /* Handles clock switching/osc initialization */
 void ecanSend(void);
-void checkUartErrors(void);
 
 void processSetPort(void);
 void checkInputChange(void);

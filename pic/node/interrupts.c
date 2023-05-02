@@ -41,8 +41,8 @@ void high_isr(void)
 {
 
       /* This code stub shows general interrupt handling.  Note that these
-      conditional statements are not handled within 3 seperate if blocks.
-      Do not use a seperate if block for each interrupt flag to avoid run
+      conditional statements are not handled within 3 separate if blocks.
+      Do not use a separate if block for each interrupt flag to avoid run
       time errors. */
 
       /* High Priority interrupt routine code here. */
@@ -77,7 +77,7 @@ void high_isr(void)
             TXREG = (sendPacketBuffer.data[sendPacketBuffer.possition++]);
 
             if (sendPacketBuffer.possition == sendPacketBuffer.dataLength) {
-                // All data are written, cler outPacket, disable interrupt
+                // All data are written, clear outPacket, disable interrupt
                 sendPacketBuffer.dataLength = 0;
                 PIE1bits.TXIE = 0;
             }
@@ -86,8 +86,7 @@ void high_isr(void)
             PIE1bits.TXIE = 0;
         }
     } else {
-        /* Unhandled interrupts */
-        
+        /* Unhandled interrupts */        
     }
 
 }
