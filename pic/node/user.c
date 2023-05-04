@@ -216,6 +216,7 @@ void processGetBuildTimeRequest() {
     outPacket.messageType = MSG_GetBuildTimeResponse;
     outPacket.length = 7;
 
+    // __DATE__ is substituted as "May  4 2023"
     //Year
     outPacket.data[0] = (__DATE__[9] - '0') * 10 + __DATE__[10] - '0';
 
@@ -238,7 +239,7 @@ void processGetBuildTimeRequest() {
     if (tmp1 == 'D') outPacket.data[1] = 12;
 
     //Day
-    outPacket.data[2] = (char) ((__DATE__[4] - '0') * 10 + __DATE__[5] - '0');
+    outPacket.data[2] = ((__DATE__[4] == ' ') ? 0 : __DATE__[4] - '0') * 10 + __DATE__[5] - '0';
 
     //Hour
     outPacket.data[3] = (__TIME__[0] - '0') * 10 + __TIME__[1] - '0';
