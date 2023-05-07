@@ -24,6 +24,7 @@
             </formatting>
         </data>
         <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>datasheet</word>
             <word>init</word>
             <word>Prescaler</word>
             <word>Unhandled</word>

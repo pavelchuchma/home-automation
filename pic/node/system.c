@@ -63,7 +63,6 @@ void configureOscillator(char freqMHz) {
     // Oscillator setup
     OSCTUNE = 0b00000000; //INTSRC PLLEN ? TUN4 TUN3 TUN2 TUN1 TUN0
     if (freqMHz == 16) {
-        // todo: Nefunguje!!!, nastavi na 4MHz
         OSCCON = 0b01110010; //IDLEN IRCF2 IRCF1 IRCF0 OSTS IOFS SCS1 SCS0
     } else if (freqMHz == 8) {
         OSCCON = 0b01100010; //IDLEN IRCF2 IRCF1 IRCF0 OSTS IOFS SCS1 SCS0
