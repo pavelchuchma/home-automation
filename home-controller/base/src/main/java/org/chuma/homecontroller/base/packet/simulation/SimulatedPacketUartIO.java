@@ -27,6 +27,7 @@ import org.chuma.homecontroller.base.node.Pin;
 import org.chuma.homecontroller.base.packet.AbstractPacketUartIO;
 import org.chuma.homecontroller.base.packet.Packet;
 import org.chuma.homecontroller.base.packet.PacketUartIO;
+import org.chuma.homecontroller.base.utils.Utils;
 
 /**
  * Implementation of {@link PacketUartIO} which simulates the actual system.
@@ -56,10 +57,7 @@ public class SimulatedPacketUartIO extends AbstractPacketUartIO implements AutoC
                         sendHeartBeat(n);
                     }
                 }
-                try {
-                Thread.sleep(500);
-                } catch (InterruptedException e) {
-                }
+                Utils.sleep(500);
             }
         }).start();
     }

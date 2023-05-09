@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.chuma.homecontroller.extensions.external.inverter.impl.RemoteConfiguration.SELF_USE_MIN_SOC;
 
+import org.chuma.homecontroller.base.utils.Utils;
 import org.chuma.homecontroller.extensions.external.inverter.InverterState;
 
 public class SolaxInverterRemoteClient {
@@ -111,11 +112,7 @@ public class SolaxInverterRemoteClient {
                 log.debug("     exiting");
                 return;
             }
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            Utils.sleep(2000);
         }
         throw new IllegalStateException("Failed to switch inverted ON for config change");
     }
