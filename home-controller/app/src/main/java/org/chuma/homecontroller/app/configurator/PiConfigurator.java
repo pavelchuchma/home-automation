@@ -93,8 +93,6 @@ public class PiConfigurator extends AbstractConfigurator {
 
     @Override
     public void configure() {
-        OptionsSingleton.createInstance("cfg/app.properties", "default-pi.properties");
-
         Node bridge = nodeInfoRegistry.createNode(1, "Bridge");
         Node zadveri = nodeInfoRegistry.createNode(2, "Zadveri");
         Node actor3 = nodeInfoRegistry.createNode(3, "Actor3");
@@ -838,7 +836,7 @@ public class PiConfigurator extends AbstractConfigurator {
     }
 
     private HvacDevice startHvacDevice() {
-        HvacDevice hvacDevice = new HvacDevice("/dev/ttyUSB0", 0x85, 0x20, null);
+        HvacDevice hvacDevice = new HvacDevice("/dev/ttyUSB_FT232R", 0x85, 0x20, null);
         try {
             hvacDevice.start();
         } catch (IOException | Error e) {

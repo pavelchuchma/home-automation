@@ -10,7 +10,7 @@ public abstract class SolaxInverterTestBase {
     protected final String basicConfigPin;
 
     public SolaxInverterTestBase() {
-        Options options = new Options("../cfg/app.properties", "default-pi.properties");
+        Options options = new Options("../cfg/app.properties", "default-app.properties");
         localPassword = options.get("inverter.local.password");
         localUrl = options.get("inverter.local.url");
         remoteUsername = options.get("inverter.remote.username");

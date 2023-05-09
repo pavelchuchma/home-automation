@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import org.chuma.homecontroller.app.configurator.AbstractConfigurator;
 import org.chuma.homecontroller.app.configurator.MartinConfigurator;
+import org.chuma.homecontroller.app.configurator.Options;
+import org.chuma.homecontroller.app.configurator.OptionsSingleton;
 import org.chuma.homecontroller.app.configurator.PiConfigurator;
 import org.chuma.homecontroller.app.configurator.PiPeConfigurator;
 import org.chuma.homecontroller.app.servlet.Servlet;
@@ -21,30 +23,21 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            String port = (System.getenv("COMPUTERNAME") != null) ? "COM1" : "/dev/ttyS80";
+            Options options = OptionsSingleton.createInstance("cfg/app.properties", "default-app.properties");
+            String bridgePortName = options.get("system.bridge.port");
             IPacketUartIO packetUartIO;
-            try {
-                packetUartIO = new PacketUartIO(port, 19200);
-            } catch (Exception | Error e) {
-                if (System.getenv("COMPUTERNAME") != null) {
-                    packetUartIO = new SimulatedPacketUartIO();
-                } else {
-                    throw e;
-                }
+
+            if ("simulator".equals(bridgePortName)) {
+                packetUartIO = new SimulatedPacketUartIO();
+            } else {
+                packetUartIO = new PacketUartIO(bridgePortName, 19200);
             }
 
             NodeInfoRegistry nodeInfoRegistry = new NodeInfoRegistry(packetUartIO);
 
             String hostName = InetAddress.getLocalHost().getHostName();
-            AbstractConfigurator configurator;
-            if (hostName.equalsIgnoreCase("raspberrypi") || hostName.equalsIgnoreCase("CZWW00145")) {
-                configurator = new PiConfigurator(nodeInfoRegistry);
-            } else if (hostName.equalsIgnoreCase("martinpi")) {
-                configurator = new MartinConfigurator(nodeInfoRegistry);
-            } else {
-                configurator = new PiPeConfigurator(nodeInfoRegistry);
-            }
-            log.info("Hostname: " + hostName + " using configurator: " + configurator.getClass());
+            AbstractConfigurator configurator = getConfigurator(nodeInfoRegistry);
+            log.info("Hostname: {}, using configurator: {}", hostName, configurator.getClass());
             configurator.configure();
 
             nodeInfoRegistry.start();
@@ -68,4 +61,16 @@ public class Main {
         }
     }
 
+    private static AbstractConfigurator getConfigurator(NodeInfoRegistry nodeInfoRegistry) {
+        String configurationName = OptionsSingleton.getInstance().get("system.application.configuration.name");
+        switch (configurationName) {
+            case "chuma":
+                return new PiConfigurator(nodeInfoRegistry);
+            case "martin":
+                return new MartinConfigurator(nodeInfoRegistry);
+            case "petr":
+                return new PiPeConfigurator(nodeInfoRegistry);
+        }
+        throw new IllegalArgumentException("Unexpected application configuration name: '" + configurationName + "'");
+    }
 }

@@ -1,5 +1,6 @@
 package org.chuma.homecontroller.base.packet;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -74,9 +75,9 @@ public class PacketSerializer {
         try {
             while (true) {
                 int b = inputStream.read();
-                msgLog.trace(" > byte: " + b);
+                msgLog.trace(" > byte: {}", b);
                 if (b < 0) {
-                    throw new IOException("End of stream reached");
+                    throw new EOFException("End of stream reached");
                 }
                 Packet p = readPacket(b);
                 if (p != null) {
