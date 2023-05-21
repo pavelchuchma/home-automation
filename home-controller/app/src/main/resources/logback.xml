@@ -7,7 +7,7 @@
 
     <appender name="applicationLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>out/app.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <rollingPolicy class="org.chuma.homecontroller.app.logging.SizeAndTimeBasedRollingOnStartPolicy">
             <fileNamePattern>out/app-%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
             <totalSizeCap>2GB</totalSizeCap>
             <maxFileSize>100MB</maxFileSize>
@@ -19,7 +19,7 @@
     </appender>
     <appender name="messagesFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>out/messages.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+        <rollingPolicy class="org.chuma.homecontroller.app.logging.SizeAndTimeBasedRollingOnStartPolicy">
             <fileNamePattern>out/messages-%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
             <totalSizeCap>2GB</totalSizeCap>
             <maxFileSize>100MB</maxFileSize>
