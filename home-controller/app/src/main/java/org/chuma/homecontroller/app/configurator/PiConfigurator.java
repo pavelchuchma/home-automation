@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.chuma.homecontroller.app.servlet.pages.AbstractPage.VIRTUAL_CONFIGURATION_JS_FILENAME;
@@ -836,7 +837,12 @@ public class PiConfigurator extends AbstractConfigurator {
     }
 
     private HvacDevice startHvacDevice() {
-        HvacDevice hvacDevice = new HvacDevice("/dev/ttyUSB_FT232R", 0x85, 0x20, null);
+        String hvacPort = OptionsSingleton.get("hvac.port");
+        if (StringUtils.isEmpty(hvacPort)) {
+            log.warn("HVAC Device port not set, not starting");
+            return null;
+        }
+        HvacDevice hvacDevice = new HvacDevice(hvacPort, 0x85, 0x20, null);
         try {
             hvacDevice.start();
         } catch (IOException | Error e) {

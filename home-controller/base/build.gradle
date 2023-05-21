@@ -12,12 +12,8 @@ plugins {
     id 'eclipse'
 }
 
-
 dependencies {
-    implementation 'org.rxtx:rxtx'
-    implementation 'com.fazecast:jSerialComm:2.9.3'
-
     implementation 'ch.qos.logback:logback-classic'
-
+    implementation 'com.fazecast:jSerialComm'
     implementation 'org.apache.commons:commons-lang3'
 }

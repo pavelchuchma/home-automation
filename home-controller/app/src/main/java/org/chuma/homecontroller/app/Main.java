@@ -25,6 +25,7 @@ public class Main {
         try {
             Options options = OptionsSingleton.createInstance("cfg/app.properties", "default-app.properties");
             String bridgePortName = options.get("system.bridge.port");
+            log.info("Using bridge serial port: {}", bridgePortName);
             IPacketUartIO packetUartIO;
 
             if ("simulator".equals(bridgePortName)) {

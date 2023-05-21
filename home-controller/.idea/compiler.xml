@@ -4,6 +4,8 @@
     <bytecodeTargetLevel target="1.8">
       <module name="home-controller.core.main" target="8" />
       <module name="home-controller.core.test" target="8" />
+      <module name="org.chuma.hvac-controller.hvac-controller.main" target="8" />
+      <module name="org.chuma.hvac-controller.hvac-controller.test" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>

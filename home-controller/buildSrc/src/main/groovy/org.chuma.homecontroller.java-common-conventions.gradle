@@ -7,14 +7,8 @@ repositories {
     // Use Maven Central for resolving dependencies.
     mavenLocal()
     mavenCentral()
-    maven {
-        url 'https://repo.opennms.org/maven2'
-    }
 }
 
-configurations {
-    winRxtx { transitive = false }
-}
 
 dependencies {
     constraints {
@@ -34,8 +28,9 @@ dependencies {
         implementation 'org.eclipse.jetty.websocket:websocket-server:9.1.6.v20160112'
         implementation 'org.eclipse.jetty:jetty-server:9.1.6.v20160112'
 
-        implementation 'org.chuma.hvac-controller:hvac-controller:0.2.0-SNAPSHOT'
+        implementation 'org.chuma.hvac-controller:hvac-controller:0.3.0-SNAPSHOT'
         implementation 'it.sauronsoftware.cron4j:cron4j:2.2.5'
+        implementation 'com.fazecast:jSerialComm:2.9.3'
     }
 
     testImplementation 'junit:junit:4.13.2'
