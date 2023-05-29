@@ -4,7 +4,11 @@ pic/node/nbproject/private
 build
 dist
 controller/out
+**/related_files/backup
+**/related_files/Component
+**/related_files/infobox
 
 # Following "global" directories can lead to problems...
 [Bb]in
 [Oo]bj
+.idea
