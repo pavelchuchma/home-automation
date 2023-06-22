@@ -32,3 +32,8 @@ startScripts {
         unixScript.text = unixScript.text.replace('DEFAULT_JVM_OPTS=""', "DEFAULT_JVM_OPTS=\"${debugOption}\"")
     }
 }
+
+tasks.jar.configure {
+    exclude("**/configuration.js")
+    exclude("**/getBackendUrl.js")
+}

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import org.chuma.homecontroller.app.configurator.AbstractConfigurator;
 import org.chuma.homecontroller.app.configurator.MartinConfigurator;
+import org.chuma.homecontroller.app.configurator.OndraConfigurator;
 import org.chuma.homecontroller.app.configurator.Options;
 import org.chuma.homecontroller.app.configurator.OptionsSingleton;
 import org.chuma.homecontroller.app.configurator.PiConfigurator;
@@ -71,6 +72,8 @@ public class Main {
                 return new MartinConfigurator(nodeInfoRegistry);
             case "petr":
                 return new PiPeConfigurator(nodeInfoRegistry);
+            case "ondra":
+                return new OndraConfigurator(nodeInfoRegistry);
         }
         throw new IllegalArgumentException("Unexpected application configuration name: '" + configurationName + "'");
     }

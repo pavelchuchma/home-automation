@@ -2,23 +2,64 @@ let mainCtx;
 let currentFloor = 0;
 let status;
 let toolbar;
+let floorImages = [];
 
 window.onload = function () {
     try {
-        drawPlanCanvas();
-        toolbar = new Toolbar();
-        status = new Status('/rest/all/status', 750, function () {
-            drawItems();
-        }, getComponents(), getBaseUrl());
-        status.startRefresh();
+        toolbar = new Toolbar('toolsCanvas');
 
-        document.getElementById('planCanvas').addEventListener("click", function (event) {
-            onPlanClick(event);
-        });
+        let imgIndex = 0;
+        for (const imageSrc of getFloorImages()) {
+            const img = new Image();
+            floorImages.push(img);
+            if (imgIndex++ === currentFloor) {
+                img.onload = function () {
+                    this.onLoadContinue();
+                }.bind(this);
+            }
+            img.src = imageSrc;
+        }
     } catch (e) {
         printException(e);
     }
 };
+
+function onLoadContinue() {
+    try {
+        const planCanvas = document.getElementById('planCanvas');
+        planCanvas.width = floorImages[currentFloor].naturalWidth;
+        planCanvas.height = floorImages[currentFloor].naturalHeight;
+        planCanvas.addEventListener("click", function (event) {
+            onPlanClick(event);
+        });
+        mainCtx = planCanvas.getContext("2d");
+        drawPlanCanvas();
+
+        const toolbarTable = document.getElementById('toolbarTable');
+        const additionalToolbars = getAdditionalToolbars();
+        for (const additionalToolbar of additionalToolbars) {
+            let tr = document.createElement('tr');
+            let td = document.createElement('td');
+            let canvas = document.createElement('canvas');
+            canvas.id = additionalToolbar.canvasId;
+            canvas.width = additionalToolbar.canvasWidth;
+            canvas.height = additionalToolbar.canvasHeight;
+
+            toolbarTable.appendChild(tr).appendChild(td).appendChild(canvas);
+
+            additionalToolbar.onCanvasCreated();
+        }
+
+        status = new Status('/rest/all/status', 750, function () {
+            drawItems();
+        }, getComponents().concat(additionalToolbars), getBaseUrl());
+        status.startRefresh();
+
+        initConfiguration();
+    } catch (e) {
+        printException(e);
+    }
+}
 
 function drawItems() {
     for (const item of status.components) {
@@ -29,10 +70,7 @@ function drawItems() {
 }
 
 function drawPlanCanvas() {
-    const c = document.getElementById("planCanvas");
-    mainCtx = c.getContext("2d");
-    const img = document.getElementById(getFloorIds()[currentFloor]);
-    mainCtx.drawImage(img, 0, 0, img.width, img.height);
+    mainCtx.drawImage(floorImages[currentFloor], 0, 0);
 }
 
 function onPlanClick(event) {

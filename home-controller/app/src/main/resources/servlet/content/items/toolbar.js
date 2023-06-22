@@ -1,40 +1,57 @@
 'use strict';
 
 class Toolbar {
-    constructor() {
+    constructor(canvasId) {
+        this.canvasId = canvasId;
         this.items = getToolbarItems();
-        this.selectedItemIndex = 0;
-        this.ctx = getCanvasContext('toolsCanvas');
-        this.itemHeight = this.ctx.canvas.height / this.items.length;
-        for (let i = 0; i < this.items.length; i++) {
-            this.items[i].drawFunction(this.ctx.canvas.width / 2, this.itemHeight * (i + 0.5), this.ctx);
-        }
-        this.#drawToolSelection();
+        this.selectedItem = this.items[0];
 
-        document.getElementById('toolsCanvas').addEventListener("click", (function (event) {
+        let totalHeight = 0;
+        for (const item of this.items) {
+            item.toolbarYPosition = totalHeight + 0.5 * item.height;
+            totalHeight += item.height;
+        }
+
+        let canvas = document.getElementById(canvasId);
+        canvas.height = totalHeight;
+        canvas.width = 110;
+        canvas.addEventListener("click", (function (event) {
             this.onClick(event);
         }).bind(this));
+
+        this.ctx = prepareCanvasContext(this.canvasId);
+        for (const item of this.items) {
+            this.#drawItem(item, item === this.items[0])
+        }
+    }
+
+    #drawItem(item, selected) {
+        const border = 2;
+        this.ctx.beginPath();
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeStyle = 'lightgray';
+        this.ctx.rect(border, item.toolbarYPosition - item.height/2 + border, this.ctx.canvas.width - 2*border, item.height - 2*border);
+        this.ctx.fillStyle = (selected) ? '#FF7B2B' : 'lightgray';
+        this.ctx.fill();
+        this.ctx.stroke();
+
+        item.drawFunction(this.ctx.canvas.width / 2, item.toolbarYPosition, this.ctx)
     }
 
     onClick(event) {
-        this.selectedItemIndex = Math.floor(event.offsetY / this.itemHeight);
-        this.#drawToolSelection();
-    }
-
-    #drawToolSelection() {
-        const itemWidth = this.ctx.canvas.width;
-        for (let i = 0; i < this.items.length; i++) {
-            const r = 35;
-
-            this.ctx.beginPath();
-            this.ctx.rect(itemWidth / 2 - r, (this.itemHeight * (i + 0.5)) - r, 2 * r, 2 * r);
-            this.ctx.strokeStyle = (i === this.selectedItemIndex) ? 'red' : 'lightgray';
-            this.ctx.lineWidth = 10;
-            this.ctx.stroke();
+        for (const item of this.items) {
+            if (event.offsetY > item.toolbarYPosition - item.height / 2 && event.offsetY < item.toolbarYPosition + item.height / 2) {
+                if (this.selectedItem !== item) {
+                    this.#drawItem(this.selectedItem, false)
+                    this.selectedItem = item;
+                    this.#drawItem(this.selectedItem, true)
+                }
+                break;
+            }
         }
     }
 
     getCurrent() {
-        return this.items[this.selectedItemIndex];
+        return this.selectedItem;
     }
 }

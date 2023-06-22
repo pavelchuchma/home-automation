@@ -1,8 +1,8 @@
 'use strict';
 
-class InverterItem extends BaseItem {
-    constructor(id, x, y, floor) {
-        super(id, x, y, floor)
+class InverterItem extends AdditionalToolItem {
+    constructor() {
+        super('inverter', 135)
         this.mode = undefined;
         this.pvPwr = undefined;
         this.acPwr = undefined;
@@ -31,7 +31,7 @@ class InverterItem extends BaseItem {
     }
 
     draw() {
-        const ctx = getCanvasContext("inverterCanvas");
+        const ctx = prepareCanvasContext(this.canvasId);
 
         if (this.mode !== undefined) {
             ctx.font = "12px Arial";

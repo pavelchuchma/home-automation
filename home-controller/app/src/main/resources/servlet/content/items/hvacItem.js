@@ -1,8 +1,8 @@
 'use strict';
 
-class HvacItem extends BaseItem {
-    constructor(id, x, y, floor) {
-        super(id, x, y, floor)
+class HvacItem extends AdditionalToolItem {
+    constructor() {
+        super('hvac', 150)
         this.on = undefined;
         this.fanSpeed = undefined;
         this.currentMode = undefined;
@@ -16,8 +16,10 @@ class HvacItem extends BaseItem {
         this.air2Temperature = undefined;
         this.roomTemperature = undefined;
         this.unitTemperature = undefined;
+    }
 
-        document.getElementById('hvacCanvas').addEventListener("click", (function () {
+    onCanvasCreated() {
+        document.getElementById(this.canvasId).addEventListener("click", (function () {
             this.onClick();
         }).bind(this));
     }
@@ -39,7 +41,7 @@ class HvacItem extends BaseItem {
     }
 
     draw() {
-        const ctx = getCanvasContext("hvacCanvas");
+        const ctx = prepareCanvasContext(this.canvasId);
 
         if (this.on) {
             ctx.font = "bold 15px Arial";

@@ -1,16 +1,12 @@
 'use strict';
 
-class WaterPumpItem extends BaseItem {
-    constructor(id, x, y, floor) {
-        super(id, x, y, floor)
+class WaterPumpItem extends AdditionalToolItem {
+    constructor() {
+        super('wpump', 45)
         this.on = undefined;
         this.recCount = undefined;
         this.lastPeriodRecCount = undefined;
         this.lastRecords = undefined;
-
-        document.getElementById('pumpCanvas').addEventListener("click", (function () {
-            this.onClick();
-        }).bind(this));
     }
 
     update(item) {
@@ -21,7 +17,7 @@ class WaterPumpItem extends BaseItem {
     }
 
     draw() {
-        const ctx = getCanvasContext('pumpCanvas');
+        const ctx = prepareCanvasContext(this.canvasId);
 
         ctx.fillStyle = 'black';
         ctx.font = "12px Arial";
@@ -38,9 +34,5 @@ class WaterPumpItem extends BaseItem {
             ctx.fillStyle = 'red';
         }
         ctx.fillText('⏱ ' + lastDuration + ' s', 5, y += step);
-    }
-
-    onClick() {
-        window.location = '/nodes'
     }
 }

@@ -1,7 +1,13 @@
 'use strict';
 
-function getFloorIds() {
-    return ['1stFloor', '2ndFloor'];
+function getFloorImages() {
+    return ['1stFloor.jpg', '2ndFloor.jpg'];
+}
+
+function initConfiguration() {
+    document.getElementById(_waterPumpItem.canvasId).addEventListener("click", (function () {
+        window.location = '/nodes'
+    }));
 }
 
 function getLouversComponents() {
@@ -148,12 +154,8 @@ function getComponents() {
         new AirValveItem('vlPata', 450, 726, 1),
         new AirValveItem('vlKoupH', 450, 515, 1),
 
-        new HvacItem('hvac', 0, 0, -1),
-        new WaterPumpItem('wpump', 0, 0, -1),
-        new InverterItem('inverter', 0, 0, -1),
-
-        new LightItem('svSklepLevy', 510, 500,0),
-        new LightItem('svSklepPravy', 565, 500,0),
+        new LightItem('svSklepLevy', 510, 500, 0),
+        new LightItem('svSklepPravy', 565, 500, 0),
     ].concat(getLouversComponents(), getPwmLightComponents(), getSensorComponents(), getInfraHeaters());
 }
 
@@ -199,4 +201,13 @@ function getToolbarItems() {
             AirValveItem.drawIcon(x - 10, y + 5, 0, 'stopped', 'green', ctx);
         }, [AirValveItem.name, StairsItem.name], 'toggle')
     ];
+}
+
+const _waterPumpItem = new WaterPumpItem();
+function getAdditionalToolbars() {
+    return[
+        new HvacItem(),
+        _waterPumpItem,
+        new InverterItem(),
+    ]
 }

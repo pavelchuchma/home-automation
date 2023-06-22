@@ -1,7 +1,10 @@
 'use strict';
 
-function getCanvasContext(canvasId) {
+function prepareCanvasContext(canvasId) {
     const ctx = document.getElementById(canvasId).getContext("2d");
+    ctx.beginPath();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'black';
     ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.fillStyle = 'lightgray';
     ctx.fill();

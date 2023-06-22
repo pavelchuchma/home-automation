@@ -28,46 +28,24 @@
 
 <p id="error"></p>
 
-<img height="1500" hidden="1" id="1stFloor" src="1stFloor.jpg" width="588"/>
-<img height="1500" hidden="1" id="2ndFloor" src="2ndFloor.jpg" width="588"/>
-
 <table>
     <tr>
         <td>
-            <canvas height="1500" id="planCanvas" width="588">
+            <canvas id="planCanvas">
                 Your browser does not support the HTML5 canvas tag.
             </canvas>
         </td>
         <td>
             <table>
-                <tr>
-                    <td>
-                        <canvas height="900" id="toolsCanvas" width="110">
-                            Your browser does not support the HTML5 canvas tag.
-                        </canvas>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <canvas height="150" id="hvacCanvas" width="110">
-                            Your browser does not support the HTML5 canvas tag.
-                        </canvas>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <canvas height="45" id="pumpCanvas" width="110">
-                            Your browser does not support the HTML5 canvas tag.
-                        </canvas>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <canvas height="118" id="inverterCanvas" width="110">
-                            Your browser does not support the HTML5 canvas tag.
-                        </canvas>
-                    </td>
-                </tr>
+                <tbody id="toolbarTable">
+                    <tr>
+                        <td>
+                            <canvas id="toolsCanvas">
+                                Your browser does not support the HTML5 canvas tag.
+                            </canvas>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
         </td>
 </table>

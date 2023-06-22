@@ -37,5 +37,19 @@ class BaseItem extends AbstractItem {
         ctx.fill();
         ctx.stroke();
     }
+}
 
+class AdditionalToolItem extends BaseItem {
+    constructor(id, canvasHeight) {
+        super(id, 0, 0, -1);
+        this.canvasId = id + 'Canvas';
+        this.canvasWidth = 110;
+        this.canvasHeight = canvasHeight;
+    }
+
+    /**
+     * Called after canvas creation is done
+     */
+    onCanvasCreated() {
+    }
 }
