@@ -38,5 +38,6 @@ public class InverterHandler extends AbstractRestHandler<InverterMonitor> {
         jw.addAttribute("batSoc", state.getBatterySoc());
         jw.addAttribute("yieldToday", state.getYieldToday());
         jw.addAttribute("consumedToday", state.getConsumedEnergyToday());
+        jw.addAttribute("feedInToday", state.getFeedInEnergyToday());
     }
 }

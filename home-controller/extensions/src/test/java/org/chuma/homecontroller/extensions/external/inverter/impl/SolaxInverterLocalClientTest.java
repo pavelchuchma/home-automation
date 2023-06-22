@@ -27,7 +27,8 @@ public class SolaxInverterLocalClientTest extends SolaxInverterTestBase {
         System.out.println("Battery SOC: " + state.getBatterySoc() + "%");
         System.out.println();
         System.out.println("Yield today: " + state.getYieldToday() + " W");
-        System.out.println("Consumed today: " + state.getConsumedEnergyToday() + " W");
+        System.out.println("Consumed today: " + state.getConsumedEnergyToday() + " kW/h");
+        System.out.println("FeedIn today: " + state.getFeedInEnergyToday() + " kW/h");
         System.out.println();
         int load = grid - feedIn;
         int diff = pv - (battery + grid);

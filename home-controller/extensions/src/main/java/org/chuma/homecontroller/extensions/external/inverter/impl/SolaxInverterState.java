@@ -34,6 +34,7 @@ public class SolaxInverterState implements InverterState {
     public final double yieldTotal;
     public final double yieldToday;
     public final double feedInEnergyTotal;
+    public final double feedInEnergyToday;
     public final double consumedEnergyTotal;
     public final double consumedEnergyToday;
     public final int batterySoc;
@@ -62,6 +63,7 @@ public class SolaxInverterState implements InverterState {
         yieldTotal = packU16(data, 68, 69) / 10d;
         yieldToday = data.getInteger(70) / 10d;
         feedInEnergyTotal = packU16(data, 86, 87) / 100d;
+        feedInEnergyToday = data.getInteger(90) / 100d;
         consumedEnergyTotal = packU16(data, 88, 89) / 100d;
         consumedEnergyToday = data.getInteger(92) / 100d;
         batterySoc = data.getInteger(103);
@@ -174,6 +176,11 @@ public class SolaxInverterState implements InverterState {
     @Override
     public double getFeedInEnergyTotal() {
         return feedInEnergyTotal;
+    }
+
+    @Override
+    public double getFeedInEnergyToday() {
+        return feedInEnergyToday;
     }
 
     @Override

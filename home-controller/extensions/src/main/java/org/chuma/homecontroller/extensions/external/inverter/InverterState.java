@@ -54,6 +54,8 @@ public interface InverterState {
 
     double getFeedInEnergyTotal();
 
+    double getFeedInEnergyToday();
+
     double getConsumedEnergyTotal();
 
     double getConsumedEnergyToday();
