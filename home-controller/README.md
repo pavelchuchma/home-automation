@@ -31,4 +31,5 @@
 * [ ] control lights in bathroom by window switch
 * [ ] refactor hvac control on web (more fan speeds, combine with valve control)
 * [ ] face recognition
+* [ ] BUG: Don't allow to map multiple louvers to single relay `addLouversController()` & `Relay16BoardDevice` 
 

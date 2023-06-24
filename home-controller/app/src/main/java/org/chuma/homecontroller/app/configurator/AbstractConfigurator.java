@@ -39,6 +39,7 @@ import org.chuma.homecontroller.controller.nodeinfo.NodeListener;
 public abstract class AbstractConfigurator {
     static Logger log = LoggerFactory.getLogger(AbstractConfigurator.class.getName());
     final protected NodeInfoRegistry nodeInfoRegistry;
+    final protected NodeListener nodeListener;
     final protected List<PirStatus> pirStatusList = new ArrayList<>();
     final protected List<IOnOffActor> onOffActors = new ArrayList<>();
     final protected List<LouversController> louversControllers = new ArrayList<>();
@@ -47,13 +48,14 @@ public abstract class AbstractConfigurator {
 
     public AbstractConfigurator(NodeInfoRegistry nodeInfoRegistry) {
         this.nodeInfoRegistry = nodeInfoRegistry;
+        nodeListener = nodeInfoRegistry.getNodeListener();
     }
 
-    protected static void configurePwmLights(NodeListener lst, WallSwitch wallSwitch, WallSwitch.Side side, double switchOnValue, PwmActor... pwmActors) {
-        configurePwmLightsImpl(lst, wallSwitch, side, switchOnValue, pwmActors, null);
+    protected void configurePwmLights(WallSwitch wallSwitch, WallSwitch.Side side, double switchOnValue, PwmActor... pwmActors) {
+        configurePwmLightsImpl(wallSwitch, side, switchOnValue, pwmActors, null);
     }
 
-    protected static void configurePwmLightsImpl(NodeListener lst, WallSwitch wallSwitch, WallSwitch.Side side, double switchOnValue, PwmActor[] pwmActors, IOnOffActor[] switchOffOnlyActors) {
+    protected void configurePwmLightsImpl(WallSwitch wallSwitch, WallSwitch.Side side, double switchOnValue, PwmActor[] pwmActors, IOnOffActor[] switchOffOnlyActors) {
         List<Action> upperButtonUpActions = new ArrayList<>();
         List<Action> upperButtonDownActions = new ArrayList<>();
         List<Action> downButtonUpActions = new ArrayList<>();
@@ -74,8 +76,8 @@ public abstract class AbstractConfigurator {
 
         NodePin upperButton = getUpperButton(wallSwitch, side);
         NodePin bottomButton = getBottomButton(wallSwitch, side);
-        lst.addActionBinding(new ActionBinding(upperButton, toArray(upperButtonUpActions), toArray(upperButtonDownActions)));
-        lst.addActionBinding(new ActionBinding(bottomButton, toArray(downButtonUpActions), toArray(downButtonDownActions)));
+        nodeListener.addActionBinding(new ActionBinding(upperButton, toArray(upperButtonUpActions), toArray(upperButtonDownActions)));
+        nodeListener.addActionBinding(new ActionBinding(bottomButton, toArray(downButtonUpActions), toArray(downButtonDownActions)));
     }
 
     /**
@@ -88,7 +90,7 @@ public abstract class AbstractConfigurator {
         return lddActor;
     }
 
-    static void configureLouvers(NodeListener lst, WallSwitch wallSwitch, WallSwitch.Side side, LouversController... louversControllers) {
+    protected void configureLouvers(WallSwitch wallSwitch, WallSwitch.Side side, LouversController... louversControllers) {
         Action[] upButtonDownAction = new Action[louversControllers.length];
         Action[] upButtonUpAction = new Action[louversControllers.length];
         Action[] downButtonDownAction = new Action[louversControllers.length];
@@ -103,8 +105,8 @@ public abstract class AbstractConfigurator {
 
         NodePin upTrigger = getUpperButton(wallSwitch, side);
         NodePin downTrigger = getBottomButton(wallSwitch, side);
-        lst.addActionBinding(new ActionBinding(upTrigger, upButtonDownAction, upButtonUpAction));
-        lst.addActionBinding(new ActionBinding(downTrigger, downButtonDownAction, downButtonUpAction));
+        nodeListener.addActionBinding(new ActionBinding(upTrigger, upButtonDownAction, upButtonUpAction));
+        nodeListener.addActionBinding(new ActionBinding(downTrigger, downButtonDownAction, downButtonUpAction));
     }
 
     protected static NodePin getBottomButton(WallSwitch wallSwitch, WallSwitch.Side side) {
@@ -129,20 +131,20 @@ public abstract class AbstractConfigurator {
         return servlet;
     }
 
-    protected void setupPir(NodeListener lst, NodePin pirPin, String id, String name, Action[] activateActions, Action[] deactivateActions) {
-        setupSensor(lst, pirPin, id, name, activateActions, deactivateActions, true);
+    protected void setupPir(NodePin pirPin, String id, String name, Action[] activateActions, Action[] deactivateActions) {
+        setupSensor(pirPin, id, name, activateActions, deactivateActions, true);
     }
 
-    protected void setupPir(NodeListener lst, NodePin pirPin, String id, String name, Action activateAction, Action deactivateAction) {
-        setupPir(lst, pirPin, id, name, toArray(activateAction), toArray(deactivateAction));
+    protected void setupPir(NodePin pirPin, String id, String name, Action activateAction, Action deactivateAction) {
+        setupPir(pirPin, id, name, toArray(activateAction), toArray(deactivateAction));
     }
 
-    protected void setupMagneticSensor(NodeListener lst, NodePin pirPin, String id, String name, Action[] activateActions, Action[] deactivateActions) {
-        setupSensor(lst, pirPin, id, name, activateActions, deactivateActions, false);
+    protected void setupMagneticSensor(NodePin pirPin, String id, String name, Action[] activateActions, Action[] deactivateActions) {
+        setupSensor(pirPin, id, name, activateActions, deactivateActions, false);
     }
 
-    protected void setupMagneticSensor(NodeListener lst, NodePin pirPin, String id, String name, Action activateAction, Action deactivateAction) {
-        setupMagneticSensor(lst, pirPin, id, name, toArray(activateAction), toArray(deactivateAction));
+    protected void setupMagneticSensor(NodePin pirPin, String id, String name, Action activateAction, Action deactivateAction) {
+        setupMagneticSensor(pirPin, id, name, toArray(activateAction), toArray(deactivateAction));
     }
 
     protected IOnOffActor addOnOffActor(String id, String label, OutputNodePin output, ActorListener... actorListeners) {
@@ -158,14 +160,14 @@ public abstract class AbstractConfigurator {
         return controller;
     }
 
-    private void setupSensor(NodeListener lst, NodePin pirPin, String id, String name, Action[] activateActions, Action[] deactivateActions, boolean logicalOneIsActivate) {
+    private void setupSensor(NodePin pirPin, String id, String name, Action[] activateActions, Action[] deactivateActions, boolean logicalOneIsActivate) {
         PirStatus status = new PirStatus(id, name);
         Action[] activateActionArray = ArrayUtils.addAll(activateActions, status.getActivateAction());
         Action[] deactivateActionArray = ArrayUtils.addAll(deactivateActions, status.getDeactivateAction());
         if (logicalOneIsActivate) {
-            lst.addActionBinding(new ActionBinding(pirPin, deactivateActionArray, activateActionArray));
+            nodeListener.addActionBinding(new ActionBinding(pirPin, deactivateActionArray, activateActionArray));
         } else {
-            lst.addActionBinding(new ActionBinding(pirPin, activateActionArray, deactivateActionArray));
+            nodeListener.addActionBinding(new ActionBinding(pirPin, activateActionArray, deactivateActionArray));
         }
         pirStatusList.add(status);
     }

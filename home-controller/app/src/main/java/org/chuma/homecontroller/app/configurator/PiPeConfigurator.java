@@ -64,13 +64,13 @@ public class PiPeConfigurator extends AbstractConfigurator {
         PwmActor led6PwmActor = addLddLight("pwmVchH", "Vchod hore", lddDevice5.getLdd6(), 1.0); // 1.08
 
 
-        configurePwmLights(lst, switchASw, WallSwitch.Side.LEFT, 0.6, vratnice1PwmActor);
-        configurePwmLights(lst, switchASw, WallSwitch.Side.RIGHT, 0.6, vratnice2PwmActor);
+        configurePwmLights(switchASw, WallSwitch.Side.LEFT, 0.6, vratnice1PwmActor);
+        configurePwmLights(switchASw, WallSwitch.Side.RIGHT, 0.6, vratnice2PwmActor);
 
 
         // PIR
         GenericInputDevice pirDevice = new GenericInputDevice("pirDevice", pirSensors, 3);
-        setupPir(lst, pirDevice.getIn1AndActivate(), "pirZadHVch", "Zadveri hore vchod",
+        setupPir(pirDevice.getIn1AndActivate(), "pirZadHVch", "Zadveri hore vchod",
                 new ContinuousValueSwitchOnActionWithTimer(vratnice2PwmActor, 600, 0.05), new SwitchOffActionWithTimer(vratnice2PwmActor, 10));
 
         // Louvers
@@ -80,7 +80,7 @@ public class PiPeConfigurator extends AbstractConfigurator {
                 zaluzieVratnice = new LouversControllerImpl("lvVrt2", "Vratnice 2", rele51.getRelay1(), rele51.getRelay2(), 10000, 1000),
         };
 
-        configureLouvers(lst, switchBSw, WallSwitch.Side.LEFT, zaluzieVratnice);
+        configureLouvers(switchBSw, WallSwitch.Side.LEFT, zaluzieVratnice);
 
         // Air Valves
         ValveController vzduchVratnice;

@@ -1,5 +1,6 @@
 package org.chuma.homecontroller.app.configurator;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,6 +27,8 @@ import org.chuma.homecontroller.app.servlet.rest.ServletActionHandler;
 import org.chuma.homecontroller.app.servlet.rest.StatusHandler;
 import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
 import org.chuma.homecontroller.base.node.Node;
+import org.chuma.homecontroller.controller.action.Action;
+import org.chuma.homecontroller.controller.actor.Actor;
 import org.chuma.homecontroller.controller.controller.LouversController;
 import org.chuma.homecontroller.controller.device.Relay16BoardDevice;
 import org.chuma.homecontroller.controller.device.WallSwitch;
@@ -41,6 +44,28 @@ public class OndraConfigurator extends AbstractConfigurator {
 
     public OndraConfigurator(NodeInfoRegistry nodeInfoRegistry) {
         super(nodeInfoRegistry);
+    }
+
+    private static class NgrokAction implements Action {
+        private final int port;
+
+        public NgrokAction(int port) {
+            this.port = port;
+        }
+
+        @Override
+        public void perform(int timeSinceLastAction) {
+            try {
+                Runtime.getRuntime().exec("/usr/local/bin/ngrok tcp " + port);
+            } catch (IOException e) {
+                log.error("Failed to start ngrok process", e);
+            }
+        }
+
+        @Override
+        public Actor getActor() {
+            return null;
+        }
     }
 
     @Override
@@ -70,17 +95,47 @@ public class OndraConfigurator extends AbstractConfigurator {
         Relay16BoardDevice releBoard1 = new Relay16BoardDevice("rele1", rele1);
         Relay16BoardDevice releBoard2 = new Relay16BoardDevice("rele2", rele2, true, false, true);
 
-        LouversController zaluzieKoupelna = addLouversController("lvKoupelna", "Koupelna", releBoard1.getRelay(1), releBoard1.getRelay(2), 60_000);
-        LouversController zaluziePracovna = addLouversController("lvPracovna", "Pracovna", releBoard1.getRelay(3), releBoard1.getRelay(4), 60_000);
-        LouversController zaluzieLoznice = addLouversController("lvLoznice", "Ložnice", releBoard1.getRelay(5), releBoard1.getRelay(6), 60_000);
-        LouversController zaluziePokojEdita = addLouversController("lvPokojEdita", "Pokoj Edita", releBoard1.getRelay(7), releBoard1.getRelay(8), 60_000);
-        LouversController zaluziePokojKluci = addLouversController("lvPokojKluci", "Pokoj kluci", releBoard1.getRelay(9), releBoard1.getRelay(10), 60_000);
-        LouversController zaluzieTerasa1 = addLouversController("lvTerasa1", "Terasa 1", releBoard1.getRelay(11), releBoard1.getRelay(12), 60_000);
-        LouversController zaluzieTerasa2 = addLouversController("lvTerasa2", "Terasa 2", releBoard1.getRelay(13), releBoard1.getRelay(14), 60_000);
-        LouversController zaluzieJidelna = addLouversController("lvJidelna", "Jídelna", releBoard1.getRelay(15), releBoard1.getRelay(16), 60_000);
-        LouversController zaluzie = addLouversController("lvKuchyn", "Kuchyň", releBoard2.getRelay(1), releBoard1.getRelay(2), 60_000);
+        LouversController zaluzieKoupelna = addLouversController("lvKoupelna", "Koupelna", releBoard1.getRelay(1), releBoard1.getRelay(2), 38_000);
+        LouversController zaluziePracovna = addLouversController("lvPracovna", "Pracovna", releBoard1.getRelay(3), releBoard1.getRelay(4), 48_000);
+        LouversController zaluzieLoznice = addLouversController("lvLoznice", "Ložnice", releBoard1.getRelay(5), releBoard1.getRelay(6), 48_000);
+        LouversController zaluziePokojKluci = addLouversController("lvPokojKluci", "Pokoj kluci", releBoard1.getRelay(7), releBoard1.getRelay(8), 48_000);
+        LouversController zaluziePokojEdita = addLouversController("lvPokojEdita", "Pokoj Edita", releBoard1.getRelay(9), releBoard1.getRelay(10), 48_000);
+        LouversController zaluzieTerasa1 = addLouversController("lvTerasa1", "Terasa 1", releBoard1.getRelay(11), releBoard1.getRelay(12), 67_000);
+        LouversController zaluzieTerasa2 = addLouversController("lvTerasa2", "Terasa 2", releBoard2.getRelay(1), releBoard2.getRelay(2), 67_000);
+        LouversController zaluzieKuchyn = addLouversController("lvKuchyn", "Kuchyň", releBoard1.getRelay(13), releBoard1.getRelay(14), 38_000);
+        LouversController zaluzieJidelna = addLouversController("lvJidelna", "Jídelna", releBoard1.getRelay(15), releBoard1.getRelay(16), 48_000);
+
+        configureLouvers(lozniceDvereSw, WallSwitch.Side.LEFT, zaluzieLoznice);
+        configureLouvers(lozniceDvereSw, WallSwitch.Side.RIGHT, zaluzieLoznice);
+
+//        configureLouvers(loznicePostelSw, WallSwitch.Side.LEFT, zaluzieKoupelna, zaluziePracovna, zaluzieLoznice,
+//                zaluziePokojEdita, zaluziePokojKluci, zaluzieTerasa1, zaluzieTerasa2, zaluzieJidelna, zaluzieKuchyn);
+        configureLouvers(loznicePostelSw, WallSwitch.Side.RIGHT, zaluzieLoznice);
+
+        configureLouvers(pracovnaSw, WallSwitch.Side.LEFT, zaluziePracovna);
+        configureLouvers(pracovnaSw, WallSwitch.Side.RIGHT, zaluziePracovna);
+
+        configureLouvers(pokojEditaSw, WallSwitch.Side.LEFT, zaluziePokojKluci);
+        configureLouvers(pokojEditaSw, WallSwitch.Side.RIGHT, zaluziePokojEdita);
+        configureLouvers(pokojKluciSw, WallSwitch.Side.LEFT, zaluziePokojKluci);
+        configureLouvers(pokojKluciSw, WallSwitch.Side.RIGHT, zaluziePokojEdita);
+
+        configureLouvers(koupelnaHorniSw, WallSwitch.Side.LEFT, zaluzieKoupelna);
+        configureLouvers(koupelnaHorniSw, WallSwitch.Side.RIGHT, zaluzieKoupelna);
+
+        configureLouvers(obyvakSw1, WallSwitch.Side.LEFT, zaluzieTerasa1);
+        configureLouvers(obyvakSw1, WallSwitch.Side.RIGHT, zaluzieTerasa2);
+        configureLouvers(obyvakSw2, WallSwitch.Side.LEFT, zaluzieJidelna);
+        configureLouvers(obyvakSw2, WallSwitch.Side.RIGHT, zaluzieKuchyn);
+        configureLouvers(obyvakSw3, WallSwitch.Side.LEFT, zaluzieTerasa1, zaluzieTerasa2, zaluzieJidelna, zaluzieKuchyn);
+//        configureLouvers(obyvakSw3, WallSwitch.Side.RIGHT, zaluzieKoupelna, zaluziePracovna, zaluzieLoznice,
+//                zaluziePokojEdita, zaluziePokojKluci, zaluzieTerasa1, zaluzieTerasa2, zaluzieJidelna, zaluzieKuchyn);
+
 
         List<ServletAction> servletActions = new ArrayList<>();
+        servletActions.add(new ServletAction("ngrokSsh", "Start ngrok SSH", new NgrokAction(22)));
+        servletActions.add(new ServletAction("ngrokHttp", "Start ngrok HTTP", new NgrokAction(80)));
+        servletActions.add(new ServletAction("ngrokKodiWeb", "Start ngrok KodiWeb", new NgrokAction(8080)));
 
         List<WebSocketHandler> wsHandlers = new ArrayList<>();
         // page handlers

@@ -19,7 +19,6 @@ public class MartinConfigurator extends AbstractConfigurator {
 
     @Override
     public void configure() {
-        NodeListener lst = nodeInfoRegistry.getNodeListener();
         ArrayList<Action> lightsActions = new ArrayList<>();
 
         Node bridge = nodeInfoRegistry.createNode(1, "Bridge");
@@ -39,9 +38,9 @@ public class MartinConfigurator extends AbstractConfigurator {
         LouversController vyhybka02 = addLouversController("lvVyh02", "Vyhybka 02", rele51.getRelay3(), rele51.getRelay4(), 1000);
         LouversController vyhybka03 = addLouversController("lvVyh03", "Vyhybka 03", rele51.getRelay5(), rele51.getRelay6(), 1000);
 
-        configureLouvers(lst, switchASw, WallSwitch.Side.LEFT, vyhybka01);
-        configureLouvers(lst, switchASw, WallSwitch.Side.RIGHT, vyhybka02);
-        configureLouvers(lst, switchBSw, WallSwitch.Side.LEFT, vyhybka03);
+        configureLouvers(switchASw, WallSwitch.Side.LEFT, vyhybka01);
+        configureLouvers(switchASw, WallSwitch.Side.RIGHT, vyhybka02);
+        configureLouvers(switchBSw, WallSwitch.Side.LEFT, vyhybka03);
 
 
         // Air Valves
