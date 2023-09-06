@@ -28,7 +28,7 @@ class Status {
 
     _refreshImpl() {
         const request = new XMLHttpRequest();
-        request.open('GET', this.baseUrl + this.statusRefreshPath, false);
+        request.open('GET', this.baseUrl + this.statusRefreshPath, true);
         request.onreadystatechange = (function () {
             if (request.readyState === 4 && request.status === 200) {
                 try {

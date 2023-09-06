@@ -62,6 +62,7 @@ function onLoadContinue() {
 }
 
 function drawItems() {
+    drawPlanCanvas();
     for (const item of status.components) {
         if (item.floor === currentFloor || item.floor < 0) {
             item.draw(mainCtx);

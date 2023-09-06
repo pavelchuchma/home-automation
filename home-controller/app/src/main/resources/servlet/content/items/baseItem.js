@@ -25,7 +25,7 @@ class BaseItem extends AbstractItem {
 
     static _send(path) {
         const request = new XMLHttpRequest();
-        request.open('GET', getBaseUrl() + path, false);
+        request.open('GET', getBaseUrl() + path, true);
         request.send();
     }
 
