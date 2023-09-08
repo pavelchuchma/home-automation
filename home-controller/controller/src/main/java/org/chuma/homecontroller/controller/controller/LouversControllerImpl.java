@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.base.node.OutputNodePin;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
 import org.chuma.homecontroller.controller.actor.OnOffActor;
+import org.chuma.homecontroller.controller.persistence.StateMap;
 
 public class LouversControllerImpl implements LouversController {
     public static final double UP_POSITION_RESERVE = 0.08;
@@ -21,23 +22,23 @@ public class LouversControllerImpl implements LouversController {
     // initialization necessary due to optimized stop()
     Object actionData = new Object();
 
-    public LouversControllerImpl(String id, String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs, int maxOffsetMs) {
-        init(id, name, upActor, downActor, downPositionMs, maxOffsetMs);
+    public LouversControllerImpl(String id, String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs, int maxOffsetMs, StateMap stateMap) {
+        init(id, name, upActor, downActor, downPositionMs, maxOffsetMs, stateMap);
     }
 
-    public LouversControllerImpl(String id, String name, OutputNodePin relayUp, OutputNodePin relayDown, int downPositionMs, int maxOffsetMs) {
+    public LouversControllerImpl(String id, String name, OutputNodePin relayUp, OutputNodePin relayDown, int downPositionMs, int maxOffsetMs, StateMap stateMap) {
         IOnOffActor upActor = new OnOffActor(name + " Up", "LABEL", relayUp);
         IOnOffActor downActor = new OnOffActor(name + " Down", "LABEL", relayDown);
 
-        init(id, name, upActor, downActor, downPositionMs, maxOffsetMs);
+        init(id, name, upActor, downActor, downPositionMs, maxOffsetMs, stateMap);
     }
 
-    private void init(String id, String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs, int maxOffsetMs) {
+    private void init(String id, String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs, int maxOffsetMs, StateMap stateMap) {
         this.id = id;
         this.name = name;
         this.upActor = upActor;
         this.downActor = downActor;
-        louversPosition = new LouversPosition(downPositionMs, maxOffsetMs, (int)(downPositionMs * UP_POSITION_RESERVE));
+        louversPosition = new LouversPosition(downPositionMs, maxOffsetMs, (int)(downPositionMs * UP_POSITION_RESERVE), id, stateMap);
     }
 
     @Override

@@ -6,7 +6,7 @@ import org.junit.Test;
 public class LouversPositionTest {
     @Test
     public void testFindDownPosition() throws Exception {
-        LouversPosition lp = new LouversPosition(100, 10, 0);
+        LouversPosition lp = new LouversPosition(100, 10, 0, "xx", PositionTest.createEmpty100MsStateMap());
         Assert.assertEquals(-1, lp.getPosition());
         Assert.assertEquals(-1, lp.getOffset());
 
@@ -63,7 +63,7 @@ public class LouversPositionTest {
 
     @Test
     public void testFindUpperPosition() throws Exception {
-        LouversPosition lp = new LouversPosition(100, 10, 0);
+        LouversPosition lp = new LouversPosition(100, 10, 0, "xx", PositionTest.createEmpty100MsStateMap());
         Assert.assertEquals(-1, lp.getPosition());
         Assert.assertEquals(-1, lp.getOffset());
 
@@ -110,7 +110,7 @@ public class LouversPositionTest {
 
     @Test
     public void testMovement() throws Exception {
-        LouversPosition lp = new LouversPosition(1000, 100, 0);
+        LouversPosition lp = new LouversPosition(1000, 100, 0, "xx", PositionTest.createEmpty100MsStateMap());
 
         int i = lp.startDown();
         Assert.assertEquals(1000, i);

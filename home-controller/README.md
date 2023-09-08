@@ -18,6 +18,7 @@
 * [x] BUG: Mem leak - Missing periodic message log clean in NodeInfo
 * [x] Use executors instead of explicit thread creation. See todo in SwitchListener
 * [x] Add Solax inverter support
+* [x] Persistent Louvers and AirValve state (survive app restart)
 * [ ] Add Solax web control (change configuration)
 * [ ] Merge GenericOutputDevice and GenericInputDevice into new GenericDevice
 * [ ] Denon AVR support (using denon4j)

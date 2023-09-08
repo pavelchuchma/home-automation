@@ -2,16 +2,17 @@ package org.chuma.homecontroller.controller.controller;
 
 import org.chuma.homecontroller.base.node.OutputNodePin;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
+import org.chuma.homecontroller.controller.persistence.StateMap;
 
 public class ValveControllerImpl implements ValveController {
     private final LouversControllerImpl impl;
 
-    public ValveControllerImpl(String id, String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs) {
-        impl = new LouversControllerImpl(id, name, upActor, downActor, downPositionMs, 0);
+    public ValveControllerImpl(String id, String name, IOnOffActor upActor, IOnOffActor downActor, int downPositionMs, StateMap stateMap) {
+        impl = new LouversControllerImpl(id, name, upActor, downActor, downPositionMs, 0, stateMap);
     }
 
-    public ValveControllerImpl(String id, String name, OutputNodePin relayUp, OutputNodePin relayDown, int downPositionMs) {
-        impl = new LouversControllerImpl(id, name, relayUp, relayDown, downPositionMs, 0);
+    public ValveControllerImpl(String id, String name, OutputNodePin relayUp, OutputNodePin relayDown, int downPositionMs, StateMap stateMap) {
+        impl = new LouversControllerImpl(id, name, relayUp, relayDown, downPositionMs, 0, stateMap);
     }
 
     @Override

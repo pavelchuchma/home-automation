@@ -18,13 +18,17 @@ import org.chuma.homecontroller.base.packet.PacketUartIO;
 import org.chuma.homecontroller.base.packet.PacketUartIOException;
 import org.chuma.homecontroller.base.packet.simulation.SimulatedPacketUartIO;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
+import org.chuma.homecontroller.controller.persistence.PersistentStateMap;
+import org.chuma.homecontroller.controller.persistence.StateMap;
 
 public class Main {
+    public static final String APP_PROPERTIES_FILE = "cfg/app.properties";
+    public static final String STATE_MAP_FILE = "cfg/app-state.properties";
     static Logger log = LoggerFactory.getLogger(Main.class.getName());
 
     public static void main(String[] args) {
         try {
-            Options options = OptionsSingleton.createInstance("cfg/app.properties", "default-app.properties");
+            Options options = OptionsSingleton.createInstance(APP_PROPERTIES_FILE, "default-app.properties");
             String bridgePortName = options.get("system.bridge.port");
             log.info("Using bridge serial port: {}", bridgePortName);
             IPacketUartIO packetUartIO;
@@ -65,15 +69,16 @@ public class Main {
 
     private static AbstractConfigurator getConfigurator(NodeInfoRegistry nodeInfoRegistry) {
         String configurationName = OptionsSingleton.getInstance().get("system.application.configuration.name");
+        StateMap stateMap = new PersistentStateMap(STATE_MAP_FILE, 10_000);
         switch (configurationName) {
             case "chuma":
-                return new PiConfigurator(nodeInfoRegistry);
+                return new PiConfigurator(nodeInfoRegistry, stateMap);
             case "martin":
-                return new MartinConfigurator(nodeInfoRegistry);
+                return new MartinConfigurator(nodeInfoRegistry, stateMap);
             case "petr":
-                return new PiPeConfigurator(nodeInfoRegistry);
+                return new PiPeConfigurator(nodeInfoRegistry, stateMap);
             case "ondra":
-                return new OndraConfigurator(nodeInfoRegistry);
+                return new OndraConfigurator(nodeInfoRegistry, stateMap);
         }
         throw new IllegalArgumentException("Unexpected application configuration name: '" + configurationName + "'");
     }

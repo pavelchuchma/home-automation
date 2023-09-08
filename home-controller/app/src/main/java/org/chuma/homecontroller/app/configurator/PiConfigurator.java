@@ -69,6 +69,7 @@ import org.chuma.homecontroller.controller.device.SwitchIndicator;
 import org.chuma.homecontroller.controller.device.TriacBoardDevice;
 import org.chuma.homecontroller.controller.device.WallSwitch;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
+import org.chuma.homecontroller.controller.persistence.StateMap;
 import org.chuma.homecontroller.extensions.action.condition.SunCondition;
 import org.chuma.homecontroller.extensions.actor.HvacActor;
 import org.chuma.homecontroller.extensions.actor.RadioOnOffActor;
@@ -87,8 +88,8 @@ public class PiConfigurator extends AbstractConfigurator {
     private static final String CFG_INVERTER_MANAGER_MINIMAL_SOC = "inverter.manager.minimal.soc";
     static Logger log = LoggerFactory.getLogger(PiConfigurator.class.getName());
 
-    public PiConfigurator(NodeInfoRegistry nodeInfoRegistry) {
-        super(nodeInfoRegistry);
+    public PiConfigurator(NodeInfoRegistry nodeInfoRegistry, StateMap stateMap) {
+        super(nodeInfoRegistry, stateMap);
     }
 
     @Override
@@ -279,17 +280,17 @@ public class PiConfigurator extends AbstractConfigurator {
         LouversController zaluzieVratnice3 = addLouversController("lvVrt3", "Vrátnice 3", rele5ZaluzieBPort2.getRelay5(), rele5ZaluzieBPort2.getRelay6(), 40000);
 
         ValveController[] valveControllers = new ValveController[]{
-                new ValveControllerImpl("vlVrt", "Vratnice", rele11.getRelay1(), rele11.getRelay2(), 150000),
-                new ValveControllerImpl("vlPrc", "Pracovna", rele11.getRelay3(), rele11.getRelay4(), 150000),
-                new ValveControllerImpl("vlKoupD", "KoupelnaDole", rele11.getRelay5(), rele11.getRelay6(), 150000),
+                new ValveControllerImpl("vlVrt", "Vratnice", rele11.getRelay1(), rele11.getRelay2(), 150000, stateMap),
+                new ValveControllerImpl("vlPrc", "Pracovna", rele11.getRelay3(), rele11.getRelay4(), 150000, stateMap),
+                new ValveControllerImpl("vlKoupD", "KoupelnaDole", rele11.getRelay5(), rele11.getRelay6(), 150000, stateMap),
 
-                new ValveControllerImpl("vlJid", "Jidelna", rele09.getRelay1(), rele09.getRelay2(), 150000),
-                new ValveControllerImpl("vlKoupH", "KoupelnaHore", rele09.getRelay3(), rele09.getRelay4(), 150000),
-                new ValveControllerImpl("vlPata", "Pata", rele09.getRelay5(), rele09.getRelay6(), 150000),
+                new ValveControllerImpl("vlJid", "Jidelna", rele09.getRelay1(), rele09.getRelay2(), 150000, stateMap),
+                new ValveControllerImpl("vlKoupH", "KoupelnaHore", rele09.getRelay3(), rele09.getRelay4(), 150000, stateMap),
+                new ValveControllerImpl("vlPata", "Pata", rele09.getRelay5(), rele09.getRelay6(), 150000, stateMap),
 
-                new ValveControllerImpl("vlObyv23", "Obyvak 2+3", rele10.getRelay1(), rele10.getRelay2(), 150000),
-                new ValveControllerImpl("vlMarek", "Marek", rele10.getRelay3(), rele10.getRelay4(), 150000),
-                new ValveControllerImpl("vlObyv45", "Obyvak 4+5", rele10.getRelay5(), rele10.getRelay6(), 150000),
+                new ValveControllerImpl("vlObyv23", "Obyvak 2+3", rele10.getRelay1(), rele10.getRelay2(), 150000, stateMap),
+                new ValveControllerImpl("vlMarek", "Marek", rele10.getRelay3(), rele10.getRelay4(), 150000, stateMap),
+                new ValveControllerImpl("vlObyv45", "Obyvak 4+5", rele10.getRelay5(), rele10.getRelay6(), 150000, stateMap),
         };
 
         SwitchIndicator krystofIndicator = new SwitchIndicator(krystofSwA2.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF);

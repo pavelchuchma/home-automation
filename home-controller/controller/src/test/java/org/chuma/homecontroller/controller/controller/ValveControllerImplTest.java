@@ -12,7 +12,7 @@ public class ValveControllerImplTest extends AbstractControllerTest {
 
     @Test
     public void testValveClose() {
-        ValveController vc = new ValveControllerImpl("vc", "LC", openActor, closeActor, valveSwitchDuration);
+        ValveController vc = new ValveControllerImpl("vc", "LC", openActor, closeActor, valveSwitchDuration, PositionTest.createEmpty100MsStateMap());
 
         vc.close();
 
@@ -25,7 +25,7 @@ public class ValveControllerImplTest extends AbstractControllerTest {
 
     @Test
     public void testValveManipulation() {
-        ValveController vc = new ValveControllerImpl("vc", "LC", openActor, closeActor, valveSwitchDuration);
+        ValveController vc = new ValveControllerImpl("vc", "LC", openActor, closeActor, valveSwitchDuration, PositionTest.createEmpty100MsStateMap());
 
         vc.close();
         vc.setPosition(1);
@@ -60,7 +60,7 @@ public class ValveControllerImplTest extends AbstractControllerTest {
 
     @Test
     public void testValveManipulationOpenClose() {
-        ValveController vc = new ValveControllerImpl("vc", "LC", openActor, closeActor, 20_000);
+        ValveController vc = new ValveControllerImpl("vc", "LC", openActor, closeActor, 20_000, PositionTest.createEmpty100MsStateMap());
 
         vc.close();
         Assert.assertEquals(1.0, vc.getPosition(), 0.001);

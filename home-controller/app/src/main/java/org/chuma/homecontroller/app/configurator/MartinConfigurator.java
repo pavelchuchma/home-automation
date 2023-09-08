@@ -9,12 +9,12 @@ import org.chuma.homecontroller.controller.controller.ValveController;
 import org.chuma.homecontroller.controller.device.RelayBoardDevice;
 import org.chuma.homecontroller.controller.device.WallSwitch;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
-import org.chuma.homecontroller.controller.nodeinfo.NodeListener;
+import org.chuma.homecontroller.controller.persistence.StateMap;
 
 public class MartinConfigurator extends AbstractConfigurator {
 
-    public MartinConfigurator(NodeInfoRegistry nodeInfoRegistry) {
-        super(nodeInfoRegistry);
+    public MartinConfigurator(NodeInfoRegistry nodeInfoRegistry, StateMap stateMap) {
+        super(nodeInfoRegistry, stateMap);
     }
 
     @Override

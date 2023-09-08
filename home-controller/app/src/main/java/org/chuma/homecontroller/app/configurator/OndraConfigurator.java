@@ -33,6 +33,7 @@ import org.chuma.homecontroller.controller.controller.LouversController;
 import org.chuma.homecontroller.controller.device.Relay16BoardDevice;
 import org.chuma.homecontroller.controller.device.WallSwitch;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
+import org.chuma.homecontroller.controller.persistence.StateMap;
 
 @SuppressWarnings({"unused", "DuplicatedCode", "SpellCheckingInspection"})
 public class OndraConfigurator extends AbstractConfigurator {
@@ -42,8 +43,8 @@ public class OndraConfigurator extends AbstractConfigurator {
     private static final String CFG_INVERTER_MANAGER_MINIMAL_SOC = "inverter.manager.minimal.soc";
     static Logger log = LoggerFactory.getLogger(OndraConfigurator.class.getName());
 
-    public OndraConfigurator(NodeInfoRegistry nodeInfoRegistry) {
-        super(nodeInfoRegistry);
+    public OndraConfigurator(NodeInfoRegistry nodeInfoRegistry, StateMap stateMap) {
+        super(nodeInfoRegistry, stateMap);
     }
 
     private static class NgrokAction implements Action {

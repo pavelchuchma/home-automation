@@ -35,6 +35,7 @@ import org.chuma.homecontroller.controller.device.WallSwitch;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfo;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 import org.chuma.homecontroller.controller.nodeinfo.NodeListener;
+import org.chuma.homecontroller.controller.persistence.StateMap;
 
 public abstract class AbstractConfigurator {
     static Logger log = LoggerFactory.getLogger(AbstractConfigurator.class.getName());
@@ -44,11 +45,13 @@ public abstract class AbstractConfigurator {
     final protected List<IOnOffActor> onOffActors = new ArrayList<>();
     final protected List<LouversController> louversControllers = new ArrayList<>();
     final protected List<LddActor> lddActors = new ArrayList<>();
+    final protected StateMap stateMap;
     Servlet servlet;
 
-    public AbstractConfigurator(NodeInfoRegistry nodeInfoRegistry) {
+    public AbstractConfigurator(NodeInfoRegistry nodeInfoRegistry, StateMap stateMap) {
         this.nodeInfoRegistry = nodeInfoRegistry;
         nodeListener = nodeInfoRegistry.getNodeListener();
+        this.stateMap = stateMap;
     }
 
     protected void configurePwmLights(WallSwitch wallSwitch, WallSwitch.Side side, double switchOnValue, PwmActor... pwmActors) {
@@ -154,8 +157,9 @@ public abstract class AbstractConfigurator {
     }
 
     abstract int getLouversMaxOffsetMs();
+
     protected LouversController addLouversController(String id, String name, OutputNodePin relayUp, OutputNodePin relayDown, int downPositionMs) {
-        LouversController controller = new LouversControllerImpl(id, name, relayUp, relayDown, downPositionMs, getLouversMaxOffsetMs());
+        LouversController controller = new LouversControllerImpl(id, name, relayUp, relayDown, downPositionMs, getLouversMaxOffsetMs(), stateMap);
         louversControllers.add(controller);
         return controller;
     }

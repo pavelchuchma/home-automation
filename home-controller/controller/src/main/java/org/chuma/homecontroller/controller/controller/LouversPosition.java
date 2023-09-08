@@ -1,14 +1,16 @@
 package org.chuma.homecontroller.controller.controller;
 
+import org.chuma.homecontroller.controller.persistence.StateMap;
+
 public class LouversPosition {
     public static final int DOWN_TOLERANCE = 10;
     Position position;
     Position offset;
     int upReserve;
 
-    public LouversPosition(int maxPositionMs, int maxOffsetMs, int upReserve) {
-        position = new Position(maxPositionMs);
-        offset = new Position(maxOffsetMs);
+    public LouversPosition(int maxPositionMs, int maxOffsetMs, int upReserve, String id, StateMap stateMap) {
+        position = new Position(maxPositionMs, id + ".pos", stateMap);
+        offset = new Position(maxOffsetMs, id + ".off", stateMap);
         this.upReserve = upReserve;
     }
 

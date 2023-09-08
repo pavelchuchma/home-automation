@@ -57,7 +57,7 @@ public class Options {
             }
             // If available, load additional properties from file
             if (file.exists()) {
-                try (InputStream is = new FileInputStream(file)) {
+                try (InputStream is = Files.newInputStream(file.toPath())) {
                     loadFrom(is);
                 }
             }
@@ -132,7 +132,7 @@ public class Options {
         if (!file.getParentFile().exists()) {
             Files.createDirectories(file.getParentFile().toPath());
         }
-        try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+        try (BufferedWriter w = new BufferedWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8))) {
             String[] keys = getNames().toArray(new String[0]);
             Arrays.sort(keys);
             for (String key : keys) {

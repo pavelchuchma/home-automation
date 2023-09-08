@@ -25,7 +25,7 @@ public class LouversControllerImplTest extends AbstractControllerTest {
 
     @Test
     public void testUp() {
-        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, 1000, 10);
+        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, 1000, 10, PositionTest.createEmpty100MsStateMap());
 
         lc.up();
 
@@ -39,7 +39,7 @@ public class LouversControllerImplTest extends AbstractControllerTest {
 
     @Test
     public void testDown() {
-        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, louversLength, offsetLength);
+        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, louversLength, offsetLength, PositionTest.createEmpty100MsStateMap());
 
         lc.blind();
 
@@ -52,7 +52,7 @@ public class LouversControllerImplTest extends AbstractControllerTest {
 
     @Test
     public void testDownAndOutshine() {
-        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, louversLength, offsetLength);
+        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, louversLength, offsetLength, PositionTest.createEmpty100MsStateMap());
 
         lc.blind();
 
@@ -97,7 +97,7 @@ public class LouversControllerImplTest extends AbstractControllerTest {
     @Test
     public void testDownAndOutshineAsync() throws Exception {
         final double testOffset = 0.4;
-        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, louversLength, offsetLength);
+        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, louversLength, offsetLength, PositionTest.createEmpty100MsStateMap());
         lc.up();
         actions.clear();
 
@@ -134,7 +134,7 @@ public class LouversControllerImplTest extends AbstractControllerTest {
 
     @Test
     public void testDownAndStop() throws Exception {
-        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, louversLength, offsetLength);
+        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, louversLength, offsetLength, PositionTest.createEmpty100MsStateMap());
         lc.up();
 
         final ScheduledFuture<?> future = scheduler.schedule(lc::stop, 300, TimeUnit.MILLISECONDS);
@@ -164,7 +164,7 @@ public class LouversControllerImplTest extends AbstractControllerTest {
 
     @Test
     public void testDownAndUp() throws Exception {
-        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, louversLength, offsetLength);
+        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, louversLength, offsetLength, PositionTest.createEmpty100MsStateMap());
         lc.up();
 
         final ScheduledFuture<?> future = scheduler.schedule(lc::up, 300, TimeUnit.MILLISECONDS);
@@ -200,7 +200,7 @@ public class LouversControllerImplTest extends AbstractControllerTest {
 
     @Test
     public void testDownAndUpBroken() {
-        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, louversLength, offsetLength);
+        LouversControllerImpl lc = new LouversControllerImpl("lc", "LC", upActor, downActor, louversLength, offsetLength, PositionTest.createEmpty100MsStateMap());
         lc.up();
 
         final ScheduledFuture<?> future = scheduler.schedule(

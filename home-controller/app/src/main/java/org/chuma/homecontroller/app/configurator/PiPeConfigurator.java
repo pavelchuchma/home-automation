@@ -19,11 +19,12 @@ import org.chuma.homecontroller.controller.device.SwitchIndicator;
 import org.chuma.homecontroller.controller.device.WallSwitch;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 import org.chuma.homecontroller.controller.nodeinfo.NodeListener;
+import org.chuma.homecontroller.controller.persistence.StateMap;
 
 public class PiPeConfigurator extends AbstractConfigurator {
 
-    public PiPeConfigurator(NodeInfoRegistry nodeInfoRegistry) {
-        super(nodeInfoRegistry);
+    public PiPeConfigurator(NodeInfoRegistry nodeInfoRegistry, StateMap stateMap) {
+        super(nodeInfoRegistry, stateMap);
     }
 
     @Override
@@ -77,7 +78,7 @@ public class PiPeConfigurator extends AbstractConfigurator {
         LouversController zaluzieVratnice;
 
         LouversController[] louversControllers = new LouversController[]{
-                zaluzieVratnice = new LouversControllerImpl("lvVrt2", "Vratnice 2", rele51.getRelay1(), rele51.getRelay2(), 10000, 1000),
+                zaluzieVratnice = new LouversControllerImpl("lvVrt2", "Vratnice 2", rele51.getRelay1(), rele51.getRelay2(), 10000, 1000, stateMap),
         };
 
         configureLouvers(switchBSw, WallSwitch.Side.LEFT, zaluzieVratnice);
@@ -86,7 +87,7 @@ public class PiPeConfigurator extends AbstractConfigurator {
         ValveController vzduchVratnice;
 
         ValveController[] valveControllers = new ValveController[]{
-                vzduchVratnice = new ValveControllerImpl("vlVrt", "Vratnice", rele51.getRelay5(), rele51.getRelay6(),10000),
+                vzduchVratnice = new ValveControllerImpl("vlVrt", "Vratnice", rele51.getRelay5(), rele51.getRelay6(),10000, stateMap),
         };
 
 //        Servlet.setLouversControllers(louversControllers);
