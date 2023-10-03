@@ -5,7 +5,7 @@ function getFloorImages() {
 }
 
 function initConfiguration() {
-    document.getElementById(_waterPumpItem.canvasId).addEventListener("click", (function () {
+    document.getElementById(new WaterPumpItem().canvasId).addEventListener("click", (function () {
         window.location = '/nodes'
     }));
 }
@@ -122,12 +122,12 @@ function getSensorComponents() {
         new PirItem('pirZadHCh', 179, 346, 1),
         new PirItem('pirChMa', 207, 946, 1),
 
-        new BaseItem('mgntGH', 18, 61, 1),
-        new BaseItem('mgntGD', 18, 117, 1),
-        new BaseItem('mgntCrpd', 438, 376, 0),
+        new SensorItem('mgntGH', 18, 61, 1),
+        new SensorItem('mgntGD', 18, 117, 1),
+        new SensorItem('mgntCrpd', 438, 376, 0),
 
-        new BaseItem('pisD', 0, 0, 0),
-        new BaseItem('pisH', 0, 0, 1),
+        new SensorItem('pisD', 0, 0, 0),
+        new SensorItem('pisH', 0, 0, 1),
     ];
 }
 
@@ -203,11 +203,10 @@ function getToolbarItems() {
     ];
 }
 
-const _waterPumpItem = new WaterPumpItem();
 function getAdditionalToolbars() {
     return[
         new HvacItem(),
-        _waterPumpItem,
+        new WaterPumpItem(),
         new InverterItem(),
     ]
 }

@@ -1,17 +1,8 @@
 'use strict';
 
-class PirItem extends BaseItem {
+class PirItem extends SensorItem {
     constructor(id, x, y, floor) {
         super(id, x, y, floor)
-        this.name = undefined;
-        this.active = undefined;
-        this.age = undefined;
-    }
-
-    update(item) {
-        this.name = item.name;
-        this.active = item.active;
-        this.age = item.age;
     }
 
     draw(ctx) {
@@ -39,6 +30,4 @@ class PirItem extends BaseItem {
             ctx.stroke();
         }
     }
-
-
 }

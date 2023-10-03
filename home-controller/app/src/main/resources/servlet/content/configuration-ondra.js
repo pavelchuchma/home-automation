@@ -5,7 +5,7 @@ function getFloorImages() {
 }
 
 function initConfiguration() {
-    document.getElementById(_waterPumpItem.canvasId).addEventListener("click", (function () {
+    document.getElementById(new WaterPumpItem().canvasId).addEventListener("click", (function () {
         window.location = '/nodes'
     }));
 }
@@ -45,9 +45,8 @@ function getToolbarItems() {
     ];
 }
 
-const _waterPumpItem = new WaterPumpItem();
 function getAdditionalToolbars() {
     return[
-        _waterPumpItem,
+        new WaterPumpItem(),
     ]
 }
