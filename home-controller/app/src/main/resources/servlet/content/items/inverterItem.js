@@ -41,10 +41,14 @@ class InverterItem extends AdditionalToolItem {
             let sunText = (this.pvPwr === 0)
                 ? '☁' : ((this.pvPwr < 1000) ? '🌥' : (this.pvPwr < 3500) ? '🌤' : '😎') + ' ' + this.pvPwr + ' W';
             ctx.fillText(sunText, 5, y += step);
-            if (this.feedInPwr > 0) {
-                ctx.fillText('🏡 ▶ 🏭 ' + this.feedInPwr + ' W', 5, y += step);
+            if (this.mode === 'EPSMode') {
+                ctx.fillText('🏡 ❌ 🏭 ', 5, y += step);
             } else {
-                ctx.fillText('🏡 ◀ 🏭 ' + -this.feedInPwr + ' W', 5, y += step);
+                if (this.feedInPwr > 0) {
+                    ctx.fillText('🏡 ▶ 🏭 ' + this.feedInPwr + ' W', 5, y += step);
+                } else {
+                    ctx.fillText('🏡 ◀ 🏭 ' + -this.feedInPwr + ' W', 5, y += step);
+                }
             }
             let batteryText = '🔋 ' + this.batSoc + '%';
             if (this.batPwr !== 0) {

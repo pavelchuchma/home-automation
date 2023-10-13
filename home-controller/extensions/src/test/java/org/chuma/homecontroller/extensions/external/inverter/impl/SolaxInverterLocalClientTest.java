@@ -59,7 +59,14 @@ public class SolaxInverterLocalClientTest extends SolaxInverterTestBase {
         final InverterState s3 = monitor.getState();
         Assert.assertNotEquals("a fresh instance expected", s2, s3);
         Assert.assertEquals("the same instance expected", s3, monitor.getState());
+        Assert.assertEquals("the same instance expected", s3, monitor.getStateSync());
         Thread.sleep(10_000);
+
+        final InverterState s3s1 = monitor.getStateSync();
+        Assert.assertNotNull("should be fresh got synchronously", s3s1);
+        final InverterState s3s2 = monitor.getStateSync();
+        Assert.assertNotNull("should be fresh got synchronously", s3s2);
+        Assert.assertNotEquals("a fresh instance expected", s3s1, s3s2);
 
         // refresh should be stopped after 10s
         Assert.assertNull("should be null after unused for long time", monitor.state);

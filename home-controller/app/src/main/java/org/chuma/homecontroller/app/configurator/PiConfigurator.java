@@ -74,6 +74,7 @@ import org.chuma.homecontroller.extensions.action.condition.SunCondition;
 import org.chuma.homecontroller.extensions.actor.HvacActor;
 import org.chuma.homecontroller.extensions.actor.RadioOnOffActor;
 import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
+import org.chuma.homecontroller.extensions.external.inverter.GridConnectionManager;
 import org.chuma.homecontroller.extensions.external.inverter.InverterManager;
 import org.chuma.homecontroller.extensions.external.inverter.InverterMonitor;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterMonitor;
@@ -223,8 +224,9 @@ public class PiConfigurator extends AbstractConfigurator {
         ActorListener prizemiVzaduKuchynSw2Indicator = kuchynLSw1.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON);
         ActorListener schodyDoleJidelnaSw3Indicator = schodyDoleR3Sw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF);
 
-        IOnOffActor pisoarHore = addOnOffActor("pisoarHore", "PisoarHore", triak1.getOut1());
+        IOnOffActor pisoarHore = addOnOffActor("pisoarHore", "Pisoar hore", triak1.getOut1());
         IOnOffActor svSklepLevy = addOnOffActor("svSklepLevy", "Levy Sklep", triak1.getOut2(), prizemiVzaduKuchynSw2Indicator, sklepLevyRSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON), zadveriDoleVchodRSw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON));
+        IOnOffActor gridDisconnect = addOnOffActor("gridDisconnect", "Stykač odpojení domu", triak1.getOut3());
         IOnOffActor pisoarDole = addOnOffActor("pisoarDole", "Pisoar dole", triak1.getOut4());
         IOnOffActor svSklepPravy = addOnOffActor("svSklepPravy", "Pravy Sklep", triak1.getOut5(), prizemiVzaduKuchynSw2Indicator, sklepPravySw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON), zadveriDoleVchodRSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON));
         IOnOffActor zasStromek = addOnOffActor("zasStromek", "Zasuvka Stromek", triak1.getOut6(), schodyDoleL1Sw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON));
@@ -732,8 +734,11 @@ public class PiConfigurator extends AbstractConfigurator {
                 OptionsSingleton.get("inverter.local.url"), OptionsSingleton.get("inverter.local.password"), 5_000, 60_000);
         inverterMonitor.start();
 
-        configureInverterRemoteControl();
-
+        InverterManager inverterManager = configureInverterRemoteControl(inverterMonitor);
+        if (inverterManager != null) {
+            GridConnectionManager gridConnectionManager = new GridConnectionManager(60_000, inverterMonitor, inverterManager, gridDisconnect);
+            gridConnectionManager.start();
+        }
         List<ServletAction> servletActions = new ArrayList<>();
         servletActions.add(new ServletAction("openDoor", "Bzučák", bzucakAction));
         servletActions.add(new ServletAction("openGarage", "Garáž", ovladacGarazAction));
@@ -790,7 +795,7 @@ public class PiConfigurator extends AbstractConfigurator {
 //        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));
     }
 
-    private static void configureInverterRemoteControl() {
+    private static InverterManager configureInverterRemoteControl(InverterMonitor inverterMonitor) {
         try {
             final Options options = OptionsSingleton.getInstance();
             final String remoteUsername = options.get("inverter.remote.username");
@@ -824,9 +829,11 @@ public class PiConfigurator extends AbstractConfigurator {
                     inverterManager.setHighTariffRanges(value);
                 }
             });
+            return inverterManager;
         } catch (Exception e) {
             log.error("Failed to init inverter manager - mising configuration property", e);
         }
+        return null;
     }
 
     @Override

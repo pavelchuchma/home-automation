@@ -95,9 +95,6 @@ public class SolaxInverterMonitor implements InverterMonitor {
         }
     }
 
-    /**
-     * Get last known state. Can be null in case of the first request or if it was not used longer than maxUnusedRunTimeMs time.
-     */
     @Override
     public synchronized InverterState getState() {
         log.trace("getting state");
@@ -110,5 +107,16 @@ public class SolaxInverterMonitor implements InverterMonitor {
         }
         log.trace("getting state - done");
         return state;
+    }
+
+    @Override
+    public synchronized InverterState getStateSync() {
+        log.trace("getting state sync");
+        InverterState s = state;
+        if (s != null) {
+            // fresh enough
+            return s;
+        }
+        return client.getState();
     }
 }

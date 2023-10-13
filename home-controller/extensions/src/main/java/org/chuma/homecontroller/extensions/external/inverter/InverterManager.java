@@ -39,12 +39,20 @@ public class InverterManager {
         return result;
     }
 
+    public int getMinimalSoc() {
+        return minimalSoc;
+    }
+
     /**
      * Sets minimal battery charge level in percent.
      */
     public void setMinimalSoc(int minimalSoc) {
         Validate.inclusiveBetween(10, 100, minimalSoc);
         this.minimalSoc = minimalSoc;
+    }
+
+    public int getBatteryReserve() {
+        return batteryReserve;
     }
 
     /**
