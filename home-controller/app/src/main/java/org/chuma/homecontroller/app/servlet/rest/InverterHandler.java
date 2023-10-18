@@ -20,15 +20,17 @@ public class InverterHandler extends AbstractRestHandler<InverterMonitor> {
 
         int pv = state.getPv1Power();
         int acPower = state.getGrid1Power() + state.getGrid2Power() + state.getGrid3Power();
+        int epsPower = state.getEps1Power() + state.getEps2Power() + state.getEps3Power();
         int batPower = state.getBatteryPower();
         int feedInPower = state.getFeedInPower();
 
         jw.addAttribute("mode", state.getMode().toString());
         jw.addAttribute("pvPwr", pv);
         jw.addAttribute("acPwr", acPower);
+        jw.addAttribute("epsPwr", epsPower);
         jw.addAttribute("feedInPwr", feedInPower);
 
-        int load = acPower - feedInPower;
+        int load = acPower + epsPower - feedInPower;
         jw.addAttribute("load", load);
         // just for debug
         int diff = pv - (batPower + acPower);

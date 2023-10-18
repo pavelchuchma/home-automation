@@ -32,6 +32,13 @@ public interface InverterState {
     int getGrid3Power();
 
     /**
+     * EPS Power in W (Inverter output to EPS (backup)), phase 1
+     */
+    int getEps1Power();
+    int getEps2Power();
+    int getEps3Power();
+
+    /**
      * Photovoltaic power, panel 1
      */
     int getPv1Power();

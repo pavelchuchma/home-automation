@@ -29,6 +29,9 @@ public class SolaxInverterState implements InverterState {
     public final int grid3Power;
     public final int pv1Power;
     public final int pv2Power;
+    public final int eps1Power;
+    public final int eps2Power;
+    public final int eps3Power;
     public final int feedInPower;
     public final int batteryPower;
     public final double yieldTotal;
@@ -45,21 +48,24 @@ public class SolaxInverterState implements InverterState {
         timestamp = System.currentTimeMillis();
         version = json.get("ver").toString();
         inverterSerialNumber = ((JsonArray)json.get("Information")).get(2).toString();
-        wifiSerialNumber = json.get("sn").toString();;
+        wifiSerialNumber = json.get("sn").toString();
         JsonArray data = (JsonArray)json.get("Data");
         mode = Mode.values()[data.getInteger(19)];
         batteryMode = BatteryMode.values()[data.getInteger(168)];
 
-        grid1Voltage =toSigned16(data.getInteger(0)) / 10d;
-        grid2Voltage =toSigned16(data.getInteger(1)) / 10d;
-        grid3Voltage =toSigned16(data.getInteger(2)) / 10d;
-        grid1Power =toSigned16(data.getInteger(6));
-        grid2Power =toSigned16(data.getInteger(7));
-        grid3Power =toSigned16(data.getInteger(8));
+        grid1Voltage = toSigned16(data.getInteger(0)) / 10d;
+        grid2Voltage = toSigned16(data.getInteger(1)) / 10d;
+        grid3Voltage = toSigned16(data.getInteger(2)) / 10d;
+        grid1Power = toSigned16(data.getInteger(6));
+        grid2Power = toSigned16(data.getInteger(7));
+        grid3Power = toSigned16(data.getInteger(8));
         pv1Power = data.getInteger(14);
         pv2Power = data.getInteger(15);
-        feedInPower =toSigned32(packU16(data, 34, 35));
-        batteryPower =toSigned16(data.getLong(41));
+        eps1Power = toSigned16(data.getInteger(29));
+        eps2Power = toSigned16(data.getInteger(30));
+        eps3Power = toSigned16(data.getInteger(31));
+        feedInPower = toSigned32(packU16(data, 34, 35));
+        batteryPower = toSigned16(data.getLong(41));
         yieldTotal = packU16(data, 68, 69) / 10d;
         yieldToday = data.getInteger(70) / 10d;
         feedInEnergyTotal = packU16(data, 86, 87) / 100d;
@@ -67,7 +73,7 @@ public class SolaxInverterState implements InverterState {
         consumedEnergyTotal = packU16(data, 88, 89) / 100d;
         consumedEnergyToday = data.getInteger(92) / 100d;
         batterySoc = data.getInteger(103);
-        batteryTemp =toSigned16(data.getInteger(105));
+        batteryTemp = toSigned16(data.getInteger(105));
         batteryVoltage = packU16(data, 169, 170) / 100d;
     }
 
@@ -151,6 +157,18 @@ public class SolaxInverterState implements InverterState {
     @Override
     public int getPv2Power() {
         return pv2Power;
+    }
+
+    public int getEps1Power() {
+        return eps1Power;
+    }
+
+    public int getEps2Power() {
+        return eps2Power;
+    }
+
+    public int getEps3Power() {
+        return eps3Power;
     }
 
     @Override
