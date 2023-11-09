@@ -19,8 +19,8 @@ public class InverterHandler extends AbstractRestHandler<InverterMonitor> {
         }
 
         int pv = state.getPv1Power();
-        int acPower = state.getGrid1Power() + state.getGrid2Power() + state.getGrid3Power();
-        int epsPower = state.getEps1Power() + state.getEps2Power() + state.getEps3Power();
+        int acPower = state.getGridPower();
+        int epsPower = state.getEpsPower();
         int batPower = state.getBatteryPower();
         int feedInPower = state.getFeedInPower();
 

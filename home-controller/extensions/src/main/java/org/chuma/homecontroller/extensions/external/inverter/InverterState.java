@@ -23,8 +23,12 @@ public interface InverterState {
     double getGrid3Voltage();
 
     /**
-     * AC Power in W (Inverter output to house excluding battery), phase 1
+     * Total AC Power in W (Inverter output to house excluding battery)
      */
+    default int getGridPower() {
+        return getGrid1Power() + getGrid2Power() + getGrid3Power();
+    }
+
     int getGrid1Power();
 
     int getGrid2Power();
@@ -32,15 +36,25 @@ public interface InverterState {
     int getGrid3Power();
 
     /**
-     * EPS Power in W (Inverter output to EPS (backup)), phase 1
+     * Total EPS Power in W (Inverter output to EPS (backup))
      */
+    default int getEpsPower() {
+        return getEps1Power() + getEps2Power() + getEps3Power();
+    }
+
     int getEps1Power();
+
     int getEps2Power();
+
     int getEps3Power();
 
     /**
-     * Photovoltaic power, panel 1
+     * Total Photovoltaic power
      */
+    default int getPvPower() {
+        return getPv1Power() + getPv2Power();
+    }
+
     int getPv1Power();
 
     int getPv2Power();
