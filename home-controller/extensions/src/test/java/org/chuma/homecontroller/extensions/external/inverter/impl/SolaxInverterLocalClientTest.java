@@ -3,6 +3,7 @@ package org.chuma.homecontroller.extensions.external.inverter.impl;
 import org.junit.Assert;
 import org.junit.Test;
 
+import org.chuma.homecontroller.extensions.external.AbstractStateMonitorTest;
 import org.chuma.homecontroller.extensions.external.inverter.InverterState;
 
 public class SolaxInverterLocalClientTest extends SolaxInverterTestBase {
@@ -49,9 +50,9 @@ public class SolaxInverterLocalClientTest extends SolaxInverterTestBase {
         System.out.println("Started");
         Thread.sleep(3_000);
         System.out.println("Getting state");
-        Assert.assertNull("should be null at the beginning", monitor.state);
+        Assert.assertNull("should be null at the beginning", AbstractStateMonitorTest.getRawState(monitor));
         Assert.assertNull(monitor.getState());
-        Assert.assertNull("should be still null immediately after the first get", monitor.state);
+        Assert.assertNull("should be still null immediately after the first get", AbstractStateMonitorTest.getRawState(monitor));
         Thread.sleep(2_000);
         final InverterState s1 = monitor.getState();
         Assert.assertNotNull("should be refreshed after 2s", s1);
@@ -71,7 +72,7 @@ public class SolaxInverterLocalClientTest extends SolaxInverterTestBase {
         Assert.assertNotEquals("a fresh instance expected", s3s1, s3s2);
 
         // refresh should be stopped after 10s
-        Assert.assertNull("should be null after unused for long time", monitor.state);
+        Assert.assertNull("should be null after unused for long time", AbstractStateMonitorTest.getRawState(monitor));
 
         // call getter to restart refresh thread
         Assert.assertNull("null expected", monitor.getState());
@@ -82,9 +83,9 @@ public class SolaxInverterLocalClientTest extends SolaxInverterTestBase {
         System.out.println("Stopping");
         monitor.stop();
         Thread.sleep(4_000);
-        final InverterState s6 = monitor.state;
+        final InverterState s6 = AbstractStateMonitorTest.getRawState(monitor);
         Thread.sleep(4_000);
-        Assert.assertEquals("the same instance expected, because it should be stopped", s6, monitor.state);
+        Assert.assertEquals("the same instance expected, because it should be stopped", s6, AbstractStateMonitorTest.getRawState(monitor));
         Assert.assertThrows(IllegalStateException.class, monitor::getState);
     }
 }

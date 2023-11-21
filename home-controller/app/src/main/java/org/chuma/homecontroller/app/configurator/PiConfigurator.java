@@ -25,6 +25,7 @@ import org.chuma.homecontroller.app.servlet.pages.PirPage;
 import org.chuma.homecontroller.app.servlet.pages.StaticPage;
 import org.chuma.homecontroller.app.servlet.rest.AirValveHandler;
 import org.chuma.homecontroller.app.servlet.rest.AllStatusHandler;
+import org.chuma.homecontroller.app.servlet.rest.FuturaHandler;
 import org.chuma.homecontroller.app.servlet.rest.HvacHandler;
 import org.chuma.homecontroller.app.servlet.rest.InverterHandler;
 import org.chuma.homecontroller.app.servlet.rest.LouversHandler;
@@ -74,6 +75,7 @@ import org.chuma.homecontroller.extensions.action.condition.SunCondition;
 import org.chuma.homecontroller.extensions.actor.HvacActor;
 import org.chuma.homecontroller.extensions.actor.RadioOnOffActor;
 import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
+import org.chuma.homecontroller.extensions.external.futura.FuturaMonitor;
 import org.chuma.homecontroller.extensions.external.inverter.InverterManager;
 import org.chuma.homecontroller.extensions.external.inverter.InverterMonitor;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterMonitor;
@@ -738,6 +740,11 @@ public class PiConfigurator extends AbstractConfigurator {
 //            GridConnectionManager gridConnectionManager = new GridConnectionManager(60_000, inverterMonitor, inverterManager, gridDisconnect);
 //            gridConnectionManager.start();
         }
+
+        FuturaMonitor futuraMonitor = new FuturaMonitor(
+                OptionsSingleton.get("futura.ipAddress"), 5_000, 60_000);
+        futuraMonitor.start();
+
         List<ServletAction> servletActions = new ArrayList<>();
         servletActions.add(new ServletAction("openDoor", "Bzučák", bzucakAction));
         servletActions.add(new ServletAction("openGarage", "Garáž", ovladacGarazAction));
@@ -776,7 +783,8 @@ public class PiConfigurator extends AbstractConfigurator {
                 new PirHandler(pirStatusList),
                 new WaterPumpHandler(Collections.singleton(waterPumpMonitor)),
                 new HvacHandler(Collections.singleton(hvacActor)),
-                new InverterHandler(Collections.singleton(inverterMonitor)));
+                new InverterHandler(Collections.singleton(inverterMonitor)),
+                new FuturaHandler(Collections.singleton(futuraMonitor)));
 //        configureSimulator(pages, wsHandlers, false);
         // rest/all handler
         List<Handler> handlers = new ArrayList<>();

@@ -3,7 +3,6 @@
 
 # Ignore Gradle build output directory
 build
-/app/out/
 /.idea/shelf/
 
 # Eclipse
@@ -12,7 +11,7 @@ build
 .settings
 /app/cfg/
 /.idea/deployment.xml
-/out/
+**/out/
 /cfg/
 /app/src/main/resources/servlet/content/configuration.js
 /app/src/main/resources/servlet/content/getBackendUrl.js

@@ -208,5 +208,6 @@ function getAdditionalToolbars() {
         new HvacItem(),
         new WaterPumpItem(),
         new InverterItem(),
+        new RecuperationItem(),
     ]
 }

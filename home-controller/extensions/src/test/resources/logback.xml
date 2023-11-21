@@ -8,6 +8,12 @@
     <logger name="org.chuma.homecontroller.extensions.external.inverter" level="TRACE" additivity="false">
         <appender-ref ref="consoleAppender"/>
     </logger>
+    <logger name="org.chuma.homecontroller.extensions.external.futura" level="TRACE" additivity="false">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+    <logger name="org.chuma.homecontroller.extensions.external.AbstractStateMonitor" level="TRACE" additivity="false">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
 
     <root level="info">
         <appender-ref ref="consoleAppender" additivity="false"/>
