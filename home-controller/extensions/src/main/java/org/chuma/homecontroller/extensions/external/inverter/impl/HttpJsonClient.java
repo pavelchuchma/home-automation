@@ -23,11 +23,8 @@ public class HttpJsonClient {
         this.readTimeoutSec = readTimeoutSec;
     }
 
-    public JsonObject doPostAndVerify(String path, String formPayload) {
-        JsonObject response = doPost(path, formPayload);
-        Validate.isTrue(Boolean.TRUE.equals(response.get("success")),
-                "Posting '%s' to '%s' failed: %s", formPayload, baseUrl + path, response.get("exception"));
-        return response;
+    public String getBaseUrl() {
+        return baseUrl;
     }
 
     public <R extends Jsonable> R doPost(String path, String formPayload) {

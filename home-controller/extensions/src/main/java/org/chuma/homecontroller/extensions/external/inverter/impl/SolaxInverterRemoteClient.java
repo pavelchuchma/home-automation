@@ -38,7 +38,7 @@ public class SolaxInverterRemoteClient {
         this.remotePasswordToken = remotePasswordToken;
         this.basicConfigPin = basicConfigPin;
         localClient = new SolaxInverterLocalClient(localUrl, localPassword);
-        configClient = new HttpJsonClient("https://abroad.solaxcloud.com/proxy/", 10);
+        configClient = new HttpJsonClient("https://www.solaxcloud.com/proxy/", 10);
     }
 
     @SuppressWarnings("SpellCheckingInspection")
@@ -48,7 +48,7 @@ public class SolaxInverterRemoteClient {
 
             HttpJsonClient client = new HttpJsonClient("https://www.solaxcloud.com/phoebus/", 10);
             String payload = MessageFormat.format("username={0}&userpwd={1}", urlEncode(remoteUsername), remotePasswordToken);
-            JsonObject loginResponse = client.doPostAndVerify("login/loginNew", payload);
+            JsonObject loginResponse = doPostAndVerify(client, "login/loginNew", payload, null);
             userId = ((JsonObject)loginResponse.get("user")).get("id").toString();
             userRelId = ((JsonObject)loginResponse.get("user")).get("relIds").toString();
             readToken = loginResponse.get("token").toString();
@@ -74,7 +74,7 @@ public class SolaxInverterRemoteClient {
 
     public RemoteConfiguration getConfiguration() {
         configLogin();
-        JsonObject response = configClient.doPostAndVerify("/settingnew/paramInit", buildCommonParams());
+        JsonObject response = doPostAndVerify(configClient, "/settingnew/paramInit", buildCommonParams(), readToken);
         return new RemoteConfiguration((JsonArray)response.get("result"));
     }
 
@@ -93,6 +93,13 @@ public class SolaxInverterRemoteClient {
     public void setSelfUseMinimalSoc(int value) {
         Validate.inclusiveBetween(10, 100, value);
         setConfigValue(SELF_USE_MIN_SOC, value);
+    }
+
+    private JsonObject doPostAndVerify(HttpJsonClient client, String path, String formPayload, String token) {
+        JsonObject response = client.doPost(path, formPayload, token);
+        Validate.isTrue(Boolean.TRUE.equals(response.get("success")),
+                "Posting '%s' to '%s' failed: %s", formPayload, configClient.getBaseUrl() + path, response.get("exception"));
+        return response;
     }
 
     private synchronized void ensureSwitchedOnForConfigChange() {
@@ -125,8 +132,8 @@ public class SolaxInverterRemoteClient {
             // invalidate timestamp before successfull login
             configTokenTimestamp = -1;
 
-            JsonObject configLoginResponse = configClient.doPostAndVerify("/login/remoteLogin.do",
-                    String.format("sn=%s&userType=5&userId=%s&firmId=%s", inverterSerialNumber, userId, userRelId));
+            JsonObject configLoginResponse = doPostAndVerify(configClient, "/login/remoteLogin.do",
+                    String.format("sn=%s&userType=5&userId=%s&firmId=%s", inverterSerialNumber, userId, userRelId), readToken);
 
             configToken = ((JsonObject)configLoginResponse.get("result")).get("tokenId").toString();
             callSetParamImpl(0, "'" + basicConfigPin + "'");
@@ -137,8 +144,8 @@ public class SolaxInverterRemoteClient {
 
     private void callSetParamImpl(int index, String value) {
         String data = urlEncode("[{'reg':" + index + ",'val':" + value + "}]");
-        configClient.doPostAndVerify("/settingnew/paramSet",
-                buildCommonParams() + "&optType=setReg&Data=" + data);
+        doPostAndVerify(configClient, "/settingnew/paramSet",
+                buildCommonParams() + "&optType=setReg&Data=" + data, readToken);
     }
 
     private boolean isConfigTokenValid() {
