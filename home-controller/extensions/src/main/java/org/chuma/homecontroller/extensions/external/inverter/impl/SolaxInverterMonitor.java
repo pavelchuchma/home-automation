@@ -17,11 +17,11 @@ import org.chuma.homecontroller.extensions.external.inverter.InverterState;
 public class SolaxInverterMonitor extends AbstractStateMonitor<InverterState> implements InverterMonitor {
     protected static Logger log = LoggerFactory.getLogger(SolaxInverterMonitor.class.getName());
 
-    protected final SolaxInverterLocalClient client;
+    protected final SolaxInverterModbusClient client;
 
-    public SolaxInverterMonitor(String url, String password, int refreshInternalMs, int maxUnusedRunTimeMs) {
+    public SolaxInverterMonitor(SolaxInverterModbusClient client, int refreshInternalMs, int maxUnusedRunTimeMs) {
         super("SolaxInverterMonitor", refreshInternalMs, maxUnusedRunTimeMs);
-        client = new SolaxInverterLocalClient(url, password);
+        this.client = client;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class SolaxInverterMonitor extends AbstractStateMonitor<InverterState> im
             log.trace("done in {} ms, inverter state {}", System.currentTimeMillis() - startTime, state.getMode());
             return state;
         } catch (Exception e) {
-            log.error("Failed to refresh SolaxInverter state from " + client.getUrl(), e);
+            log.error("Failed to refresh SolaxInverter state", e);
             return null;
         }
     }

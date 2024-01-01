@@ -93,6 +93,10 @@ public interface InverterState {
 
     double getBatteryVoltage();
 
+    int getSelfUseMinimalSoc();
+
+    PgridBias getPgridBias();
+
     enum Mode {
         Waiting,
         Checking,
@@ -112,5 +116,20 @@ public interface InverterState {
         ForceTime,
         BackUp,
         FeedInPriority
+    }
+
+    enum PgridBias {
+        /**
+         * / Targets FeedInPower to ~0W
+         */
+        Disable,
+        /**
+         * Targets FeedInPower to ~+40W
+         */
+        Grid,
+        /**
+         * Targets FeedInPower to ~-40W
+         */
+        Inv
     }
 }

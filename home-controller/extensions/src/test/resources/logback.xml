@@ -11,6 +11,12 @@
     <logger name="org.chuma.homecontroller.extensions.external.futura" level="TRACE" additivity="false">
         <appender-ref ref="consoleAppender"/>
     </logger>
+    <logger name="org.chuma.homecontroller.extensions.external.utils" level="TRACE" additivity="false">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+    <logger name="org.chuma.homecontroller.extensions.external.AbstractStateMonitorTest" level="TRACE" additivity="false">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
     <logger name="org.chuma.homecontroller.extensions.external.AbstractStateMonitor" level="TRACE" additivity="false">
         <appender-ref ref="consoleAppender"/>
     </logger>

@@ -33,11 +33,11 @@ public class SolaxInverterRemoteClient {
     private String configToken;
     private long configTokenTimestamp;
 
-    public SolaxInverterRemoteClient(String localUrl, String localPassword, String remoteUsername, String remotePasswordToken, String basicConfigPin) {
+    public SolaxInverterRemoteClient(String localIp, String localPassword, String remoteUsername, String remotePasswordToken, String basicConfigPin) {
         this.remoteUsername = remoteUsername;
         this.remotePasswordToken = remotePasswordToken;
         this.basicConfigPin = basicConfigPin;
-        localClient = new SolaxInverterLocalClient(localUrl, localPassword);
+        localClient = new SolaxInverterLocalClient(localIp, localPassword);
         configClient = new HttpJsonClient("https://www.solaxcloud.com/proxy/", 10);
     }
 

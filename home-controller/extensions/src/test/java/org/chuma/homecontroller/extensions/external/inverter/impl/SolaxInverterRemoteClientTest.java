@@ -1,14 +1,12 @@
 package org.chuma.homecontroller.extensions.external.inverter.impl;
 
 import org.junit.Assert;
-import org.junit.Test;
 
-public class SolaxInverterRemoteClientTest extends SolaxInverterTestBase {
-    @Test
+public class SolaxInverterRemoteClientTest extends AbstractSolaxInverterTestBase {
     public void testClient() {
-        final SolaxInverterRemoteClient client = new SolaxInverterRemoteClient(localUrl, localPassword, remoteUsername, remotePasswordToken, basicConfigPin);
+        final SolaxInverterRemoteClient client = new SolaxInverterRemoteClient(localIp, localPassword, remoteUsername, remotePasswordToken, basicConfigPin);
 
-        int targetValue = 30;
+        int targetValue = 37;
         client.setSelfUseMinimalSoc(targetValue);
 
         RemoteConfiguration configuration = client.getConfiguration();

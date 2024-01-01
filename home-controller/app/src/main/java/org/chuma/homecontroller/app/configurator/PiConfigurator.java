@@ -78,8 +78,8 @@ import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
 import org.chuma.homecontroller.extensions.external.futura.FuturaMonitor;
 import org.chuma.homecontroller.extensions.external.inverter.InverterManager;
 import org.chuma.homecontroller.extensions.external.inverter.InverterMonitor;
+import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterModbusClient;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterMonitor;
-import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterRemoteClient;
 import org.chuma.hvaccontroller.device.HvacDevice;
 
 @SuppressWarnings({"unused", "DuplicatedCode", "SpellCheckingInspection"})
@@ -731,14 +731,20 @@ public class PiConfigurator extends AbstractConfigurator {
         GenericInputDevice cidlaRozvadec = new GenericInputDevice("cidlaRozvadec", rozvadecDole, 3);
         setupMagneticSensor(cidlaRozvadec.getIn1AndActivate(), "mgntCrpd", "Cerpadlo", waterPumpMonitor.getOnAction(), waterPumpMonitor.getOffAction());
 
-        InverterMonitor inverterMonitor = new SolaxInverterMonitor(
-                OptionsSingleton.get("inverter.local.url"), OptionsSingleton.get("inverter.local.password"), 5_000, 60_000);
-        inverterMonitor.start();
 
-        InverterManager inverterManager = configureInverterRemoteControl(inverterMonitor);
-        if (inverterManager != null) {
+        InverterManager inverterManager = null;
+        InverterMonitor inverterMonitor = null;
+        try {
+            SolaxInverterModbusClient inverterModbusClient = new SolaxInverterModbusClient(OptionsSingleton.get("inverter.ip"));
+            inverterMonitor = new SolaxInverterMonitor(inverterModbusClient, 5_000, 60_000);
+            inverterMonitor.start();
+
+            inverterManager = configureInverterRemoteControl(inverterModbusClient, inverterMonitor);
 //            GridConnectionManager gridConnectionManager = new GridConnectionManager(60_000, inverterMonitor, inverterManager, gridDisconnect);
 //            gridConnectionManager.start();
+
+        } catch (Exception e) {
+            log.error("Failed to init solax inverter client", e);
         }
 
         FuturaMonitor futuraMonitor = new FuturaMonitor(
@@ -802,45 +808,43 @@ public class PiConfigurator extends AbstractConfigurator {
 //        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));
     }
 
-    private static InverterManager configureInverterRemoteControl(InverterMonitor inverterMonitor) {
+    private static SolaxInverterModbusClient createSolaxInverterModbusClient() {
         try {
-            final Options options = OptionsSingleton.getInstance();
-            final String remoteUsername = options.get("inverter.remote.username");
-            final String remotePasswordToken = options.get("inverter.remote.password.token");
-            final String basicConfigPin = options.get("inverter.config.pin.basic");
-
-            final String localUrl = options.get("inverter.local.url");
-            final String localPassword = options.get("inverter.local.password");
-
-            final String highTariffTimes = options.get(CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES);
-            final int minimalSoc = options.getInt(CFG_INVERTER_MANAGER_MINIMAL_SOC);
-            final int batteryReserve = options.getInt(CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE);
-
-            SolaxInverterRemoteClient inverterRemoteClient = new SolaxInverterRemoteClient(
-                    localUrl,
-                    localPassword,
-                    remoteUsername,
-                    remotePasswordToken,
-                    basicConfigPin);
-            InverterManager inverterManager = new InverterManager(inverterRemoteClient);
-            inverterManager.setMinimalSoc(minimalSoc);
-            inverterManager.setBatteryReserve(batteryReserve);
-            inverterManager.setHighTariffRanges(highTariffTimes);
-
-            options.addListener((key, value) -> {
-                if (CFG_INVERTER_MANAGER_MINIMAL_SOC.equals(key)) {
-                    inverterManager.setMinimalSoc(Integer.parseInt(value));
-                } else if (CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE.equals(key)) {
-                    inverterManager.setBatteryReserve(Integer.parseInt(value));
-                } else if (CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES.equals(key)) {
-                    inverterManager.setHighTariffRanges(value);
-                }
-            });
-            return inverterManager;
+            final String localIp = OptionsSingleton.getInstance().get("inverter.ip");
+            return new SolaxInverterModbusClient(localIp);
         } catch (Exception e) {
-            log.error("Failed to init inverter manager - mising configuration property", e);
+            log.error("Failed to init inverter client", e);
+            return null;
         }
-        return null;
+    }
+
+    private static InverterManager configureInverterRemoteControl(SolaxInverterModbusClient localClient, InverterMonitor inverterMonitor) {
+        final Options options = OptionsSingleton.getInstance();
+        final String remoteUsername = options.get("inverter.remote.username");
+        final String remotePasswordToken = options.get("inverter.remote.password.token");
+        final String basicConfigPin = options.get("inverter.config.pin.basic");
+
+        final String localPassword = options.get("inverter.local.password");
+
+        final String highTariffTimes = options.get(CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES);
+        final int minimalSoc = options.getInt(CFG_INVERTER_MANAGER_MINIMAL_SOC);
+        final int batteryReserve = options.getInt(CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE);
+
+        InverterManager inverterManager = new InverterManager(localClient);
+        inverterManager.setMinimalSoc(minimalSoc);
+        inverterManager.setBatteryReserve(batteryReserve);
+        inverterManager.setHighTariffRanges(highTariffTimes);
+
+        options.addListener((key, value) -> {
+            if (CFG_INVERTER_MANAGER_MINIMAL_SOC.equals(key)) {
+                inverterManager.setMinimalSoc(Integer.parseInt(value));
+            } else if (CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE.equals(key)) {
+                inverterManager.setBatteryReserve(Integer.parseInt(value));
+            } else if (CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES.equals(key)) {
+                inverterManager.setHighTariffRanges(value);
+            }
+        });
+        return inverterManager;
     }
 
     @Override

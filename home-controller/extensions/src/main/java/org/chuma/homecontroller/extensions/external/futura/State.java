@@ -1,81 +1,76 @@
 package org.chuma.homecontroller.extensions.external.futura;
 
-public class State {
-    private final int[] inputRegisters;
-    private final int[] holdingRegisters;
+import org.chuma.homecontroller.extensions.external.utils.ModbusClient;
 
-    public State(int[] inputRegisters, int[] holdingRegisters) {
-        this.inputRegisters = inputRegisters;
-        this.holdingRegisters = holdingRegisters;
+public class State {
+
+    private final ModbusClient client;
+
+    public State(ModbusClient client) {
+        this.client = client;
     }
 
     /**
-     * Set ventilation power (0 – off, 1..5 – preset
+     * Set ventilation speed (0 – off, 1..5 – preset
      * level 1 to 5, 6 – automatic ventilation)
      */
     public int getVentilationSpeed() {
-        return holdingRegisters[0];
+        return client.holding.getUnsignedInt(0);
     }
 
     public double getAirTempAmbient() {
-        return inputRegisters[30] / 10d;
+        return getTemperatureValue(30);
     }
 
     public double getAirTempFresh() {
-        return inputRegisters[31] / 10d;
+        return getTemperatureValue(31);
     }
 
     public double getAirTempIndoor() {
-        return inputRegisters[32] / 10d;
+        return getTemperatureValue(32);
     }
 
     public double getAirTempWaste() {
-        return inputRegisters[33] / 10d;
+        return getTemperatureValue(33);
     }
 
     public int getFilterWearLevelPercent() {
-        return inputRegisters[40];
+        return client.input.getUnsignedInt(40);
+    }
+
+    private double getTemperatureValue(int index) {
+        return client.input.getSignedInt(index) / 10d;
     }
 
     /**
      * Current power consumption of the unit in watts
      */
     public int getPowerConsumption() {
-        return inputRegisters[41];
+        return client.input.getUnsignedInt(41);
     }
 
     /**
      * Current value of heat recovery in watts
      */
     public int getHeatRecovering() {
-        return inputRegisters[42];
+        return client.input.getUnsignedInt(42);
     }
 
     /**
      * The CO2 value of the wall controller in ppm
      */
     public int getWallControllerCO2() {
-        return inputRegisters[102];
+        return client.input.getUnsignedInt(102);
     }
 
     /**
      * Wall controller temperature
      */
     public  double getWallControllerTemperature() {
-        return inputRegisters[103] / 10d;
+        return getTemperatureValue(103);
     }
 
     public boolean getTimeProgramActive() {
-        return holdingRegisters[12] == 1;
-    }
-
-    @SuppressWarnings("unused")
-    void printAll() {
-        for (int i = 0; i < inputRegisters.length; i++) {
-            System.out.println("input " + i + "=" + inputRegisters[i]);
-        }
-        for (int i = 0; i < holdingRegisters.length; i++) {
-            System.out.println("holding " + i + "=" + holdingRegisters[i]);
-        }
+        return client.holding.getUnsignedInt(12) == 1;
     }
 }

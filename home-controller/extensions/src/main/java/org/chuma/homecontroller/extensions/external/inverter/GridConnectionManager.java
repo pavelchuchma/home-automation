@@ -64,7 +64,7 @@ public class GridConnectionManager {
     }
 
     private void processImpl() {
-        InverterState state = inverterMonitor.getStateSync();
+        InverterState state = inverterMonitor.getStateSync(true);
         if (state == null) {
             log.error("Failed to get inverter state");
             return;

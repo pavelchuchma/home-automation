@@ -3,18 +3,15 @@ package org.chuma.homecontroller.extensions.external.inverter.impl;
 import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonObject;
 
-import org.chuma.homecontroller.extensions.external.inverter.InverterState;
-
 /**
  * Represents state of Solax Inverter
  * <p>
  * Implementation is based on <a href="https://github.com/squishykid/solax/blob/master/solax/inverters/x3_hybrid_g4.py">squishykid/solax project</a>
  */
-public class SolaxInverterState implements InverterState {
+public class SolaxInverterState extends AbstractInverterState {
     private static final int INT16_MAX = 0x7FFF;
     private static final int INT32_MAX = 0x7FFFFFFF;
 
-    public final long timestamp;
     public final String version;
     public final String inverterSerialNumber;
     private final String wifiSerialNumber;
@@ -45,7 +42,6 @@ public class SolaxInverterState implements InverterState {
     public final double batteryVoltage;
 
     public SolaxInverterState(JsonObject json) {
-        timestamp = System.currentTimeMillis();
         version = json.get("ver").toString();
         inverterSerialNumber = ((JsonArray)json.get("Information")).get(2).toString();
         wifiSerialNumber = json.get("sn").toString();
@@ -87,11 +83,6 @@ public class SolaxInverterState implements InverterState {
 
     private static int toSigned16(long val) {
         return (int)((val > INT16_MAX) ? val - (2L << 15) : val);
-    }
-
-    @Override
-    public long getTimestamp() {
-        return timestamp;
     }
 
     @Override
@@ -224,5 +215,15 @@ public class SolaxInverterState implements InverterState {
     @Override
     public double getBatteryVoltage() {
         return batteryVoltage;
+    }
+
+    @Override
+    public int getSelfUseMinimalSoc() {
+        return -1;
+    }
+
+    @Override
+    public PgridBias getPgridBias() {
+        return null;
     }
 }

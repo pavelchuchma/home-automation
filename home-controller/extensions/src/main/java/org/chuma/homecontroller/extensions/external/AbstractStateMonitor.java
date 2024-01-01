@@ -2,16 +2,27 @@ package org.chuma.homecontroller.extensions.external;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static java.lang.Math.min;
+
 
 public abstract class AbstractStateMonitor<S> {
-    private static final Object lock = new Object();
+    static class State<S> {
+        final long timestamp;
+        final S value;
+
+        public State(S value) {
+            timestamp = System.currentTimeMillis();
+            this.value = value;
+        }
+    }
+
+    private static final Object refreshLoopLock = new Object();
     private static final Logger log = LoggerFactory.getLogger(AbstractStateMonitor.class.getName());
     protected final int refreshInternalMs;
     protected final int maxUnusedRunTimeMs;
     private final String name;
     protected boolean running;
-    S state;
-    private long lastRefreshAttemptTime;
+    State<S> state;
     private long lastUseTime;
 
 
@@ -36,23 +47,23 @@ public abstract class AbstractStateMonitor<S> {
     private void refreshLoopBody() {
         log.trace("entering refreshLoopBody");
         while (true) {
-            synchronized (lock) {
+            synchronized (refreshLoopLock) {
                 try {
                     final long now = System.currentTimeMillis();
                     if (lastUseTime + maxUnusedRunTimeMs < now) {
                         log.trace("nobody needs me. Cleaning state and going to sleep");
                         state = null;
-                        lock.wait();
+                        refreshLoopLock.wait();
                         log.trace("woke up");
                     } else {
-                        long sleepTime = lastRefreshAttemptTime + refreshInternalMs - now;
+                        long sleepTime = getSleepTime(now);
                         if (sleepTime <= 0) {
                             // time to try next refresh
                             break;
                         } else {
                             log.trace("going to sleep for {} ms before next refresh", sleepTime);
                             // wait a moment for next refresh time
-                            lock.wait(sleepTime);
+                            refreshLoopLock.wait(sleepTime);
                             log.trace("woke up");
                         }
                     }
@@ -66,8 +77,15 @@ public abstract class AbstractStateMonitor<S> {
             }
         }
 
-        lastRefreshAttemptTime = System.currentTimeMillis();
-        state = getStateImpl();
+        state = new State<>(getStateImpl());
+    }
+
+    private long getSleepTime(long now) {
+        if (state == null) {
+            return -1;
+        } else {
+            return min(state.timestamp + refreshInternalMs, lastUseTime + maxUnusedRunTimeMs) - now;
+        }
     }
 
     protected abstract S getStateImpl();
@@ -75,9 +93,10 @@ public abstract class AbstractStateMonitor<S> {
     public synchronized void stop() {
         log.trace("stopping {}", name);
         running = false;
-        synchronized (lock) {
-            lock.notify();
+        synchronized (refreshLoopLock) {
+            refreshLoopLock.notify();
         }
+        state = null;
     }
 
     public synchronized S getState() {
@@ -85,21 +104,43 @@ public abstract class AbstractStateMonitor<S> {
         if (!running) {
             throw new IllegalStateException("Monitor is not running");
         }
+
         lastUseTime = System.currentTimeMillis();
-        synchronized (lock) {
-            lock.notify();
+        State<S> s = state;
+        if (s == null) {
+            synchronized (refreshLoopLock) {
+                // wake up thread to start refresh
+                refreshLoopLock.notify();
+            }
+            log.trace("getting state - not value ready, returning null");
+            return null;
         }
-        log.trace("getting state - done");
-        return state;
+        log.trace("getting state - done, returning state {} ms old", System.currentTimeMillis() - s.timestamp);
+        return s.value;
     }
 
-    public synchronized S getStateSync() {
-        log.trace("getting {} state", name);
-        S s = state;
-        if (s != null) {
+    /**
+     * Returns stored State or synchronously gets new one if no valid state is stored
+     *
+     * @param forceRefresh force getting fresh state, regardless valid state is already stored.
+     */
+    public synchronized S getStateSync(boolean forceRefresh) {
+        log.trace("getting {} state sync", name);
+        lastUseTime = System.currentTimeMillis();
+        State<S> s = state;
+        if (s != null && !forceRefresh) {
             // fresh enough
-            return s;
+            log.trace("getting state sync - done, returning state {} ms old", System.currentTimeMillis() - s.timestamp);
+            return s.value;
         }
-        return getStateImpl();
+        S stateImpl = getStateImpl();
+        if (running) {
+            state = new State<>(stateImpl);
+            synchronized (refreshLoopLock) {
+                // wake up thread to schedule cleanup
+                refreshLoopLock.notify();
+            }
+        }
+        return stateImpl;
     }
 }

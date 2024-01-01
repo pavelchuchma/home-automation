@@ -11,7 +11,7 @@ public interface InverterMonitor {
     InverterState getState();
 
     /**
-     * Returns recent (fresh) status or synchronously gets a new one.
-     */
-    InverterState getStateSync();
+     * Returns stored State or synchronously gets new one if no valid state is stored.
+     * @param forceRefresh force getting fresh state, regardless valid state is already stored.
+     */    InverterState getStateSync(boolean forceRefresh);
 }

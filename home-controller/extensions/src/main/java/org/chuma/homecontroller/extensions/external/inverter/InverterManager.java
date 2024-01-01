@@ -9,16 +9,16 @@ import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterRemoteClient;
+import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterModbusClient;
 
 public class InverterManager {
     static Logger log = LoggerFactory.getLogger(InverterManager.class.getName());
-    private final SolaxInverterRemoteClient client;
+    private final SolaxInverterModbusClient client;
     List<String> scheduledIds = new ArrayList<>();
     private int minimalSoc = -1;
     private int batteryReserve = -1;
 
-    public InverterManager(SolaxInverterRemoteClient client) {
+    public InverterManager(SolaxInverterModbusClient client) {
         this.client = client;
     }
 
@@ -80,6 +80,7 @@ public class InverterManager {
         try {
             Validate.inclusiveBetween(10, 100, minimalSoc);
             Validate.inclusiveBetween(0, 90, batteryReserve);
+            Validate.inclusiveBetween(10, 100, minimalSoc + batteryReserve);
             int minSoc = minimalSoc;
             if (enteringHighTariff) {
                 log.debug("setMinBatterySoc: Entering high tariff, minSOC={}}", minSoc);
@@ -90,7 +91,7 @@ public class InverterManager {
 
             client.setSelfUseMinimalSoc(minSoc);
 
-            int storedValue = client.getConfiguration().getSelfUseMinimalSoc();
+            int storedValue = client.getState().getSelfUseMinimalSoc();
             if (storedValue != minSoc) {
                 log.error("Failed to set MinBatterySoc to {}, stored value is {}", minSoc, storedValue);
             }
