@@ -21,7 +21,7 @@ dependencies {
 
     implementation 'com.github.cliftonlabs:json-simple'
     implementation 'com.luckycatlabs:SunriseSunsetCalculator'
-    implementation 'net.thejavashop:javampd'
+    implementation 'com.inthebacklog:javampd'
     implementation 'org.apache.commons:commons-lang3'
     implementation 'org.chuma.hvac-controller:hvac-controller'
     implementation 'it.sauronsoftware.cron4j:cron4j'

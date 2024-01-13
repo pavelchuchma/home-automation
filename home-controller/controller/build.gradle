@@ -17,6 +17,6 @@ dependencies {
     api project(':base')
 
     implementation 'ch.qos.logback:logback-classic'
-    implementation 'net.thejavashop:javampd'
+    implementation 'com.inthebacklog:javampd'
     implementation 'org.apache.commons:commons-lang3'
 }

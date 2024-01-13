@@ -12,6 +12,8 @@ public interface InverterMonitor {
 
     /**
      * Returns stored State or synchronously gets new one if no valid state is stored.
+     *
      * @param forceRefresh force getting fresh state, regardless valid state is already stored.
-     */    InverterState getStateSync(boolean forceRefresh);
+     */
+    InverterState getStateSync(boolean forceRefresh);
 }

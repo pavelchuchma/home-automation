@@ -1,12 +1,12 @@
 package org.chuma.homecontroller.extensions.external;
 
-import org.bff.javampd.MPD;
-import org.bff.javampd.Player;
-import org.bff.javampd.Playlist;
-import org.bff.javampd.exception.MPDException;
-import org.bff.javampd.exception.MPDPlayerException;
-import org.bff.javampd.exception.MPDPlaylistException;
-import org.bff.javampd.objects.MPDSong;
+import java.util.Optional;
+
+import org.bff.javampd.player.Player;
+import org.bff.javampd.playlist.MPDPlaylistSong;
+import org.bff.javampd.playlist.Playlist;
+import org.bff.javampd.server.MPD;
+import org.bff.javampd.song.MPDSong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,8 +17,8 @@ public class MpdRadio {
     private MPD mpdInstance;
 
     public MpdRadio(String mpdServerAddress, String file) {
-        radioStream = new MPDSong();
-        radioStream.setFile(file);
+
+        radioStream = MPDSong.builder().file(file).build();
         this.mpdServerAddress = mpdServerAddress;
     }
 
@@ -26,7 +26,7 @@ public class MpdRadio {
         if (mpdInstance == null || !mpdInstance.isConnected()) {
             try {
                 log.debug("Initializing MPD instance");
-                mpdInstance = (new MPD.Builder()).server(mpdServerAddress).build();
+                mpdInstance = MPD.builder().server(mpdServerAddress).build();
             } catch (Exception e) {
                 log.error("MPD init failed", e);
                 throw new RuntimeException(e);
@@ -39,47 +39,33 @@ public class MpdRadio {
         log.debug("starting stream: " + radioStream.getFile());
         MPD mpd = getMpd();
         Player player = mpd.getPlayer();
-        try {
-            player.stop();
-            Playlist playlist = mpd.getPlaylist();
-            playlist.clearPlaylist();
-            playlist.addSong(radioStream);
-            player.play();
-            log.debug("  started");
-        } catch (MPDPlayerException | MPDPlaylistException e) {
-            throw new RuntimeException(e);
-        }
+
+        player.stop();
+        Playlist playlist = mpd.getPlaylist();
+        playlist.clearPlaylist();
+        playlist.addSong(radioStream);
+        player.play();
+        log.debug("  started");
     }
 
     public void stop() {
         log.debug("stopping stream");
         Player player = getMpd().getPlayer();
-        try {
-            player.stop();
-            log.debug("  stopped");
-        } catch (MPDPlayerException e) {
-            throw new RuntimeException(e);
-        }
+        player.stop();
+        log.debug("  stopped");
     }
 
     public boolean isPlaying() {
         Player player = getMpd().getPlayer();
-        try {
-            Player.Status status = player.getStatus();
-            log.debug("getting status -> " + status);
-            return status == Player.Status.STATUS_PLAYING;
-        } catch (MPDException e) {
-            throw new RuntimeException(e);
-        }
+        player.getStatus();
+        Player.Status status = player.getStatus();
+        log.debug("getting status -> " + status);
+        return status == Player.Status.STATUS_PLAYING;
     }
 
     public String getCurrentSong() {
         Player player = getMpd().getPlayer();
-        try {
-            MPDSong currentSong = player.getCurrentSong();
-            return (currentSong != null) ? currentSong.getFile() : "none";
-        } catch (MPDException e) {
-            throw new RuntimeException(e);
-        }
+        Optional<MPDPlaylistSong> currentSong = player.getCurrentSong();
+        return (currentSong.isPresent()) ? currentSong.get().getFile() : "none";
     }
 }
