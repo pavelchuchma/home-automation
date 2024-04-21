@@ -25,6 +25,7 @@ import org.chuma.homecontroller.app.servlet.pages.PirPage;
 import org.chuma.homecontroller.app.servlet.pages.StaticPage;
 import org.chuma.homecontroller.app.servlet.rest.AirValveHandler;
 import org.chuma.homecontroller.app.servlet.rest.AllStatusHandler;
+import org.chuma.homecontroller.app.servlet.rest.ElectricitySpotPriceHandler;
 import org.chuma.homecontroller.app.servlet.rest.FuturaHandler;
 import org.chuma.homecontroller.app.servlet.rest.HvacHandler;
 import org.chuma.homecontroller.app.servlet.rest.InverterHandler;
@@ -76,6 +77,7 @@ import org.chuma.homecontroller.extensions.actor.HvacActor;
 import org.chuma.homecontroller.extensions.actor.RadioOnOffActor;
 import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
 import org.chuma.homecontroller.extensions.external.futura.FuturaMonitor;
+import org.chuma.homecontroller.extensions.external.inverter.ElectricitySpotPriceMonitor;
 import org.chuma.homecontroller.extensions.external.inverter.InverterManager;
 import org.chuma.homecontroller.extensions.external.inverter.InverterMonitor;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterModbusClient;
@@ -790,7 +792,8 @@ public class PiConfigurator extends AbstractConfigurator {
                 new WaterPumpHandler(Collections.singleton(waterPumpMonitor)),
                 new HvacHandler(Collections.singleton(hvacActor)),
                 new InverterHandler(Collections.singleton(inverterMonitor)),
-                new FuturaHandler(Collections.singleton(futuraMonitor)));
+                new FuturaHandler(Collections.singleton(futuraMonitor)),
+                new ElectricitySpotPriceHandler(Collections.singleton(new ElectricitySpotPriceMonitor())));
 //        configureSimulator(pages, wsHandlers, false);
         // rest/all handler
         List<Handler> handlers = new ArrayList<>();

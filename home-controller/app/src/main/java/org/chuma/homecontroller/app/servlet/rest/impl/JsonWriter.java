@@ -2,6 +2,7 @@ package org.chuma.homecontroller.app.servlet.rest.impl;
 
 import java.text.DecimalFormat;
 
+@SuppressWarnings("UnusedReturnValue")
 public class JsonWriter implements AutoCloseable {
     private static final int MAX_DEPTH = 10;
     private final StringBuilder sb;
@@ -38,9 +39,7 @@ public class JsonWriter implements AutoCloseable {
             return;
         }
         sb.append('\n');
-        for (int i = 0; i <= stackPosition; i++) {
-            sb.append("  ");
-        }
+        sb.append("  ".repeat(Math.max(0, stackPosition + 1)));
     }
 
     public void close() {
@@ -85,6 +84,12 @@ public class JsonWriter implements AutoCloseable {
 
     public JsonWriter addAttribute(String name, double value) {
         appendAttrName(name);
+        sb.append(doubleFormat.format(value));
+        return this;
+    }
+
+    public JsonWriter addArrayValue(double value) {
+        appendCommaIfNeeded();
         sb.append(doubleFormat.format(value));
         return this;
     }
