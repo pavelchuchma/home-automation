@@ -121,7 +121,7 @@ public class ElectricitySpotPriceMonitor {
 
         Cache<double[]>.Entry entry = cache.get(date);
         if (entry != null) {
-            if (entry.data != null || System.currentTimeMillis() - entry.timestamp > MAX_MISSING_ENTRY_CACHE_DURATION_MS) {
+            if (entry.data != null || System.currentTimeMillis() - entry.timestamp < MAX_MISSING_ENTRY_CACHE_DURATION_MS) {
                 return entry.data;
             }
         }
