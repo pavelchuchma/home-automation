@@ -19,7 +19,7 @@ public class ElectricitySpotPriceHandler extends AbstractRestHandler<Electricity
 
         jw.addAttribute("dist", dayPrices.distributionPrice);
         jw.addAttribute("currentEntry", dayPrices.currentEntry);
-        try (JsonWriter arr = jw.startArrayAttribute("data")) {
+        try (JsonWriter ignored = jw.startArrayAttribute("data")) {
             for (double value : dayPrices.prices) {
                 jw.addArrayValue(value);
             }

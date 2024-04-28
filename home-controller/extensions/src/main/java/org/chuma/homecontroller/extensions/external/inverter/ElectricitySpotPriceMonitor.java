@@ -86,7 +86,11 @@ public class ElectricitySpotPriceMonitor {
     public synchronized Prices getDayPrices() {
         try {
             double exchangeRate = getCurrentEurCzkExchangeRate();
-            double distributionPrice = (450.43 + 212.82 + 495.00);
+            // Cena za distribuované množství energie (v Kč/MWh): 450.53
+            // Systémové služby: 212.82
+            // Cena na podporu elektřiny z podporovaných zdrojů elektřiny (POZE): 495
+            // Cena za služby obchodu Kč/MWh: 450
+            double distributionPrice = (450.43 + 212.82 + 495.00 + 450);
 
             Calendar now = new GregorianCalendar();
 
