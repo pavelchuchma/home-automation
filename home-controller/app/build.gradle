@@ -27,7 +27,7 @@ application {
 
 startScripts {
     doLast {
-        var debugOption = '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=6070'
+        var debugOption = '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:6070'
         windowsScript.text = windowsScript.text.replace('set DEFAULT_JVM_OPTS=', "set \"DEFAULT_JVM_OPTS=${debugOption}\"")
         unixScript.text = unixScript.text.replace('DEFAULT_JVM_OPTS=""', "DEFAULT_JVM_OPTS=\"${debugOption}\"")
     }
