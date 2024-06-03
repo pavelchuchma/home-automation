@@ -131,7 +131,7 @@ update mpd configuration to use external sound card and change server binding to
 ```
 sudo nano /etc/mpd.conf
 ```
-add `audio_input` and replace `bind_to_address`:
+enable logging, add `audio_input` and replace `bind_to_address`:
 ```
 audio_output {
         type            "alsa"
