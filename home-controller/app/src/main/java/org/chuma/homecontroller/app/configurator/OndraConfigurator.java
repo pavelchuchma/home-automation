@@ -78,7 +78,7 @@ public class OndraConfigurator extends AbstractConfigurator {
         Node pokoj = nodeInfoRegistry.createNode(43, "Pokoj");
         Node obyvak = nodeInfoRegistry.createNode(41, "Obývák");
         Node rele1 = nodeInfoRegistry.createNode(45, "Relé 1");
-        Node rele2 = nodeInfoRegistry.createNode(46, "Relé 2");
+        Node rele2 = nodeInfoRegistry.createNode(49, "Relé 2");
 
         WallSwitch lozniceDvereSw = new WallSwitch("lozniceDvere", loznice, 1);
         WallSwitch loznicePostelSw = new WallSwitch("loznicePostel", loznice, 2);
