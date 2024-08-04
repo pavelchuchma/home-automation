@@ -33,7 +33,7 @@ public class HvacActor extends AbstractActor implements IOnOffActor {
         }
         int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
         if (currentMonth >= 6 && currentMonth <= 9) {
-            hvacDevice.set(switchOn, OperatingMode.COOL, FanSpeed.SPEED_1, 25, false, false);
+            hvacDevice.set(switchOn, OperatingMode.COOL, FanSpeed.SPEED_1, 23, false, false);
         } else {
             hvacDevice.set(switchOn, OperatingMode.HEAT, FanSpeed.SPEED_1, 23, false, false);
         }
