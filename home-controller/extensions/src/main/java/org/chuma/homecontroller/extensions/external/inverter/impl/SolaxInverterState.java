@@ -183,6 +183,11 @@ public class SolaxInverterState extends AbstractInverterState {
     }
 
     @Override
+    public double getPvYieldToday() {
+        return 0;
+    }
+
+    @Override
     public double getFeedInEnergyTotal() {
         return feedInEnergyTotal;
     }

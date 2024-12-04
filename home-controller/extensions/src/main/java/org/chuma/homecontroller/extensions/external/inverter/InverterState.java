@@ -73,6 +73,8 @@ public interface InverterState {
 
     double getYieldToday();
 
+    double getPvYieldToday();
+
     double getFeedInEnergyTotal();
 
     double getFeedInEnergyToday();

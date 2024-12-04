@@ -12,6 +12,7 @@ class InverterItem extends AdditionalToolItem {
         this.batPwr = undefined;
         this.batSoc = undefined;
         this.yieldToday = undefined;
+        this.pvYieldToday = undefined;
         this.consumedToday = undefined;
         this.feedInToday = undefined;
     }
@@ -26,6 +27,7 @@ class InverterItem extends AdditionalToolItem {
         this.batPwr = item.batPwr;
         this.batSoc = item.batSoc;
         this.yieldToday = item.yieldToday;
+        this.pvYieldToday = item.pvYieldToday;
         this.consumedToday = item.consumedToday;
         this.feedInToday = item.feedInToday;
     }
@@ -57,7 +59,7 @@ class InverterItem extends AdditionalToolItem {
             ctx.fillText(batteryText, 5, y += step);
             ctx.fillText('💡 ' + this.load + ' W', 5, y += step);
             y += 5;
-            ctx.fillText('∑😎 ' + this.yieldToday + ' kWh', 5, y += step);
+            ctx.fillText('∑😎 ' + this.pvYieldToday + ' kWh', 5, y += step);
             ctx.fillText('∑◀🏭 ' + this.consumedToday + ' kWh', 5, y += step);
             ctx.fillText('∑▶🏭 ' + this.feedInToday + ' kWh', 5, y += step);
         } else {

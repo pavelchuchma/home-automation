@@ -11,6 +11,7 @@ import org.chuma.homecontroller.extensions.external.utils.ModbusClient;
 
 /**
  * Client for local Modbus API of "Solax X3-Hybrid G4 Inverter"
+ * Filed map: https://github.com/InfernoEmbedded/PowerScraper/blob/master/Inputs/SolaxXHybridModbus.py
  */
 public class SolaxInverterModbusClient {
     protected static Logger log = LoggerFactory.getLogger(SolaxInverterModbusClient.class.getName());
@@ -157,6 +158,11 @@ public class SolaxInverterModbusClient {
         @Override
         public double getYieldToday() {
             return client.input.getUnsignedInt(0x0050) / 10d;
+        }
+
+        @Override
+        public double getPvYieldToday() {
+            return client.input.getUnsignedInt(0x0096) / 10d;
         }
 
         @Override
