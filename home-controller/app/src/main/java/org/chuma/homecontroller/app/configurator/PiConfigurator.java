@@ -270,7 +270,7 @@ public class PiConfigurator extends AbstractConfigurator {
 
         LouversController zaluzieKuchyn = addLouversController("lvKuch", "Kuchyň", rele2ZaluzieAPort3.getRelay5(), rele2ZaluzieAPort3.getRelay6(), 58000 - snowConstant);
         LouversController zaluzieObyvak1 = addLouversController("lvOb1", "Obývák 1", rele2ZaluzieAPort3.getRelay1(), rele2ZaluzieAPort3.getRelay2(), 57000 - snowConstant);
-        LouversController zaluzieObyvak2 = addLouversController("lvOb2", "Obývák 2", rele8Actor3Port1.getRelay5(), rele8Actor3Port1.getRelay6(), 53000);
+        LouversController zaluzieObyvak2 = addLouversController("lvOb2", "Obývák 2", rele8Actor3Port1.getRelay5(), rele8Actor3Port1.getRelay6(), 57000);
         LouversController zaluzieObyvak3 = addLouversController("lvOb3", "Obývák 3", rele2ZaluzieAPort3.getRelay3(), rele2ZaluzieAPort3.getRelay4(), 58000 - snowConstant);
 
         LouversController zaluzieObyvak4 = addLouversController("lvOb4", "Obývák 4", rele4ZaluzieAPort2.getRelay3(), rele4ZaluzieAPort2.getRelay4(), 58000 - snowConstant);
@@ -703,8 +703,8 @@ public class PiConfigurator extends AbstractConfigurator {
         setupPir(pirA1Prizemi.getIn4AndActivate(), "pirVchH", "Vchod hore", new ContinuousValueSwitchOnActionWithTimer(vchodHorePwmActor, 600, 0.8, sunCondition), new SwitchOffActionWithTimer(vchodHorePwmActor, 60));
         setupPir(pirA1Prizemi.getIn5AndActivate(), "pirSch", "Schodiste", new ContinuousValueSwitchOnActionWithTimer(schodyPwmActor, 600, 0.15, corridorDarkCondition), new SwitchOffActionWithTimer(schodyPwmActor, 30));
         setupMagneticSensor(pirA1Prizemi.getIn6AndActivate(), "pisH", "Pisoar Hore",
-                new Action[]{new SwitchOnActionWithTimer(pisoarHore, 3)},
-                new Action[]{new SwitchOnActionWithTimer(pisoarHore, 7)});
+                new Action[]{new SwitchOnActionWithTimer(pisoarHore, 2)},
+                new Action[]{new SwitchOnActionWithTimer(pisoarHore, 4)});
         // A6:3 "zadveri venku - spinac puda"
 
         GenericInputDevice pirA2Patro = new GenericInputDevice("pirA2Patro", pirNodeA, 2);
