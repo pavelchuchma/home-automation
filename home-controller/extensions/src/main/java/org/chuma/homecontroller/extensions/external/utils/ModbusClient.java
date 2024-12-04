@@ -11,6 +11,7 @@ import com.ghgande.j2mod.modbus.msg.ReadInputRegistersRequest;
 import com.ghgande.j2mod.modbus.msg.ReadInputRegistersResponse;
 import com.ghgande.j2mod.modbus.msg.ReadMultipleRegistersRequest;
 import com.ghgande.j2mod.modbus.msg.ReadMultipleRegistersResponse;
+import com.ghgande.j2mod.modbus.msg.WriteCoilRequest;
 import com.ghgande.j2mod.modbus.msg.WriteMultipleRegistersRequest;
 import com.ghgande.j2mod.modbus.msg.WriteSingleRegisterRequest;
 import com.ghgande.j2mod.modbus.net.TCPMasterConnection;
@@ -39,14 +40,16 @@ public class ModbusClient {
      * @param ipAddress                   device ip address or host name
      * @param port                        modbus port, usually 502
      * @param closeConnection             close connection after each call (if not closeConnectionSuspended is not set)
+     * @param timeoutMs                   tcp timeout
      * @param inputRegisterRanges         array of {start position, length} pairs of Input registers to be read
      * @param holdingRegisterRanges       array of {start position, length} pairs of Holding registers to be read
      * @param stableHoldingRegisterRanges array of {start position, length} pairs of Holding registers to be read only once (no change is expected)
      */
-    public ModbusClient(String ipAddress, int port, boolean closeConnection, int[][] inputRegisterRanges, int[][] holdingRegisterRanges,
+    public ModbusClient(String ipAddress, int port, boolean closeConnection, int timeoutMs, int[][] inputRegisterRanges, int[][] holdingRegisterRanges,
                         int[][] stableHoldingRegisterRanges) throws UnknownHostException {
         connection = new TCPMasterConnection(InetAddress.getByName(ipAddress));
         connection.setPort(port);
+        connection.setTimeout(timeoutMs);
         this.closeConnection = closeConnection;
 
         this.inputRegisterRanges = inputRegisterRanges;
@@ -116,15 +119,22 @@ public class ModbusClient {
     }
 
     private synchronized ModbusResponse doModbusCall(ModbusRequest req) {
+        long startTime = 0;
+        if (log.isTraceEnabled()) {
+            startTime = System.currentTimeMillis();
+        }
         try {
             ModbusTCPTransaction trans = new ModbusTCPTransaction(connection);
             req.setUnitID(1);
             trans.setReconnecting(closeConnection && !closeConnectionSuspended);
             trans.setRequest(req);
+            trans.setRetries(0);
             trans.execute();
             return trans.getResponse();
         } catch (Exception e) {
             throw new RuntimeException(e);
+        } finally {
+            log.trace("call done in {} ms", System.currentTimeMillis() - startTime);
         }
     }
 
@@ -136,6 +146,11 @@ public class ModbusClient {
     public void writeSingleRegisterValue(int address, int value) {
         log.debug("writing single register: {}={}", String.format("0x%04X", address), value);
         doModbusCall(new WriteSingleRegisterRequest(address, new SimpleRegister(value)));
+    }
+
+    public void writeCoilRegister(int address, boolean value) {
+        log.debug("writing coil register: {}={}", String.format("0x%04X", address), value);
+        doModbusCall(new WriteCoilRequest(address, value));
     }
 
     public static class Registers {

@@ -18,7 +18,7 @@ public class SolaxInverterModbusClient {
     private final ModbusClient client;
 
     public SolaxInverterModbusClient(String host) throws UnknownHostException {
-        client = new ModbusClient(host, 502, true,
+        client = new ModbusClient(host, 502, true, 3000,
                 new int[][]{{0x0003, 0x0053}, {0x006A, 0x009B} /*, {0x0114, 0x0115}*/},
                 new int[][]{{0x007D, 0x0093}, {0x00B2, 0x00B2}},
                 new int[][]{{0x0000, 0x0006}}

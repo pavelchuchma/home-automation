@@ -13,7 +13,7 @@ public class FuturaController {
     private final ModbusClient modbusClient;
 
     public FuturaController(String ipAddress) throws UnknownHostException {
-        modbusClient = new ModbusClient(ipAddress, 502, false,
+        modbusClient = new ModbusClient(ipAddress, 502, false, 3000,
                 new int[][]{{0, 21}, {30, 38}, {40, 52}, {60, 75}, {100, 154}, {160, 165}},
                 new int[][]{{0, 17}},
                 new int[][]{});
