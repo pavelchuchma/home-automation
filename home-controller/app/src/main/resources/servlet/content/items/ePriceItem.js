@@ -51,24 +51,15 @@ class EPriceItem extends AdditionalToolItem {
                 ctx.stroke();
             }
 
-            // current value
-            ctx.strokeStyle = 'red';
-            ctx.beginPath();
-            ctx.arc(xStart + 2 * this.currentEntry, this.getY(this.data[this.currentEntry], minPrice, maxPrice),
-                2, 0, 2 * Math.PI);
-            ctx.fillStyle = 'red';
-            ctx.fill()
-            ctx.stroke();
-
-            // graph of values
-            ctx.strokeStyle = 'blue';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(xStart, this.getY(this.data[0], minPrice, maxPrice));
-            for (let i = 1; i < this.data.length; i++) {
-                ctx.lineTo(xStart + 2 * i, this.getY(this.data[i], minPrice, maxPrice));
+            ctx.lineWidth = 2;
+            for (let i = 0; i <= 48; i++) {
+                ctx.strokeStyle = (i === this.currentEntry) ? 'red' : 'blue';
+                ctx.beginPath();
+                let y = this.getY(this.data[i], minPrice, maxPrice)
+                ctx.moveTo(xStart + 2 * i, y);
+                ctx.lineTo(xStart + 2 * (i + 1), y);
+                ctx.stroke();
             }
-            ctx.stroke();
 
             // text
             ctx.font = "12px Arial";

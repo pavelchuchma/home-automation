@@ -40,8 +40,12 @@ class InverterItem extends AdditionalToolItem {
             ctx.fillStyle = 'black';
             let y = 0;
             const step = 17;
-            let sunText = (this.pvPwr === 0)
-                ? '☁' : ((this.pvPwr < 1000) ? '🌥' : (this.pvPwr < 3500) ? '🌤' : '😎') + ' ' + this.pvPwr + ' W';
+            let sunText = (this.mode === 'Idle') ? "💤"
+                : (this.pvPwr === 0) ? '☁'
+                    : ((this.pvPwr < 1000) ? '🌥'
+                        : (this.pvPwr < 3500) ? '🌤'
+                            : '😎')
+                    + ' ' + this.pvPwr + ' W';
             ctx.fillText(sunText, 5, y += step);
             if (this.mode === 'EPSMode') {
                 ctx.fillText('🏡 ❌ 🏭 ', 5, y += step);
