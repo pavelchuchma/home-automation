@@ -24,7 +24,7 @@ public class Scheduler {
     }
 
     public String scheduleTask(LocalTime time, Runnable action) {
-        log.debug("Scheduling task at " + time);
+        log.debug("Scheduling task at {}", time);
         SchedulingPattern pattern = new SchedulingPattern(time.getMinute() + " " + time.getHour() + " * * *");
         return scheduler.schedule(pattern, new RunnableTask(action));
     }
