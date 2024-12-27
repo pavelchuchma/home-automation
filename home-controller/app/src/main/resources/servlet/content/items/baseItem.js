@@ -61,6 +61,7 @@ class AdditionalToolItem extends BaseItem {
 class AdditionalSvgToolItem extends AdditionalToolItem {
     constructor(id, canvasHeight) {
         super(id, canvasHeight, 'svg');
+        this.baseFont = {fill: 'black', family: 'Arial', size: 12};
     }
 
     onCanvasCreated() {

@@ -32,6 +32,7 @@ public class StaticPage implements Page {
         m.put(".html", "text/html;charset=utf-8");
         m.put(".jpg", "image/jpeg");
         m.put(".png", "image/png");
+        m.put(".svg", "image/svg+xml");
         m.put(".js", "application/javascript;charset=utf-8");
         return m;
     }

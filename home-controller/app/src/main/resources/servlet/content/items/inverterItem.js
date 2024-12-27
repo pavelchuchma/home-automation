@@ -20,7 +20,7 @@ class InverterItem extends AdditionalSvgToolItem {
     onCanvasCreatedImpl() {
         this.textLines = [];
         for (let i = 0; i < 7; i++) {
-            this.textLines.push(this.svg.text('?').move(5, i * 17).font({fill: 'black', family: 'Arial', size: 12}));
+            this.textLines.push(this.svg.text('?').move(5, i * 17).font(this.baseFont));
         }
     }
 
