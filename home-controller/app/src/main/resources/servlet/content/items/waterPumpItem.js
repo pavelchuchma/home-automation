@@ -1,31 +1,29 @@
 'use strict';
 
-class WaterPumpItem extends AdditionalToolItem {
+class WaterPumpItem extends AdditionalSvgToolItem {
     constructor() {
-        super('wpump', 45)
+        super('wpump', 40)
         this.on = undefined;
         this.recCount = undefined;
         this.lastPeriodRecCount = undefined;
         this.lastRecords = undefined;
     }
 
+    onCanvasCreatedImpl() {
+        this.textLines = [];
+        for (let i = 0; i < 2; i++) {
+            this.textLines.push(this.svg.text('?').move(5, i * 17).font(this.baseFont));
+        }
+    }
+
     draw() {
-        const ctx = prepareCanvasContext(this.canvasId);
+        this.textLines[0].text('⟳ ' + this.lastPeriodRecCount + '/' + this.recCount);
 
-        ctx.fillStyle = 'black';
-        ctx.font = "12px Arial";
-        let y = 0;
-        const step = 17;
-
-        ctx.fillText('⟳ ' + this.lastPeriodRecCount + '/' + this.recCount, 5, y += step);
         let lastRecordDuration = -1;
         if (this.lastRecords !== undefined && this.lastRecords.length > 0) {
             lastRecordDuration = this.lastRecords[this.lastRecords.length - 1].duration;
         }
         let lastDuration = Math.round(lastRecordDuration * 10.0) / 10.0;
-        if (lastDuration < 15) {
-            ctx.fillStyle = 'red';
-        }
-        ctx.fillText('⏱ ' + lastDuration + ' s', 5, y += step);
+        this.textLines[1].text('⏱ ' + lastDuration + ' s').attr('fill', (lastDuration < 15) ? 'red' : 'black');
     }
 }

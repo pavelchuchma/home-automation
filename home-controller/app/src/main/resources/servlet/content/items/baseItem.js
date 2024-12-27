@@ -67,6 +67,7 @@ class AdditionalSvgToolItem extends AdditionalToolItem {
     onCanvasCreated() {
         // draw background
         this.svg = SVG().addTo('#td-' + this.canvasId).size(this.canvasWidth, this.canvasHeight);
+        this.svg.attr('id', this.canvasId);
         const rect = this.svg.rect(this.canvasWidth, this.canvasHeight);
         rect.fill('lightgray').stroke({width: 1, color: 'black'});
 
