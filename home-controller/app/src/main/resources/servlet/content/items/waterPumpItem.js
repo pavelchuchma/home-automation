@@ -9,13 +9,6 @@ class WaterPumpItem extends AdditionalToolItem {
         this.lastRecords = undefined;
     }
 
-    update(item) {
-        this.on = item.on;
-        this.recCount = item.recCount;
-        this.lastPeriodRecCount = item.lastPeriodRecCount;
-        this.lastRecords = item.lastRecords;
-    }
-
     draw() {
         const ctx = prepareCanvasContext(this.canvasId);
 

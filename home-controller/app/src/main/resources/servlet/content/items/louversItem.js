@@ -9,13 +9,6 @@ class LouversItem extends BaseItem {
         this.act = undefined;
     }
 
-    update(item) {
-        this.name = item.name;
-        this.pos = item.pos;
-        this.off = item.off;
-        this.act = item.act;
-    }
-
     draw(ctx) {
         LouversItem.drawIcon(this.x, this.y, this.pos, this.off, this.act, ctx, 70, 80);
     }

@@ -7,10 +7,4 @@ class SensorItem extends BaseItem {
         this.active = undefined;
         this.age = undefined;
     }
-
-    update(item) {
-        this.name = item.name;
-        this.active = item.active;
-        this.age = item.age;
-    }
 }

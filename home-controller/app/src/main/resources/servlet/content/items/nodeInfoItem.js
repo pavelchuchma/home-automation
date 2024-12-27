@@ -12,15 +12,6 @@ class NodeInfoItem extends AbstractItem {
         this.messages = [];
     }
 
-    update(item) {
-        this.name = item.name;
-        this.lastPingAge = item.lastPingAge;
-        this.buildTime = item.buildTime;
-        this.bootTime = item.bootTime;
-        this.testMode = item.testMode;
-        this.messages = item.messages;
-    }
-
     doAction(action) {
     }
 }

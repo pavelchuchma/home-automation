@@ -1,8 +1,8 @@
 'use strict';
 
-class InverterItem extends AdditionalToolItem {
+class InverterItem extends AdditionalSvgToolItem {
     constructor() {
-        super('inverter', 135)
+        super('inverter', 125)
         this.mode = undefined;
         this.pvPwr = undefined;
         this.acPwr = undefined;
@@ -17,59 +17,38 @@ class InverterItem extends AdditionalToolItem {
         this.feedInToday = undefined;
     }
 
-    update(item) {
-        this.mode = item.mode;
-        this.pvPwr = item.pvPwr;
-        this.acPwr = item.acPwr;
-        this.feedInPwr = item.feedInPwr;
-        this.load = item.load;
-        this.diff = item.diff;
-        this.batPwr = item.batPwr;
-        this.batSoc = item.batSoc;
-        this.yieldToday = item.yieldToday;
-        this.pvYieldToday = item.pvYieldToday;
-        this.consumedToday = item.consumedToday;
-        this.feedInToday = item.feedInToday;
+    onCanvasCreatedImpl() {
+        this.textLines = [];
+        for (let i = 0; i < 7; i++) {
+            this.textLines.push(this.svg.text('?').move(5, i * 17).font({fill: 'black', family: 'Arial', size: 12}));
+        }
     }
 
     draw() {
-        const ctx = prepareCanvasContext(this.canvasId);
-
-        if (this.mode !== undefined) {
-            ctx.font = "12px Arial";
-            ctx.fillStyle = 'black';
-            let y = 0;
-            const step = 17;
-            let sunText = (this.mode === 'Idle') ? "💤"
-                : (this.pvPwr === 0) ? '☁'
-                    : ((this.pvPwr < 1000) ? '🌥'
-                        : (this.pvPwr < 3500) ? '🌤'
-                            : '😎')
-                    + ' ' + this.pvPwr + ' W';
-            ctx.fillText(sunText, 5, y += step);
-            if (this.mode === 'EPSMode') {
-                ctx.fillText('🏡 ❌ 🏭 ', 5, y += step);
-            } else {
-                if (this.feedInPwr > 0) {
-                    ctx.fillText('🏡 ▶ 🏭 ' + this.feedInPwr + ' W', 5, y += step);
-                } else {
-                    ctx.fillText('🏡 ◀ 🏭 ' + -this.feedInPwr + ' W', 5, y += step);
-                }
-            }
-            let batteryText = '🔋 ' + this.batSoc + '%';
-            if (this.batPwr !== 0) {
-                batteryText += ((this.batPwr > 0) ? " ▲" : " ▼") + Math.abs(this.batPwr) + ' W';
-            }
-            ctx.fillText(batteryText, 5, y += step);
-            ctx.fillText('💡 ' + this.load + ' W', 5, y += step);
-            y += 5;
-            ctx.fillText('∑😎 ' + this.pvYieldToday + ' kWh', 5, y += step);
-            ctx.fillText('∑◀🏭 ' + this.consumedToday + ' kWh', 5, y += step);
-            ctx.fillText('∑▶🏭 ' + this.feedInToday + ' kWh', 5, y += step);
-        } else {
-            ctx.fillStyle = 'black';
-            ctx.font = "30px Arial";
-            ctx.fillText('?', 15, 30);
+        this.textLines.slice(1).forEach((line) => {
+            this.setVisibility(line, this.mode !== undefined);
+        })
+        if (this.mode === undefined) {
+            this.textLines[0].text('?')
+            return;
         }
+        this.textLines[0].text((this.mode === 'Idle') ? "💤"
+            : (this.pvPwr === 0) ? '☁'
+                : ((this.pvPwr < 1000) ? '🌥'
+                    : (this.pvPwr < 3500) ? '🌤'
+                        : '😎')
+                + ' ' + this.pvPwr + ' W');
+        this.textLines[1].text((this.mode === 'EPSMode') ? '🏡 ❌ 🏭 ' :
+            (this.feedInPwr > 0) ? '🏡 ▶ 🏭 ' + this.feedInPwr + ' W' : '🏡 ◀ 🏭 ' + -this.feedInPwr + ' W');
+
+        let batteryText = '🔋 ' + this.batSoc + '%';
+        if (this.batPwr !== 0) {
+            batteryText += ((this.batPwr > 0) ? " ▲" : " ▼") + Math.abs(this.batPwr) + ' W';
+        }
+        this.textLines[2].text(batteryText);
+        this.textLines[3].text('💡 ' + this.load + ' W');
+        this.textLines[4].text('∑😎 ' + this.pvYieldToday + ' kWh');
+        this.textLines[5].text('∑ ◀ 🏭 ' + this.consumedToday + ' kWh');
+        this.textLines[6].text('∑ ▶ 🏭 ' + this.feedInToday + ' kWh');
     }
 }

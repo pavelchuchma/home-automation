@@ -40,13 +40,16 @@ function onLoadContinue() {
         for (const additionalToolbar of additionalToolbars) {
             let tr = document.createElement('tr');
             let td = document.createElement('td');
-            let canvas = document.createElement('canvas');
-            canvas.id = additionalToolbar.canvasId;
-            canvas.width = additionalToolbar.canvasWidth;
-            canvas.height = additionalToolbar.canvasHeight;
-
-            toolbarTable.appendChild(tr).appendChild(td).appendChild(canvas);
-
+            toolbarTable.appendChild(tr).appendChild(td)
+            if (additionalToolbar.type === 'canvas') {
+                let canvas = document.createElement('canvas');
+                canvas.id = additionalToolbar.canvasId;
+                canvas.width = additionalToolbar.canvasWidth;
+                canvas.height = additionalToolbar.canvasHeight;
+                toolbarTable.appendChild(canvas);
+            } else if (additionalToolbar.type === 'svg') {
+                td.id = 'td-' + additionalToolbar.canvasId;
+            }
             additionalToolbar.onCanvasCreated();
         }
 
@@ -65,7 +68,11 @@ function drawItems() {
     drawPlanCanvas();
     for (const item of status.components) {
         if (item.floor === currentFloor || item.floor < 0) {
-            item.draw(mainCtx);
+            try {
+                item.draw(mainCtx);
+            } catch (e) {
+                printException(e);
+            }
         }
     }
 }

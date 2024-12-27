@@ -29,20 +29,6 @@ class RecuperationItem extends AdditionalToolItem {
         return img
     }
 
-    update(item) {
-        this.ventSpeed = item.ventSpeed;
-        this.airTempAmbient = item.airTempAmbient;
-        this.airTempFresh = item.airTempFresh;
-        this.airTempIndoor = item.airTempIndoor;
-        this.airTempWaste = item.airTempWaste;
-        this.filterWear = item.filterWear;
-        this.powerConsumption = item.powerConsumption;
-        this.heatRecovering = item.heatRecovering;
-        this.wallControllerCo2 = item.wallControllerCo2;
-        this.wallControllerTemp = item.wallControllerTemp;
-        this.timeProgramActive = item.timeProgramActive;
-    }
-
     draw() {
         const ctx = prepareCanvasContext(this.canvasId);
 

@@ -8,12 +8,6 @@ class EPriceItem extends AdditionalToolItem {
         this.data = undefined;
     }
 
-    update(item) {
-        this.dist = item.dist;
-        this.currentEntry = item.currentEntry;
-        this.data = item.data;
-    }
-
     getY(price, minPrice, maxPrice) {
         let graphHeight = 60;
         let bottomY = Math.min(0, minPrice);

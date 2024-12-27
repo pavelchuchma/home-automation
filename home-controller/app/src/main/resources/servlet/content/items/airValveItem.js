@@ -8,12 +8,6 @@ class AirValveItem extends BaseItem {
         this.act = undefined;
     }
 
-    update(item) {
-        this.name = item.name;
-        this.pos = item.pos;
-        this.act = item.act;
-    }
-
     draw(ctx) {
         AirValveItem.drawIcon(this.x, this.y, this.pos, this.act, this.#getValveColor(), ctx)
     }

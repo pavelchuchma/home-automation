@@ -7,11 +7,6 @@ class OnOffItem extends BaseItem {
         this.val = undefined;
     }
 
-    update(item) {
-        this.name = item.name;
-        this.val = item.val;
-    }
-
     simplifyOnOffAction(action) {
         if (action === 'plus' || action === 'full') {
             return 'on';

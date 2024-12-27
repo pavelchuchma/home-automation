@@ -8,13 +8,6 @@ class PwmLightItem extends OnOffItem {
         this.curr = undefined;
     }
 
-    update(item) {
-        super.update(item);
-        this.pwmVal = item.pwmVal;
-        this.maxPwmVal = item.maxPwmVal;
-        this.curr = item.curr;
-    }
-
     draw(ctx) {
         PwmLightItem.drawLightIcon(this.x, this.y, this.val, ctx);
     }

@@ -6,6 +6,9 @@ class AbstractItem {
     }
 
     update(item) {
+        for (let prop in item) {
+            this[prop] = item[prop];
+        }
     }
 
     doAction(action) {
@@ -40,9 +43,10 @@ class BaseItem extends AbstractItem {
 }
 
 class AdditionalToolItem extends BaseItem {
-    constructor(id, canvasHeight) {
+    constructor(id, canvasHeight, type = 'canvas') {
         super(id, 0, 0, -1);
-        this.canvasId = id + 'Canvas';
+        this.type = type;
+        this.canvasId = id + '_' + type;
         this.canvasWidth = 110;
         this.canvasHeight = canvasHeight;
     }
@@ -51,5 +55,27 @@ class AdditionalToolItem extends BaseItem {
      * Called after canvas creation is done
      */
     onCanvasCreated() {
+    }
+}
+
+class AdditionalSvgToolItem extends AdditionalToolItem {
+    constructor(id, canvasHeight) {
+        super(id, canvasHeight, 'svg');
+    }
+
+    onCanvasCreated() {
+        // draw background
+        this.svg = SVG().addTo('#td-' + this.canvasId).size(this.canvasWidth, this.canvasHeight);
+        const rect = this.svg.rect(this.canvasWidth, this.canvasHeight);
+        rect.fill('lightgray').stroke({width: 1, color: 'black'});
+
+        this.onCanvasCreatedImpl();
+    }
+
+    onCanvasCreatedImpl() {
+    }
+
+    setVisibility(svgElement, value) {
+        svgElement.attr('visibility', value ? 'visible' : 'hidden');
     }
 }

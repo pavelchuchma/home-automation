@@ -24,22 +24,6 @@ class HvacItem extends AdditionalToolItem {
         }).bind(this));
     }
 
-    update(item) {
-        this.on = item.on;
-        this.fanSpeed = item.fanSpeed;
-        this.currentMode = item.currentMode;
-        this.targetMode = item.targetMode;
-        this.autoMode = item.autoMode;
-        this.quiteMode = item.quiteMode;
-        this.sleepMode = item.sleepMode;
-        this.defrost = item.defrost;
-        this.targetTemperature = item.targetTemperature;
-        this.airTemperature = item.airTemperature;
-        this.air2Temperature = item.air2Temperature;
-        this.roomTemperature = item.roomTemperature;
-        this.unitTemperature = item.unitTemperature;
-    }
-
     draw() {
         const ctx = prepareCanvasContext(this.canvasId);
 
