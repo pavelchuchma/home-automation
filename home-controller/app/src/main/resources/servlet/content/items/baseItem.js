@@ -62,6 +62,8 @@ class AdditionalSvgToolItem extends AdditionalToolItem {
     constructor(id, canvasHeight) {
         super(id, canvasHeight, 'svg');
         this.baseFont = {fill: 'black', family: 'Arial', size: 12};
+        this.hideOnNoData = [];
+        this.showOnData = [];
     }
 
     onCanvasCreated() {
@@ -70,11 +72,30 @@ class AdditionalSvgToolItem extends AdditionalToolItem {
         this.svg.attr('id', this.canvasId);
         const rect = this.svg.rect(this.canvasWidth, this.canvasHeight);
         rect.fill('lightgray').stroke({width: 1, color: 'black'});
-
+        this.textNoData = this.svg.text('⏳').move(5, 3).font(this.baseFont);
         this.onCanvasCreatedImpl();
     }
 
-    onCanvasCreatedImpl() {
+    hasData() {
+        return true;
+    }
+
+    draw() {
+        if (this.hasData()) {
+            this.setVisibility(this.textNoData, false);
+            this.showOnData.forEach((i) => {
+                this.setVisibility(i, true);
+            });
+            this.drawImpl();
+        } else {
+            this.setVisibility(this.textNoData, true);
+            this.hideOnNoData.forEach(i => {
+                this.setVisibility(i, false);
+            });
+        }
+    }
+
+    drawImpl() {
     }
 
     setVisibility(svgElement, value) {

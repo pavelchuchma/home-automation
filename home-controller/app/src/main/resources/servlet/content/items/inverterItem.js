@@ -22,16 +22,15 @@ class InverterItem extends AdditionalSvgToolItem {
         for (let i = 0; i < 7; i++) {
             this.textLines.push(this.svg.text('?').move(5, i * 17).font(this.baseFont));
         }
+        this.showOnData.push(...this.textLines);
+        this.hideOnNoData.push(...this.textLines);
     }
 
-    draw() {
-        this.textLines.slice(1).forEach((line) => {
-            this.setVisibility(line, this.mode !== undefined);
-        })
-        if (this.mode === undefined) {
-            this.textLines[0].text('?')
-            return;
-        }
+    hasData() {
+        return this.mode !== undefined;
+    }
+
+    drawImpl() {
         this.textLines[0].text((this.mode === 'Idle') ? "💤"
             : (this.pvPwr === 0) ? '☁'
                 : ((this.pvPwr < 1000) ? '🌥'

@@ -14,9 +14,16 @@ class WaterPumpItem extends AdditionalSvgToolItem {
         for (let i = 0; i < 2; i++) {
             this.textLines.push(this.svg.text('?').move(5, i * 17).font(this.baseFont));
         }
+
+        this.showOnData.push(...this.textLines);
+        this.hideOnNoData.push(...this.textLines);
     }
 
-    draw() {
+    hasData() {
+        return this.lastRecords !== undefined && this.lastRecords.length > 0;
+    }
+
+    drawImpl() {
         this.textLines[0].text('⟳ ' + this.lastPeriodRecCount + '/' + this.recCount);
 
         let lastRecordDuration = -1;
