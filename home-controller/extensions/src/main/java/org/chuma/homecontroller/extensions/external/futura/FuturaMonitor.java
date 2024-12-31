@@ -20,7 +20,7 @@ public class FuturaMonitor extends AbstractStateMonitor<State> {
             ctrl = new FuturaController(ipAddress);
         } catch (UnknownHostException e) {
             ctrl = null;
-            log.error("Failed to create FuturaController from '" + ipAddress + "'", e);
+            log.error("Failed to create FuturaController from '{}'", ipAddress, e);
         }
         this.controller = ctrl;
     }

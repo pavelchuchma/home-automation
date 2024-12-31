@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.chuma.homecontroller.extensions.external.utils.ModbusClient;
 
 public class FuturaController {
-    protected static Logger log = LoggerFactory.getLogger(FuturaController.class.getName());
     private final ModbusClient modbusClient;
 
     public FuturaController(String ipAddress) throws UnknownHostException {

@@ -210,5 +210,6 @@ function getAdditionalToolbars() {
         new InverterItem(),
         new EPriceItem(),
         new RecuperationItem(),
+        new BoilerItem(),
     ]
 }

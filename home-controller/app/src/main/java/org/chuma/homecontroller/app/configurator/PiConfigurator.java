@@ -25,6 +25,7 @@ import org.chuma.homecontroller.app.servlet.pages.PirPage;
 import org.chuma.homecontroller.app.servlet.pages.StaticPage;
 import org.chuma.homecontroller.app.servlet.rest.AirValveHandler;
 import org.chuma.homecontroller.app.servlet.rest.AllStatusHandler;
+import org.chuma.homecontroller.app.servlet.rest.BoilerHandler;
 import org.chuma.homecontroller.app.servlet.rest.ElectricitySpotPriceHandler;
 import org.chuma.homecontroller.app.servlet.rest.FuturaHandler;
 import org.chuma.homecontroller.app.servlet.rest.HvacHandler;
@@ -76,6 +77,7 @@ import org.chuma.homecontroller.extensions.action.condition.SunCondition;
 import org.chuma.homecontroller.extensions.actor.HvacActor;
 import org.chuma.homecontroller.extensions.actor.RadioOnOffActor;
 import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
+import org.chuma.homecontroller.extensions.external.boiler.BoilerMonitor;
 import org.chuma.homecontroller.extensions.external.futura.FuturaMonitor;
 import org.chuma.homecontroller.extensions.external.inverter.ElectricitySpotPriceMonitor;
 import org.chuma.homecontroller.extensions.external.inverter.InverterManager;
@@ -753,6 +755,10 @@ public class PiConfigurator extends AbstractConfigurator {
                 OptionsSingleton.get("futura.ipAddress"), 5_000, 60_000);
         futuraMonitor.start();
 
+        BoilerMonitor boilerMonitor = new BoilerMonitor(
+                "boiler.local", 10 * 60_000, 60 * 60_000);
+        boilerMonitor.start();
+
         List<ServletAction> servletActions = new ArrayList<>();
         servletActions.add(new ServletAction("openDoor", "Bzučák", bzucakAction));
         servletActions.add(new ServletAction("openGarage", "Garáž", ovladacGarazAction));
@@ -793,6 +799,7 @@ public class PiConfigurator extends AbstractConfigurator {
                 new HvacHandler(Collections.singleton(hvacActor)),
                 new InverterHandler(Collections.singleton(inverterMonitor)),
                 new FuturaHandler(Collections.singleton(futuraMonitor)),
+                new BoilerHandler(Collections.singleton(boilerMonitor)),
                 new ElectricitySpotPriceHandler(Collections.singleton(new ElectricitySpotPriceMonitor())));
 //        configureSimulator(pages, wsHandlers, false);
         // rest/all handler

@@ -5,13 +5,16 @@
         </encoder>
     </appender>
 
+    <logger name="org.chuma.homecontroller.extensions.external.boiler" level="TRACE" additivity="false">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
     <logger name="org.chuma.homecontroller.extensions.external.inverter" level="TRACE" additivity="false">
         <appender-ref ref="consoleAppender"/>
     </logger>
     <logger name="org.chuma.homecontroller.extensions.external.futura" level="TRACE" additivity="false">
         <appender-ref ref="consoleAppender"/>
     </logger>
-    <logger name="org.chuma.homecontroller.extensions.external.utils" level="TRACE" additivity="false">
+    <logger name="org.chuma.homecontroller.extensions.external.utils" level="INFO" additivity="false">
         <appender-ref ref="consoleAppender"/>
     </logger>
     <logger name="org.chuma.homecontroller.extensions.external.AbstractStateMonitorTest" level="TRACE" additivity="false">
