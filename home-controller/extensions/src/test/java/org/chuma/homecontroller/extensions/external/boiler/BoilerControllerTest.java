@@ -68,6 +68,62 @@ public class BoilerControllerTest extends TestCase {
         assertEquals(origTargetTemp, state3.getTargetTemp());
     }
 
+    public void testPowerOn() throws UnknownHostException {
+        BoilerController bc = new BoilerController(BOILER_ADDRESS);
+        bc.refreshStatus();
+        // get current target temp
+        State state = bc.getState();
+        assertFalse(state.isOn());
+
+        bc.setPowerOn(true);
+        bc.refreshStatus();
+        state = bc.getState();
+        assertTrue(state.isOn());
+    }
+
+    public void testTurnEHeatOn() throws UnknownHostException {
+        BoilerController bc = new BoilerController(BOILER_ADDRESS);
+        bc.refreshStatus();
+        // get current target temp
+        State state = bc.getState();
+        assertFalse(state.isOn());
+        assertFalse(state.isEHeat());
+
+        bc.setPowerOn(true);
+        state = bc.getState();
+        assertTrue(state.isOn());
+        assertFalse(state.isEHeat());
+
+        bc.turnEHeatOn();
+        state = bc.getState();
+        assertTrue(state.isOn());
+        assertTrue(state.isEHeat());
+
+        bc.refreshStatus();
+        state = bc.getState();
+        assertTrue(state.isOn());
+        assertTrue(state.isEHeat());
+
+        bc.setPowerOn(false);
+        bc.refreshStatus();
+        state = bc.getState();
+        assertFalse(state.isOn());
+        assertFalse(state.isEHeat());
+    }
+
+    public void testSandbox() throws UnknownHostException {
+        BoilerController bc = new BoilerController(BOILER_ADDRESS);
+//        bc.setPowerOn(false);
+        bc.refreshStatus();
+        // get current target temp
+        State state = bc.getState();
+//        bc.setTargetTemp(47);
+//        bc.setPowerOn(true);
+//        state = bc.getState();
+//        state = bc.getState();
+
+    }
+
     public void testBoilerMonitor() throws InterruptedException {
         BoilerMonitor monitor = new BoilerMonitor(BOILER_ADDRESS, 60_000, 5 * 60_000);
         monitor.start();

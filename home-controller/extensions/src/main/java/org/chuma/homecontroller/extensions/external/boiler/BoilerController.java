@@ -31,6 +31,7 @@ public class BoilerController {
 
         public static final int cregRefreshStatus = 200;
         public static final int cregPowerOn = 210;
+        public static final int cregEHeatOn = 211;
         public static final int hregTempTarget = 300;
         public static final int hregPressKey = 310;
     }
@@ -118,12 +119,17 @@ public class BoilerController {
     }
 
     public void setPowerOn(boolean value) {
-        log.trace("Setting power on: {}", value);
+        log.debug("Setting power on: {}", value);
         modbusClient.writeCoilRegister(ModbusRegisters.cregPowerOn, value);
     }
 
     public void setTargetTemp(int targetTemp) {
         log.debug("Setting target temp to {}", targetTemp);
         modbusClient.writeSingleRegisterValue(ModbusRegisters.hregTempTarget, targetTemp + 128);
+    }
+
+    public void turnEHeatOn() {
+        log.debug("Turning EHeat on");
+        modbusClient.writeCoilRegister(ModbusRegisters.cregEHeatOn, true);
     }
 }
