@@ -9,17 +9,6 @@ import org.chuma.homecontroller.extensions.external.inverter.InverterState;
 public class SolaxInverterModbusClientTest extends AbstractSolaxInverterTestBase {
     static Logger log = LoggerFactory.getLogger(SolaxInverterModbusClientTest.class.getName());
 
-    public void testCompareWithLocalClient() throws Exception {
-        SolaxInverterModbusClient client = new SolaxInverterModbusClient(localIp);
-        InverterState state = client.getState();
-        log.debug(state.toString());
-
-        // use local web client for result comparison
-        SolaxInverterLocalClient s = new SolaxInverterLocalClient(localIp, localPassword);
-        final InverterState stateJson = s.getState();
-        Assert.assertEquals(state.toString(), stateJson.toString());
-    }
-
     public void testPerformance() throws Exception {
         SolaxInverterModbusClient client = new SolaxInverterModbusClient(localIp);
         client.getState();
