@@ -830,10 +830,7 @@ public class PiConfigurator extends AbstractConfigurator {
 
     private static InverterManager configureInverterRemoteControl(SolaxInverterModbusClient localClient, InverterMonitor inverterMonitor) {
         final Options options = OptionsSingleton.getInstance();
-        final String remoteUsername = options.get("inverter.remote.username");
-        final String remotePasswordToken = options.get("inverter.remote.password.token");
         final String basicConfigPin = options.get("inverter.config.pin.basic");
-
         final String localPassword = options.get("inverter.local.password");
 
         final String highTariffTimes = options.get(CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES);

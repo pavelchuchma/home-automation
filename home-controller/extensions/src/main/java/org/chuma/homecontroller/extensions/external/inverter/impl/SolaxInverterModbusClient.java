@@ -40,22 +40,12 @@ public class SolaxInverterModbusClient {
     public synchronized void setSelfUseMinimalSoc(int value) {
         log.debug("setSelfUseMinimalSoc({})", value);
         Validate.inclusiveBetween(10, 100, value);
-        ensureSwitchedOnForConfigChange();
         client.writeSingleRegisterValue(0x0061, value);
     }
 
     public synchronized void setPgridBias(InverterState.PgridBias value) {
         log.debug("setPgridBias({})", value);
-        ensureSwitchedOnForConfigChange();
         client.writeSingleRegisterValue(0x008D, value.ordinal());
-    }
-
-    private synchronized void ensureSwitchedOnForConfigChange() {
-        final InverterState.Mode mode = getState().getMode();
-        log.debug("ensureSwitchedOnForConfigChange - initial mode: {}", mode);
-        if (mode == InverterState.Mode.Idle) {
-            throw new IllegalStateException("Cannot configure inverter in IDLE state");
-        }
     }
 
     public class State extends AbstractInverterState {
