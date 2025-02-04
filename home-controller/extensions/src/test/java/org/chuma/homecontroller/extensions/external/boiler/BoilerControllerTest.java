@@ -81,6 +81,23 @@ public class BoilerControllerTest extends TestCase {
         assertTrue(state.isOn());
     }
 
+    public void testFullPowerOn() throws UnknownHostException {
+        BoilerController bc = new BoilerController(BOILER_ADDRESS);
+        bc.refreshStatus();
+        bc.setPowerOn(false);
+        bc.refreshStatus();
+        bc.setPowerOn(true);
+        // get current target temp
+        State state = bc.getState();
+        assertTrue(state.isOn());
+        bc.setTargetTemp(60);
+//        bc.turnEHeatOn();
+        bc.refreshStatus();
+        state = bc.getState();
+        assertTrue(state.isEHeat());
+        assertEquals(60, state.getTargetTemp());
+    }
+
     public void testTurnEHeatOn() throws UnknownHostException {
         BoilerController bc = new BoilerController(BOILER_ADDRESS);
         bc.refreshStatus();

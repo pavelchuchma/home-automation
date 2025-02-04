@@ -17,11 +17,20 @@ class BoilerItem extends AdditionalSvgToolItem {
         this.vacation = undefined;
     }
 
+    onClick() {
+        const path = `/rest/boiler/action?id=${this.id}&action=refresh`;
+        BaseItem._send(path)
+    }
+
     createHidingRect(x, y) {
         return this.svg.rect(14, 14).move(x, y).fill('lightgray').opacity(.9);
     }
 
     onCanvasCreatedImpl() {
+        document.getElementById(this.canvasId).addEventListener("click", (function () {
+            this.onClick();
+        }).bind(this));
+
         const s = 14;
         let y = 3;
         const step = 19;

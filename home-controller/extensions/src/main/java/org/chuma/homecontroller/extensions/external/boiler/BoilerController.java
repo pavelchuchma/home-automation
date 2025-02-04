@@ -84,7 +84,7 @@ public class BoilerController {
         if (log.isDebugEnabled()) {
             ArrayList<String> flags = new ArrayList<>();
             if (state.isOn()) flags.add("on");
-            if (state.isHot()) flags.add("hotn");
+            if (state.isHot()) flags.add("hot");
             if (state.isEHeat()) flags.add("eHeat");
             if (state.isPump()) flags.add("pump");
             if (state.isVacation()) flags.add("vacation");

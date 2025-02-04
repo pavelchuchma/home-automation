@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.app.servlet.rest;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
 import org.chuma.homecontroller.extensions.external.boiler.BoilerMonitor;
@@ -32,4 +33,17 @@ public class BoilerHandler extends AbstractRestHandler<BoilerMonitor> {
         jw.addAttribute("pump", state.isPump());
         jw.addAttribute("vacation", state.isVacation());
     }
+
+    @Override
+    void processAction(BoilerMonitor instance, Map<String, String[]> requestParameters) {
+        String action = getStringParam(requestParameters, "action");
+        switch (action) {
+            case "refresh":
+                instance.getStateSync(true);
+                return;
+            default:
+                throw new IllegalArgumentException("Unknown action '" + action + "'");
+        }
+    }
 }
+

@@ -118,4 +118,44 @@ public class AbstractStateMonitorTest extends TestCase {
         Assert.assertNull("should be null after stop", AbstractStateMonitorTest.getRawState(monitor));
         Assert.assertNotEquals("a fresh instance expected", s3, s4);
     }
+
+
+    private static class TestState {
+        int refreshCount = 0;
+        void incrementRefreshCount() {
+            refreshCount++;
+        }
+    }
+
+    private static class TestMonitor extends AbstractStateMonitor<TestState> {
+        final TestState state = new TestState();
+
+        public TestMonitor() {
+            super("testMonitor", 200, 1_000);
+        }
+
+        @Override
+        protected TestState getStateImpl() {
+            state.incrementRefreshCount();
+            return state;
+        }
+    };
+
+    public void testRefreshNow() {
+        TestMonitor monitor = new TestMonitor();
+        monitor.start();
+
+        Assert.assertNull(monitor.getState());
+        sleep(50);
+        assertEquals(1, monitor.state.refreshCount);
+        sleep(200);
+        assertEquals(2, monitor.state.refreshCount);
+        assertEquals(2, monitor.state.refreshCount);
+        Assert.assertNotNull(monitor.getState());
+        assertEquals(2, monitor.state.refreshCount);
+        Assert.assertNotNull(monitor.getStateSync(false));
+        assertEquals(2, monitor.state.refreshCount);
+        Assert.assertNotNull(monitor.getStateSync(true));
+        assertEquals(3, monitor.state.refreshCount);
+    }
 }
