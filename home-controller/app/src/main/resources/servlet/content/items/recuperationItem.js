@@ -24,6 +24,7 @@ class RecuperationItem extends AdditionalSvgToolItem {
         items.push(this.fanIcon = this.svg.image('img/fanIcon.svg').size(s, s).move(4, y + 2).rotate(45));
         items.push(this.textVentSpeed = this.svg.text('?').move(19, y).font(this.baseFont));
         items.push(this.clockIcon = this.svg.image('img/clockIcon.svg').size(s, s).move(43, y + 2));
+        this.createHideBox(this.clockIcon);
         items.push(this.co2Icon = this.svg.image('img/co2Icon.svg').size(s, s).move(60, y + 2));
         items.push(this.textCo2 = this.svg.text('????').move(76, y).font(this.baseFont));
 
@@ -51,5 +52,7 @@ class RecuperationItem extends AdditionalSvgToolItem {
         this.textFilter.text(this.filterWear + '%');
         this.textHeatRecovery.text(this.heatRecovering + ' W');
         this.textConsumption.text('💡' + this.powerConsumption + ' W');
+
+        this.setVisibility(this.clockIcon.hideBox, !this.timeProgramActive);
     }
 }

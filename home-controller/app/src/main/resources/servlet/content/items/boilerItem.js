@@ -22,10 +22,6 @@ class BoilerItem extends AdditionalSvgToolItem {
         BaseItem._send(path)
     }
 
-    createHidingRect(x, y) {
-        return this.svg.rect(14, 14).move(x, y).fill('lightgray').opacity(.9);
-    }
-
     onCanvasCreatedImpl() {
         document.getElementById(this.canvasId).addEventListener("click", (function () {
             this.onClick();
@@ -44,16 +40,16 @@ class BoilerItem extends AdditionalSvgToolItem {
         y += 2;
         let x = 4 - step;
         items.push(this.onOffIcon = this.svg.image('img/onOff.svg').size(s, s).move(x += step, y));
-        hidingBoxes.push(this.onOffHide = this.createHidingRect(x, y));
+        this.createHideBox(this.onOffIcon);
         items.push(this.pumpIcon = this.svg.image('img/pump.svg').size(s, s).move(x += step, y));
-        hidingBoxes.push(this.pumpHide = this.createHidingRect(x, y));
+        this.createHideBox(this.pumpIcon);
         items.push(this.eHeatIcon = this.svg.image('img/eHeat.svg').size(s, s).move(x += step, y));
-        hidingBoxes.push(this.eHeatHide = this.createHidingRect(x, y));
+        this.createHideBox(this.eHeatIcon);
         items.push(this.palmIcon = this.svg.image('img/palm.svg').size(s, s).move(x += step, y));
-        hidingBoxes.push(this.palmHide = this.createHidingRect(x, y));
+        this.createHideBox(this.palmIcon);
 
         this.showOnData.push(...items);
-        this.hideOnNoData.push(...items, ...hidingBoxes);
+        this.hideOnNoData.push(...items);
     }
 
     hasData() {
@@ -63,9 +59,9 @@ class BoilerItem extends AdditionalSvgToolItem {
     drawImpl() {
         this.textCurrentTemp.text(this.t5U + '/' + this.t5L + ' °C');
         this.textTargetTemp.text('▶' + this.targetTemp);
-        this.setVisibility(this.onOffHide, !this.on);
-        this.setVisibility(this.pumpHide, !this.pump);
-        this.setVisibility(this.eHeatHide, !this.eHeat);
-        this.setVisibility(this.palmHide, !this.vacation);
+        this.setVisibility(this.onOffIcon.hideBox, !this.on);
+        this.setVisibility(this.pumpIcon.hideBox, !this.pump);
+        this.setVisibility(this.eHeatIcon.hideBox, !this.eHeat);
+        this.setVisibility(this.palmIcon.hideBox, !this.vacation);
     }
 }

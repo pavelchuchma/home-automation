@@ -101,4 +101,12 @@ class AdditionalSvgToolItem extends AdditionalToolItem {
     setVisibility(svgElement, value) {
         svgElement.attr('visibility', value ? 'visible' : 'hidden');
     }
+
+    createHideBox(img) {
+        let hb = this.svg.rect(img.node.width.baseVal.value, img.node.height.baseVal.value)
+            .move(img.node.x.baseVal.value, img.node.y.baseVal.value).fill('lightgray').opacity(.9);
+        this.hideOnNoData.push(hb);
+        img.hideBox = hb;
+        return hb;
+    }
 }
