@@ -52,10 +52,6 @@ class BoilerItem extends AdditionalSvgToolItem {
         this.hideOnNoData.push(...items);
     }
 
-    hasData() {
-        return this.targetTemp !== undefined;
-    }
-
     drawImpl() {
         this.textCurrentTemp.text(this.t5U + '/' + this.t5L + ' °C');
         this.textTargetTemp.text('▶' + this.targetTemp);

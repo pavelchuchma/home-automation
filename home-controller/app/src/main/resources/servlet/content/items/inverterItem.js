@@ -26,10 +26,6 @@ class InverterItem extends AdditionalSvgToolItem {
         this.hideOnNoData.push(...this.textLines);
     }
 
-    hasData() {
-        return this.mode !== undefined;
-    }
-
     drawImpl() {
         this.textLines[0].text((this.mode === 'Idle') ? "💤"
             : (this.pvPwr === 0) ? '☁'

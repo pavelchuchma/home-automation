@@ -59,10 +59,6 @@ class EPriceItem extends AdditionalSvgToolItem {
         l.attr('stroke', color);
     }
 
-    hasData() {
-        return this.data !== undefined;
-    }
-
     drawImpl() {
         let maxPrice = Math.round(Math.max(...this.data) + 0.5)
         let minPrice = Math.round(Math.min(...this.data) - 0.5)

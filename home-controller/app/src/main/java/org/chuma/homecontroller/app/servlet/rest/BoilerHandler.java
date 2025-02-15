@@ -8,12 +8,18 @@ import org.chuma.homecontroller.extensions.external.boiler.BoilerMonitor;
 import org.chuma.homecontroller.extensions.external.boiler.State;
 
 public class BoilerHandler extends AbstractRestHandler<BoilerMonitor> {
+    private boolean refreshingState = false;
+    private BoilerMonitor boilerMonitor;
     public BoilerHandler(Iterable<BoilerMonitor> monitors) {
         super("boiler", "boiler", monitors, (o) -> "boiler");
     }
 
     @Override
     void writeJsonItemValues(JsonWriter jw, BoilerMonitor monitor, HttpServletRequest request) {
+        if (refreshingState) {
+            // refreshing in progress, no data yet
+            return;
+        }
         final State state = monitor.getState();
         if (state == null) {
             return;
@@ -39,8 +45,13 @@ public class BoilerHandler extends AbstractRestHandler<BoilerMonitor> {
         String action = getStringParam(requestParameters, "action");
         switch (action) {
             case "refresh":
-                instance.getStateSync(true);
-                return;
+                try {
+                    refreshingState = true;
+                    instance.getStateSync(true);
+                    return;
+                } finally {
+                    refreshingState = false;
+                }
             default:
                 throw new IllegalArgumentException("Unknown action '" + action + "'");
         }

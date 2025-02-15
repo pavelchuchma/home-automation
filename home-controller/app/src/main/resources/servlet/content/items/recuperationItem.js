@@ -41,10 +41,6 @@ class RecuperationItem extends AdditionalSvgToolItem {
         this.hideOnNoData.push(...items);
     }
 
-    hasData() {
-        return this.ventSpeed !== undefined;
-    }
-
     drawImpl() {
         this.textVentSpeed.text((this.ventSpeed === 6) ? 'A' : this.ventSpeed);
         this.textCo2.text(this.wallControllerCo2);

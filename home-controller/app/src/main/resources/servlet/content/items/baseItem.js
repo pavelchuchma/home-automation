@@ -6,6 +6,7 @@ class AbstractItem {
     }
 
     update(item) {
+        this.updatedWithValidData = Object.keys(item).length > 1;
         for (let prop in item) {
             this[prop] = item[prop];
         }
@@ -77,7 +78,7 @@ class AdditionalSvgToolItem extends AdditionalToolItem {
     }
 
     hasData() {
-        return true;
+        return this.updatedWithValidData;
     }
 
     draw() {

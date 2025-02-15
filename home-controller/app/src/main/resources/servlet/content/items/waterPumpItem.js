@@ -19,10 +19,6 @@ class WaterPumpItem extends AdditionalSvgToolItem {
         this.hideOnNoData.push(...this.textLines);
     }
 
-    hasData() {
-        return this.lastRecords !== undefined && this.lastRecords.length > 0;
-    }
-
     drawImpl() {
         this.textLines[0].text('⟳ ' + this.lastPeriodRecCount + '/' + this.recCount);
 
