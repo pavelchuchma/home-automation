@@ -1,7 +1,7 @@
 package org.chuma.homecontroller.extensions.external.inverter;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,33 +10,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterModbusClient;
+import org.chuma.homecontroller.extensions.external.utils.TimeRange;
 
 public class InverterManager {
     static Logger log = LoggerFactory.getLogger(InverterManager.class.getName());
     private final SolaxInverterModbusClient client;
     List<String> scheduledIds = new ArrayList<>();
+    private List<TimeRange> tariffRanges;
     private int minimalSoc = -1;
     private int batteryReserve = -1;
 
     public InverterManager(SolaxInverterModbusClient client) {
         this.client = client;
-    }
-
-    /**
-     * Parse range string like "6:55-8:05;17:55-19:05" to pairs of times.
-     */
-    static List<LocalTime[]> parseTariffRanges(String str) {
-        List<LocalTime[]> result = new ArrayList<>();
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:mm");
-        for (String interval : str.split(";")) {
-            String[] times = interval.split("-");
-            Validate.isTrue(times.length == 2, "Invalid time interval '%s' of string %s", interval, str);
-            result.add(new LocalTime[]{
-                    LocalTime.parse(times[0], formatter),
-                    LocalTime.parse(times[1], formatter)
-            });
-        }
-        return result;
     }
 
     public int getMinimalSoc() {
@@ -66,13 +51,39 @@ public class InverterManager {
 
     public void setHighTariffRanges(String intervals) {
         log.debug("setHighTariffRanges([{}])", intervals);
-        final List<LocalTime[]> tariffRanges = parseTariffRanges(intervals);
+        tariffRanges = TimeRange.parseTariffRanges(intervals);
         Scheduler scheduler = Scheduler.getInstance();
         scheduler.removeScheduledTasks(scheduledIds);
         scheduledIds.clear();
-        for (LocalTime[] interval : tariffRanges) {
-            scheduledIds.add(scheduler.scheduleTask(interval[0], () -> applyMinBatterySoc(true)));
-            scheduledIds.add(scheduler.scheduleTask(interval[1], () -> applyMinBatterySoc(false)));
+        for (TimeRange range : tariffRanges) {
+            scheduledIds.add(scheduler.scheduleTask(range.from, () -> applyMinBatterySoc(true)));
+            scheduledIds.add(scheduler.scheduleTask(range.to, () -> applyMinBatterySoc(false)));
+        }
+    }
+
+    private boolean isInHighTariff() {
+        LocalTime now = LocalTime.from(LocalDateTime.now());
+        for (TimeRange range : tariffRanges) {
+            if (range.from.isBefore(range.to)) {
+                if (range.from.isBefore(now) && range.to.isAfter(now)) {
+                    return true;
+                }
+            } else {
+                // during midnight
+                if (range.from.isBefore(now) || range.to.isAfter(now)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void applyConfiguration() {
+        boolean highTariff = isInHighTariff();
+        try {
+            applyMinBatterySoc(highTariff);
+        } catch (Exception e) {
+            log.error("Failed to applyConfiguration", e);
         }
     }
 

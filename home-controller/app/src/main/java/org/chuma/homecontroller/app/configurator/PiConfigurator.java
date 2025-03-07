@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -839,13 +840,25 @@ public class PiConfigurator extends AbstractConfigurator {
         inverterManager.setBatteryReserve(batteryReserve);
         inverterManager.setHighTariffRanges(highTariffTimes);
 
-        options.addListener((key, value) -> {
-            if (CFG_INVERTER_MANAGER_MINIMAL_SOC.equals(key)) {
-                inverterManager.setMinimalSoc(Integer.parseInt(value));
-            } else if (CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE.equals(key)) {
-                inverterManager.setBatteryReserve(Integer.parseInt(value));
-            } else if (CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES.equals(key)) {
-                inverterManager.setHighTariffRanges(value);
+        options.addListener(new Options.OptionChangeListener() {
+            @Override
+            public void optionChanged(String key, String value) {
+                if (CFG_INVERTER_MANAGER_MINIMAL_SOC.equals(key)) {
+                    inverterManager.setMinimalSoc(Integer.parseInt(value));
+                } else if (CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE.equals(key)) {
+                    inverterManager.setBatteryReserve(Integer.parseInt(value));
+                } else if (CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES.equals(key)) {
+                    inverterManager.setHighTariffRanges(value);
+                }
+            }
+
+            @Override
+            public void optionsSaved(Set<String> keys) {
+                if (keys.contains(CFG_INVERTER_MANAGER_MINIMAL_SOC)
+                        || keys.contains(CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE)
+                        || keys.contains(CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES)) {
+                    inverterManager.applyConfiguration();
+                }
             }
         });
         return inverterManager;

@@ -3,8 +3,6 @@ package org.chuma.homecontroller.app.configurator;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,6 +10,8 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
@@ -44,6 +44,7 @@ public class Options {
     private final Properties comments = new Properties();
     private final File file;
     private final ListenerManager<OptionChangeListener> listenerManager = new ListenerManager<>();
+    private final Set<String> modifiedKeys = Collections.synchronizedSet(new HashSet<>());
 
     public Options(String persistenceFile, String defaultResource) {
         file = new File(persistenceFile);
@@ -75,7 +76,7 @@ public class Options {
         if (value == null) {
             throw new IllegalArgumentException("Property '" + key + "' has no value");
         }
-        return value.length() == 0 ? null : value;
+        return value.isEmpty() ? null : value;
     }
 
     public int getInt(String key) {
@@ -106,6 +107,7 @@ public class Options {
             String v = value;
             listenerManager.callListeners(l -> l.optionChanged(key, v));
             properties.put(key, value);
+            modifiedKeys.add(key);
         }
     }
 
@@ -148,6 +150,9 @@ public class Options {
                 w.newLine();
             }
         }
+
+        listenerManager.callListeners(l -> l.optionsSaved(modifiedKeys));
+        modifiedKeys.clear();
     }
 
     private void loadFrom(InputStream inputStream) throws IOException {
@@ -155,7 +160,7 @@ public class Options {
             String lastComment = null;
             for (String line; (line = r.readLine()) != null; ) {
                 line = line.trim();
-                if (line.length() == 0) {
+                if (line.isEmpty()) {
                     lastComment = null;
                     continue;
                 }
@@ -167,18 +172,17 @@ public class Options {
                 if (i > 0) {
                     String key = line.substring(0, i).trim();
                     String value = line.substring(i + 1).trim();
-                    if (key.length() != 0) {
+                    if (!key.isEmpty()) {
                         properties.put(key, value);
                         if (lastComment != null) {
                             for (i = 1; i < lastComment.length() && (lastComment.charAt(i) == '#' || Character.isWhitespace(lastComment.charAt(i))); i++)
                                 ;
                             lastComment = lastComment.substring(i);
-                            if (lastComment.length() > 0) {
+                            if (!lastComment.isEmpty()) {
                                 comments.put(key, lastComment);
                             }
                             lastComment = null;
                         }
-                        continue;
                     }
                 }
             }
@@ -187,5 +191,6 @@ public class Options {
 
     public interface OptionChangeListener {
         void optionChanged(String key, String value);
+        void optionsSaved(Set<String> keys);
     }
 }
