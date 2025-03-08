@@ -7,12 +7,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.chuma.homecontroller.extensions.external.inverter.Scheduler;
 
-public abstract class AbstractIntervalScheduler {
+public class IntervalScheduler {
+    static Logger log = LoggerFactory.getLogger(IntervalScheduler.class.getName());
     List<String> scheduledIds = new ArrayList<>();
     private List<TimeRange> tariffRanges;
+    private final Runnable onIntervalStart;
+    private final Runnable onIntervalEnd;
+
+    public IntervalScheduler(Runnable onIntervalStart, Runnable onIntervalEnd) {
+        this.onIntervalStart = onIntervalStart;
+        this.onIntervalEnd = onIntervalEnd;
+    }
 
     private static class TimeRange {
         public final LocalTime from;
@@ -30,9 +40,29 @@ public abstract class AbstractIntervalScheduler {
         scheduler.removeScheduledTasks(scheduledIds);
         scheduledIds.clear();
         for (TimeRange range : tariffRanges) {
-            scheduledIds.add(scheduler.scheduleTask(range.from, this::onIntervalStart));
-            scheduledIds.add(scheduler.scheduleTask(range.to, this::onIntervalEnd));
+            scheduledIds.add(scheduler.scheduleTask(range.from, onIntervalStart));
+            scheduledIds.add(scheduler.scheduleTask(range.to, onIntervalEnd));
         }
+    }
+
+    /**
+     * Runs onIntervalStart() if the current time is in one of defined intervals, onIntervalEnd() otherwise
+     */
+    public void applyCallback() {
+        boolean inInterval = isInInterval();
+        new Thread(() -> {
+            try {
+                log.info("Running applyCallback thread");
+                if (inInterval) {
+                    onIntervalStart.run();
+                } else {
+                    onIntervalEnd.run();
+                }
+                log.info("applyCallback thread finished");
+            } catch (Exception e) {
+                log.error("applyCallback thread failed", e);
+            }
+        }, this.getClass().getSimpleName()).start();
     }
 
     public boolean isInInterval() {
@@ -68,8 +98,4 @@ public abstract class AbstractIntervalScheduler {
         }
         return result;
     }
-
-    abstract public void onIntervalStart();
-
-    abstract public void onIntervalEnd();
 }

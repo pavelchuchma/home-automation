@@ -25,6 +25,10 @@ public class BoilerMonitor extends AbstractStateMonitor<State> {
         this.controller = ctrl;
     }
 
+    public BoilerController getController() {
+        return controller;
+    }
+
     @Override
     protected State getStateImpl() {
         try {

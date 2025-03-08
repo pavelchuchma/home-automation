@@ -78,6 +78,8 @@ import org.chuma.homecontroller.extensions.action.condition.SunCondition;
 import org.chuma.homecontroller.extensions.actor.HvacActor;
 import org.chuma.homecontroller.extensions.actor.RadioOnOffActor;
 import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
+import org.chuma.homecontroller.extensions.external.boiler.BoilerController;
+import org.chuma.homecontroller.extensions.external.boiler.BoilerManager;
 import org.chuma.homecontroller.extensions.external.boiler.BoilerMonitor;
 import org.chuma.homecontroller.extensions.external.futura.FuturaMonitor;
 import org.chuma.homecontroller.extensions.external.inverter.ElectricitySpotPriceMonitor;
@@ -93,6 +95,9 @@ public class PiConfigurator extends AbstractConfigurator {
     private static final String CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE = "inverter.manager.high.tariff.battery.reserve";
     private static final String CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES = "inverter.manager.high.tariff.times";
     private static final String CFG_INVERTER_MANAGER_MINIMAL_SOC = "inverter.manager.minimal.soc";
+
+    public static final String CFG_BOILER_TIMES = "boiler.times";
+    public static final String CFG_BOILER_TARGET_TEMP = "boiler.target.temp";
     static Logger log = LoggerFactory.getLogger(PiConfigurator.class.getName());
 
     public PiConfigurator(NodeInfoRegistry nodeInfoRegistry, StateMap stateMap) {
@@ -759,6 +764,7 @@ public class PiConfigurator extends AbstractConfigurator {
         BoilerMonitor boilerMonitor = new BoilerMonitor(
                 "boiler.local", 10 * 60_000, 60 * 60_000);
         boilerMonitor.start();
+        configureBoilerManager(boilerMonitor.getController());
 
         List<ServletAction> servletActions = new ArrayList<>();
         servletActions.add(new ServletAction("openDoor", "Bzučák", bzucakAction));
@@ -829,6 +835,36 @@ public class PiConfigurator extends AbstractConfigurator {
         }
     }
 
+    private static void configureBoilerManager(BoilerController bc) {
+        final Options options = OptionsSingleton.getInstance();
+        final String times = options.get(CFG_BOILER_TIMES);
+        final int targetTemp = options.getInt(CFG_BOILER_TARGET_TEMP);
+
+        BoilerManager boilerManager = new BoilerManager(bc);
+        boilerManager.setTargetTemp(targetTemp);
+        boilerManager.setOperatingTimes(times);
+        boilerManager.applyConfiguration();
+
+        options.addListener(new Options.OptionChangeListener() {
+            @Override
+            public void optionChanged(String key, String value) {
+                if (CFG_BOILER_TARGET_TEMP.equals(key)) {
+                    boilerManager.setTargetTemp(Integer.parseInt(value));
+                } else if (CFG_BOILER_TIMES.equals(key)) {
+                    boilerManager.setOperatingTimes(value);
+                }
+            }
+
+            @Override
+            public void optionsSaved(Set<String> keys) {
+                if (keys.contains(CFG_BOILER_TARGET_TEMP)
+                        || keys.contains(CFG_BOILER_TIMES)) {
+                    boilerManager.applyConfiguration();
+                }
+            }
+        });
+    }
+
     private static InverterManager configureInverterRemoteControl(SolaxInverterModbusClient client, InverterMonitor inverterMonitor) {
         final Options options = OptionsSingleton.getInstance();
         final String highTariffTimes = options.get(CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES);
@@ -839,6 +875,7 @@ public class PiConfigurator extends AbstractConfigurator {
         inverterManager.setMinimalSoc(minimalSoc);
         inverterManager.setBatteryReserve(batteryReserve);
         inverterManager.setHighTariffRanges(highTariffTimes);
+        inverterManager.applyConfiguration();
 
         options.addListener(new Options.OptionChangeListener() {
             @Override

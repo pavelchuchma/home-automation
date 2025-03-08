@@ -5,26 +5,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterModbusClient;
-import org.chuma.homecontroller.extensions.external.utils.AbstractIntervalScheduler;
+import org.chuma.homecontroller.extensions.external.utils.IntervalScheduler;
 
 public class InverterManager {
     static Logger log = LoggerFactory.getLogger(InverterManager.class.getName());
     private final SolaxInverterModbusClient client;
     private int minimalSoc = -1;
     private int batteryReserve = -1;
-    private final IntervalScheduler intervalScheduler = new IntervalScheduler();
-
-    class IntervalScheduler extends AbstractIntervalScheduler {
-        @Override
-        public void onIntervalStart() {
-            applyMinBatterySoc(true);
-        }
-
-        @Override
-        public void onIntervalEnd() {
-            applyMinBatterySoc(false);
-        }
-    }
+    private final IntervalScheduler intervalScheduler = new IntervalScheduler(
+            () -> applyMinBatterySoc(true),
+            () -> applyMinBatterySoc(false)
+    );
 
     public InverterManager(SolaxInverterModbusClient client) {
         this.client = client;
@@ -62,12 +53,7 @@ public class InverterManager {
     }
 
     public void applyConfiguration() {
-        boolean highTariff = intervalScheduler.isInInterval();
-        try {
-            applyMinBatterySoc(highTariff);
-        } catch (Exception e) {
-            log.error("Failed to apply configuration", e);
-        }
+        intervalScheduler.applyCallback();
     }
 
     void applyMinBatterySoc(boolean enteringHighTariff) {
@@ -83,13 +69,16 @@ public class InverterManager {
                 log.debug("setMinBatterySoc: Entering low tariff, minSOC={} ({}+{})}", minSoc, minimalSoc, batteryReserve);
             }
 
-            client.setSelfUseMinimalSoc(minSoc);
-
-            int storedValue = client.getState().getSelfUseMinimalSoc();
-            if (storedValue != minSoc) {
-                log.error("Failed to set MinBatterySoc to {}, stored value is {}", minSoc, storedValue);
+            int origValue = client.getState().getSelfUseMinimalSoc();
+            if (minSoc != origValue) {
+                client.setSelfUseMinimalSoc(minSoc);
+                int storedValue = client.getState().getSelfUseMinimalSoc();
+                if (storedValue != minSoc) {
+                    log.error("Failed to set MinBatterySoc to {}, stored value is {}", minSoc, storedValue);
+                }
+            } else {
+                log.debug("minBatterySoc already set to {}, no change needed", minSoc);
             }
-            log.debug("setMinBatterySoc: done");
         } catch (Exception e) {
             log.error("Failed to set MinBatterySoc", e);
         }
