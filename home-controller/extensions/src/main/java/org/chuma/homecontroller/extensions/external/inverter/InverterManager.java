@@ -1,24 +1,30 @@
 package org.chuma.homecontroller.extensions.external.inverter;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterModbusClient;
-import org.chuma.homecontroller.extensions.external.utils.TimeRange;
+import org.chuma.homecontroller.extensions.external.utils.AbstractIntervalScheduler;
 
 public class InverterManager {
     static Logger log = LoggerFactory.getLogger(InverterManager.class.getName());
     private final SolaxInverterModbusClient client;
-    List<String> scheduledIds = new ArrayList<>();
-    private List<TimeRange> tariffRanges;
     private int minimalSoc = -1;
     private int batteryReserve = -1;
+    private final IntervalScheduler intervalScheduler = new IntervalScheduler();
+
+    class IntervalScheduler extends AbstractIntervalScheduler {
+        @Override
+        public void onIntervalStart() {
+            applyMinBatterySoc(true);
+        }
+
+        @Override
+        public void onIntervalEnd() {
+            applyMinBatterySoc(false);
+        }
+    }
 
     public InverterManager(SolaxInverterModbusClient client) {
         this.client = client;
@@ -45,45 +51,22 @@ public class InverterManager {
      * and to setMinimalSoc in high tariff.
      */
     public void setBatteryReserve(int batteryReserve) {
+        log.debug("Setting battery reserve to {}", batteryReserve);
         Validate.inclusiveBetween(0, 90, batteryReserve);
         this.batteryReserve = batteryReserve;
     }
 
     public void setHighTariffRanges(String intervals) {
-        log.debug("setHighTariffRanges([{}])", intervals);
-        tariffRanges = TimeRange.parseTariffRanges(intervals);
-        Scheduler scheduler = Scheduler.getInstance();
-        scheduler.removeScheduledTasks(scheduledIds);
-        scheduledIds.clear();
-        for (TimeRange range : tariffRanges) {
-            scheduledIds.add(scheduler.scheduleTask(range.from, () -> applyMinBatterySoc(true)));
-            scheduledIds.add(scheduler.scheduleTask(range.to, () -> applyMinBatterySoc(false)));
-        }
-    }
-
-    private boolean isInHighTariff() {
-        LocalTime now = LocalTime.from(LocalDateTime.now());
-        for (TimeRange range : tariffRanges) {
-            if (range.from.isBefore(range.to)) {
-                if (range.from.isBefore(now) && range.to.isAfter(now)) {
-                    return true;
-                }
-            } else {
-                // during midnight
-                if (range.from.isBefore(now) || range.to.isAfter(now)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        log.debug("setHighTariffRanges({})", intervals);
+        intervalScheduler.setIntervals(intervals);
     }
 
     public void applyConfiguration() {
-        boolean highTariff = isInHighTariff();
+        boolean highTariff = intervalScheduler.isInInterval();
         try {
             applyMinBatterySoc(highTariff);
         } catch (Exception e) {
-            log.error("Failed to applyConfiguration", e);
+            log.error("Failed to apply configuration", e);
         }
     }
 
