@@ -1,8 +1,7 @@
 package org.chuma.homecontroller.extensions.action.condition;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,10 +25,9 @@ public class SunCondition implements ICondition {
 
     @Override
     public boolean isTrue(int previousDurationMs) {
-        GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-        int minutesToday = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE);
-        if (minutesToday > sunCalculator.getSunriseMinutes() - disabledBeforeSunRiseMinutes && minutesToday < sunCalculator.getSunsetMinutes() + enabledAfterSunsetMinutes) {
-            // sun should be shining enough :-)
+        final LocalTime now = ZonedDateTime.now().toLocalTime();
+        if (sunCalculator.getSunrise().minusMinutes(disabledBeforeSunRiseMinutes).isBefore(now)
+                && sunCalculator.getSunset().plusMinutes(enabledAfterSunsetMinutes).isAfter(now)) {
             log.trace("Sun is shining instead of me. Ignoring switch on action!");
             return false;
         }

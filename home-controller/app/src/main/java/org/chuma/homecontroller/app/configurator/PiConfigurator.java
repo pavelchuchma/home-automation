@@ -78,6 +78,7 @@ import org.chuma.homecontroller.extensions.action.condition.SunCondition;
 import org.chuma.homecontroller.extensions.actor.HvacActor;
 import org.chuma.homecontroller.extensions.actor.RadioOnOffActor;
 import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
+import org.chuma.homecontroller.extensions.external.SunCalculator;
 import org.chuma.homecontroller.extensions.external.boiler.BoilerController;
 import org.chuma.homecontroller.extensions.external.boiler.BoilerManager;
 import org.chuma.homecontroller.extensions.external.boiler.BoilerMonitor;
@@ -695,6 +696,7 @@ public class PiConfigurator extends AbstractConfigurator {
         configurePwmLights(kuchynRSw1, WallSwitch.Side.RIGHT, 0.75, kuchynLinkaPwmActor);
         configurePwmLights(kuchynRSw1, WallSwitch.Side.LEFT, 0.5, kuchyn1PwmActor, kuchyn2PwmActor, kuchyn3PwmActor);
 
+        SunCalculator.createInstance(OptionsSingleton.getDouble("location.latitude"), OptionsSingleton.getDouble("location.longitude"), OptionsSingleton.getDouble("location.altitude"));
         SunCondition sunCondition = new SunCondition(0, -15);
         DarkCondition corridorDarkCondition = new DarkCondition(sunCondition, new IOnOffActor[]{chodbaUPokojuPwmActor, chodbaUPokojuPwmActor, obyvak01PwmActor, obyvak02PwmActor, obyvak03PwmActor,
                 obyvak04PwmActor, obyvak05PwmActor, obyvak06PwmActor, obyvak07PwmActor, obyvak08PwmActor, /*obyvak09PwmActor,*/ obyvak10PwmActor, obyvak11PwmActor, obyvak12PwmActor,

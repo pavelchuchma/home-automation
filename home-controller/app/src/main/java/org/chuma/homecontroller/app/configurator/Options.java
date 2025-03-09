@@ -83,6 +83,10 @@ public class Options {
         return Integer.parseInt(get(key));
     }
 
+    public double getDouble(String key) {
+        return Double.parseDouble(get(key));
+    }
+
     public boolean getBoolean(String key) {
         return Boolean.parseBoolean(get(key));
     }

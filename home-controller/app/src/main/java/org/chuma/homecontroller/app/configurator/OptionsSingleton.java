@@ -10,7 +10,7 @@ public class OptionsSingleton {
 
     public static Options createInstance(String persistenceFile, String defaultResource) {
         Validate.isTrue(instance == null, "Only one instance of " + Options.class.getSimpleName() + " is allowed");
-        return instance = new Options( persistenceFile, defaultResource);
+        return instance = new Options(persistenceFile, defaultResource);
     }
 
     public static Options getInstance() {
@@ -27,5 +27,9 @@ public class OptionsSingleton {
 
     public static boolean getBoolean(String key) {
         return instance.getBoolean(key);
+    }
+
+    public static double getDouble(String key) {
+        return instance.getDouble(key);
     }
 }

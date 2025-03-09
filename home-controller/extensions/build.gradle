@@ -20,10 +20,10 @@ dependencies {
     implementation 'ch.qos.logback:logback-classic'
 
     implementation 'com.github.cliftonlabs:json-simple'
-    implementation 'com.luckycatlabs:SunriseSunsetCalculator'
     implementation 'com.inthebacklog:javampd'
     implementation 'org.apache.commons:commons-lang3'
     implementation 'org.chuma.hvac-controller:hvac-controller'
     implementation 'it.sauronsoftware.cron4j:cron4j'
     implementation 'com.ghgande:j2mod:3.2.0'
+    implementation 'net.e175.klaus:solarpositioning:2.0.3'
 }
