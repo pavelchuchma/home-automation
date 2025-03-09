@@ -750,9 +750,6 @@ public class PiConfigurator extends AbstractConfigurator {
             inverterMonitor.start();
 
             inverterManager = configureInverterRemoteControl(inverterModbusClient, inverterMonitor);
-//            GridConnectionManager gridConnectionManager = new GridConnectionManager(60_000, inverterMonitor, inverterManager, gridDisconnect);
-//            gridConnectionManager.start();
-
         } catch (Exception e) {
             log.error("Failed to init solax inverter client", e);
         }
