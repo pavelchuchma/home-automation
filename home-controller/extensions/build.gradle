@@ -26,4 +26,6 @@ dependencies {
     implementation 'it.sauronsoftware.cron4j:cron4j'
     implementation 'com.ghgande:j2mod:3.2.0'
     implementation 'net.e175.klaus:solarpositioning:2.0.3'
+
+    testImplementation 'org.apache.poi:poi-ooxml:5.4.0'
 }

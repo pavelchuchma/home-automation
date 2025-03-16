@@ -11,8 +11,6 @@ import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.chuma.homecontroller.extensions.external.inverter.impl.HttpJsonClient;
-
 public class SunCalculator {
     static Logger log = LoggerFactory.getLogger(SunCalculator.class.getName());
     private static SunCalculator instance;
@@ -43,6 +41,10 @@ public class SunCalculator {
 
     private SunriseResult.RegularDay getUpdatedSunriseTransitSet() {
         final ZonedDateTime now = ZonedDateTime.now();
+        return getUpdatedSunriseTransitSet(now);
+    }
+
+    private SunriseResult.RegularDay getUpdatedSunriseTransitSet(ZonedDateTime now) {
         if (transitSetCalculationTime == null || transitSetCalculationTime.plusHours(24).isBefore(now) || transitSetCalculationTime.getZone() != now.getZone()) {
             var result = SPA.calculateSunriseTransitSet(
                     now, latitude, longitude, DeltaT.estimate(now.toLocalDate()), SPA.Horizon.SUNRISE_SUNSET);
@@ -56,7 +58,7 @@ public class SunCalculator {
         return sunriseResult;
     }
 
-    SolarPosition calculateSolarPosition(ZonedDateTime time) {
+    public SolarPosition calculateSolarPosition(ZonedDateTime time) {
         return SPA.calculateSolarPosition(time, latitude, longitude, altitude,
                 DeltaT.estimate(time.toLocalDate()), 1010, 11);
     }
