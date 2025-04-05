@@ -15,7 +15,6 @@ import org.chuma.homecontroller.extensions.external.inverter.impl.HttpJsonClient
 public class ElectricitySpotPriceMonitor {
     static Logger log = LoggerFactory.getLogger(ElectricitySpotPriceMonitor.class.getName());
 
-    private static final double VAT_RATE = 1.21;
     final DailyValueCache<double[]> cache = new DailyValueCache<>(3 * 24 * 60 * 60, 10 * 60) {
         @Override
         public double[] getEntryImpl(Calendar date) {
@@ -46,27 +45,20 @@ public class ElectricitySpotPriceMonitor {
         }
     };
     private final ExchangeRateMonitor exchangeRateMonitor = new ExchangeRateMonitor();
+    private final double distributionPrice;
+    private final double vatRate;
 
-    public static class Prices {
-        public final double[] prices;
-        public final double distributionPrice;
-        public final int currentEntry;
+    public ElectricitySpotPriceMonitor(double distributionPrice, double vatRate) {
+        this.distributionPrice = distributionPrice;
+        this.vatRate = vatRate;
+    }
 
-        public Prices(double[] prices, double distributionPrice, int currentEntry) {
-            this.prices = prices;
-            this.distributionPrice = distributionPrice;
-            this.currentEntry = currentEntry;
-        }
+    public record Prices(double[] prices, double distributionPrice, int currentEntry) {
     }
 
     public synchronized Prices getDayPrices() {
         try {
             Double exchangeRate = exchangeRateMonitor.getCurrentEurCzkExchangeRate();
-            // Cena za distribuované množství energie (v Kč/MWh): 450.53
-            // Systémové služby: 212.82
-            // Cena na podporu elektřiny z podporovaných zdrojů elektřiny (POZE): 495
-            // Cena za služby obchodu Kč/MWh: 450
-            double distributionPrice = (450.43 + 212.82 + 495.00 + 450);
 
             double[] todayPrices = getOneDayPricesImpl(0);
             double[] tomorrowPrices = getOneDayPricesImpl(1);
@@ -89,10 +81,10 @@ public class ElectricitySpotPriceMonitor {
             }
 
             for (int i = 0; i < 48; i++) {
-                result[i] = (result[i] * exchangeRate + distributionPrice) * VAT_RATE / 1000;
+                result[i] = (result[i] * exchangeRate + distributionPrice) * (1 + vatRate/100) / 1000;
             }
 
-            return new Prices(result, distributionPrice * VAT_RATE / 1000, currentEntry);
+            return new Prices(result, distributionPrice * (1 + vatRate/100) / 1000, currentEntry);
         } catch (RuntimeException e) {
             log.error("Failed to get electricity day prices", e);
             return null;

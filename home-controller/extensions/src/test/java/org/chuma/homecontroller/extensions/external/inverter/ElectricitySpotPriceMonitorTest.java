@@ -9,7 +9,7 @@ import org.junit.Assert;
 
 public class ElectricitySpotPriceMonitorTest extends TestCase {
     public void testGetPrice() throws InterruptedException {
-        ElectricitySpotPriceMonitor monitor = new ElectricitySpotPriceMonitor();
+        ElectricitySpotPriceMonitor monitor = new ElectricitySpotPriceMonitor(1500, 21);
         // first calls should return -1 and run single thread in background
         for (int i = 0; i < 3; i++) {
             long start = System.currentTimeMillis();
@@ -24,7 +24,7 @@ public class ElectricitySpotPriceMonitorTest extends TestCase {
             long start = System.currentTimeMillis();
             ElectricitySpotPriceMonitor.Prices dayPrices = monitor.getDayPrices();
             Assert.assertNotNull(dayPrices);
-            Assert.assertEquals(48, dayPrices.prices.length);
+            Assert.assertEquals(48, dayPrices.prices().length);
             long end = System.currentTimeMillis();
             Assert.assertTrue(end - start < 100);
         }
@@ -33,7 +33,7 @@ public class ElectricitySpotPriceMonitorTest extends TestCase {
     public void testTimeShift() {
         Calendar firstSummerTimeDate = new GregorianCalendar(2024, Calendar.MARCH, 31);
         Calendar firstWinterTimeDate = new GregorianCalendar(2024, Calendar.OCTOBER, 27);
-        ElectricitySpotPriceMonitor monitor = new ElectricitySpotPriceMonitor();
+        ElectricitySpotPriceMonitor monitor = new ElectricitySpotPriceMonitor(1500, 21);
         double[] summerValues = monitor.cache.getEntryImpl(firstSummerTimeDate);
         Assert.assertEquals(24, Objects.requireNonNull(summerValues).length);
         double[] winterValues = monitor.cache.getEntryImpl(firstWinterTimeDate);

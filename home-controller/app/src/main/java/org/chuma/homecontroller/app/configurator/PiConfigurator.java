@@ -765,6 +765,12 @@ public class PiConfigurator extends AbstractConfigurator {
         boilerMonitor.start();
         configureBoilerManager(boilerMonitor.getController());
 
+        ElectricitySpotPriceMonitor priceMonitor = new ElectricitySpotPriceMonitor(
+                OptionsSingleton.getDouble("electricity.price.distribution"),
+                OptionsSingleton.getDouble("electricity.price.vat")
+        );
+
+
         List<ServletAction> servletActions = new ArrayList<>();
         servletActions.add(new ServletAction("openDoor", "Bzučák", bzucakAction));
         servletActions.add(new ServletAction("openGarage", "Garáž", ovladacGarazAction));
@@ -806,7 +812,7 @@ public class PiConfigurator extends AbstractConfigurator {
                 new InverterHandler(Collections.singleton(inverterMonitor)),
                 new FuturaHandler(Collections.singleton(futuraMonitor)),
                 new BoilerHandler(Collections.singleton(boilerMonitor)),
-                new ElectricitySpotPriceHandler(Collections.singleton(new ElectricitySpotPriceMonitor())));
+                new ElectricitySpotPriceHandler(Collections.singleton(priceMonitor)));
 //        configureSimulator(pages, wsHandlers, false);
         // rest/all handler
         List<Handler> handlers = new ArrayList<>();
