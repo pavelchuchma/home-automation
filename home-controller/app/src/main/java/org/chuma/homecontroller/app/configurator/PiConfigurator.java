@@ -142,8 +142,7 @@ public class PiConfigurator extends AbstractConfigurator {
         Node rozvadecDole = nodeInfoRegistry.createNode(34, "RozvadecDole");
         Node lozniceZed = nodeInfoRegistry.createNode(35, "LozniceZed");
         Node chodbaOkno = nodeInfoRegistry.createNode(39, "ChodbaOkno");
-        Node switchTestNode50 = nodeInfoRegistry.createNode(50, "SwitchTestNode50");
-        Node switchTestNode41 = nodeInfoRegistry.createNode(41, "SwitchTestNode41");
+        Node switchTestNode = nodeInfoRegistry.createNode(53, "SwitchTestNode");
         Node relay16testNode45 = nodeInfoRegistry.createNode(45, "Relay16testNode45");
         Node relay16testNode46 = nodeInfoRegistry.createNode(46, "Relay16testNode46");
 
@@ -245,9 +244,13 @@ public class PiConfigurator extends AbstractConfigurator {
 
         SwitchIndicator zaricKoupelnaHoreSw2Indicator = new SwitchIndicator(koupelnaHoreSw2.getRedLed(), SwitchIndicator.Mode.SIGNAL_ANY_ON);
         SwitchIndicator zaricKoupelnaHoreOknoSwIndicator = new SwitchIndicator(koupelnaHoreOknoSw.getRedLed(), SwitchIndicator.Mode.SIGNAL_ANY_ON);
+        SwitchIndicator lozniceLampySwIndicator = lozniceZedLampySw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON);
+
         IOnOffActor zaricKoupelnaHore2Trubice = addOnOffActor("zaricKoupelnaHore2Trubice", "Zaric koupelna 2 trubice", rele01.getRelay1(), zaricKoupelnaHoreSw2Indicator, zaricKoupelnaHoreOknoSwIndicator);
         IOnOffActor zaricKoupelnaHore1Trubice = addOnOffActor("zaricKoupelnaHore1Trubice", "Zaric koupelna 1 trubice", rele01.getRelay2(), zaricKoupelnaHoreSw2Indicator, zaricKoupelnaHoreOknoSwIndicator);
         IOnOffActor obyvakZasLZvonek = addOnOffActor("obyvakZasL", "ObyvakZasLZvonek", rele01.getRelay3(), zvonekPravySw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), zvonekLevySw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
+        IOnOffActor svLampaLozniceLeva = addOnOffActor("svLampaLozniceLeva", "Lampa ložnice levá", rele01.getRelay4(), lozniceLampySwIndicator);
+        IOnOffActor svLampaLoznicePrava = addOnOffActor("svLampaLoznicePrava", "Lampa ložnice pravá", rele01.getRelay5(), lozniceLampySwIndicator);
 
         RelayBoardDevice rele12 = new RelayBoardDevice("rele12", rozvadecDole, 2);
         IOnOffActor ovladacGaraz = addOnOffActor("ovladacGaraz", "Vrata garaz", rele12.getRelay2());
@@ -412,7 +415,8 @@ public class PiConfigurator extends AbstractConfigurator {
                 zadveriPwmActor};
         IOnOffActor[] svetlaHore = {vratnice1PwmActor, vratnice2PwmActor, koupelnaPwmActor, koupelnaZrcadlaPwmActor,
                 chodbaUPokojuPwmActor, chodbaSchodyPwmActor, schodyPwmActor, wcPwmActor, satnaPwmActor,
-                krystofPwmActor, pataPwmActor, marekPwmActor, loznice1PwmActor, loznice2PwmActor, pracovnaPwmActor};
+                krystofPwmActor, pataPwmActor, marekPwmActor, loznice1PwmActor, loznice2PwmActor, pracovnaPwmActor,
+                svLampaLozniceLeva, svLampaLoznicePrava};
 
         // koupelna
         configurePwmLights(koupelnaHoreSw1, WallSwitch.Side.LEFT, 0.5, koupelnaZrcadlaPwmActor);
@@ -610,19 +614,17 @@ public class PiConfigurator extends AbstractConfigurator {
         configureLouvers(lozniceZedSw1, WallSwitch.Side.RIGHT, zaluzieLoznice2);
         configurePwmLights(lozniceZedSw2, WallSwitch.Side.LEFT, 0.4, loznice1PwmActor);
         configurePwmLights(lozniceZedSw2, WallSwitch.Side.RIGHT, 0.4, loznice2PwmActor);
-        configurePwmLights(lozniceZedLampySw, WallSwitch.Side.LEFT, 0.4, loznice1PwmActor);
-        configurePwmLights(lozniceZedLampySw, WallSwitch.Side.RIGHT, 0.4, loznice2PwmActor);
+
+        nodeListener.addActionBinding(new ActionBinding(lozniceZedLampySw.getLeftUpperButton(), new SwitchOnAction(svLampaLozniceLeva), null));
+        nodeListener.addActionBinding(new ActionBinding(lozniceZedLampySw.getLeftBottomButton(), new SwitchOffAction(svLampaLozniceLeva), null));
+        nodeListener.addActionBinding(new ActionBinding(lozniceZedLampySw.getRightUpperButton(), new SwitchOnAction(svLampaLoznicePrava), null));
+        nodeListener.addActionBinding(new ActionBinding(lozniceZedLampySw.getRightBottomButton(), new SwitchOffAction(svLampaLoznicePrava), null));
 
         //pracovna
         configureLouvers(pracovnaSw2, WallSwitch.Side.LEFT, zaluziePracovna);
         configurePwmLights(pracovnaSw2, WallSwitch.Side.RIGHT, 0.3, pracovnaPwmActor);
 
         // vratnice
-
-        //TODO: Remove test 41
-        WallSwitch test41Sw1 = new WallSwitch("Test41.1", switchTestNode41, 1);
-        configureLouvers(test41Sw1, WallSwitch.Side.RIGHT, zaluzieVratnice1);
-
         configureLouvers(vratniceSw1, WallSwitch.Side.RIGHT, zaluzieVratnice1);
         configureLouvers(vratniceSw2, WallSwitch.Side.LEFT, zaluzieVratnice2);
         configureLouvers(vratniceSw2, WallSwitch.Side.RIGHT, zaluzieVratnice3);
@@ -776,10 +778,9 @@ public class PiConfigurator extends AbstractConfigurator {
         servletActions.add(new ServletAction("openGarage", "Garáž", ovladacGarazAction));
 
         //test wall switch application
-        WallSwitch testSw = new WallSwitch("testSwA", switchTestNode50, 1);
-        WallSwitch test3Sw = new WallSwitch("test3Sw", switchTestNode50, 3);
-        VoidOnOffActor testingRightOnOffActor = new VoidOnOffActor("RightSwitchTestingActor", testSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), test3Sw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
-        VoidOnOffActor testingLeftOnOffActor = new VoidOnOffActor("LeftSwitchTestingActor", testSw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), test3Sw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
+        WallSwitch testSw = new WallSwitch("testSwA", switchTestNode, 1);
+        VoidOnOffActor testingRightOnOffActor = new VoidOnOffActor("RightSwitchTestingActor", testSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON));
+        VoidOnOffActor testingLeftOnOffActor = new VoidOnOffActor("LeftSwitchTestingActor", testSw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON));
         nodeListener.addActionBinding(new ActionBinding(testSw.getRightBottomButton(), new SwitchOffAction(testingRightOnOffActor), null));
         nodeListener.addActionBinding(new ActionBinding(testSw.getRightUpperButton(), new SwitchOnAction(testingRightOnOffActor), null));
         nodeListener.addActionBinding(new ActionBinding(testSw.getLeftUpperButton(), new SwitchOnAction(testingLeftOnOffActor), null));
