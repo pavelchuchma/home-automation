@@ -52,8 +52,8 @@ public class PiPeConfigurator extends AbstractConfigurator {
         lst.addActionBinding(new ActionBinding(switchCSw.getRightBottomButton(), zvonekStopAction, null));
 
         // Indikatory vratnice
-        SwitchIndicator vratniceOffIndicator = new SwitchIndicator(switchASw.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF);
-        SwitchIndicator vratniceOnIndicator = new SwitchIndicator(switchASw.getGreenLed(), SwitchIndicator.Mode.SIGNAL_ANY_ON);
+        SwitchIndicator vratniceOffIndicator = switchASw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF);
+        SwitchIndicator vratniceOnIndicator = switchASw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON);
 
         // LDD5
         LddBoardDevice lddDevice5 = new LddBoardDevice("lddDevice5", actor, 2, .35, .35, 1.0, 1.0, 1.0, 1.0);

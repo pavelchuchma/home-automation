@@ -2,28 +2,31 @@ package org.chuma.homecontroller.controller.device;
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.chuma.homecontroller.base.node.OutputNodePin;
+import org.chuma.homecontroller.base.node.PwmOutputNodePin;
 import org.chuma.homecontroller.controller.action.condition.SensorDimCounter;
-import org.chuma.homecontroller.controller.actor.AbstractPinActor;
 import org.chuma.homecontroller.controller.actor.ActorListener;
 import org.chuma.homecontroller.controller.actor.IReadableOnOff;
+import org.chuma.homecontroller.controller.actor.PwmActor;
 
 public class SwitchIndicator implements ActorListener {
     private static final int RETRY_COUNT = 2;
     static Logger log = LoggerFactory.getLogger(SwitchIndicator.class.getName());
-    final OutputNodePin pin;
+    final PwmOutputNodePin pin;
     Mode mode;
+    private final double indicatorIntensity;
     ArrayList<IReadableOnOff> sources = new ArrayList<>();
     private boolean lastSetValue;
 
-    public SwitchIndicator(OutputNodePin pin, Mode mode) {
+    SwitchIndicator(PwmOutputNodePin pin, Mode mode, double indicatorIntensity) {
+        Validate.inclusiveBetween(0.01, 1, indicatorIntensity);
         this.pin = pin;
         this.mode = mode;
+        this.indicatorIntensity = indicatorIntensity;
     }
-
 
     @Override
     public void onAction(IReadableOnOff source, Object actionData) {
@@ -44,8 +47,7 @@ public class SwitchIndicator implements ActorListener {
             value ^= (((SensorDimCounter)actionData).getCount() % 2 == 1);
         }
         if (value != lastSetValue) {
-//            log.debug("  setting " + pin + " to " + resultValue);
-            if (AbstractPinActor.setPinValueImpl(pin, value, RETRY_COUNT)) {
+            if (PwmActor.setPinPwmValueImpl(pin, (value) ? 48 - Math.max(1, (int)(48 * indicatorIntensity)) : 48, RETRY_COUNT)) {
                 lastSetValue = value;
             }
         }

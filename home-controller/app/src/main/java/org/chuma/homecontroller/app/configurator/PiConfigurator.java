@@ -188,14 +188,14 @@ public class PiConfigurator extends AbstractConfigurator {
         WallSwitch chodbaHoreKoupelnaSw3 = new WallSwitch("chodbaHoreKoupelnaSw3", koupelnaHore, 3);
         WallSwitch zadveriDoleChodbaSw = new WallSwitch("zadveriDoleChodbaSw", zadveriDoleChodba, 1);
         WallSwitch zadveriDolePradelnaSw = new WallSwitch("zadveriDolePradelnaSw", zadveriDoleChodba, 3);
-        WallSwitch lozniceOknoSw1 = new WallSwitch("lozniceOknoSw1", lozniceOkno, 1);
-        WallSwitch lozniceOknoSw2 = new WallSwitch("lozniceOknoSw2", lozniceOkno, 2);
-        WallSwitch lozniceDvereSw1 = new WallSwitch("lozniceDvereSw1", lozniceDvere, 1);
-        WallSwitch lozniceDvereSw2 = new WallSwitch("lozniceDvereSw2", lozniceDvere, 2);
+        WallSwitch lozniceOknoSw1 = new WallSwitch("lozniceOknoSw1", lozniceOkno, 1, 0.01);
+        WallSwitch lozniceOknoSw2 = new WallSwitch("lozniceOknoSw2", lozniceOkno, 2, 0.01);
+        WallSwitch lozniceDvereSw1 = new WallSwitch("lozniceDvereSw1", lozniceDvere, 1, 0.01);
+        WallSwitch lozniceDvereSw2 = new WallSwitch("lozniceDvereSw2", lozniceDvere, 2, 0.01);
         WallSwitch marekPostelSw3 = new WallSwitch("marekPostelSw3", lozniceDvere, 3);
-        WallSwitch lozniceZedSw1 = new WallSwitch("lozniceZedSw1", lozniceZed, 1);
-        WallSwitch lozniceZedSw2 = new WallSwitch("lozniceZedSw2", lozniceZed, 2);
-        WallSwitch lozniceZedLampySw = new WallSwitch("lozniceZedLampySw", lozniceZed, 3);
+        WallSwitch lozniceZedSw1 = new WallSwitch("lozniceZedSw1", lozniceZed, 1, 0.01);
+        WallSwitch lozniceZedSw2 = new WallSwitch("lozniceZedSw2", lozniceZed, 2, 0.01);
+        WallSwitch lozniceZedLampySw = new WallSwitch("lozniceZedLampySw", lozniceZed, 3, 0.01);
         WallSwitch vratniceSw1 = new WallSwitch("vratniceSw1", vratnice, 1);
         WallSwitch vratniceSw2 = new WallSwitch("vratniceSw2", vratnice, 2);
         WallSwitch zadveriVratniceSw3 = new WallSwitch("zadveriVratniceSw3", vratnice, 3);
@@ -242,15 +242,16 @@ public class PiConfigurator extends AbstractConfigurator {
         IOnOffActor svSklepPravy = addOnOffActor("svSklepPravy", "Pravy Sklep", triak1.getOut5(), prizemiVzaduKuchynSw2Indicator, sklepPravySw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON), zadveriDoleVchodRSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON));
         IOnOffActor zasStromek = addOnOffActor("zasStromek", "Zasuvka Stromek", triak1.getOut6(), schodyDoleL1Sw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON));
 
-        SwitchIndicator zaricKoupelnaHoreSw2Indicator = new SwitchIndicator(koupelnaHoreSw2.getRedLed(), SwitchIndicator.Mode.SIGNAL_ANY_ON);
-        SwitchIndicator zaricKoupelnaHoreOknoSwIndicator = new SwitchIndicator(koupelnaHoreOknoSw.getRedLed(), SwitchIndicator.Mode.SIGNAL_ANY_ON);
-        SwitchIndicator lozniceLampySwIndicator = lozniceZedLampySw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON);
+        SwitchIndicator zaricKoupelnaHoreSw2Indicator = koupelnaHoreSw2.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON);
+        SwitchIndicator zaricKoupelnaHoreOknoSwIndicator = koupelnaHoreOknoSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON);
+        SwitchIndicator lozniceLampyOnSwIndicator = lozniceZedLampySw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON);
+        SwitchIndicator lozniceLampyOffSwIndicator = lozniceZedLampySw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF);
 
         IOnOffActor zaricKoupelnaHore2Trubice = addOnOffActor("zaricKoupelnaHore2Trubice", "Zaric koupelna 2 trubice", rele01.getRelay1(), zaricKoupelnaHoreSw2Indicator, zaricKoupelnaHoreOknoSwIndicator);
         IOnOffActor zaricKoupelnaHore1Trubice = addOnOffActor("zaricKoupelnaHore1Trubice", "Zaric koupelna 1 trubice", rele01.getRelay2(), zaricKoupelnaHoreSw2Indicator, zaricKoupelnaHoreOknoSwIndicator);
         IOnOffActor obyvakZasLZvonek = addOnOffActor("obyvakZasL", "ObyvakZasLZvonek", rele01.getRelay3(), zvonekPravySw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), zvonekLevySw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
-        IOnOffActor svLampaLozniceLeva = addOnOffActor("svLampaLozniceLeva", "Lampa ložnice levá", rele01.getRelay4(), lozniceLampySwIndicator);
-        IOnOffActor svLampaLoznicePrava = addOnOffActor("svLampaLoznicePrava", "Lampa ložnice pravá", rele01.getRelay5(), lozniceLampySwIndicator);
+        IOnOffActor svLampaLozniceLeva = addOnOffActor("svLampaLozniceLeva", "Lampa ložnice levá", rele01.getRelay4(), lozniceLampyOnSwIndicator, lozniceLampyOffSwIndicator);
+        IOnOffActor svLampaLoznicePrava = addOnOffActor("svLampaLoznicePrava", "Lampa ložnice pravá", rele01.getRelay5(), lozniceLampyOnSwIndicator, lozniceLampyOffSwIndicator);
 
         RelayBoardDevice rele12 = new RelayBoardDevice("rele12", rozvadecDole, 2);
         IOnOffActor ovladacGaraz = addOnOffActor("ovladacGaraz", "Vrata garaz", rele12.getRelay2());
@@ -310,50 +311,51 @@ public class PiConfigurator extends AbstractConfigurator {
                 new ValveControllerImpl("vlObyv45", "Obyvak 4+5", rele10.getRelay5(), rele10.getRelay6(), 150000, stateMap),
         };
 
-        SwitchIndicator krystofIndicator = new SwitchIndicator(krystofSwA2.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF);
-        SwitchIndicator pataIndicator = new SwitchIndicator(patrikSw2.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF);
+        SwitchIndicator krystofIndicator = krystofSwA2.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF);
+        SwitchIndicator pataIndicator = patrikSw2.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF);
 
-        SwitchIndicator pradelnaOnIndicator = new SwitchIndicator(zadveriDolePradelnaSw.getRedLed(), SwitchIndicator.Mode.SIGNAL_ANY_ON); // red & green is swapped on this switch
-        SwitchIndicator pradelnaOffIndicator = new SwitchIndicator(pradelnaSw1.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF);
+        SwitchIndicator pradelnaOnIndicator = zadveriDolePradelnaSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON); // red & green is swapped on this switch
+        SwitchIndicator pradelnaOffIndicator = pradelnaSw1.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF);
 
         // lights
         // PWM
-        SwitchIndicator lozniceDvereSw2Indicator = new SwitchIndicator(lozniceDvereSw2.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF);
-        SwitchIndicator lozniceOknoSw2Indicator = new SwitchIndicator(lozniceOknoSw2.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF);
-        SwitchIndicator lozniceZedSw2Indicator = new SwitchIndicator(lozniceZedSw2.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF);
+        SwitchIndicator lozniceDvereSw2Indicator = lozniceDvereSw2.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF);
+        SwitchIndicator lozniceOknoSw2Indicator = lozniceOknoSw2.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF);
+        SwitchIndicator lozniceZedSw2Indicator = lozniceZedSw2.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF);
+        SwitchIndicator koupelnaSvetlaIndicator = koupelnaHoreSw1.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF);
         LddBoardDevice lddDevice1 = new LddBoardDevice("lddDevice1", lddActorA, 1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
         LddActor marekPwmActor = addLddLight("pwmMarek", "Marek", lddDevice1.getLdd1(), 0.95, marekSwA2.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), marekSwA2.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON)); //.96
         LddActor pataPwmActor = addLddLight("pwmPata", "Paťa", lddDevice1.getLdd2(), 0.95, krystofIndicator, pataIndicator); //.96
         LddActor krystofPwmActor = addLddLight("pwmKry", "Kryštof", lddDevice1.getLdd3(), 0.95, krystofIndicator, pataIndicator); //.96
-        LddActor koupelnaPwmActor = addLddLight("pwmKpH", "Koupelna", lddDevice1.getLdd4(), 1.0, koupelnaHoreSw1.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON), koupelnaHoreSw1.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // 1.08
+        LddActor koupelnaPwmActor = addLddLight("pwmKpH", "Koupelna", lddDevice1.getLdd4(), 1.0, koupelnaSvetlaIndicator); // 1.08
         LddActor loznice1PwmActor = addLddLight("pwmLozV", "Ložnice velké", lddDevice1.getLdd5(), 1.0, lozniceDvereSw2Indicator, lozniceOknoSw2Indicator, lozniceZedSw2Indicator); //1.08
-        LddActor chodbaUPokojuPwmActor = addLddLight("pwmChP", "Chodba u pokoju", lddDevice1.getLdd6(), 1.0, new SwitchIndicator(chodbaHoreKoupelnaSw3.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF), new SwitchIndicator(chodbaHoreKrystofSwA3.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF), new SwitchIndicator(chodbaHorePatrikSw3.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // 1.08
+        LddActor chodbaUPokojuPwmActor = addLddLight("pwmChP", "Chodba u pokoju", lddDevice1.getLdd6(), 1.0, chodbaHoreKoupelnaSw3.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), chodbaHoreKrystofSwA3.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), chodbaHorePatrikSw3.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // 1.08
 
         LddBoardDevice lddDevice2 = new LddBoardDevice("lddDevice2", lddActorA, 2, 1.0, .7, .7, .7, .7, .35);
 //        LddActor pradelna1PwmActor = addLddLight("pwmPrd1", "Prádelna 1", lddDevice2.getLdd1(), 1, prizemiVzaduKuchynSw2Indicator, pradelnaOnIndicator, pradelnaOffIndicator); // 1.05
         LddActor pradelna1PwmActor = addLddLight("pwmPrd1", "Prádelna 1", lddDevice2.getLdd2(), 0.7, prizemiVzaduKuchynSw2Indicator, pradelnaOnIndicator, pradelnaOffIndicator); //  1.05
 //        LddActor obyvak09PwmActor = addLddLight("pwmOb9", "Obyvák 09", lddDevice2.getLdd2(), 0.7); // .72
         LddActor obyvak08PwmActor = addLddLight("pwmOb8", "Obyvák 08", lddDevice2.getLdd3(), 0.7); // .72
-        LddActor satnaPwmActor = addLddLight("pwmSat", "Šatna", lddDevice2.getLdd4(), 0.48, new SwitchIndicator(chodbaVzaduLSw.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF), new SwitchIndicator(satnaSw3.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF)); //0.48
+        LddActor satnaPwmActor = addLddLight("pwmSat", "Šatna", lddDevice2.getLdd4(), 0.48, chodbaVzaduLSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), satnaSw3.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF)); //0.48
         LddActor obyvak03PwmActor = addLddLight("pwmOb3", "Obyvák 03", lddDevice2.getLdd5(), 0.7); // .72
-        LddActor wcPwmActor = addLddLight("pwmWc", "WC", lddDevice2.getLdd6(), 0.24, new SwitchIndicator(wcSw.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF));
+        LddActor wcPwmActor = addLddLight("pwmWc", "WC", lddDevice2.getLdd6(), 0.24, wcSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF));
 
         LddBoardDevice lddDevice3 = new LddBoardDevice("lddDevice3", lddActorA, 3, .7, .35, .35, .35, .7, .7);
         LddActor obyvak07PwmActor = addLddLight("pwmOb7", "Obyvák 07", lddDevice3.getLdd1(), 0.7); // .72
         LddActor pradelna3PwmActor = addLddLight("pwmPrd3", "Prádelna 3", lddDevice3.getLdd2(), 0.35, prizemiVzaduKuchynSw2Indicator, pradelnaOnIndicator, pradelnaOffIndicator); // .36
         LddActor schodyPwmActor = addLddLight("pwmSchd", "Schody", lddDevice3.getLdd3(), 0.35); // .6
-        LddActor koupelnaZrcadlaPwmActor = addLddLight("pwmKpHZrc", "Koupena zrcadla", lddDevice3.getLdd4(), 0.35); // .36
+        LddActor koupelnaZrcadlaPwmActor = addLddLight("pwmKpHZrc", "Koupena zrcadla", lddDevice3.getLdd4(), 0.35, koupelnaSvetlaIndicator); // .36
         LddActor obyvak02PwmActor = addLddLight("pwmOb2", "Obyvák 02", lddDevice3.getLdd5(), 0.7); // .72
         LddActor chodbaSchodyPwmActor = addLddLight("pwmChSch", "Chodba nad schody", lddDevice3.getLdd6(), 0.7); // .72
 
 
         LddBoardDevice lddDevice4 = new LddBoardDevice("lddDevice4", lddActorB, 1, .7, .7, .7, .7, .7, .7);
-        SwitchIndicator garazZadveriSwAIndicator = new SwitchIndicator(zadveriSwA2.getRedLed(), SwitchIndicator.Mode.SIGNAL_ANY_ON);
-        SwitchIndicator garazGarazSwAIndicator = new SwitchIndicator(garazASw1.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF);
+        SwitchIndicator garazZadveriSwAIndicator = zadveriSwA2.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON);
+        SwitchIndicator garazGarazSwAIndicator = garazASw1.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF);
         LddActor obyvak05PwmActor = addLddLight("pwmOb5", "Obyvák 05", lddDevice4.getLdd1(), 0.7); // .72
         LddActor kuchyn4PwmActor = addLddLight("pwmKch4", "Kuchyň 4", lddDevice4.getLdd2(), 0.7); // .72
         LddActor obyvak11PwmActor = addLddLight("pwmOb11", "Obyvák 11", lddDevice4.getLdd3(), 0.7); // .72
-        LddActor kuchyn2PwmActor = addLddLight("pwmKch2", "Kuchyň 2", lddDevice4.getLdd4(), 0.7, new SwitchIndicator(kuchynLSw3.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // .72
+        LddActor kuchyn2PwmActor = addLddLight("pwmKch2", "Kuchyň 2", lddDevice4.getLdd4(), 0.7, kuchynLSw3.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // .72
         LddActor kuchyn3PwmActor = addLddLight("pwmKch3", "Kuchyň 3", lddDevice4.getLdd5(), 0.7); // .72
         LddActor kuchyn1PwmActor = addLddLight("pwmKch1", "Kuchyň 1", lddDevice4.getLdd6(), 0.7); // .72
 
@@ -363,7 +365,7 @@ public class PiConfigurator extends AbstractConfigurator {
         LddActor koupelnaDoleZrcadlaPwmActor = addLddLight("pwmKpDZrc", "Koupelna dole zrcadla", lddDevice5.getLdd2(), 0.35, prizemiVzaduKuchynSw2Indicator); // .36
         LddActor pudaPwmActor = addLddLight("pwmPuda", "Půda", lddDevice5.getLdd3(), 0.96, garazASw2.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON)); // .96
         LddActor kuchynLinkaPwmActor = addLddLight("pwmKuLi", "Kuchyňská linka", lddDevice5.getLdd4(), 1.0); // .72
-        LddActor vratnice1PwmActor = addLddLight("pwmVrt1", "Vrátnice 1", lddDevice5.getLdd5(), 0.95, new SwitchIndicator(vratniceSw1.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // .96
+        LddActor vratnice1PwmActor = addLddLight("pwmVrt1", "Vrátnice 1", lddDevice5.getLdd5(), 0.95, vratniceSw1.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // .96
         LddActor terasaPwmActor = addLddLight("pwmTrs", "Terasa", lddDevice5.getLdd6(), 1.0, prizemiVzaduKuchynSw2Indicator); // 1.08
 
         LddBoardDevice lddDevice6 = new LddBoardDevice("lddDevice6", lddActorC, 2, .7, .7, .7, .7, .7, .7);
@@ -372,7 +374,7 @@ public class PiConfigurator extends AbstractConfigurator {
         LddActor obyvak10PwmActor = addLddLight("pwmOb10", "Obyvák 10", lddDevice6.getLdd3(), 0.7); // .72
         LddActor obyvak01PwmActor = addLddLight("pwmOb1", "Obyvák 01", lddDevice6.getLdd4(), 0.7); // .72
         LddActor obyvak13PwmActor = addLddLight("pwmOb13", "Obyvák 13", lddDevice6.getLdd5(), 0.7); // .72
-        LddActor zadveriPwmActor = addLddLight("pwmZadH", "Zádveří", lddDevice6.getLdd6(), 0.48, new SwitchIndicator(zadveriSwA1.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // 0.48
+        LddActor zadveriPwmActor = addLddLight("pwmZadH", "Zádveří", lddDevice6.getLdd6(), 0.48, zadveriSwA1.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // 0.48
 
         LddBoardDevice lddDevice7 = new LddBoardDevice("lddDevice7", lddActorC, 3, .7, .7, .7, .7, .7, .7);
         LddActor pradelna2PwmActor = addLddLight("pwmPrd2", "Prádelna 2", lddDevice7.getLdd1(), 0.7, prizemiVzaduKuchynSw2Indicator, pradelnaOnIndicator, pradelnaOffIndicator); // .72
@@ -383,8 +385,8 @@ public class PiConfigurator extends AbstractConfigurator {
         LddActor obyvak12PwmActor = addLddLight("pwmOb12", "Obyvák 12", lddDevice7.getLdd6(), 0.7); // .72
 
         LddBoardDevice lddDevice8 = new LddBoardDevice("lddDevice8", lddActorC, 1, .6, .6, .5, .5, .5, .5);
-        LddActor pracovnaPwmActor = addLddLight("pwmPrac", "Pracovna", lddDevice8.getLdd1(), 0.6); // .6
-        LddActor koupelnaDolePwmActor = addLddLight("pwmKpD", "Koupelna dole", lddDevice8.getLdd2(), 0.6, prizemiVzaduKuchynSw2Indicator, new SwitchIndicator(koupelnaDoleSw2.getRedLed(), SwitchIndicator.Mode.SIGNAL_ALL_OFF), koupelnaDoleSw2.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON)); // .60
+        LddActor pracovnaPwmActor = addLddLight("pwmPrac", "Pracovna", lddDevice8.getLdd1(), 0.6, pracovnaSw2.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // .6
+        LddActor koupelnaDolePwmActor = addLddLight("pwmKpD", "Koupelna dole", lddDevice8.getLdd2(), 0.6, prizemiVzaduKuchynSw2Indicator, koupelnaDoleSw2.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), koupelnaDoleSw2.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON)); // .60
         LddActor vratnice2PwmActor = addLddLight("pwmVrt2", "Vrátnice 2", lddDevice8.getLdd3(), 0.48); //.48
         LddActor chodbaDolePwmActor = addLddLight("pwmChoD", "Chodba dole", lddDevice8.getLdd4(), 0.48, prizemiVzaduKuchynSw2Indicator); //.48
         LddActor zadveriDolePwmActor = addLddLight("pwmZadD", "Zádveří dole", lddDevice8.getLdd5(), 0.48, prizemiVzaduKuchynSw2Indicator, zadveriDoleChodbaSw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON), zadveriDoleChodbaSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // .48
@@ -778,6 +780,7 @@ public class PiConfigurator extends AbstractConfigurator {
         servletActions.add(new ServletAction("openGarage", "Garáž", ovladacGarazAction));
 
         //test wall switch application
+//        WallSwitch testSw = new WallSwitch("testSwA", switchTestNode, 1, 0.01);
         WallSwitch testSw = new WallSwitch("testSwA", switchTestNode, 1);
         VoidOnOffActor testingRightOnOffActor = new VoidOnOffActor("RightSwitchTestingActor", testSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON));
         VoidOnOffActor testingLeftOnOffActor = new VoidOnOffActor("LeftSwitchTestingActor", testSw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON));

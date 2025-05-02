@@ -96,12 +96,16 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
             final Pin pin = getPin(connectorNumber, i + 1);
             final String pinId = String.format("%s:%d.%s", id, connectorNumber, names[i]);
             if ((mask & 1) == 1) {
-                pins[i] = new OutputNodePin(pinId, names[i], node, pin, highValueMeansOn);
+                pins[i] = createOutputNodePin(pinId, names[i], node, pin);
             } else {
                 pins[i] = new NodePin(pinId, names[i], node, pin);
             }
             mask >>= 1;
         }
+    }
+
+    protected NodePin createOutputNodePin(String pinId, String name, Node node, Pin pin) {
+        return new OutputNodePin(pinId, name, node, pin, highValueMeansOn);
     }
 
     protected void finishInit() {
