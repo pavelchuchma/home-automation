@@ -332,9 +332,8 @@ public class PiConfigurator extends AbstractConfigurator {
         LddActor chodbaUPokojuPwmActor = addLddLight("pwmChP", "Chodba u pokoju", lddDevice1.getLdd6(), 1.0, chodbaHoreKoupelnaSw3.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), chodbaHoreKrystofSwA3.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), chodbaHorePatrikSw3.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF)); // 1.08
 
         LddBoardDevice lddDevice2 = new LddBoardDevice("lddDevice2", lddActorA, 2, 1.0, .7, .7, .7, .7, .35);
-//        LddActor pradelna1PwmActor = addLddLight("pwmPrd1", "Prádelna 1", lddDevice2.getLdd1(), 1, prizemiVzaduKuchynSw2Indicator, pradelnaOnIndicator, pradelnaOffIndicator); // 1.05
-        LddActor pradelna1PwmActor = addLddLight("pwmPrd1", "Prádelna 1", lddDevice2.getLdd2(), 0.7, prizemiVzaduKuchynSw2Indicator, pradelnaOnIndicator, pradelnaOffIndicator); //  1.05
-//        LddActor obyvak09PwmActor = addLddLight("pwmOb9", "Obyvák 09", lddDevice2.getLdd2(), 0.7); // .72
+        LddActor pradelna1PwmActor = addLddLight("pwmPrd1", "Prádelna 1", lddDevice2.getLdd1(), 1, prizemiVzaduKuchynSw2Indicator, pradelnaOnIndicator, pradelnaOffIndicator); // 1.05
+        LddActor obyvak09PwmActor = addLddLight("pwmOb9", "Obyvák 09", lddDevice2.getLdd2(), 0.7); // .72
         LddActor obyvak08PwmActor = addLddLight("pwmOb8", "Obyvák 08", lddDevice2.getLdd3(), 0.7); // .72
         LddActor satnaPwmActor = addLddLight("pwmSat", "Šatna", lddDevice2.getLdd4(), 0.48, chodbaVzaduLSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), satnaSw3.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF)); //0.48
         LddActor obyvak03PwmActor = addLddLight("pwmOb3", "Obyvák 03", lddDevice2.getLdd5(), 0.7); // .72
@@ -410,7 +409,7 @@ public class PiConfigurator extends AbstractConfigurator {
         IOnOffActor[] svetlaDole = {kuchyn1PwmActor, kuchyn2PwmActor, kuchyn3PwmActor, kuchyn4PwmActor, kuchyn5PwmActor,
                 jidelna1PwmActor, jidelna2PwmActor, jidelna3PwmActor, jidelnaStulPwmActor,
                 obyvak01PwmActor, obyvak02PwmActor, obyvak03PwmActor, obyvak04PwmActor, obyvak05PwmActor,
-                obyvak06PwmActor, obyvak07PwmActor, obyvak08PwmActor, /*obyvak09PwmActor,*/ obyvak10PwmActor,
+                obyvak06PwmActor, obyvak07PwmActor, obyvak08PwmActor, obyvak09PwmActor, obyvak10PwmActor,
                 obyvak11PwmActor, obyvak12PwmActor, obyvak13PwmActor, kuchynLinkaPwmActor};
 
         IOnOffActor[] svetlaHoreVenku = {garaz1PwmActor, garaz2PwmActor, garaz3PwmActor, vchodHorePwmActor, pudaPwmActor,
@@ -473,7 +472,7 @@ public class PiConfigurator extends AbstractConfigurator {
 
         // gauc
         nodeListener.addActionBinding(new ActionBinding(obyvakGaucLSw.getLeftBottomButton(), allLightsFromKitchenToLivingRoomOff, null));
-        configurePwmLights(obyvakGaucLSw, WallSwitch.Side.RIGHT, 0.7, /*obyvak09PwmActor,*/ obyvak12PwmActor, obyvak13PwmActor);
+        configurePwmLights(obyvakGaucLSw, WallSwitch.Side.RIGHT, 0.7, obyvak09PwmActor, obyvak12PwmActor, obyvak13PwmActor);
         configureLouvers(obyvakGaucRSw, WallSwitch.Side.LEFT, zaluzieObyvak4);
         configureLouvers(obyvakGaucRSw, WallSwitch.Side.RIGHT, zaluzieObyvak5, zaluzieObyvak6);
 
@@ -489,7 +488,7 @@ public class PiConfigurator extends AbstractConfigurator {
         configureLouvers(obyvakVzadu3Sw, WallSwitch.Side.RIGHT, zaluzieObyvak5, zaluzieObyvak6);
 
         configurePwmLights(obyvakVzadu4Sw, WallSwitch.Side.LEFT, 0.7, obyvak01PwmActor, obyvak02PwmActor, obyvak03PwmActor);
-        configurePwmLights(obyvakVzadu4Sw, WallSwitch.Side.RIGHT, 0.7, /*obyvak09PwmActor,*/ obyvak12PwmActor, obyvak13PwmActor);
+        configurePwmLights(obyvakVzadu4Sw, WallSwitch.Side.RIGHT, 0.7, obyvak09PwmActor, obyvak12PwmActor, obyvak13PwmActor);
 
 
         // wc
@@ -703,7 +702,7 @@ public class PiConfigurator extends AbstractConfigurator {
         SunCalculator.createInstance(OptionsSingleton.getDouble("location.latitude"), OptionsSingleton.getDouble("location.longitude"), OptionsSingleton.getDouble("location.altitude"));
         SunCondition sunCondition = new SunCondition(0, -15);
         DarkCondition corridorDarkCondition = new DarkCondition(sunCondition, new IOnOffActor[]{chodbaUPokojuPwmActor, chodbaUPokojuPwmActor, obyvak01PwmActor, obyvak02PwmActor, obyvak03PwmActor,
-                obyvak04PwmActor, obyvak05PwmActor, obyvak06PwmActor, obyvak07PwmActor, obyvak08PwmActor, /*obyvak09PwmActor,*/ obyvak10PwmActor, obyvak11PwmActor, obyvak12PwmActor,
+                obyvak04PwmActor, obyvak05PwmActor, obyvak06PwmActor, obyvak07PwmActor, obyvak08PwmActor, obyvak09PwmActor, obyvak10PwmActor, obyvak11PwmActor, obyvak12PwmActor,
                 obyvak13PwmActor, jidelna1PwmActor, jidelna2PwmActor, jidelna3PwmActor,
                 vchodHorePwmActor});
 

@@ -60,7 +60,7 @@ function getPwmLightComponents() {
         new PwmLightItem('pwmOb6', 390, 1037, 0),
         new PwmLightItem('pwmOb7', 260, 1340, 0),
         new PwmLightItem('pwmOb8', 236, 1269, 0),
-        // new PwmLightItem('pwmOb9', 217, 1217, 0),
+        new PwmLightItem('pwmOb9', 217, 1217, 0),
         new PwmLightItem('pwmOb10', 160, 1135, 0),
         new PwmLightItem('pwmOb11', 270, 1157, 0),
         new PwmLightItem('pwmOb12', 185, 1276, 0),
