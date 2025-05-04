@@ -27,6 +27,7 @@ import org.chuma.homecontroller.app.servlet.rest.ServletActionHandler;
 import org.chuma.homecontroller.app.servlet.rest.StatusHandler;
 import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
 import org.chuma.homecontroller.base.node.Node;
+import org.chuma.homecontroller.base.utils.OptionsSingleton;
 import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.actor.Actor;
 import org.chuma.homecontroller.controller.controller.LouversController;

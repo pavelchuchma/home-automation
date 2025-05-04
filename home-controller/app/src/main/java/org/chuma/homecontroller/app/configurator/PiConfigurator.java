@@ -41,6 +41,8 @@ import org.chuma.homecontroller.app.servlet.rest.StatusHandler;
 import org.chuma.homecontroller.app.servlet.rest.WaterPumpHandler;
 import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
 import org.chuma.homecontroller.base.node.Node;
+import org.chuma.homecontroller.base.utils.Options;
+import org.chuma.homecontroller.base.utils.OptionsSingleton;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.action.ContinuousValueSwitchOnActionWithTimer;
@@ -92,13 +94,6 @@ import org.chuma.hvaccontroller.device.HvacDevice;
 
 @SuppressWarnings({"unused", "DuplicatedCode", "SpellCheckingInspection"})
 public class PiConfigurator extends AbstractConfigurator {
-
-    private static final String CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE = "inverter.manager.high.tariff.battery.reserve";
-    private static final String CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES = "inverter.manager.high.tariff.times";
-    private static final String CFG_INVERTER_MANAGER_MINIMAL_SOC = "inverter.manager.minimal.soc";
-
-    public static final String CFG_BOILER_TIMES = "boiler.times";
-    public static final String CFG_BOILER_TARGET_TEMP = "boiler.target.temp";
     static Logger log = LoggerFactory.getLogger(PiConfigurator.class.getName());
 
     public PiConfigurator(NodeInfoRegistry nodeInfoRegistry, StateMap stateMap) {
@@ -845,68 +840,12 @@ public class PiConfigurator extends AbstractConfigurator {
 
     private static void configureBoilerManager(BoilerController bc) {
         final Options options = OptionsSingleton.getInstance();
-        final String times = options.get(CFG_BOILER_TIMES);
-        final int targetTemp = options.getInt(CFG_BOILER_TARGET_TEMP);
-
-        BoilerManager boilerManager = new BoilerManager(bc);
-        boilerManager.setTargetTemp(targetTemp);
-        boilerManager.setOperatingTimes(times);
-        boilerManager.applyConfiguration();
-
-        options.addListener(new Options.OptionChangeListener() {
-            @Override
-            public void optionChanged(String key, String value) {
-                if (CFG_BOILER_TARGET_TEMP.equals(key)) {
-                    boilerManager.setTargetTemp(Integer.parseInt(value));
-                } else if (CFG_BOILER_TIMES.equals(key)) {
-                    boilerManager.setOperatingTimes(value);
-                }
-            }
-
-            @Override
-            public void optionsSaved(Set<String> keys) {
-                if (keys.contains(CFG_BOILER_TARGET_TEMP)
-                        || keys.contains(CFG_BOILER_TIMES)) {
-                    boilerManager.applyConfiguration();
-                }
-            }
-        });
+        BoilerManager boilerManager = new BoilerManager(bc, options);
     }
 
     private static InverterManager configureInverterRemoteControl(SolaxInverterModbusClient client, InverterMonitor inverterMonitor) {
         final Options options = OptionsSingleton.getInstance();
-        final String highTariffTimes = options.get(CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES);
-        final int minimalSoc = options.getInt(CFG_INVERTER_MANAGER_MINIMAL_SOC);
-        final int batteryReserve = options.getInt(CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE);
-
-        InverterManager inverterManager = new InverterManager(client);
-        inverterManager.setMinimalSoc(minimalSoc);
-        inverterManager.setBatteryReserve(batteryReserve);
-        inverterManager.setHighTariffRanges(highTariffTimes);
-        inverterManager.applyConfiguration();
-
-        options.addListener(new Options.OptionChangeListener() {
-            @Override
-            public void optionChanged(String key, String value) {
-                if (CFG_INVERTER_MANAGER_MINIMAL_SOC.equals(key)) {
-                    inverterManager.setMinimalSoc(Integer.parseInt(value));
-                } else if (CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE.equals(key)) {
-                    inverterManager.setBatteryReserve(Integer.parseInt(value));
-                } else if (CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES.equals(key)) {
-                    inverterManager.setHighTariffRanges(value);
-                }
-            }
-
-            @Override
-            public void optionsSaved(Set<String> keys) {
-                if (keys.contains(CFG_INVERTER_MANAGER_MINIMAL_SOC)
-                        || keys.contains(CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE)
-                        || keys.contains(CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES)) {
-                    inverterManager.applyConfiguration();
-                }
-            }
-        });
-        return inverterManager;
+        return new InverterManager(client, options);
     }
 
     @Override

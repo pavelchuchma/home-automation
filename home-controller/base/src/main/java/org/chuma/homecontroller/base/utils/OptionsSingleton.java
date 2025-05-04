@@ -1,4 +1,4 @@
-package org.chuma.homecontroller.app.configurator;
+package org.chuma.homecontroller.base.utils;
 
 import org.apache.commons.lang3.Validate;
 

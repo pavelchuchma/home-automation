@@ -1,15 +1,23 @@
 package org.chuma.homecontroller.extensions.external.inverter;
 
+import java.util.Set;
+
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.chuma.homecontroller.base.utils.Options;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterModbusClient;
 import org.chuma.homecontroller.extensions.external.utils.IntervalScheduler;
 
 public class InverterManager {
+    private static final String CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE = "inverter.manager.high.tariff.battery.reserve";
+    private static final String CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES = "inverter.manager.high.tariff.times";
+    private static final String CFG_INVERTER_MANAGER_MINIMAL_SOC = "inverter.manager.minimal.soc";
+
     static Logger log = LoggerFactory.getLogger(InverterManager.class.getName());
     private final SolaxInverterModbusClient client;
+    private final Options options;
     private int minimalSoc = -1;
     private int batteryReserve = -1;
     private final IntervalScheduler intervalScheduler = new IntervalScheduler(
@@ -17,8 +25,36 @@ public class InverterManager {
             () -> applyMinBatterySoc(false)
     );
 
-    public InverterManager(SolaxInverterModbusClient client) {
+    public InverterManager(SolaxInverterModbusClient client, Options options) {
         this.client = client;
+        this.options = options;
+
+        setMinimalSoc(options.getInt(CFG_INVERTER_MANAGER_MINIMAL_SOC));
+        setBatteryReserve(options.getInt(CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE));
+        setHighTariffRanges(options.get(CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES));
+        applyConfiguration();
+
+        options.addListener(new Options.OptionChangeListener() {
+            @Override
+            public void optionChanged(String key, String value) {
+                if (CFG_INVERTER_MANAGER_MINIMAL_SOC.equals(key)) {
+                    setMinimalSoc(Integer.parseInt(value));
+                } else if (CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE.equals(key)) {
+                    setBatteryReserve(Integer.parseInt(value));
+                } else if (CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES.equals(key)) {
+                    setHighTariffRanges(value);
+                }
+            }
+
+            @Override
+            public void optionsSaved(Set<String> keys) {
+                if (keys.contains(CFG_INVERTER_MANAGER_MINIMAL_SOC)
+                        || keys.contains(CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE)
+                        || keys.contains(CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES)) {
+                    applyConfiguration();
+                }
+            }
+        });
     }
 
     public int getMinimalSoc() {

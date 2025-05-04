@@ -24,14 +24,7 @@ public class IntervalScheduler {
         this.onIntervalEnd = onIntervalEnd;
     }
 
-    private static class TimeRange {
-        public final LocalTime from;
-        public final LocalTime to;
-
-        TimeRange(LocalTime from, LocalTime to) {
-            this.from = from;
-            this.to = to;
-        }
+    private record TimeRange(LocalTime from, LocalTime to) {
     }
 
     public void setIntervals(String intervals) {
@@ -46,7 +39,7 @@ public class IntervalScheduler {
     }
 
     /**
-     * Runs onIntervalStart() if the current time is in one of defined intervals, onIntervalEnd() otherwise
+     * Runs onIntervalStart() if the current time is in one of the defined intervals, onIntervalEnd() otherwise
      */
     public void applyCallback() {
         boolean inInterval = isInInterval();

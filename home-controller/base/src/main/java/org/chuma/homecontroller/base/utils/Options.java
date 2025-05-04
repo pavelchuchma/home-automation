@@ -1,4 +1,4 @@
-package org.chuma.homecontroller.app.configurator;
+package org.chuma.homecontroller.base.utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -92,7 +92,7 @@ public class Options {
     }
 
     /**
-     * Returns comment for given key or null if none defined.
+     * Returns comment for a given key or null if none defined.
      */
     public String getComment(String key) {
         return (String)comments.get(key);

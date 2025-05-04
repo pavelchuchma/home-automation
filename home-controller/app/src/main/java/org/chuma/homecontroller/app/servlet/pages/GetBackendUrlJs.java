@@ -5,8 +5,8 @@ import java.io.IOException;
 
 import org.eclipse.jetty.server.Request;
 
-import org.chuma.homecontroller.app.configurator.Options;
-import org.chuma.homecontroller.app.configurator.OptionsSingleton;
+import org.chuma.homecontroller.base.utils.Options;
+import org.chuma.homecontroller.base.utils.OptionsSingleton;
 import org.chuma.homecontroller.app.servlet.Handler;
 
 public class GetBackendUrlJs implements Handler {
