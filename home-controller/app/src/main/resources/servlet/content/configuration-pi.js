@@ -213,5 +213,6 @@ function getAdditionalToolbars() {
         new EPriceItem(),
         new RecuperationItem(),
         new BoilerItem(),
+        new RobonectItem(),
     ]
 }

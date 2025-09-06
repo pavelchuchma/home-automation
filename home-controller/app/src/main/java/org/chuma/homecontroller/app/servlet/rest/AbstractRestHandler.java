@@ -70,6 +70,14 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
         return Integer.parseInt(val);
     }
 
+    static long getLongParam(Map<String, String[]> requestParams, String name, long defaultValue) {
+        String val = getStringParam(requestParams, name);
+        if (val == null) {
+            return defaultValue;
+        }
+        return Long.parseLong(val);
+    }
+
     /**
      * Adds single item with unique ID to the internal map.
      */

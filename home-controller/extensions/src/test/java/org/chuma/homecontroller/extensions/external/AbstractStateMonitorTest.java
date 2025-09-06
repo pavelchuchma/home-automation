@@ -11,7 +11,7 @@ public class AbstractStateMonitorTest extends TestCase {
     /**
      * Private field getter for tests
      */
-    public static <S> AbstractStateMonitor.State<S> getRawState(AbstractStateMonitor<S> m) {
+    static <S> AbstractStateMonitor.State<S> getRawState(AbstractStateMonitor<S> m) {
         return m.state;
     }
 
@@ -122,6 +122,7 @@ public class AbstractStateMonitorTest extends TestCase {
 
     private static class TestState {
         int refreshCount = 0;
+        boolean firstCallAfterSleep = false;
         void incrementRefreshCount() {
             refreshCount++;
         }
@@ -135,8 +136,9 @@ public class AbstractStateMonitorTest extends TestCase {
         }
 
         @Override
-        protected TestState getStateImpl() {
+        protected TestState getStateImpl(boolean firstCallAfterSleep) {
             state.incrementRefreshCount();
+            state.firstCallAfterSleep = firstCallAfterSleep;
             return state;
         }
     };
@@ -148,14 +150,19 @@ public class AbstractStateMonitorTest extends TestCase {
         Assert.assertNull(monitor.getState());
         sleep(50);
         assertEquals(1, monitor.state.refreshCount);
+        assertTrue(monitor.state.firstCallAfterSleep);
         sleep(200);
         assertEquals(2, monitor.state.refreshCount);
         assertEquals(2, monitor.state.refreshCount);
+        assertFalse(monitor.state.firstCallAfterSleep);
         Assert.assertNotNull(monitor.getState());
         assertEquals(2, monitor.state.refreshCount);
+        assertFalse(monitor.state.firstCallAfterSleep);
         Assert.assertNotNull(monitor.getStateSync(false));
         assertEquals(2, monitor.state.refreshCount);
+        assertFalse(monitor.state.firstCallAfterSleep);
         Assert.assertNotNull(monitor.getStateSync(true));
         assertEquals(3, monitor.state.refreshCount);
+        assertFalse(monitor.state.firstCallAfterSleep);
     }
 }

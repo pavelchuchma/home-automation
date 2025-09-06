@@ -10,7 +10,7 @@ public class JsonWriter implements AutoCloseable {
     private final char[] endingChars = new char[MAX_DEPTH];
     private final boolean indent;
     private int stackPosition = -1;
-    private final DecimalFormat doubleFormat = new DecimalFormat("###.###");
+    private final DecimalFormat doubleFormat = new DecimalFormat("###.#######");
 
     public JsonWriter(boolean indent) {
         this.indent = indent;

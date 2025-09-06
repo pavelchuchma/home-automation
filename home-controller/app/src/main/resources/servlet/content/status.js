@@ -27,8 +27,17 @@ class Status {
     }
 
     _refreshImpl() {
+        let params = []
+        this.componentMap.values().forEach(item => {
+            const itemParams = item.getRefreshParams();
+            if (itemParams) {
+                itemParams.forEach(param => params.push(param[0] + '=' + encodeURIComponent(param[1])));
+            }
+        });
+
+        const queryString = params.length > 0 ? '?' + params.join('&') : '';
         const request = new XMLHttpRequest();
-        request.open('GET', this.baseUrl + this.statusRefreshPath, true);
+        request.open('GET', this.baseUrl + this.statusRefreshPath + queryString, true);
         request.onreadystatechange = (function () {
             if (request.readyState === 4 && request.status === 200) {
                 try {

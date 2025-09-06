@@ -14,6 +14,12 @@ class AbstractItem {
 
     doAction(action) {
     }
+
+    /**
+     * @returns {[string,string | number | boolean][]} name/value pairs for next GET refresh call
+     */
+    getRefreshParams() {
+    }
 }
 
 class BaseItem extends AbstractItem {

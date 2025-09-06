@@ -59,6 +59,10 @@
         <appender-ref ref="applicationLog"/>
     </logger>
 
+    <logger name="org.chuma.homecontroller.extensions.external.robonect" level="TRACE" additivity="false">
+        <appender-ref ref="applicationLog"/>
+    </logger>
+
     <logger name="controller" level="DEBUG" additivity="false">
         <appender-ref ref="applicationLog"/>
     </logger>

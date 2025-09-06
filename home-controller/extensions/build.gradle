@@ -26,6 +26,8 @@ dependencies {
     implementation 'it.sauronsoftware.cron4j:cron4j'
     implementation 'com.ghgande:j2mod:3.2.0'
     implementation 'net.e175.klaus:solarpositioning:2.0.3'
+    implementation 'com.google.code.gson:gson:2.13.1'
+    implementation 'org.eclipse.jetty:jetty-client'
 
     testImplementation 'org.apache.poi:poi-ooxml:5.4.0'
 }

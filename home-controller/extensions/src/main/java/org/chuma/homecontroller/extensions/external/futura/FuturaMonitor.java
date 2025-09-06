@@ -26,7 +26,7 @@ public class FuturaMonitor extends AbstractStateMonitor<State> {
     }
 
     @Override
-    protected State getStateImpl() {
+    protected State getStateImpl(boolean firstCallAfterSleep) {
         try {
             long startTime = 0;
             if (log.isTraceEnabled()) {

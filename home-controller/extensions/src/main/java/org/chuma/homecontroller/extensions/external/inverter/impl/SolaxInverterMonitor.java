@@ -25,7 +25,7 @@ public class SolaxInverterMonitor extends AbstractStateMonitor<InverterState> im
     }
 
     @Override
-    protected InverterState getStateImpl() {
+    protected InverterState getStateImpl(boolean firstCallAfterSleep) {
         try {
             long startTime = 0;
             if (log.isTraceEnabled()) {

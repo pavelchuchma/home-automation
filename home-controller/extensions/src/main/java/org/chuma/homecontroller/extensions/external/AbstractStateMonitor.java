@@ -77,7 +77,7 @@ public abstract class AbstractStateMonitor<S> {
             }
         }
 
-        state = new State<>(getStateImpl());
+        state = new State<>(getStateImpl(state == null));
     }
 
     private long getSleepTime(long now) {
@@ -88,7 +88,7 @@ public abstract class AbstractStateMonitor<S> {
         }
     }
 
-    protected abstract S getStateImpl();
+    protected abstract S getStateImpl(boolean firstCallAfterSleep);
 
     public synchronized void stop() {
         log.trace("stopping {}", name);
@@ -133,7 +133,7 @@ public abstract class AbstractStateMonitor<S> {
             log.trace("getting state sync - done, returning state {} ms old", System.currentTimeMillis() - s.timestamp);
             return s.value;
         }
-        S stateImpl = getStateImpl();
+        S stateImpl = getStateImpl(s == null);
         if (running) {
             state = new State<>(stateImpl);
             synchronized (refreshLoopLock) {

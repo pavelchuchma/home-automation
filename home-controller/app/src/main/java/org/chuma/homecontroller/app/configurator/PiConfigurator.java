@@ -36,6 +36,7 @@ import org.chuma.homecontroller.app.servlet.rest.NodeHandler;
 import org.chuma.homecontroller.app.servlet.rest.OnOffHandler;
 import org.chuma.homecontroller.app.servlet.rest.PirHandler;
 import org.chuma.homecontroller.app.servlet.rest.PwmLightsHandler;
+import org.chuma.homecontroller.app.servlet.rest.RobonectHandler;
 import org.chuma.homecontroller.app.servlet.rest.ServletActionHandler;
 import org.chuma.homecontroller.app.servlet.rest.StatusHandler;
 import org.chuma.homecontroller.app.servlet.rest.WaterPumpHandler;
@@ -90,6 +91,9 @@ import org.chuma.homecontroller.extensions.external.inverter.InverterManager;
 import org.chuma.homecontroller.extensions.external.inverter.InverterMonitor;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterModbusClient;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterMonitor;
+import org.chuma.homecontroller.extensions.external.robonect.RobonectMonitor;
+import org.chuma.homecontroller.extensions.external.robonect.client.RobonectClient;
+import org.chuma.homecontroller.extensions.external.robonect.client.RobonectEndpoint;
 import org.chuma.hvaccontroller.device.HvacDevice;
 
 @SuppressWarnings({"unused", "DuplicatedCode", "SpellCheckingInspection"})
@@ -763,6 +767,13 @@ public class PiConfigurator extends AbstractConfigurator {
         boilerMonitor.start();
         configureBoilerManager(boilerMonitor.getController());
 
+        RobonectEndpoint robonectEndpoint = new RobonectEndpoint(OptionsSingleton.get("robonect.host"),
+                OptionsSingleton.get("robonect.username"), OptionsSingleton.get("robonect.password"));
+        RobonectClient robonectClient = new RobonectClient(robonectEndpoint);
+        RobonectMonitor robonectMonitor = new RobonectMonitor(
+                robonectClient, 2_500, 3600_000);
+        robonectMonitor.start();
+
         ElectricitySpotPriceMonitor priceMonitor = new ElectricitySpotPriceMonitor(
                 OptionsSingleton.getDouble("electricity.price.distribution"),
                 OptionsSingleton.getDouble("electricity.price.vat")
@@ -810,7 +821,8 @@ public class PiConfigurator extends AbstractConfigurator {
                 new InverterHandler(Collections.singleton(inverterMonitor)),
                 new FuturaHandler(Collections.singleton(futuraMonitor)),
                 new BoilerHandler(Collections.singleton(boilerMonitor)),
-                new ElectricitySpotPriceHandler(Collections.singleton(priceMonitor)));
+                new ElectricitySpotPriceHandler(Collections.singleton(priceMonitor)),
+                new RobonectHandler(Collections.singleton(robonectMonitor)));
 //        configureSimulator(pages, wsHandlers, false);
         // rest/all handler
         List<Handler> handlers = new ArrayList<>();
