@@ -1,7 +1,6 @@
 package org.chuma.homecontroller.app.servlet.rest;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.Map;
 
 import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
@@ -9,6 +8,7 @@ import org.chuma.homecontroller.extensions.external.robonect.RobonectMonitor;
 import org.chuma.homecontroller.extensions.external.robonect.State;
 import org.chuma.homecontroller.extensions.external.robonect.client.model.Gps;
 import org.chuma.homecontroller.extensions.external.robonect.client.model.Status;
+import org.chuma.homecontroller.extensions.external.robonect.client.model.WeatherInfo;
 
 public class RobonectHandler extends AbstractRestHandler<RobonectMonitor> {
     public RobonectHandler(Iterable<RobonectMonitor> monitors) {
@@ -33,16 +33,27 @@ public class RobonectHandler extends AbstractRestHandler<RobonectMonitor> {
         jw.addAttribute("home", status.isHome());
         jw.addAttribute("now", monitor.getTimestamp());
         jw.addAttribute("timer", state.timer().getStatus().toString());
-        jw.addAttribute("weatherBreak", (state.weather() != null && state.weather().isBreak()));
+        boolean isWeatherBreak = state.weather() != null && state.weather().isBreak();
+        jw.addAttribute("weatherBreak", isWeatherBreak);
+        if (isWeatherBreak) {
+            WeatherInfo.Weather.WeatherCondition condition = state.weather().condition();
+            if (condition != null) {
+                jw.addAttribute("weatherBreakReason",
+                        (condition.toorainy()) ? "toorainy"
+                                : (condition.toocold()) ? "toocold"
+                                : (condition.toowarm()) ? "toowarm"
+                                : (condition.toodry()) ? "toodry"
+                                : (condition.toowet()) ? "toowet"
+                                : "unknown");
+            }
+        }
 
         Gps gps = state.gps();
         if (gps != null) {
             jw.addAttribute("satellites", gps.getSatellites());
-            jw.addAttribute("latitude", gps.getLatitude());
-            jw.addAttribute("longitude", gps.getLongitude());
         }
         final Map<String, String[]> parameterMap = request.getParameterMap();
-        long fromTimestamp = getLongParam(parameterMap, "robonectFromTime", -5*60);
+        long fromTimestamp = getLongParam(parameterMap, "robonectFromTime", -5 * 60);
 
         RobonectMonitor.GpsHistoryEntry[] gpsHistory = monitor.getGpsHistory(fromTimestamp);
         if (gpsHistory != null && gpsHistory.length > 0) {

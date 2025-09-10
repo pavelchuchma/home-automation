@@ -7,8 +7,12 @@ class AbstractItem {
 
     update(item) {
         this.updatedWithValidData = Object.keys(item).length > 1;
-        for (let prop in item) {
-            this[prop] = item[prop];
+        if (this.updateToDataProperty()) {
+            this.data = item;
+        } else {
+            for (let prop in item) {
+                this[prop] = item[prop];
+            }
         }
     }
 
@@ -19,6 +23,10 @@ class AbstractItem {
      * @returns {[string,string | number | boolean][]} name/value pairs for next GET refresh call
      */
     getRefreshParams() {
+    }
+
+    updateToDataProperty() {
+        return false;
     }
 }
 

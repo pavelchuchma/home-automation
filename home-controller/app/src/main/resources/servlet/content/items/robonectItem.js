@@ -2,19 +2,20 @@
 
 
 class RobonectItem extends AdditionalSvgToolItem {
-    mode;
-    status;
-    battery;
-    stopped;
-    home;
-    latitude;
-    longitude;
-    latestEntryTime;
-    now;
-    gpsHistory;
-    localGpsHistory = [];
-    weatherBreak;
+    data = {
+        mode: undefined,
+        status: undefined,
+        battery: undefined,
+        stopped: undefined,
+        home: undefined,
+        now: undefined,
+        gpsHistory: undefined,
+        weatherBreak: undefined,
+        weatherBreakReason: undefined
+    };
 
+    latestEntryTime;
+    localGpsHistory = [];
     border = 0;
     mapMoveLeft = 12;
     mapRotate = -5.7;
@@ -25,17 +26,22 @@ class RobonectItem extends AdditionalSvgToolItem {
         super('robonect', 80)
     }
 
+    updateToDataProperty() {
+        return true;
+    }
+
     // /**
     //  * for testing only
     //  * @param item
     //  */
     // update(item) {
     //     // Load gpsHistory from a local JSON file for testing
+    //     const firstHistoryLength = 110;
     //     let fakeItem = this.loadFakeData();
     //     let refreshFromTime = this.getRefreshFromTime();
     //
     //     if (!this._testTime) {
-    //         this._testTime = fakeItem.gpsHistory.at(100).time;
+    //         this._testTime = fakeItem.gpsHistory.at(firstHistoryLength).time;
     //     } else {
     //         this._testTime += 1;
     //     }
@@ -51,11 +57,15 @@ class RobonectItem extends AdditionalSvgToolItem {
     //     // take only entries after the "current" testTime
     //     if (refreshFromTime > 0) {
     //         fakeItem.gpsHistory = this.sliceGpsHistoryFrom(fakeItem.gpsHistory, refreshFromTime);
+    //         if (fakeItem.gpsHistory.length === 0) {
+    //             fakeItem.gpsHistory = undefined;
+    //         }
     //     }
     //
-    //     fakeItem.now = (fakeItem.gpsHistory && fakeItem.gpsHistory.length > 0) ? fakeItem.gpsHistory.at(-1).time : this.now;
+    //     fakeItem.now = this._testTime;
     //     super.update(fakeItem);
     // }
+
 
     getRefreshParams() {
         return [['robonectFromTime', this.getRefreshFromTime()]];
@@ -110,6 +120,7 @@ class RobonectItem extends AdditionalSvgToolItem {
         this.positionMoving = this.svg.polygon().attr({
             fill: 'blue',
             visibility: 'hidden',
+            points: this.calculateMovingIconPoints(5),
         });
 
         this.positionStopped = this.svg.circle(3).attr({
@@ -133,6 +144,12 @@ class RobonectItem extends AdditionalSvgToolItem {
         this.goatStateIcons.push(this.goatIconSleepingAtHome = this.svg.image('img/goat-sleepingAtHome.svg'));
         this.goatStateIcons.push(this.goatIconSleepingAtHomeWithAlarm = this.svg.image('img/goat-sleepingAtHomeWithAlarm.svg'));
         this.goatStateIcons.push(this.goatIconUnknown = this.svg.image('img/goat-unknown.svg'));
+        this.goatStateIcons.push(this.goatIconTooCold = this.svg.image('img/goat-tooCold.svg'));
+        this.goatStateIcons.push(this.goatIconTooRainy = this.svg.image('img/goat-tooRainy.svg'));
+        this.goatStateIcons.push(this.goatIconTooDry = this.svg.image('img/goat-tooDry.svg'));
+        this.goatStateIcons.push(this.goatIconTooHot = this.svg.image('img/goat-tooHot.svg'));
+        this.goatStateIcons.push(this.goatIconTooWet = this.svg.image('img/goat-tooWet.svg'));
+
 
         this.goatStateIcons.forEach(icon => {
             icon.size(goatIconSize, goatIconSize).move(this.canvasWidth - goatIconSize - 1, 5);
@@ -167,7 +184,7 @@ class RobonectItem extends AdditionalSvgToolItem {
     }
 
     dropOldHistory() {
-        this.localGpsHistory = this.sliceGpsHistoryFrom(this.localGpsHistory, this.now - this.maxPathAge);
+        this.localGpsHistory = this.sliceGpsHistoryFrom(this.localGpsHistory, this.data.now - this.maxPathAge);
     }
 
     sliceGpsHistoryFrom(gpsHistory, fromTime) {
@@ -181,23 +198,19 @@ class RobonectItem extends AdditionalSvgToolItem {
 
     drawImpl() {
         this.dropOldHistory();
-        if (this.gpsHistory) {
-            for (let h of this.gpsHistory) {
+        // copy the new path to localGpsHistory
+        if (this.data.gpsHistory) {
+            for (let h of this.data.gpsHistory) {
                 const p = this.toStringCoordinates(this.project(h));
                 h.transformed = `${p.x},${p.y}`;
                 this.localGpsHistory.push(h);
             }
         }
 
-        const lastGpsHistoryEntry = (this.localGpsHistory && this.localGpsHistory.length > 0) ? this.localGpsHistory.at(-1) : undefined;
-        this.latestEntryTime = (lastGpsHistoryEntry) ? lastGpsHistoryEntry.time : undefined;
-        this.latitude = (this.home) ? 49.0778717 : (lastGpsHistoryEntry) ? lastGpsHistoryEntry.lat : undefined;
-        this.longitude = (this.home) ? 18.0225450 : (lastGpsHistoryEntry) ? lastGpsHistoryEntry.lon : undefined;
-
         // draw path - split points into 2-minute buckets mapped to activePaths
         const bucketArrays = Array.from({length: this.activePaths.length}, () => []);
         this.localGpsHistory.forEach(gp => {
-            const ageSec = this.now - gp.time; // seconds
+            const ageSec = this.data.now - gp.time; // seconds
             const bucketIndex = Math.floor(ageSec / (this.maxPathAge / this.activePaths.length));
             // Map newest (bucketIndex 0) to the last active path; older to earlier paths
             if (bucketIndex < this.activePaths.length) {
@@ -218,37 +231,37 @@ class RobonectItem extends AdditionalSvgToolItem {
             path.attr({points: pts});
         });
 
-        // draw position
-        if (this.latitude !== undefined && this.longitude !== undefined) {
-            if (this.stopped || !this.localGpsHistory || this.localGpsHistory.length < 2) {
-                const {x, y} = this.project({lat: this.latitude, lon: this.longitude});
-                // Display fallback circle
+        const lastGpsHistoryEntry = (this.localGpsHistory && this.localGpsHistory.length > 1) ? this.localGpsHistory.at(-1) : undefined;
+        this.latestEntryTime = (lastGpsHistoryEntry) ? lastGpsHistoryEntry.time : undefined;
+        const latitude = (this.data.home) ? 49.0778717 : (lastGpsHistoryEntry) ? lastGpsHistoryEntry.lat : undefined;
+        const longitude = (this.data.home) ? 18.0225450 : (lastGpsHistoryEntry) ? lastGpsHistoryEntry.lon : undefined;
+
+        let showMovingIcon = false;
+        let showStoppedIcon = false;
+        if (latitude && longitude) {
+            const {x, y} = this.project({lat: latitude, lon: longitude});
+            if (this.data.stopped || this.data.home || !this.localGpsHistory || this.localGpsHistory.length < 2) {
                 this.positionStopped.attr({
                     cx: x,
                     cy: y,
-                    visibility: 'visible',
                 });
-                this.positionMoving.attr({visibility: 'hidden'});
+                showStoppedIcon = true;
             } else {
-                const lastPoint = this.project(this.localGpsHistory.at(-1));
                 const secondLastPoint = this.project(this.localGpsHistory.at(-2));
+                const angle = Math.atan2(y - secondLastPoint.y, x - secondLastPoint.x);
 
-                const dx = lastPoint.x - secondLastPoint.x;
-                const dy = lastPoint.y - secondLastPoint.y;
-                const angle = Math.atan2(dy, dx);
-
-                const size = 5; // Size of the triangle
-
-                this.positionMoving.attr({
-                    points: this.calculateMovingIconPoints(lastPoint, angle, size),
-                    visibility: 'visible',
+                this.positionMoving.transform({
+                    rotate: angle * 180 / Math.PI - 90,
+                    translateX: x,
+                    translateY: y,
+                    origin: [0, 0],
                 });
-                this.positionStopped.attr({visibility: 'hidden'});
+                showMovingIcon = true;
             }
-        } else {
-            this.positionMoving.attr({visibility: 'hidden'});
-            this.positionStopped.attr({visibility: 'hidden'});
         }
+
+        this.setVisibility(this.positionMoving, showMovingIcon);
+        this.setVisibility(this.positionStopped, showStoppedIcon);
         this.currentStateIcon = this.chooseCurrentStateIcon();
         this.showCurrentStateIcon();
     }
@@ -262,23 +275,38 @@ class RobonectItem extends AdditionalSvgToolItem {
 
     showCurrentStateIcon() {
         this.goatStateIcons.forEach(icon => {
-            icon.attr({visibility: (icon === this.currentStateIcon) ? 'visible' : 'hidden'});
+            this.setVisibility(icon, icon === this.currentStateIcon);
         })
     }
 
     chooseCurrentStateIcon() {
-        if (this.home) {
-            switch (this.status) {
+        if (this.data.home) {
+            switch (this.data.status) {
                 case 'CHARGING':
                     return this.goatIconCharging;
                 case 'SLEEPING':
-                    return (this.weatherBreak) ? this.goatIconBadWeather :
-                        ("STANDBY" === this.timer) ? this.goatIconSleepingAtHomeWithAlarm : this.goatIconSleepingAtHome;
+                    if (this.data.weatherBreak) {
+                        switch (this.data.weatherBreakReason) {
+                            case 'toorainy':
+                                return this.goatIconTooRainy;
+                            case 'toocold':
+                                return this.goatIconTooCold;
+                            case 'toohot':
+                                return this.goatIconTooHot;
+                            case 'toowet':
+                                return this.goatIconTooWet;
+                            case 'toodry':
+                                return this.goatIconTooDry;
+                            default:
+                                return this.goatIconBadWeather
+                        }
+                    }
+                    return ("STANDBY" === this.timer) ? this.goatIconSleepingAtHomeWithAlarm : this.goatIconSleepingAtHome;
                 default:
                     return this.goatIconAtHome;
             }
         } else {
-            switch (this.status) {
+            switch (this.data.status) {
                 case 'MOWING':
                     return this.goatIconCutting;
                 case 'SEARCH_CHARGING_STATION':
@@ -295,16 +323,9 @@ class RobonectItem extends AdditionalSvgToolItem {
         }
     }
 
-    calculateMovingIconPoints({x, y}, angle, size) {
-        const halfSize = size / 3;
-        const x1 = x + size * Math.cos(angle);
-        const y1 = y + size * Math.sin(angle);
-        const x2 = x - halfSize * Math.cos(angle - Math.PI / 2);
-        const y2 = y - halfSize * Math.sin(angle - Math.PI / 2);
-        const x3 = x - halfSize * Math.cos(angle + Math.PI / 2);
-        const y3 = y - halfSize * Math.sin(angle + Math.PI / 2);
-
-        return `${x1.toFixed(2)},${y1.toFixed(2)} ${x2.toFixed(2)},${y2.toFixed(2)} ${x3.toFixed(2)},${y3.toFixed(2)}`;
+    calculateMovingIconPoints(size) {
+        const thirdSize = (size / 3).toFixed(2);
+        return `-${thirdSize},-${thirdSize} ${thirdSize},-${thirdSize} 0,+${(2 * size / 3).toFixed(2)}`;
     }
 
     loadFakeData() {

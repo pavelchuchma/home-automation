@@ -53,12 +53,13 @@ public class RobonectMonitor extends AbstractStateMonitor<State> {
                 log.error("Fail to get Robonect info");
                 return null;
             }
-            Gps gps = null;
             Status mowerStatus = mowerInfo.getStatus();
             MowerStatus status = mowerStatus.getStatus();
-            WeatherInfo weatherInfo = client.getWeatherInfo();
-            Thread.sleep(1000);
-            WeatherInfo.Weather weather = (weatherInfo.service().enable()) ? weatherInfo.weather() : null;
+            // get weather info only if the mower is at home
+            WeatherInfo weatherInfo = (mowerStatus.isHome()) ? client.getWeatherInfo() : null;
+            WeatherInfo.Weather weather = (weatherInfo != null && weatherInfo.service().enable()) ? weatherInfo.weather() : null;
+
+            Gps gps = null;
             if (!mowerStatus.isHome() && status != MowerStatus.OFF) {
                 GpsInfo gpsInfo = client.getGpsInfo();
                 if (gpsInfo != null) {
