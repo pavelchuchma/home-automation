@@ -1,6 +1,8 @@
 'use strict';
 
 class Status {
+    refreshInProgress = false;
+
     constructor(statusRefreshPath, refreshIntervalMs, onRefreshFunction, components, baseUrl, factoryMethod) {
         this.statusRefreshPath = statusRefreshPath;
         this.refreshIntervalMs = refreshIntervalMs;
@@ -27,6 +29,11 @@ class Status {
     }
 
     _refreshImpl() {
+        if (this.refreshInProgress) {
+            console.error('Refresh inProgress, skipping the refresh...');
+            return;
+        }
+        this.refreshInProgress = true;
         let params = []
         this.componentMap.values().forEach(item => {
             const itemParams = item.getRefreshParams();
@@ -39,6 +46,7 @@ class Status {
         const request = new XMLHttpRequest();
         request.open('GET', this.baseUrl + this.statusRefreshPath + queryString, true);
         request.onreadystatechange = (function () {
+            this.refreshInProgress = false;
             if (request.readyState === 4 && request.status === 200) {
                 try {
                     const content = JSON.parse(request.responseText);
