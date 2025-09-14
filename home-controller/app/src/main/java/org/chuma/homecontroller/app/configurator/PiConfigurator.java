@@ -47,6 +47,7 @@ import org.chuma.homecontroller.base.utils.OptionsSingleton;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.action.ContinuousValueSwitchOnActionWithTimer;
+import org.chuma.homecontroller.controller.action.GenericCodeAction;
 import org.chuma.homecontroller.controller.action.IndicatorAction;
 import org.chuma.homecontroller.controller.action.InvertAction;
 import org.chuma.homecontroller.controller.action.InvertActionWithTimer;
@@ -86,6 +87,7 @@ import org.chuma.homecontroller.extensions.external.boiler.BoilerController;
 import org.chuma.homecontroller.extensions.external.boiler.BoilerManager;
 import org.chuma.homecontroller.extensions.external.boiler.BoilerMonitor;
 import org.chuma.homecontroller.extensions.external.futura.FuturaMonitor;
+import org.chuma.homecontroller.extensions.external.garage.GarageManager;
 import org.chuma.homecontroller.extensions.external.inverter.ElectricitySpotPriceMonitor;
 import org.chuma.homecontroller.extensions.external.inverter.InverterManager;
 import org.chuma.homecontroller.extensions.external.inverter.InverterMonitor;
@@ -502,10 +504,10 @@ public class PiConfigurator extends AbstractConfigurator {
         // zadveri
         configurePwmLights(zadveriSwA1, WallSwitch.Side.LEFT, 0.8, zadveriPwmActor);
 
-        SwitchOnActionWithTimer ovladacGarazAction = new SwitchOnActionWithTimer(ovladacGaraz, 1);
-//        InvertActionWithTimer stomekAction = new InvertActionWithTimer(zasStromek, 12600);
-        nodeListener.addActionBinding(new ActionBinding(zadveriSwA1.getRightUpperButton(), ovladacGarazAction, null));
-//        lst.addActionBinding(new ActionBinding(zadveriSwA1.getRightBottomButton(), stomekAction, null));
+        SwitchOnActionWithTimer ovladacGarazAction = new SwitchOnActionWithTimer(ovladacGaraz, 0,500);
+        GarageManager garageManager = new GarageManager(ovladacGaraz);
+        nodeListener.addActionBinding(new ActionBinding(zadveriSwA1.getRightUpperButton(), new GenericCodeAction(t -> garageManager.open()), null));
+        nodeListener.addActionBinding(new ActionBinding(zadveriSwA1.getRightBottomButton(), new GenericCodeAction(t -> garageManager.close()), null));
 
         configurePwmLights(zadveriSwA2, WallSwitch.Side.LEFT, 0.5, garaz1PwmActor, garaz2PwmActor);
         configurePwmLights(zadveriSwA2, WallSwitch.Side.RIGHT, 0.8, garaz3PwmActor);
@@ -526,16 +528,20 @@ public class PiConfigurator extends AbstractConfigurator {
         // garaz
         configurePwmLights(garazASw1, WallSwitch.Side.LEFT, 0.5, garaz1PwmActor, garaz2PwmActor);
         configurePwmLights(garazASw1, WallSwitch.Side.RIGHT, 0.8, garaz3PwmActor);
-        nodeListener.addActionBinding(new ActionBinding(garazASw2.getLeftUpperButton(), ovladacGarazAction, null));
-        nodeListener.addActionBinding(new ActionBinding(garazASw2.getLeftBottomButton(), ovladacGarazAction, null));
+        nodeListener.addActionBinding(new ActionBinding(garazASw2.getLeftUpperButton(),
+                new GenericCodeAction(t -> garageManager.open()), null));
+        nodeListener.addActionBinding(new ActionBinding(garazASw2.getLeftBottomButton(),
+                new GenericCodeAction(t -> garageManager.close()), null));
         nodeListener.addActionBinding(new ActionBinding(garazASw2.getRightUpperButton(), new SwitchOnActionWithTimer(pudaPwmActor, 1200), null));
         nodeListener.addActionBinding(new ActionBinding(garazASw2.getRightBottomButton(), new SwitchOffAction(pudaPwmActor), null));
 
         configurePwmLights(garazBSwL, WallSwitch.Side.LEFT, 0.8, garaz3PwmActor);
         configurePwmLights(garazBSwL, WallSwitch.Side.RIGHT, 0.5, garaz2PwmActor);
         configurePwmLights(garazBSwR, WallSwitch.Side.LEFT, 0.5, garaz1PwmActor);
-        nodeListener.addActionBinding(new ActionBinding(garazBSwR.getRightUpperButton(), ovladacGarazAction, null));
-        nodeListener.addActionBinding(new ActionBinding(garazBSwR.getRightBottomButton(), ovladacGarazAction, null));
+        nodeListener.addActionBinding(new ActionBinding(garazBSwR.getRightUpperButton(),
+                new GenericCodeAction(t -> garageManager.open()), null));
+        nodeListener.addActionBinding(new ActionBinding(garazBSwR.getRightBottomButton(),
+                new GenericCodeAction(t -> garageManager.close()), null));
 
         // Krystof + Pata
         configureLouvers(krystofSwA1, WallSwitch.Side.LEFT, zaluziePata);
@@ -738,8 +744,19 @@ public class PiConfigurator extends AbstractConfigurator {
         setupPir(pirA3Prizemi.getIn6AndActivate(), "pirZadD", "Zadveri dole", new ContinuousValueSwitchOnActionWithTimer(zadveriDolePwmActor, 600, 1.0, new SunCondition(-15, -30)), new SwitchOffActionWithTimer(zadveriDolePwmActor, 15));
 
         GenericInputDevice cidlaGaraz = new GenericInputDevice("cidlaGaraz", garazVzadu, 3);
-        setupMagneticSensor(cidlaGaraz.getIn1AndActivate(), "mgntGH", "Garaz hore", (Action)null, null);
-        setupMagneticSensor(cidlaGaraz.getIn2AndActivate(), "mgntGD", "Garaz dole", garazIndicator.getOnAction(), garazIndicator.getOffAction());
+        setupMagneticSensor(cidlaGaraz.getIn1AndActivate(), "mgntGH", "Garaz hore",
+                new GenericCodeAction(t -> garageManager.onOpenContactPressed()),
+                new GenericCodeAction(t -> garageManager.onOpenContactReleased()));
+        setupMagneticSensor(cidlaGaraz.getIn2AndActivate(), "mgntGD", "Garaz dole",
+                new Action[] {
+                        garazIndicator.getOnAction(),
+                        new GenericCodeAction(t -> garageManager.onClosedContactPressed()),
+                },
+                new Action[]{
+                        garazIndicator.getOffAction(),
+                        new GenericCodeAction(t -> garageManager.onClosedContactReleased()),
+                }
+        );
 
         WaterPumpMonitor waterPumpMonitor = new WaterPumpMonitor();
         GenericInputDevice cidlaRozvadec = new GenericInputDevice("cidlaRozvadec", rozvadecDole, 3);
@@ -880,5 +897,4 @@ public class PiConfigurator extends AbstractConfigurator {
         }
         return hvacDevice;
     }
-
 }

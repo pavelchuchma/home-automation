@@ -17,7 +17,7 @@ public class ContinuousValueSwitchOnActionWithTimer extends AbstractSwitchOnActi
     }
 
     public ContinuousValueSwitchOnActionWithTimer(IContinuousValueActor actor, int timeoutSec, double switchOnValue, Priority priority, ICondition condition) {
-        super(actor, timeoutSec, true, priority, condition);
+        super(actor, timeoutSec * 1000, true, priority, condition);
         this.switchOnValue = switchOnValue;
         Validate.inclusiveBetween(0, 1, switchOnValue);
     }

@@ -4,7 +4,7 @@ import org.chuma.homecontroller.controller.actor.IOnOffActor;
 
 public class InvertActionWithTimer extends AbstractSwitchOnActionWithTimer<IOnOffActor> {
     public InvertActionWithTimer(IOnOffActor actor, int timeoutSec) {
-        super(actor, timeoutSec, true, Priority.LOW, null);
+        super(actor, timeoutSec * 1000, true, Priority.LOW, null);
     }
 
     @Override

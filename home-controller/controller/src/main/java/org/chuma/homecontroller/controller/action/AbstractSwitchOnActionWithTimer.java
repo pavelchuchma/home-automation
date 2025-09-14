@@ -29,16 +29,16 @@ public class AbstractSwitchOnActionWithTimer<A extends IOnOffActor> extends Abst
     boolean canSwitchOn;
 
     /**
-     * @param timeoutSec  switch actor of after this time in seconds
+     * @param timeoutMs  switch actor of after this time in milliseconds
      * @param canSwitchOn is switching on allowed or just switch off after timeout is expected
      * @param priority    of this action
      * @param condition   optional condition to disable this action
      */
-    public AbstractSwitchOnActionWithTimer(A actor, int timeoutSec, boolean canSwitchOn, Priority priority, ICondition condition) {
+    public AbstractSwitchOnActionWithTimer(A actor, int timeoutMs, boolean canSwitchOn, Priority priority, ICondition condition) {
         super(actor);
         this.priority = priority;
         this.condition = condition;
-        this.timeoutMs = timeoutSec * 1000;
+        this.timeoutMs = timeoutMs;
         this.canSwitchOn = canSwitchOn;
     }
 

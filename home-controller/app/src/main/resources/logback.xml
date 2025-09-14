@@ -63,6 +63,10 @@
         <appender-ref ref="applicationLog"/>
     </logger>
 
+    <logger name="org.chuma.homecontroller.extensions.external.garage" level="TRACE" additivity="false">
+        <appender-ref ref="applicationLog"/>
+    </logger>
+
     <logger name="controller" level="DEBUG" additivity="false">
         <appender-ref ref="applicationLog"/>
     </logger>
