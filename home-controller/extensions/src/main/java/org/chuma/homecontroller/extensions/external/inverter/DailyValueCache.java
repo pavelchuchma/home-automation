@@ -45,7 +45,7 @@ abstract class DailyValueCache<D> {
             // remove expired entry
             map.remove(key);
         }
-        // store null to skip next requests before fresh value will be filled from the thread
+        // store null to skip next requests before a fresh value will be filled from the thread
         set(date, null, failureDurationSecs);
         executor.execute(() -> refreshEntry(date));
         return null;

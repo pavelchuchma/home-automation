@@ -149,6 +149,7 @@ class RobonectItem extends AdditionalSvgToolItem {
         this.goatStateIcons.push(this.goatIconTooDry = this.svg.image('img/goat-tooDry.svg'));
         this.goatStateIcons.push(this.goatIconTooHot = this.svg.image('img/goat-tooHot.svg'));
         this.goatStateIcons.push(this.goatIconTooWet = this.svg.image('img/goat-tooWet.svg'));
+        this.goatStateIcons.push(this.goatIconWaitingForGoodWeather = this.svg.image('img/goat-waitingForGoodWeather.svg'));
 
 
         this.goatStateIcons.forEach(icon => {
@@ -298,7 +299,7 @@ class RobonectItem extends AdditionalSvgToolItem {
                             case 'toodry':
                                 return this.goatIconTooDry;
                             default:
-                                return this.goatIconBadWeather
+                                return this.goatIconWaitingForGoodWeather;
                         }
                     }
                     return ("STANDBY" === this.timer) ? this.goatIconSleepingAtHomeWithAlarm : this.goatIconSleepingAtHome;
