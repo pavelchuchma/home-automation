@@ -15,9 +15,12 @@ import org.chuma.homecontroller.extensions.external.inverter.impl.HttpJsonClient
 public class ElectricitySpotPriceMonitor {
     static Logger log = LoggerFactory.getLogger(ElectricitySpotPriceMonitor.class.getName());
 
-    final DailyValueCache<double[]> cache = new DailyValueCache<>(3 * 24 * 60 * 60, 10 * 60) {
+    public record IntervalPrice(long time, double price) {
+    }
+
+    final DailyValueCache<IntervalPrice[]> cache = new DailyValueCache<>(3 * 24 * 60 * 60, 10 * 60) {
         @Override
-        public double[] getEntryImpl(Calendar date) {
+        public IntervalPrice[] getEntryImpl(Calendar date) {
             try {
                 String url = String.format("https://www.ote-cr.cz/cs/kratkodobe-trhy/elektrina/denni-trh/@@chart-data?report_date=%d-%d-%d",
                         date.get(Calendar.YEAR), date.get(Calendar.MONTH) + 1, date.get(Calendar.DAY_OF_MONTH));
@@ -30,11 +33,17 @@ public class ElectricitySpotPriceMonitor {
                     log.debug("  empty response");
                     return null;
                 }
-                JsonArray points = normalizeDayPricesArray((JsonArray)((JsonObject)dataLines.get(1)).get("point"));
-                double[] result = new double[24];
-                for (int i = 0; i < 24; i++) {
-                    BigDecimal d = (BigDecimal)((JsonObject)points.get(i)).get("y");
-                    result[i] = d.doubleValue();
+                JsonArray points = (JsonArray)((JsonObject)dataLines.get(1)).get("point");
+
+                double[] prices = getPriceArray(points);
+                // 15-minute intervals
+                IntervalPrice[] result = new IntervalPrice[prices.length];
+                GregorianCalendar time = new GregorianCalendar(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH), 0, 0);
+                long millis = time.getTimeInMillis();
+
+                for (int i = 0; i < prices.length; i++) {
+                    result[i] = new IntervalPrice(millis, prices[i]);
+                    millis += 15 * 60_000;
                 }
                 log.debug("  OK response");
                 return result;
@@ -44,54 +53,66 @@ public class ElectricitySpotPriceMonitor {
             }
         }
     };
+
+    private static double[] getPriceArray(JsonArray points) {
+        // service returns hour intervals for dates before 2025-10-01
+        boolean quarterFormat = points.size() > 25;
+        double[] result = new double[(quarterFormat) ? points.size() : points.size() * 4];
+        for (int i = 0; i < result.length; i++) {
+            BigDecimal d = (BigDecimal)((JsonObject)points.get((quarterFormat) ? i : i / 4)).get("y");
+            result[i] = d.doubleValue();
+        }
+        return result;
+    }
+
     private final ExchangeRateMonitor exchangeRateMonitor = new ExchangeRateMonitor();
-    private final double distributionPrice;
+    private final double distributionFeeKwInclVat;
+    private final double sellFeeKwInclVat;
     private final double vatRate;
 
-    public ElectricitySpotPriceMonitor(double distributionPrice, double vatRate) {
-        this.distributionPrice = distributionPrice;
+    /**
+     * @param distributionFeeWithoutVat buying fee in CZK per MWh without VAT
+     * @param sellFeeWithoutVat         selling fee in CZK per MWh without VAT
+     * @param vatRate                   VAT rate in %
+     */
+    public ElectricitySpotPriceMonitor(double distributionFeeWithoutVat, double sellFeeWithoutVat, double vatRate) {
+        this.distributionFeeKwInclVat = distributionFeeWithoutVat * (1 + vatRate / 100) / 1000;
+        this.sellFeeKwInclVat = sellFeeWithoutVat * (1 + vatRate / 100) / 1000;
         this.vatRate = vatRate;
     }
 
-    public record Prices(double[] prices, double distributionPrice, int currentEntry) {
+    public record Prices(IntervalPrice[] prices, double distributionFee, double sellFee) {
     }
 
     public synchronized Prices getDayPrices() {
         try {
             Double exchangeRate = exchangeRateMonitor.getCurrentEurCzkExchangeRate();
 
-            double[] todayPrices = getOneDayPricesImpl(0);
-            double[] tomorrowPrices = getOneDayPricesImpl(1);
-            double[] yesterdayPrices = (tomorrowPrices == null) ? getOneDayPricesImpl(-1) : null;
+            IntervalPrice[] todayPrices = getOneDayPricesImpl(0);
+            IntervalPrice[] tomorrowPrices = getOneDayPricesImpl(1);
+            IntervalPrice[] yesterdayPrices = (tomorrowPrices == null) ? getOneDayPricesImpl(-1) : null;
 
             if (exchangeRate == null || todayPrices == null || (yesterdayPrices == null && tomorrowPrices == null)) {
                 // data not available (yet)
                 return null;
             }
 
-            Calendar now = new GregorianCalendar();
-            double[] result;
-            int currentEntry;
-            if (tomorrowPrices != null) {
-                result = ArrayUtils.addAll(todayPrices, tomorrowPrices);
-                currentEntry = now.get(Calendar.HOUR_OF_DAY);
-            } else {
-                result = ArrayUtils.addAll(yesterdayPrices, todayPrices);
-                currentEntry = now.get(Calendar.HOUR_OF_DAY) + 24;
+            IntervalPrice[] input = (tomorrowPrices != null) ? ArrayUtils.addAll(todayPrices, tomorrowPrices) : ArrayUtils.addAll(yesterdayPrices, todayPrices);
+
+            // convert from EUR/MWh to CZK/kWh including distribution fee and VAT
+            IntervalPrice[] result = new IntervalPrice[input.length];
+            for (int i = 0; i < result.length; i++) {
+                result[i] = new IntervalPrice(input[i].time, (input[i].price * exchangeRate) * (1 + vatRate / 100) / 1000 + distributionFeeKwInclVat);
             }
 
-            for (int i = 0; i < 48; i++) {
-                result[i] = (result[i] * exchangeRate + distributionPrice) * (1 + vatRate/100) / 1000;
-            }
-
-            return new Prices(result, distributionPrice * (1 + vatRate/100) / 1000, currentEntry);
+            return new Prices(result, distributionFeeKwInclVat, sellFeeKwInclVat);
         } catch (RuntimeException e) {
             log.error("Failed to get electricity day prices", e);
             return null;
         }
     }
 
-    private double[] getOneDayPricesImpl(int daysFromToday) {
+    private IntervalPrice[] getOneDayPricesImpl(int daysFromToday) {
         Calendar date = new GregorianCalendar();
         if (daysFromToday > 0 && date.get(Calendar.HOUR_OF_DAY) < 12) {
             // tomorrow's prices are published ~14:00, no reason to try it much earlier
@@ -99,19 +120,5 @@ public class ElectricitySpotPriceMonitor {
         }
         date.add(Calendar.DAY_OF_MONTH, daysFromToday);
         return cache.get(date);
-    }
-
-    private static JsonArray normalizeDayPricesArray(JsonArray values) {
-        if (values.size() == 25) {
-            // summer -> winter time -> remove 4th hour
-            values.remove(2);
-        } else if (values.size() == 23) {
-            // winter -> summer -> duplicate 3rd hour
-            values.add(2, values.get(2));
-        }
-        if (values.size() != 24) {
-            throw new IllegalStateException("Unexpected response content");
-        }
-        return values;
     }
 }

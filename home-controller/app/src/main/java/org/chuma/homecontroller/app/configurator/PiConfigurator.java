@@ -792,7 +792,8 @@ public class PiConfigurator extends AbstractConfigurator {
         robonectMonitor.start();
 
         ElectricitySpotPriceMonitor priceMonitor = new ElectricitySpotPriceMonitor(
-                OptionsSingleton.getDouble("electricity.price.distribution"),
+                OptionsSingleton.getDouble("electricity.price.distribution-fee"),
+                OptionsSingleton.getDouble("electricity.price.sell-fee"),
                 OptionsSingleton.getDouble("electricity.price.vat")
         );
 

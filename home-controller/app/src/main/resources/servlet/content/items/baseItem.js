@@ -98,23 +98,23 @@ class AdditionalSvgToolItem extends AdditionalToolItem {
     draw() {
         if (this.hasData()) {
             this.setVisibility(this.textNoData, false);
-            this.showOnData.forEach((i) => {
-                this.setVisibility(i, true);
-            });
+            this.setVisibility(this.showOnData, true);
             this.drawImpl();
         } else {
             this.setVisibility(this.textNoData, true);
-            this.hideOnNoData.forEach(i => {
-                this.setVisibility(i, false);
-            });
+            this.setVisibility(this.hideOnNoData, false);
         }
     }
 
     drawImpl() {
     }
 
-    setVisibility(svgElement, value) {
-        svgElement.attr('visibility', value ? 'visible' : 'hidden');
+    setVisibility(e, value) {
+        if (Array.isArray(e)) {
+            e.forEach(i => this.setVisibility(i, value));
+        } else {
+            e.attr('visibility', value ? 'visible' : 'hidden');
+        }
     }
 
     createHideBox(img) {
