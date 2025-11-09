@@ -1,4 +1,31 @@
-#TODO
+# Setup on Raspberry PI
+1. Get Headless Raspbian
+   * setup ssh key 
+   * hostname: `pi.local`
+2. **Java 21** `sudo apt install openjdk-21-jre`
+3. install **authbind** to allow to user pi access to port 80
+   ```shell
+   sudo apt-get install authbind
+   sudo touch /etc/authbind/byport/80
+   sudo chmod 500 /etc/authbind/byport/80
+   sudo chown pi /etc/authbind/byport/80
+   ```
+4. Setup Tailscale VPN: https://tailscale.com/kb/1627/install-rpi-trixie
+   
+5. Setup daemon
+   * copy `RaspberryPI/etc/init.d/homeAutomation` to `/etc/init.d/`
+   * `sudo chmod 755 /etc/init.d/homeAutomation`
+   * auto start after reboot: `sudo update-rc.d homeAutomation defaults`
+5. Create app directory
+   ```shell
+   sudo mkdir /usr/local/bin/homeAutomation/
+   sudo chown pi /usr/local/bin/homeAutomation/
+   ```
+6. Deploy app by running `home-controller/script/deploy-pi.sh`
+   * running console: http://pi.local/
+   * app logs: `/usr/local/bin/homeAutomation/out/`
+
+# TODO
 * [x] virtualize `configuration-pi.js' instead of string replace in servlet
 * [x] refactor lights page
 * [x] **BUG:** Broken stylesheets on http://pi/lights, louvers

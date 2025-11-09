@@ -12,7 +12,7 @@ This board is represented by Java class `WallSwitch`
 
 ## Parts
  * 1x resistor array RRA 4X10k
- * 4x micro switch 6*6*8 mm (SMD)
+ * 4x micro switch 6x6x8 mm (SMD)
  * 1x resistor R180
  * 1x bi-color led
  * 1x flat cable with FC-8P connector
@@ -25,7 +25,7 @@ This board is represented by Java class `WallSwitch`
 
 ## Pin layout
 
-FC-8P connector (pin 1 is on the left side of schema)
+FC-8P connector (pin 1 is on the left side of the schema)
 ```
 1 - VDD out
 2 - VSS
