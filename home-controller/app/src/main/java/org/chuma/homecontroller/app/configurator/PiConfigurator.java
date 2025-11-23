@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -83,9 +82,7 @@ import org.chuma.homecontroller.extensions.actor.HvacActor;
 import org.chuma.homecontroller.extensions.actor.RadioOnOffActor;
 import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
 import org.chuma.homecontroller.extensions.external.SunCalculator;
-import org.chuma.homecontroller.extensions.external.boiler.BoilerController;
 import org.chuma.homecontroller.extensions.external.boiler.BoilerManager;
-import org.chuma.homecontroller.extensions.external.boiler.BoilerMonitor;
 import org.chuma.homecontroller.extensions.external.futura.FuturaMonitor;
 import org.chuma.homecontroller.extensions.external.garage.GarageManager;
 import org.chuma.homecontroller.extensions.external.inverter.ElectricitySpotPriceMonitor;
@@ -504,7 +501,7 @@ public class PiConfigurator extends AbstractConfigurator {
         // zadveri
         configurePwmLights(zadveriSwA1, WallSwitch.Side.LEFT, 0.8, zadveriPwmActor);
 
-        SwitchOnActionWithTimer ovladacGarazAction = new SwitchOnActionWithTimer(ovladacGaraz, 0,500);
+        SwitchOnActionWithTimer ovladacGarazAction = new SwitchOnActionWithTimer(ovladacGaraz, 0, 500);
         GarageManager garageManager = new GarageManager(ovladacGaraz);
         nodeListener.addActionBinding(new ActionBinding(zadveriSwA1.getRightUpperButton(), new GenericCodeAction(t -> garageManager.open()), null));
         nodeListener.addActionBinding(new ActionBinding(zadveriSwA1.getRightBottomButton(), new GenericCodeAction(t -> garageManager.close()), null));
@@ -748,7 +745,7 @@ public class PiConfigurator extends AbstractConfigurator {
                 new GenericCodeAction(t -> garageManager.onOpenContactPressed()),
                 new GenericCodeAction(t -> garageManager.onOpenContactReleased()));
         setupMagneticSensor(cidlaGaraz.getIn2AndActivate(), "mgntGD", "Garaz dole",
-                new Action[] {
+                new Action[]{
                         garazIndicator.getOnAction(),
                         new GenericCodeAction(t -> garageManager.onClosedContactPressed()),
                 },
@@ -779,10 +776,7 @@ public class PiConfigurator extends AbstractConfigurator {
                 OptionsSingleton.get("futura.ipAddress"), 5_000, 60_000);
         futuraMonitor.start();
 
-        BoilerMonitor boilerMonitor = new BoilerMonitor(
-                "boiler.local", 10 * 60_000, 60 * 60_000);
-        boilerMonitor.start();
-        configureBoilerManager(boilerMonitor.getController());
+        BoilerManager boilerManager = new BoilerManager(10 * 60_000, 60 * 60_000);
 
         RobonectEndpoint robonectEndpoint = new RobonectEndpoint(OptionsSingleton.get("robonect.host"),
                 OptionsSingleton.get("robonect.username"), OptionsSingleton.get("robonect.password"));
@@ -838,7 +832,7 @@ public class PiConfigurator extends AbstractConfigurator {
                 new HvacHandler(Collections.singleton(hvacActor)),
                 new InverterHandler(Collections.singleton(inverterMonitor)),
                 new FuturaHandler(Collections.singleton(futuraMonitor)),
-                new BoilerHandler(Collections.singleton(boilerMonitor)),
+                new BoilerHandler(Collections.singleton(boilerManager.getBoilerMonitor())),
                 new ElectricitySpotPriceHandler(Collections.singleton(priceMonitor)),
                 new RobonectHandler(Collections.singleton(robonectMonitor)));
 //        configureSimulator(pages, wsHandlers, false);
@@ -866,11 +860,6 @@ public class PiConfigurator extends AbstractConfigurator {
             log.error("Failed to init inverter client", e);
             return null;
         }
-    }
-
-    private static void configureBoilerManager(BoilerController bc) {
-        final Options options = OptionsSingleton.getInstance();
-        BoilerManager boilerManager = new BoilerManager(bc, options);
     }
 
     private static InverterManager configureInverterRemoteControl(SolaxInverterModbusClient client, InverterMonitor inverterMonitor) {

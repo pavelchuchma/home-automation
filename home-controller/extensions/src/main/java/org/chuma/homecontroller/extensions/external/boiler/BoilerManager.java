@@ -7,18 +7,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.chuma.homecontroller.base.utils.Options;
+import org.chuma.homecontroller.base.utils.OptionsSingleton;
 import org.chuma.homecontroller.extensions.external.inverter.InverterManager;
 import org.chuma.homecontroller.extensions.external.utils.IntervalScheduler;
 
 public class BoilerManager {
+    private static final String CFG_BOILER_IP = "boiler.ip";
     private static final String CFG_BOILER_TIMES = "boiler.times";
     private static final String CFG_BOILER_TARGET_TEMP = "boiler.target.temp";
     private static final String CFG_BOILER_DISINFECT = "boiler.disinfect";
     private static final String CFG_BOILER_EHEAT = "boiler.eheat";
 
     static Logger log = LoggerFactory.getLogger(InverterManager.class.getName());
-    private final BoilerController bc;
-    private final Options options;
+    private final BoilerMonitor boilerMonitor;
     private int targetTemp = -1;
     private boolean disinfect = false;
     private boolean eHeat = false;
@@ -28,9 +29,15 @@ public class BoilerManager {
             this::turnOff
     );
 
-    public BoilerManager(BoilerController bc, Options options) {
-        this.bc = bc;
-        this.options = options;
+    public BoilerManager(int refreshInternalMs, int maxUnusedRunTimeMs) {
+        Options options = OptionsSingleton.getInstance();
+        String ipAddress = options.get(CFG_BOILER_IP);
+        boilerMonitor = (ipAddress == null || ipAddress.isEmpty()) ? null : new BoilerMonitor(options.get(CFG_BOILER_IP), refreshInternalMs, maxUnusedRunTimeMs);
+        if (boilerMonitor == null) {
+            log.info("BoilerMonitor disabled, no IP address configured");
+            return;
+        }
+        boilerMonitor.start();
 
         setTargetTemp(options.getInt(CFG_BOILER_TARGET_TEMP));
         setOperatingTimes(options.get(CFG_BOILER_TIMES));
@@ -62,6 +69,10 @@ public class BoilerManager {
         });
     }
 
+    public BoilerMonitor getBoilerMonitor() {
+        return boilerMonitor;
+    }
+
     public void setTargetTemp(int targetTemp) {
         Validate.inclusiveBetween(38, 60, targetTemp);
         this.targetTemp = targetTemp;
@@ -88,6 +99,7 @@ public class BoilerManager {
 
     public void turnOn() {
         try {
+            BoilerController bc = boilerMonitor.getController();
             bc.refreshStatus();
             State state = bc.getState();
             int temp = (disinfect) ? 60 : targetTemp;
@@ -115,6 +127,7 @@ public class BoilerManager {
 
     public void turnOff() {
         try {
+            BoilerController bc = boilerMonitor.getController();
             bc.refreshStatus();
             State state = bc.getState();
 
@@ -125,6 +138,7 @@ public class BoilerManager {
                 log.debug("Turn on: already OFF");
             }
             log.debug("Disabling boiler disinfect and e-heat");
+            Options options = OptionsSingleton.getInstance();
             options.put(CFG_BOILER_DISINFECT, false);
             options.put(CFG_BOILER_EHEAT, false);
             optionsSaveInProgress = true;
