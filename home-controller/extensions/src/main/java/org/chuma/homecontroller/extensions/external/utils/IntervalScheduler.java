@@ -81,13 +81,15 @@ public class IntervalScheduler {
     private static List<TimeRange> parseTariffRanges(String str) {
         List<TimeRange> result = new ArrayList<>();
         final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:mm");
-        for (String interval : str.split(";")) {
-            String[] times = interval.split("-");
-            Validate.isTrue(times.length == 2, "Invalid time interval '%s' of string %s", interval, str);
-            result.add(new TimeRange(
-                    LocalTime.parse(times[0], formatter),
-                    LocalTime.parse(times[1], formatter)
-            ));
+        if (str != null && !str.isEmpty()) {
+            for (String interval : str.split(";")) {
+                String[] times = interval.split("-");
+                Validate.isTrue(times.length == 2, "Invalid time interval '%s' of string %s", interval, str);
+                result.add(new TimeRange(
+                        LocalTime.parse(times[0], formatter),
+                        LocalTime.parse(times[1], formatter)
+                ));
+            }
         }
         return result;
     }
