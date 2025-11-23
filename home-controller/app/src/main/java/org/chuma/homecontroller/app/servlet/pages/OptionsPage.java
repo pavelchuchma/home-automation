@@ -22,6 +22,7 @@ public class OptionsPage extends AbstractPage {
 
     @Override
     protected void appendContent(StringBuilder sb, Map<String, String[]> requestParameters) {
+        boolean saved = false;
         if (!requestParameters.isEmpty()) {
             Set<String> names = new HashSet<>(options.getNames());
             for (Entry<String, String[]> e : requestParameters.entrySet()) {
@@ -37,6 +38,7 @@ public class OptionsPage extends AbstractPage {
 
             try {
                 options.save();
+                saved = true;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -44,6 +46,9 @@ public class OptionsPage extends AbstractPage {
 
         sb.append("<br>");
         sb.append("<form action=\"").append(getPath()).append("\">\n<table>\n");
+        if (saved) {
+            sb.append("<script>alert('Options saved successfully.');</script>\n");
+        }
         String[] names = options.getNames().toArray(new String[0]);
         Arrays.sort(names);
         for (String n : names) {
