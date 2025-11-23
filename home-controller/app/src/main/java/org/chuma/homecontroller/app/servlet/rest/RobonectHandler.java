@@ -10,9 +10,10 @@ import org.chuma.homecontroller.extensions.external.robonect.client.model.Gps;
 import org.chuma.homecontroller.extensions.external.robonect.client.model.Status;
 import org.chuma.homecontroller.extensions.external.robonect.client.model.WeatherInfo;
 
-public class RobonectHandler extends AbstractRestHandler<RobonectMonitor> {
-    public RobonectHandler(Iterable<RobonectMonitor> monitors) {
-        super("robonect", "robonect", monitors, (o) -> "robonect");
+public class RobonectHandler extends AbstractMonitorRestHandler<RobonectMonitor> {
+
+    public RobonectHandler(RobonectMonitor monitor) {
+        super("robonect", monitor);
     }
 
     @Override

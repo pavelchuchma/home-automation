@@ -761,7 +761,7 @@ public class PiConfigurator extends AbstractConfigurator {
 
 
         InverterManager inverterManager = null;
-        InverterMonitor inverterMonitor = null;
+        SolaxInverterMonitor inverterMonitor = null;
         try {
             SolaxInverterModbusClient inverterModbusClient = new SolaxInverterModbusClient(OptionsSingleton.get("inverter.ip"));
             inverterMonitor = new SolaxInverterMonitor(inverterModbusClient, 5_000, 60_000);
@@ -828,13 +828,13 @@ public class PiConfigurator extends AbstractConfigurator {
                 new PwmLightsHandler(lddActors),
                 new OnOffHandler(onOffActors),
                 new PirHandler(pirStatusList),
-                new WaterPumpHandler(Collections.singleton(waterPumpMonitor)),
-                new HvacHandler(Collections.singleton(hvacActor)),
-                new InverterHandler(Collections.singleton(inverterMonitor)),
-                new FuturaHandler(Collections.singleton(futuraMonitor)),
-                new BoilerHandler(Collections.singleton(boilerManager.getBoilerMonitor())),
-                new ElectricitySpotPriceHandler(Collections.singleton(priceMonitor)),
-                new RobonectHandler(Collections.singleton(robonectMonitor)));
+                new WaterPumpHandler(waterPumpMonitor),
+                new HvacHandler(hvacActor),
+                new InverterHandler(inverterMonitor),
+                new FuturaHandler(futuraMonitor),
+                new BoilerHandler(boilerManager.getBoilerMonitor()),
+                new ElectricitySpotPriceHandler(priceMonitor),
+                new RobonectHandler(robonectMonitor));
 //        configureSimulator(pages, wsHandlers, false);
         // rest/all handler
         List<Handler> handlers = new ArrayList<>();

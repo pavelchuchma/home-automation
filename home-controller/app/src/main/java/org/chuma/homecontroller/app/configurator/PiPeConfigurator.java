@@ -114,7 +114,7 @@ public class PiPeConfigurator extends AbstractConfigurator {
 
 
         InverterManager inverterManager = null;
-        InverterMonitor inverterMonitor = null;
+        SolaxInverterMonitor inverterMonitor = null;
         try {
             SolaxInverterModbusClient inverterModbusClient = new SolaxInverterModbusClient(OptionsSingleton.get("inverter.ip"));
             inverterMonitor = new SolaxInverterMonitor(inverterModbusClient, 5_000, 60_000);
@@ -158,8 +158,8 @@ public class PiPeConfigurator extends AbstractConfigurator {
                 new PwmLightsHandler(lddActors),
                 new OnOffHandler(onOffActors),
                 new PirHandler(pirStatusList),
-                new InverterHandler(Collections.singleton(inverterMonitor)),
-                new ElectricitySpotPriceHandler(Collections.singleton(priceMonitor)));
+                new InverterHandler(inverterMonitor),
+                new ElectricitySpotPriceHandler(priceMonitor));
 //        configureSimulator(pages, wsHandlers, false);
         // rest/all handler
         List<Handler> handlers = new ArrayList<>();

@@ -25,12 +25,15 @@ public abstract class AbstractStateMonitor<S> {
     State<S> state;
     private long lastUseTime;
 
-
     public AbstractStateMonitor(String name, int refreshInternalMs, int maxUnusedRunTimeMs) {
         this.name = name;
         running = false;
         this.refreshInternalMs = refreshInternalMs;
         this.maxUnusedRunTimeMs = maxUnusedRunTimeMs;
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 
     public synchronized void start() {

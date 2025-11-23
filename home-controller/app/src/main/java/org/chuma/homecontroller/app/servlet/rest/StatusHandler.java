@@ -9,4 +9,8 @@ public interface StatusHandler extends Handler {
     String getStatusJsonArrayName();
 
     void writeStatusJson(JsonWriter writer, HttpServletRequest request);
+
+    default boolean isEnabled() {
+        return true;
+    }
 }

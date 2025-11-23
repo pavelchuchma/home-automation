@@ -3,6 +3,7 @@ package org.chuma.homecontroller.app.servlet.rest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
@@ -36,6 +37,10 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
         for (T i : items) {
             addMapItem(i, getId);
         }
+    }
+
+    public AbstractRestHandler(String id, T item) {
+        this(id, id, Collections.singleton(item), (o) -> id);
     }
 
     static String getMandatoryStringParam(Map<String, String[]> requestParams, String name) {
@@ -131,6 +136,9 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
     }
 
     public void writeStatusJson(JsonWriter writer, HttpServletRequest request) {
+        if (!isEnabled()) {
+            return;
+        }
         try (JsonWriter arrayWriter = writer.startArrayAttribute(statusJsonArrayName)) {
             String id = getStringParam(request.getParameterMap(), "id");
             if (id != null) {

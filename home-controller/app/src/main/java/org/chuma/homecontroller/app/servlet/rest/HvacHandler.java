@@ -8,8 +8,8 @@ import org.chuma.homecontroller.extensions.actor.HvacActor;
 import org.chuma.hvaccontroller.device.HvacDevice;
 
 public class HvacHandler extends AbstractRestHandler<HvacActor> {
-    public HvacHandler(Iterable<HvacActor> hvacActors) {
-        super("hvac", "hvac", hvacActors, HvacActor::getId);
+    public HvacHandler(HvacActor actor) {
+        super("hvac", actor);
     }
 
     @Override

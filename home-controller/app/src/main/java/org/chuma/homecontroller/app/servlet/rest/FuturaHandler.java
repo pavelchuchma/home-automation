@@ -6,9 +6,9 @@ import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
 import org.chuma.homecontroller.extensions.external.futura.FuturaMonitor;
 import org.chuma.homecontroller.extensions.external.futura.State;
 
-public class FuturaHandler extends AbstractRestHandler<FuturaMonitor> {
-    public FuturaHandler(Iterable<FuturaMonitor> monitors) {
-        super("recuperation", "recuperation", monitors, (o) -> "futura");
+public class FuturaHandler extends AbstractMonitorRestHandler<FuturaMonitor> {
+    public FuturaHandler(FuturaMonitor monitor) {
+        super("futura", monitor);
     }
 
     @Override

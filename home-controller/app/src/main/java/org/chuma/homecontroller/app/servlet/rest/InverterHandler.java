@@ -3,16 +3,16 @@ package org.chuma.homecontroller.app.servlet.rest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
-import org.chuma.homecontroller.extensions.external.inverter.InverterMonitor;
 import org.chuma.homecontroller.extensions.external.inverter.InverterState;
+import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterMonitor;
 
-public class InverterHandler extends AbstractRestHandler<InverterMonitor> {
-    public InverterHandler(Iterable<InverterMonitor> monitors) {
-        super("inverter", "inverter", monitors, (o) -> "inverter");
+public class InverterHandler extends AbstractMonitorRestHandler<SolaxInverterMonitor> {
+    public InverterHandler(SolaxInverterMonitor monitor) {
+        super("inverter", monitor);
     }
 
     @Override
-    void writeJsonItemValues(JsonWriter jw, InverterMonitor monitor, HttpServletRequest request) {
+    void writeJsonItemValues(JsonWriter jw, SolaxInverterMonitor monitor, HttpServletRequest request) {
         final InverterState state = monitor.getState();
         if (state == null) {
             return;

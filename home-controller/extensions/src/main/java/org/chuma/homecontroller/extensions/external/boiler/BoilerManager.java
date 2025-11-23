@@ -32,8 +32,8 @@ public class BoilerManager {
     public BoilerManager(int refreshInternalMs, int maxUnusedRunTimeMs) {
         Options options = OptionsSingleton.getInstance();
         String ipAddress = options.get(CFG_BOILER_IP);
-        boilerMonitor = (ipAddress == null || ipAddress.isEmpty()) ? null : new BoilerMonitor(options.get(CFG_BOILER_IP), refreshInternalMs, maxUnusedRunTimeMs);
-        if (boilerMonitor == null) {
+        boilerMonitor = new BoilerMonitor(options.get(CFG_BOILER_IP), refreshInternalMs, maxUnusedRunTimeMs);
+        if (ipAddress == null || ipAddress.trim().isEmpty()) {
             log.info("BoilerMonitor disabled, no IP address configured");
             return;
         }

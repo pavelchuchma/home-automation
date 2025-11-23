@@ -6,8 +6,8 @@ import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
 import org.chuma.homecontroller.extensions.external.inverter.ElectricitySpotPriceMonitor;
 
 public class ElectricitySpotPriceHandler extends AbstractRestHandler<ElectricitySpotPriceMonitor> {
-    public ElectricitySpotPriceHandler(Iterable<ElectricitySpotPriceMonitor> monitors) {
-        super("eprice", "eprice", monitors, (o) -> "eprice");
+    public ElectricitySpotPriceHandler(ElectricitySpotPriceMonitor monitor) {
+        super("eprice", monitor);
     }
 
     @Override

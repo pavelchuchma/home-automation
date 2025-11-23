@@ -7,11 +7,10 @@ import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
 import org.chuma.homecontroller.extensions.external.boiler.BoilerMonitor;
 import org.chuma.homecontroller.extensions.external.boiler.State;
 
-public class BoilerHandler extends AbstractRestHandler<BoilerMonitor> {
+public class BoilerHandler extends AbstractMonitorRestHandler<BoilerMonitor> {
     private boolean refreshingState = false;
-    private BoilerMonitor boilerMonitor;
-    public BoilerHandler(Iterable<BoilerMonitor> monitors) {
-        super("boiler", "boiler", monitors, (o) -> "boiler");
+    public BoilerHandler(BoilerMonitor monitor) {
+        super("boiler", monitor);
     }
 
     @Override

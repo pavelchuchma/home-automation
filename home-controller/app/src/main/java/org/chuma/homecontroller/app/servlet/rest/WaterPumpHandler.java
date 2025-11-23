@@ -8,8 +8,8 @@ import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
 import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
 
 public class WaterPumpHandler extends AbstractRestHandler<WaterPumpMonitor> {
-    public WaterPumpHandler(Iterable<WaterPumpMonitor> monitors) {
-        super("wpump", "wpump", monitors, (o) -> "wpump");
+    public WaterPumpHandler(WaterPumpMonitor monitor) {
+        super("wpump", monitor);
     }
 
     @Override
