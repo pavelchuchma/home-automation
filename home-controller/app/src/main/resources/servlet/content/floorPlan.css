@@ -2,6 +2,24 @@ td {
     vertical-align: top;
 }
 
+/* Ensure the SVG overlays the canvas exactly */
+#planCanvasContainer {
+    position: relative;
+    display: inline-block;
+}
+
+#planCanvas {
+    display: block; /* remove inline gaps */
+}
+
+#floorPlanSvg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    pointer-events: none; /* let clicks pass to the canvas */
+}
+
 div.gray {
     color: gray;
     font-size: .5em;

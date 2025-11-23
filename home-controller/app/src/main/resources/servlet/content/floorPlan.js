@@ -57,11 +57,24 @@ function onLoadContinue() {
             drawItems();
         }, getComponents().concat(additionalToolbars), getBaseUrl());
         status.startRefresh();
-
         initConfiguration();
+        // justTry()
     } catch (e) {
         printException(e);
     }
+}
+
+function justTry() {
+    const planCanvas = document.getElementById('planCanvas');
+    const width = planCanvas.width;
+    const height = planCanvas.height;
+
+    this.svg = SVG().addTo('#planCanvasContainer').size(width, height);
+    this.svg.attr('id', 'floorPlanSvg');
+
+    // sample content to verify overlay alignment
+    const rect = this.svg.rect(40, 40).move(10, 10);
+    rect.fill('green').stroke({width: 1, color: 'red'});
 }
 
 function drawItems() {

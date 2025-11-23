@@ -1,27 +1,105 @@
 package org.chuma.homecontroller.app.configurator;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import static org.chuma.homecontroller.app.servlet.pages.AbstractPage.VIRTUAL_CONFIGURATION_JS_FILENAME;
+
+import org.chuma.homecontroller.app.servlet.Handler;
+import org.chuma.homecontroller.app.servlet.Servlet;
+import org.chuma.homecontroller.app.servlet.ServletAction;
+import org.chuma.homecontroller.app.servlet.pages.GetBackendUrlJs;
+import org.chuma.homecontroller.app.servlet.pages.LightsPage;
+import org.chuma.homecontroller.app.servlet.pages.LouversPage;
+import org.chuma.homecontroller.app.servlet.pages.NodeInfoDetailPage;
+import org.chuma.homecontroller.app.servlet.pages.NodeInfoPage;
+import org.chuma.homecontroller.app.servlet.pages.OptionsPage;
+import org.chuma.homecontroller.app.servlet.pages.Page;
+import org.chuma.homecontroller.app.servlet.pages.PirPage;
+import org.chuma.homecontroller.app.servlet.pages.StaticPage;
+import org.chuma.homecontroller.app.servlet.rest.AirValveHandler;
+import org.chuma.homecontroller.app.servlet.rest.AllStatusHandler;
+import org.chuma.homecontroller.app.servlet.rest.BoilerHandler;
+import org.chuma.homecontroller.app.servlet.rest.ElectricitySpotPriceHandler;
+import org.chuma.homecontroller.app.servlet.rest.FuturaHandler;
+import org.chuma.homecontroller.app.servlet.rest.HvacHandler;
+import org.chuma.homecontroller.app.servlet.rest.InverterHandler;
+import org.chuma.homecontroller.app.servlet.rest.LouversHandler;
+import org.chuma.homecontroller.app.servlet.rest.NodeHandler;
+import org.chuma.homecontroller.app.servlet.rest.OnOffHandler;
+import org.chuma.homecontroller.app.servlet.rest.PirHandler;
+import org.chuma.homecontroller.app.servlet.rest.PwmLightsHandler;
+import org.chuma.homecontroller.app.servlet.rest.RobonectHandler;
+import org.chuma.homecontroller.app.servlet.rest.ServletActionHandler;
+import org.chuma.homecontroller.app.servlet.rest.StatusHandler;
+import org.chuma.homecontroller.app.servlet.rest.WaterPumpHandler;
+import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
 import org.chuma.homecontroller.base.node.Node;
+import org.chuma.homecontroller.base.utils.Options;
+import org.chuma.homecontroller.base.utils.OptionsSingleton;
 import org.chuma.homecontroller.controller.ActionBinding;
+import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.action.ContinuousValueSwitchOnActionWithTimer;
+import org.chuma.homecontroller.controller.action.GenericCodeAction;
+import org.chuma.homecontroller.controller.action.IndicatorAction;
+import org.chuma.homecontroller.controller.action.InvertAction;
+import org.chuma.homecontroller.controller.action.InvertActionWithTimer;
+import org.chuma.homecontroller.controller.action.Relay16TestLoopAction;
+import org.chuma.homecontroller.controller.action.SwitchAllOffWithMemory;
 import org.chuma.homecontroller.controller.action.SwitchOffAction;
 import org.chuma.homecontroller.controller.action.SwitchOffActionWithTimer;
+import org.chuma.homecontroller.controller.action.SwitchOnAction;
 import org.chuma.homecontroller.controller.action.SwitchOnActionWithTimer;
-import org.chuma.homecontroller.controller.actor.OnOffActor;
+import org.chuma.homecontroller.controller.action.condition.DarkCondition;
+import org.chuma.homecontroller.controller.action.condition.ICondition;
+import org.chuma.homecontroller.controller.action.condition.PressDurationCondition;
+import org.chuma.homecontroller.controller.actor.ActorListener;
+import org.chuma.homecontroller.controller.actor.IOnOffActor;
+import org.chuma.homecontroller.controller.actor.LddActor;
 import org.chuma.homecontroller.controller.actor.PwmActor;
+import org.chuma.homecontroller.controller.actor.VoidOnOffActor;
 import org.chuma.homecontroller.controller.controller.LouversController;
-import org.chuma.homecontroller.controller.controller.LouversControllerImpl;
 import org.chuma.homecontroller.controller.controller.ValveController;
 import org.chuma.homecontroller.controller.controller.ValveControllerImpl;
 import org.chuma.homecontroller.controller.device.GenericInputDevice;
+import org.chuma.homecontroller.controller.device.GenericOutputDevice;
 import org.chuma.homecontroller.controller.device.LddBoardDevice;
+import org.chuma.homecontroller.controller.device.Relay16BoardDevice;
 import org.chuma.homecontroller.controller.device.RelayBoardDevice;
 import org.chuma.homecontroller.controller.device.SwitchIndicator;
+import org.chuma.homecontroller.controller.device.TriacBoardDevice;
 import org.chuma.homecontroller.controller.device.WallSwitch;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
-import org.chuma.homecontroller.controller.nodeinfo.NodeListener;
 import org.chuma.homecontroller.controller.persistence.StateMap;
+import org.chuma.homecontroller.extensions.action.condition.SunCondition;
+import org.chuma.homecontroller.extensions.actor.HvacActor;
+import org.chuma.homecontroller.extensions.actor.RadioOnOffActor;
+import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
+import org.chuma.homecontroller.extensions.external.SunCalculator;
+import org.chuma.homecontroller.extensions.external.boiler.BoilerController;
+import org.chuma.homecontroller.extensions.external.boiler.BoilerManager;
+import org.chuma.homecontroller.extensions.external.boiler.BoilerMonitor;
+import org.chuma.homecontroller.extensions.external.futura.FuturaMonitor;
+import org.chuma.homecontroller.extensions.external.garage.GarageManager;
+import org.chuma.homecontroller.extensions.external.inverter.ElectricitySpotPriceMonitor;
+import org.chuma.homecontroller.extensions.external.inverter.InverterManager;
+import org.chuma.homecontroller.extensions.external.inverter.InverterMonitor;
+import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterModbusClient;
+import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterMonitor;
+import org.chuma.homecontroller.extensions.external.robonect.RobonectMonitor;
+import org.chuma.homecontroller.extensions.external.robonect.client.RobonectClient;
+import org.chuma.homecontroller.extensions.external.robonect.client.RobonectEndpoint;
+import org.chuma.hvaccontroller.device.HvacDevice;
 
+@SuppressWarnings({"unused", "DuplicatedCode", "SpellCheckingInspection"})
 public class PiPeConfigurator extends AbstractConfigurator {
+    static Logger log = LoggerFactory.getLogger(PiConfigurator.class.getName());
 
     public PiPeConfigurator(NodeInfoRegistry nodeInfoRegistry, StateMap stateMap) {
         super(nodeInfoRegistry, stateMap);
@@ -29,75 +107,109 @@ public class PiPeConfigurator extends AbstractConfigurator {
 
     @Override
     public void configure() {
-        NodeListener lst = nodeInfoRegistry.getNodeListener();
-
         Node bridge = nodeInfoRegistry.createNode(1, "Bridge");
-        Node actor = nodeInfoRegistry.createNode(44, "Actor");
-        Node switches = nodeInfoRegistry.createNode(43, "Switches");
-        Node pirSensors = nodeInfoRegistry.createNode(42, "PirSensors");
-
-        WallSwitch switchASw = new WallSwitch("switchASw", switches, 1);
-        WallSwitch switchBSw = new WallSwitch("switchBSw", switches, 2);
-        WallSwitch switchCSw = new WallSwitch("switchCSw", switches, 3);
-
-        // Rele51
-        RelayBoardDevice rele51 = new RelayBoardDevice("rele51", actor, 1);
-
-        // Zvonek
-        OnOffActor zvonekActor = new OnOffActor("zvonek", "Zvonek", rele51.getRelay4(),
-                switchCSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF), switchCSw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON));
-        SwitchOnActionWithTimer zvonekAction = new SwitchOnActionWithTimer(zvonekActor, 5);
-        SwitchOffAction zvonekStopAction = new SwitchOffAction(zvonekActor);
-        lst.addActionBinding(new ActionBinding(switchCSw.getRightUpperButton(), zvonekAction, null));
-        lst.addActionBinding(new ActionBinding(switchCSw.getRightBottomButton(), zvonekStopAction, null));
-
-        // Indikatory vratnice
-        SwitchIndicator vratniceOffIndicator = switchASw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ALL_OFF);
-        SwitchIndicator vratniceOnIndicator = switchASw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON);
-
-        // LDD5
-        LddBoardDevice lddDevice5 = new LddBoardDevice("lddDevice5", actor, 2, .35, .35, 1.0, 1.0, 1.0, 1.0);
-        PwmActor vratnice1PwmActor = addLddLight("pwmVrt1", "Vratnice 1", lddDevice5.getLdd1(), 0.35, vratniceOffIndicator, vratniceOnIndicator); // .6
-        PwmActor vratnice2PwmActor = addLddLight("pwmVrt2", "Vratnice 2", lddDevice5.getLdd2(), 0.35, vratniceOffIndicator, vratniceOnIndicator); // .72
-        PwmActor led3PwmActor = addLddLight("pwmZadH", "Zádveří", lddDevice5.getLdd3(), 0.35); // .36
-        PwmActor led4PwmActor = addLddLight("pwmKpHZrc", "Koupena zrcadla", lddDevice5.getLdd4(), 0.35); // .36
-        PwmActor led5PwmActor = addLddLight("pwmKpH", "Koupelna", lddDevice5.getLdd5(), 0.7); // .72
-        PwmActor led6PwmActor = addLddLight("pwmVchH", "Vchod hore", lddDevice5.getLdd6(), 1.0); // 1.08
+        Node relay16testNode46 = nodeInfoRegistry.createNode(46, "Relay16testNode46");
+        Node relay16testNode47 = nodeInfoRegistry.createNode(47, "Relay16testNode48");
+        Node relay16testNode48 = nodeInfoRegistry.createNode(48, "Relay16testNode47");
 
 
-        configurePwmLights(switchASw, WallSwitch.Side.LEFT, 0.6, vratnice1PwmActor);
-        configurePwmLights(switchASw, WallSwitch.Side.RIGHT, 0.6, vratnice2PwmActor);
+        InverterManager inverterManager = null;
+        InverterMonitor inverterMonitor = null;
+        try {
+            SolaxInverterModbusClient inverterModbusClient = new SolaxInverterModbusClient(OptionsSingleton.get("inverter.ip"));
+            inverterMonitor = new SolaxInverterMonitor(inverterModbusClient, 5_000, 60_000);
+            inverterMonitor.start();
+
+            inverterManager = configureInverterRemoteControl(inverterModbusClient, inverterMonitor);
+        } catch (Exception e) {
+            log.error("Failed to init solax inverter client", e);
+        }
+
+        ElectricitySpotPriceMonitor priceMonitor = new ElectricitySpotPriceMonitor(
+                OptionsSingleton.getDouble("electricity.price.distribution-fee"),
+                OptionsSingleton.getDouble("electricity.price.sell-fee"),
+                OptionsSingleton.getDouble("electricity.price.vat")
+        );
 
 
-        // PIR
-        GenericInputDevice pirDevice = new GenericInputDevice("pirDevice", pirSensors, 3);
-        setupPir(pirDevice.getIn1AndActivate(), "pirZadHVch", "Zadveri hore vchod",
-                new ContinuousValueSwitchOnActionWithTimer(vratnice2PwmActor, 600, 0.05), new SwitchOffActionWithTimer(vratnice2PwmActor, 10));
+        List<ServletAction> servletActions = new ArrayList<>();
 
-        // Louvers
-        LouversController zaluzieVratnice;
+        //test wall switch application
+//        WallSwitch testSw = new WallSwitch("testSwA", switchTestNode, 1, 0.01);
+        servletActions.add(new ServletAction("testRele16-46", "Rele16-46", new Relay16TestLoopAction(new Relay16BoardDevice("test46", relay16testNode46))));
+        servletActions.add(new ServletAction("testRele16-47", "Rele16-47", new Relay16TestLoopAction(new Relay16BoardDevice("test47", relay16testNode47))));
+        servletActions.add(new ServletAction("testRele16-48", "Rele16-48", new Relay16TestLoopAction(new Relay16BoardDevice("test48", relay16testNode48))));
 
-        LouversController[] louversControllers = new LouversController[]{
-                zaluzieVratnice = new LouversControllerImpl("lvVrt2", "Vratnice 2", rele51.getRelay1(), rele51.getRelay2(), 10000, 1000, stateMap),
-        };
+        List<WebSocketHandler> wsHandlers = new ArrayList<>();
+        // page handlers
+        Page floorsPage = new StaticPage("/", "/floorPlan.html", "Mapa");
+        List<Page> pages = new ArrayList<>();
+        //noinspection CollectionAddAllCanBeReplacedWithConstructor
+        pages.addAll(Arrays.asList(
+                floorsPage,
+                new LightsPage(lddActors, pages),
+                new LouversPage(louversControllers, pages),
+                new PirPage(pirStatusList, pages),
+                new NodeInfoPage(nodeInfoRegistry, pages, servletActions),
+                new OptionsPage(OptionsSingleton.getInstance(), pages)));
+        // rest handlers
+        List<StatusHandler> deviceRestHandlers = Arrays.asList(
+                new LouversHandler(louversControllers),
+                new PwmLightsHandler(lddActors),
+                new OnOffHandler(onOffActors),
+                new PirHandler(pirStatusList),
+                new InverterHandler(Collections.singleton(inverterMonitor)),
+                new ElectricitySpotPriceHandler(Collections.singleton(priceMonitor)));
+//        configureSimulator(pages, wsHandlers, false);
+        // rest/all handler
+        List<Handler> handlers = new ArrayList<>();
+        handlers.add(new NodeInfoDetailPage(nodeInfoRegistry, pages));
+        handlers.addAll(pages);
+        handlers.add(new StaticPage(VIRTUAL_CONFIGURATION_JS_FILENAME, "/configuration-pipe.js", null));
+        handlers.add(new GetBackendUrlJs());
+        handlers.add(new NodeHandler(nodeInfoRegistry));
+        handlers.add(new ServletActionHandler(servletActions));
+        handlers.addAll(deviceRestHandlers);
+        handlers.add(new AllStatusHandler(deviceRestHandlers));
+        servlet = new Servlet(handlers, floorsPage.getPath(), wsHandlers);
 
-        configureLouvers(switchBSw, WallSwitch.Side.LEFT, zaluzieVratnice);
+//        OnOffActor testLedActor = new OnOffActor("testLed", testOutputDevice3.getOut2(), 1, 0);
+//        lst.addActionBinding(new ActionBinding(testInputDevice2.getIn1(), new Action[]{new SensorAction(testLedActor, 10)}, new Action[]{new SensorAction(testLedActor, 60)}));
+    }
 
-        // Air Valves
-        ValveController vzduchVratnice;
+    private static SolaxInverterModbusClient createSolaxInverterModbusClient() {
+        try {
+            final String localIp = OptionsSingleton.getInstance().get("inverter.ip");
+            return new SolaxInverterModbusClient(localIp);
+        } catch (Exception e) {
+            log.error("Failed to init inverter client", e);
+            return null;
+        }
+    }
 
-        ValveController[] valveControllers = new ValveController[]{
-                vzduchVratnice = new ValveControllerImpl("vlVrt", "Vratnice", rele51.getRelay5(), rele51.getRelay6(),10000, stateMap),
-        };
-
-//        Servlet.setLouversControllers(louversControllers);
-//        Servlet.setValveControllers(valveControllers);
-//        Servlet.setLightActions(lightsActions.toArray(new Action[lightsActions.size()]));
-//        Servlet.pirStatusList = pirStatusList;
+    private static InverterManager configureInverterRemoteControl(SolaxInverterModbusClient client, InverterMonitor inverterMonitor) {
+        final Options options = OptionsSingleton.getInstance();
+        return new InverterManager(client, options);
     }
 
     @Override
     int getLouversMaxOffsetMs() {
         return 1600;
+    }
+
+    private HvacDevice startHvacDevice() {
+        String hvacPort = OptionsSingleton.get("hvac.port");
+        if (StringUtils.isEmpty(hvacPort)) {
+            log.warn("HVAC Device port not set, not starting");
+            return null;
+        }
+        HvacDevice hvacDevice = new HvacDevice(hvacPort, 0x85, 0x20, null);
+        try {
+            hvacDevice.start();
+        } catch (IOException | Error e) {
+            log.error("Failed to start HVAC Device", e);
+            return null;
+        }
+        return hvacDevice;
     }
 }
