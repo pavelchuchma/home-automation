@@ -106,7 +106,7 @@ function onPlanClick(event) {
         drawItems();
         return;
     }
-    // console.log(`new PwmLightItem('pwm', ${+Math.round(parseFloat(event.offsetX))}, ${Math.round(parseFloat(event.offsetY))}, ${currentFloor}),`);
+    // console.log(`new LouversItem('lv', ${+Math.round(parseFloat(event.offsetX))}, ${Math.round(parseFloat(event.offsetY))}, ${currentFloor}),`);
     // return;
 
     item.doAction(selectedToolbar.onClickAction);

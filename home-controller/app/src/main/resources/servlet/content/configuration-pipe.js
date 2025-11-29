@@ -12,31 +12,29 @@ function initConfiguration() {
 
 function getLouversComponents() {
     return [
-        new LouversItem('lvKoupH', 530, 473, 1),
-        new LouversItem('lvKrys', 530, 640, 1),
-        new LouversItem('lvPata', 530, 823, 1),
-        new LouversItem('lvMarek', 530, 1006, 1),
+        new LouversItem('lvLoznice', 45, 116, 0),
+        new LouversItem('lvPracovna', 45, 252, 0),
+        new LouversItem('lvPracovnaDvere', 45, 316, 0),
+        new LouversItem('lvKuchyn', 45, 547, 0),
+        new LouversItem('lvObyvak1', 45, 686, 0),
+        new LouversItem('lvObyvak2', 325, 842, 0),
+        new LouversItem('lvObyvak3', 121, 842, 0),
+        new LouversItem('lvObyvak4', 121, 774, 0),
+        new LouversItem('lvObyvak5', 192, 774, 0),
+        new LouversItem('lvObyvak6', 257, 774, 0),
+        new LouversItem('lvObyvak7', 325, 774, 0),
+        new LouversItem('lvObyvak8', 395, 709, 0),
+        new LouversItem('lvSchodiste', 425, 586, 0),
+        new LouversItem('lvSpajz', 422, 433, 0),
+        new LouversItem('lvKoupelnaDole', 457, 176, 0),
+        new LouversItem('lvDvorek', 412, 86, 0),
+        new LouversItem('lvDada', 42, 367, 1),
+        new LouversItem('lvOchoz', 459, 584, 1),
+        new LouversItem('lvMates2', 512, 424, 1),
+        new LouversItem('lvMates1', 554, 356, 1),
+        new LouversItem('lvKoupelnaHore', 455, 286, 1),
+        new LouversItem('lvJuju', 425, 123, 1),
 
-        new LouversItem('lvLoz1', 530, 1311, 1),
-        new LouversItem('lvLoz2', 397, 1440, 1),
-        new LouversItem('lvSat', 55, 1085, 1),
-        new LouversItem('lvPrc', 55, 1325, 1),
-
-        new LouversItem('lvKuch', 510, 809, 0),
-        new LouversItem('lvOb1', 510, 978, 0),
-        new LouversItem('lvOb2', 510, 1121, 0),
-        new LouversItem('lvOb3', 510, 1285, 0),
-
-        new LouversItem('lvOb4', 360, 1430, 0),
-        new LouversItem('lvOb5', 65, 1286, 0),
-        new LouversItem('lvOb6', 65, 882, 0),
-        new LouversItem('lvKoupD', 65, 510, 0),
-
-        new LouversItem('lvCh1', 55, 850, 1),
-        new LouversItem('lvCh2', 55, 512, 1),
-        new LouversItem('lvVrt1', 260, 118, 1),
-        new LouversItem('lvVrt2', 370, 50, 1),
-        new LouversItem('lvVrt3', 530, 298, 1),
     ];
 }
 
@@ -50,8 +48,8 @@ function getSensorComponents() {
 
 function getComponents() {
     return [
-        new StairsItem('stairsUp', 127, 690, 0, 1, '▲'),
-        new StairsItem('stairsDown', 127, 690, 1, 0, '▼'),
+        new StairsItem('stairsUp', 381, 518, 0, 1, '▲'),
+        new StairsItem('stairsDown', 420, 518, 1, 0, '▼'),
     ].concat(getLouversComponents());
 }
 

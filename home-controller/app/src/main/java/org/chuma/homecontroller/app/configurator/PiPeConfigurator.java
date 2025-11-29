@@ -108,9 +108,47 @@ public class PiPeConfigurator extends AbstractConfigurator {
     @Override
     public void configure() {
         Node bridge = nodeInfoRegistry.createNode(1, "Bridge");
-        Node relay16testNode46 = nodeInfoRegistry.createNode(46, "Relay16testNode46");
-        Node relay16testNode47 = nodeInfoRegistry.createNode(47, "Relay16testNode48");
-        Node relay16testNode48 = nodeInfoRegistry.createNode(48, "Relay16testNode47");
+        Node rele1 = nodeInfoRegistry.createNode(46, "Relé 1");
+        Node rele2 = nodeInfoRegistry.createNode(47, "Relé 2");
+        Node rele3 = nodeInfoRegistry.createNode(48, "Relé 3");
+        Node krb = nodeInfoRegistry.createNode(38, "Krb");
+        Node kuchyn = nodeInfoRegistry.createNode(52, "Kuchyň");
+        Node pracovna = nodeInfoRegistry.createNode(53, "Pracovna");
+        Node koupelnadole = nodeInfoRegistry.createNode(54, "KoupelnaDole");
+        Node loznice = nodeInfoRegistry.createNode(55, "Ložnice");
+        Node ochoz = nodeInfoRegistry.createNode(56, "Ochoz");
+        Node dada = nodeInfoRegistry.createNode(57, "Dáda");
+        Node mates = nodeInfoRegistry.createNode(58, "Mates");
+        Node koupelnahore = nodeInfoRegistry.createNode(59, "KoupelnaHore");
+        Node juju = nodeInfoRegistry.createNode(60, "Juju");
+
+
+        Relay16BoardDevice releBoard1 = new Relay16BoardDevice("rele1", rele1);
+        Relay16BoardDevice releBoard2 = new Relay16BoardDevice("rele2", rele2);
+        Relay16BoardDevice releBoard3 = new Relay16BoardDevice("rele3", rele3);
+
+        LouversController zLoznice = addLouversController("lvLoznice", "Ložnice", releBoard3.getRelay(9), releBoard1.getRelay(10), 5_000);
+        LouversController zPracovna = addLouversController("lvPracovna", "Pracovna", releBoard2.getRelay(11), releBoard1.getRelay(12), 5_000);
+        LouversController zPracovnaDvere = addLouversController("lvPracovnaDvere", "PracovnaDveře", releBoard3.getRelay(15), releBoard1.getRelay(16), 5_000);
+        LouversController zKuchyn = addLouversController("lvKuchyn", "Kuchyň", releBoard2.getRelay(9), releBoard1.getRelay(10), 5_000);
+        LouversController zObyvak1 = addLouversController("lvObyvak1", "Obyvák1", releBoard2.getRelay(15), releBoard1.getRelay(16), 5_000);
+        LouversController zObyvak2 = addLouversController("lvObyvak2", "Obyvák2", releBoard1.getRelay(2), releBoard1.getRelay(1), 5_000);
+        LouversController zObyvak3 = addLouversController("lvObyvak3", "Obyvák3", releBoard2.getRelay(2), releBoard1.getRelay(1), 5_000);
+        LouversController zObyvak4 = addLouversController("lvObyvak4", "Obyvák4", releBoard3.getRelay(13), releBoard1.getRelay(14), 5_000);
+        LouversController zObyvak5 = addLouversController("lvObyvak5", "Obyvák5", releBoard3.getRelay(11), releBoard1.getRelay(12), 5_000);
+        LouversController zObyvak6 = addLouversController("lvObyvak6", "Obyvák6", releBoard2.getRelay(6), releBoard1.getRelay(5), 5_000);
+        LouversController zObyvak7 = addLouversController("lvObyvak7", "Obyvák7", releBoard2.getRelay(4), releBoard1.getRelay(3), 5_000);
+        LouversController zObyvak8 = addLouversController("lvObyvak8", "Obyvák8", releBoard1.getRelay(4), releBoard1.getRelay(3), 5_000);
+        LouversController zSchodiste = addLouversController("lvSchodiste", "Schodiště", releBoard2.getRelay(13), releBoard1.getRelay(14), 5_000);
+        LouversController zZpajz = addLouversController("lvSpajz", "Špajz", releBoard3.getRelay(4), releBoard1.getRelay(3), 5_000);
+        LouversController zKoupelnaDole = addLouversController("lvKoupelnaDole", "KoupelnaDole", releBoard2.getRelay(8), releBoard1.getRelay(7), 5_000);
+        LouversController zDvorek = addLouversController("lvDvorek", "Dvorek", releBoard3.getRelay(2), releBoard1.getRelay(1), 5_000);
+        LouversController zDada = addLouversController("lvDada", "Dáda", releBoard1.getRelay(15), releBoard1.getRelay(16), 5_000);
+        LouversController zOchoz = addLouversController("lvOchoz", "Ochoz", releBoard1.getRelay(11), releBoard1.getRelay(12), 5_000);
+        LouversController zMates2 = addLouversController("lvMates2", "Mates2", releBoard1.getRelay(6), releBoard1.getRelay(5), 5_000);
+        LouversController zMates1 = addLouversController("lvMates1", "Mates1", releBoard1.getRelay(8), releBoard1.getRelay(7), 5_000);
+        LouversController zKoupelnaHore = addLouversController("lvKoupelnaHore", "KoupelnaHore", releBoard1.getRelay(13), releBoard1.getRelay(14), 5_000);
+        LouversController zJuju = addLouversController("lvJuju", "Juju", releBoard1.getRelay(9), releBoard1.getRelay(10), 5_000);
 
 
         InverterManager inverterManager = null;
@@ -136,9 +174,9 @@ public class PiPeConfigurator extends AbstractConfigurator {
 
         //test wall switch application
 //        WallSwitch testSw = new WallSwitch("testSwA", switchTestNode, 1, 0.01);
-        servletActions.add(new ServletAction("testRele16-46", "Rele16-46", new Relay16TestLoopAction(new Relay16BoardDevice("test46", relay16testNode46))));
-        servletActions.add(new ServletAction("testRele16-47", "Rele16-47", new Relay16TestLoopAction(new Relay16BoardDevice("test47", relay16testNode47))));
-        servletActions.add(new ServletAction("testRele16-48", "Rele16-48", new Relay16TestLoopAction(new Relay16BoardDevice("test48", relay16testNode48))));
+//        servletActions.add(new ServletAction("testRele16-46", "Rele16-46", new Relay16TestLoopAction(new Relay16BoardDevice("test46", rele1))));
+//        servletActions.add(new ServletAction("testRele16-47", "Rele16-47", new Relay16TestLoopAction(new Relay16BoardDevice("test47", rele2))));
+//        servletActions.add(new ServletAction("testRele16-48", "Rele16-48", new Relay16TestLoopAction(new Relay16BoardDevice("test48", rele3))));
 
         List<WebSocketHandler> wsHandlers = new ArrayList<>();
         // page handlers
