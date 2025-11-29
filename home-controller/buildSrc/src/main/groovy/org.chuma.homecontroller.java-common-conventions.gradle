@@ -46,6 +46,6 @@ compileTestJava.options.encoding = "UTF-8"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
