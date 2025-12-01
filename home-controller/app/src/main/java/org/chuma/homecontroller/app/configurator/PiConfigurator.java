@@ -238,7 +238,7 @@ public class PiConfigurator extends AbstractConfigurator {
 //        IOnOffActor gridDisconnect = addOnOffActor("gridDisconnect", "Stykač odpojení domu", triak1.getOut3());
         IOnOffActor pisoarDole = addOnOffActor("pisoarDole", "Pisoar dole", triak1.getOut4());
         IOnOffActor svSklepPravy = addOnOffActor("svSklepPravy", "Pravy Sklep", triak1.getOut5(), prizemiVzaduKuchynSw2Indicator, sklepPravySw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON), zadveriDoleVchodRSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON));
-        IOnOffActor zasStromek = addOnOffActor("zasStromek", "Zasuvka Stromek", triak1.getOut6(), schodyDoleL1Sw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON));
+        IOnOffActor zasStromek = addOnOffActor("zasStromek", "Zasuvka Stromek", triak1.getOut3(), schodyDoleL1Sw.getGreenLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON));
 
         SwitchIndicator zaricKoupelnaHoreSw2Indicator = koupelnaHoreSw2.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON);
         SwitchIndicator zaricKoupelnaHoreOknoSwIndicator = koupelnaHoreOknoSw.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON);
