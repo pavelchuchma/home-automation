@@ -156,8 +156,8 @@ function getComponents() {
 
         new LightItem('svSklepLevy', 510, 500, 0),
         new LightItem('svSklepPravy', 565, 500, 0),
-        new LightItem('svLampaLozniceLeva', 275, 1280 - 50, 1),
-        new LightItem('svLampaLoznicePrava', 275, 1280 + 50, 1),
+        new LightItem('svLampaLozniceLeva', 275, 1280 + 50, 1),
+        new LightItem('svLampaLoznicePrava', 275, 1280 - 50, 1),
     ].concat(getLouversComponents(), getPwmLightComponents(), getSensorComponents(), getInfraHeaters());
 }
 
