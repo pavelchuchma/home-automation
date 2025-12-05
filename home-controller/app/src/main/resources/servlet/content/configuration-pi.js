@@ -1,7 +1,7 @@
 'use strict';
 
 function getFloorImages() {
-    return ['1stFloor.jpg', '2ndFloor.jpg'];
+    return ['img/1stFloor.jpg', 'img/2ndFloor.jpg'];
 }
 
 function initConfiguration() {

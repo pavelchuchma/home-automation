@@ -1,7 +1,7 @@
 'use strict';
 
 function getFloorImages() {
-    return ['1stFloor-ondra.png'];
+    return ['img/1stFloor-ondra.png'];
 }
 
 function initConfiguration() {
