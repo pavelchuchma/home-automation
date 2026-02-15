@@ -268,7 +268,7 @@ public class PiConfigurator extends AbstractConfigurator {
         RelayBoardDevice rele8Actor3Port1 = new RelayBoardDevice("rele8Actor3Port1", actor3, 2);
 
 //        int snowConstant = 3000;
-        int snowConstant = 0;
+        int snowConstant = 3000;
         LouversController zaluzieKoupelna = addLouversController("lvKoupH", "Koupelna", rele6ZaluzieBPort1.getRelay1(), rele6ZaluzieBPort1.getRelay2(), 39000);
         LouversController zaluzieKrystof = addLouversController("lvKrys", "Kryštof", rele3ZaluzieAPort1.getRelay1(), rele3ZaluzieAPort1.getRelay2(), 35000);
         LouversController zaluziePata = addLouversController("lvPata", "Paťa", rele3ZaluzieAPort1.getRelay3(), rele3ZaluzieAPort1.getRelay4(), 35000);
@@ -281,7 +281,7 @@ public class PiConfigurator extends AbstractConfigurator {
 
         LouversController zaluzieKuchyn = addLouversController("lvKuch", "Kuchyň", rele2ZaluzieAPort3.getRelay5(), rele2ZaluzieAPort3.getRelay6(), 58000 - snowConstant);
         LouversController zaluzieObyvak1 = addLouversController("lvOb1", "Obývák 1", rele2ZaluzieAPort3.getRelay1(), rele2ZaluzieAPort3.getRelay2(), 57000 - snowConstant);
-        LouversController zaluzieObyvak2 = addLouversController("lvOb2", "Obývák 2", rele8Actor3Port1.getRelay5(), rele8Actor3Port1.getRelay6(), 57000);
+        LouversController zaluzieObyvak2 = addLouversController("lvOb2", "Obývák 2", rele8Actor3Port1.getRelay5(), rele8Actor3Port1.getRelay6(), 57000 - snowConstant);
         LouversController zaluzieObyvak3 = addLouversController("lvOb3", "Obývák 3", rele2ZaluzieAPort3.getRelay3(), rele2ZaluzieAPort3.getRelay4(), 58000 - snowConstant);
 
         LouversController zaluzieObyvak4 = addLouversController("lvOb4", "Obývák 4", rele4ZaluzieAPort2.getRelay3(), rele4ZaluzieAPort2.getRelay4(), 58000 - snowConstant);
@@ -445,7 +445,7 @@ public class PiConfigurator extends AbstractConfigurator {
         // kuchyn + obyvak
 //        lst.addActionBinding(new ActionBinding(schodyDoleL2Sw.getLeftBottomButton(), new InvertAction(recuperation), null));
 
-        configureLouvers(schodyDoleR1Sw, WallSwitch.Side.LEFT, zaluzieKuchyn);
+//        configureLouvers(schodyDoleR1Sw, WallSwitch.Side.LEFT, zaluzieKuchyn);
         configureLouvers(schodyDoleR1Sw, WallSwitch.Side.RIGHT, zaluzieObyvak1);
         configureLouvers(schodyDoleR2Sw, WallSwitch.Side.LEFT, zaluzieObyvak2, zaluzieObyvak3);
         configureLouvers(schodyDoleR2Sw, WallSwitch.Side.RIGHT, zaluzieObyvak4);
