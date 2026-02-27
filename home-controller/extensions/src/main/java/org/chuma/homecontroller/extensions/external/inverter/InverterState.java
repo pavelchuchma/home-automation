@@ -99,6 +99,11 @@ public interface InverterState {
 
     PgridBias getPgridBias();
 
+    /**
+     * Export control user limit in W
+     */
+    int getExportControlUserLimit();
+
     enum Mode {
         Waiting,
         Checking,

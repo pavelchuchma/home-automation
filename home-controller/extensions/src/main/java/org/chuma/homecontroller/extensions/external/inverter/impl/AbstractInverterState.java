@@ -42,6 +42,7 @@ public abstract class AbstractInverterState implements InverterState {
                 "\n  batteryVoltage=" + getBatteryVoltage() +
                 "\n  selfUseMinimalSoc=" + getSelfUseMinimalSoc() +
                 "\n  pgridBias=" + getPgridBias() +
+                "\n  exportControlUserLimit=" + getExportControlUserLimit() +
                 "\n}";
     }
 }

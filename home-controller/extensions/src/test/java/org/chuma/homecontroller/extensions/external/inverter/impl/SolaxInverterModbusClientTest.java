@@ -9,6 +9,13 @@ import org.chuma.homecontroller.extensions.external.inverter.InverterState;
 public class SolaxInverterModbusClientTest extends AbstractSolaxInverterTestBase {
     static Logger log = LoggerFactory.getLogger(SolaxInverterModbusClientTest.class.getName());
 
+
+    public void testGetState() throws Exception {
+        SolaxInverterModbusClient client = new SolaxInverterModbusClient(localIp);
+        InverterState state = client.getState();
+        log.debug("state: {}", state);
+    }
+
     public void testPerformance() throws Exception {
         SolaxInverterModbusClient client = new SolaxInverterModbusClient(localIp);
         client.getState();
@@ -42,6 +49,34 @@ public class SolaxInverterModbusClientTest extends AbstractSolaxInverterTestBase
         state = client.getState();
         log.debug("after test: selfUseMinimalSoc={}", state.getSelfUseMinimalSoc());
         Assert.assertEquals(initialSelfUseMinimalSoc, state.getSelfUseMinimalSoc());
+    }
+
+    public void testSetExportControlUserLimit() throws Exception {
+        SolaxInverterModbusClient client = new SolaxInverterModbusClient(localIp);
+
+        InverterState state = client.getState();
+        int initialValue = state.getExportControlUserLimit();
+        log.debug("before: exportControlUserLimit={}", initialValue);
+
+        int targetValue = 5000;
+        log.debug("setting: exportControlUserLimit={}", targetValue);
+        client.setExportControlUserLimit(targetValue);
+
+        state = client.getState();
+        Assert.assertEquals(targetValue, state.getExportControlUserLimit());
+
+        log.debug("setting: exportControlUserLimit=0");
+        client.setExportControlUserLimit(0);
+
+        state = client.getState();
+        Assert.assertEquals(0, state.getExportControlUserLimit());
+
+        // restore original value
+        log.debug("setting back: exportControlUserLimit={}", initialValue);
+        client.setExportControlUserLimit(initialValue);
+        state = client.getState();
+        log.debug("after test: exportControlUserLimit={}", state.getExportControlUserLimit());
+        Assert.assertEquals(initialValue, state.getExportControlUserLimit());
     }
 
     public void testSetPgridBias() throws Exception {

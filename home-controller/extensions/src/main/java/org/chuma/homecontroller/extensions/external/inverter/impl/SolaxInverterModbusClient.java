@@ -20,7 +20,7 @@ public class SolaxInverterModbusClient {
     public SolaxInverterModbusClient(String host) throws UnknownHostException {
         client = new ModbusClient(host, 502, true, 3000,
                 new int[][]{{0x0003, 0x0053}, {0x006A, 0x009B} /*, {0x0114, 0x0115}*/},
-                new int[][]{{0x007D, 0x0093}, {0x00B2, 0x00B2}},
+                new int[][]{{0x007D, 0x0093}, {0x00B2, 0x00B6}},
                 new int[][]{{0x0000, 0x0006}}
         );
     }
@@ -41,6 +41,15 @@ public class SolaxInverterModbusClient {
         log.debug("setSelfUseMinimalSoc({})", value);
         Validate.inclusiveBetween(10, 100, value);
         client.writeSingleRegisterValue(0x0061, value);
+    }
+
+    /**
+     * @param value export limit in W (X3 register unit is 10W)
+     */
+    public synchronized void setExportControlUserLimit(int value) {
+        log.debug("setExportControlUserLimit({})", value);
+        Validate.inclusiveBetween(0, 600000, value);
+        client.writeSingleRegisterValue(0x0042, value / 10);
     }
 
     public synchronized void setPgridBias(InverterState.PgridBias value) {
@@ -198,6 +207,11 @@ public class SolaxInverterModbusClient {
         @Override
         public PgridBias getPgridBias() {
             return PgridBias.values()[client.holding.getUnsignedInt(0x00B2)];
+        }
+
+        @Override
+        public int getExportControlUserLimit() {
+            return client.holding.getUnsignedInt(0x00B6) * 10;
         }
     }
 }
