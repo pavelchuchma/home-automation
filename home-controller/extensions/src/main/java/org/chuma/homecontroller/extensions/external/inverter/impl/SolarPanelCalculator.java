@@ -4,13 +4,10 @@ import java.time.ZonedDateTime;
 
 import net.e175.klaus.solarpositioning.SolarPosition;
 import org.apache.commons.lang3.Validate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.chuma.homecontroller.extensions.external.SunCalculator;
 
 public class SolarPanelCalculator {
-    final static Logger logger = LoggerFactory.getLogger(SolarPanelCalculator.class);
     private final SunCalculator sunCalculator = SunCalculator.getInstance();
     /// Panel's azimuth angle in degrees (0° = North, 90° = East, etc.)
     private final double panelAzimuth;
@@ -51,9 +48,25 @@ public class SolarPanelCalculator {
         return Math.max(result, 0);
     }
 
+    public double calculateDailyYield(ZonedDateTime date) {
+        // Get start of the day (midnight) in the same zone
+        ZonedDateTime startOfDay = date.toLocalDate().atStartOfDay(date.getZone());
+        // Get end of the day (midnight of the next day)
+        ZonedDateTime endOfDay = startOfDay.plusDays(1);
+
+        ZonedDateTime current = startOfDay;
+        double segmentsPerHour = 4;
+        double totalPower = 0;
+        while (current.isBefore(endOfDay)) {
+            totalPower += calculateMaxPower(current) / segmentsPerHour;
+            current = current.plusMinutes((long)(60 / segmentsPerHour));
+        }
+        return totalPower / 1000;
+    }
+
     public static double calculateSolarIntensity(double angleDegrees) {
 //        final double k = 0.14;     // Extinction coefficient
-        final double k = 0.07;     // Extinction coefficient
+        final double k = 0.075;     // Extinction coefficient
         Validate.inclusiveBetween(0, 90, angleDegrees);
 
         // Convert degrees to radians

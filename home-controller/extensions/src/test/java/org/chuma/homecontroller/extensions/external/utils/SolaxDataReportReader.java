@@ -27,17 +27,24 @@ public class SolaxDataReportReader implements Closeable {
         }
         public ZonedDateTime getTime() {
             return ZonedDateTime.of(
-                    java.time.LocalDateTime.parse(row.getCell(0).getStringCellValue(), formatter),
+                    java.time.LocalDateTime.parse(stripTrailingDot(row.getCell(0).getStringCellValue()), formatter),
                     ZoneId.systemDefault()
             );
         }
 
+        private static String stripTrailingDot(String input) {
+            if (input != null && input.endsWith(".")) {
+                return input.substring(0, input.length() - 1);
+            }
+            return input;
+        }
+
         public double getPvPower() {
-            return row.getCell(3).getNumericCellValue();
+            return row.getCell(35).getNumericCellValue();
         }
 
         public double getDailyPvYield() {
-            return row.getCell(38).getNumericCellValue();
+            return row.getCell(2).getNumericCellValue();
         }
     }
     // Constructor accepting path to XLSX file

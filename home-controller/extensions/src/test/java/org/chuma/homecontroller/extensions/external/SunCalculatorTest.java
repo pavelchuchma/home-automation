@@ -8,7 +8,7 @@ import net.e175.klaus.solarpositioning.SolarPosition;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.chuma.homecontroller.app.configurator.Options;
+import org.chuma.homecontroller.base.utils.Options;
 
 public class SunCalculatorTest {
     @BeforeClass
