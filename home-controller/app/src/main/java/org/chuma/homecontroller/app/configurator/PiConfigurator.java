@@ -445,7 +445,7 @@ public class PiConfigurator extends AbstractConfigurator {
         // kuchyn + obyvak
 //        lst.addActionBinding(new ActionBinding(schodyDoleL2Sw.getLeftBottomButton(), new InvertAction(recuperation), null));
 
-//        configureLouvers(schodyDoleR1Sw, WallSwitch.Side.LEFT, zaluzieKuchyn);
+        configureLouvers(schodyDoleR1Sw, WallSwitch.Side.LEFT, zaluzieKuchyn);
         configureLouvers(schodyDoleR1Sw, WallSwitch.Side.RIGHT, zaluzieObyvak1);
         configureLouvers(schodyDoleR2Sw, WallSwitch.Side.LEFT, zaluzieObyvak2, zaluzieObyvak3);
         configureLouvers(schodyDoleR2Sw, WallSwitch.Side.RIGHT, zaluzieObyvak4);
