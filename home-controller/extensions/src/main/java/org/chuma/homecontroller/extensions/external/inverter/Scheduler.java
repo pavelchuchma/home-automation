@@ -29,6 +29,11 @@ public class Scheduler {
         return scheduler.schedule(pattern, new RunnableTask(action));
     }
 
+    public String scheduleTask(String cronPattern, Runnable action) {
+        log.debug("Scheduling task with pattern '{}'", cronPattern);
+        return scheduler.schedule(new SchedulingPattern(cronPattern), new RunnableTask(action));
+    }
+
     public void removeScheduledTasks(Iterable<String> ids) {
         for (String id : ids) {
             scheduler.deschedule(id);

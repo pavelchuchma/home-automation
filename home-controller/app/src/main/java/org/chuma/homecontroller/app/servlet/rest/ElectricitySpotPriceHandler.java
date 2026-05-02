@@ -17,8 +17,8 @@ public class ElectricitySpotPriceHandler extends AbstractRestHandler<Electricity
             return;
         }
 
-        jw.addAttribute("distFee", dayPrices.distributionFee());
-        jw.addAttribute("sellFee", dayPrices.sellFee());
+        jw.addAttribute("distFee", dayPrices.prices()[0].distributionFee());
+        jw.addAttribute("sellFee", dayPrices.prices()[0].sellFee());
         try (JsonWriter aw = jw.startArrayAttribute("values")) {
             for (ElectricitySpotPriceMonitor.IntervalPrice value : dayPrices.prices()) {
                 try (JsonWriter objectWriter = aw.startObject()) {

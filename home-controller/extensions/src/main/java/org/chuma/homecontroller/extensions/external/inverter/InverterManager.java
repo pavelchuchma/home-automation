@@ -17,7 +17,8 @@ public class InverterManager {
 
     static Logger log = LoggerFactory.getLogger(InverterManager.class.getName());
     private final SolaxInverterModbusClient client;
-    private final Options options;
+    private final ElectricitySpotPriceMonitor priceMonitor;
+    private final int hardMaxExportPower;
     private int minimalSoc = -1;
     private int batteryReserve = -1;
     private final IntervalScheduler intervalScheduler = new IntervalScheduler(
@@ -25,14 +26,17 @@ public class InverterManager {
             () -> applyMinBatterySoc(false)
     );
 
-    public InverterManager(SolaxInverterModbusClient client, Options options) {
+    public InverterManager(SolaxInverterModbusClient client, Options options, ElectricitySpotPriceMonitor priceMonitor, int hardMaxExportPower) {
         this.client = client;
-        this.options = options;
+        this.priceMonitor = priceMonitor;
+        this.hardMaxExportPower = hardMaxExportPower;
 
         setMinimalSoc(options.getInt(CFG_INVERTER_MANAGER_MINIMAL_SOC));
         setBatteryReserve(options.getInt(CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE));
         setHighTariffRanges(options.get(CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES));
         applyConfiguration();
+
+        Scheduler.getInstance().scheduleTask("0,15,30,45 * * * *", this::doPowerManagement);
 
         options.addListener(new Options.OptionChangeListener() {
             @Override
@@ -90,6 +94,31 @@ public class InverterManager {
 
     public void applyConfiguration() {
         intervalScheduler.applyCallback();
+    }
+
+    void doPowerManagement() {
+        log.debug("doPowerManagement");
+        // TODO: implement power management logic
+        InverterState state = client.getState();
+        ElectricitySpotPriceMonitor.IntervalPrice currentPrice = priceMonitor.getPriceAt(System.currentTimeMillis() + 5000);
+
+        if (state == null || currentPrice == null) {
+            log.warn("Failed to get inverter state or price");
+            return;
+        }
+
+        if (hardMaxExportPower > 0) {
+            double netSellPrice = currentPrice.price() - currentPrice.distributionFee() - currentPrice.sellFee();
+            int maxExport = (netSellPrice > 0) ? hardMaxExportPower : 0;
+            log.debug("maxExport: {} because (price - distributionFee - sellFee) = {} and allowedExport is {}", maxExport, netSellPrice, hardMaxExportPower);
+            int currentMaxExport = state.getExportControlUserLimit();
+            if (currentMaxExport != maxExport) {
+                log.debug("setExportControlUserLimit: {} -> {}", currentMaxExport, maxExport);
+                client.setExportControlUserLimit(maxExport);
+            } else {
+                log.trace("setExportControlUserLimit: already set to {}", maxExport);
+            }
+        }
     }
 
     void applyMinBatterySoc(boolean enteringHighTariff) {

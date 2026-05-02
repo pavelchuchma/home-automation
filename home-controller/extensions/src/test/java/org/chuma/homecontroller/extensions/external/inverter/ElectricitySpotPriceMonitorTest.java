@@ -25,16 +25,25 @@ public class ElectricitySpotPriceMonitorTest extends TestCase {
             long start = System.currentTimeMillis();
             ElectricitySpotPriceMonitor.Prices dayPrices = monitor.getDayPrices();
             Assert.assertNotNull(dayPrices);
-            Assert.assertEquals(48, dayPrices.prices().length);
+            Assert.assertEquals(192, dayPrices.prices().length);
             long end = System.currentTimeMillis();
             Assert.assertTrue(end - start < 100);
         }
     }
 
+    public void testGetPrice2() throws InterruptedException {
+        ElectricitySpotPriceMonitor monitor = new ElectricitySpotPriceMonitor(1500, 500, 21);
+        monitor.getDayPrices();
+        Thread.sleep(3000);
+        ElectricitySpotPriceMonitor.Prices dayPrices = monitor.getDayPrices();
+        Assert.assertNotNull(dayPrices);
+    }
+
+
     /**
      * Prints all hour entries to stdout, including time with timezone and the price value.
      */
-    private static void printHourPrices(ElectricitySpotPriceMonitor.IntervalPrice[] values) {
+    private static void printHourPrices(ElectricitySpotPriceMonitor.RawIntervalPrice[] values) {
         if (values == null) {
             System.out.println("<null>");
             return;
@@ -43,7 +52,7 @@ public class ElectricitySpotPriceMonitorTest extends TestCase {
         GregorianCalendar cal = new GregorianCalendar();
         long now = System.currentTimeMillis();
         for (int i = 0; i < values.length; i++) {
-            ElectricitySpotPriceMonitor.IntervalPrice hp = values[i];
+            ElectricitySpotPriceMonitor.RawIntervalPrice hp = values[i];
             cal.setTimeInMillis(hp.time());
             System.out.println(fmt.format(cal.getTime()) + " (" + hp.time() + ") -> " + hp.price());
             fmt.setTimeZone(cal.getTimeZone());
@@ -58,18 +67,18 @@ public class ElectricitySpotPriceMonitorTest extends TestCase {
         ElectricitySpotPriceMonitor monitor = new ElectricitySpotPriceMonitor(1500, 500, 21);
 
         Calendar firstSummerTimeDate = new GregorianCalendar(2024, Calendar.MARCH, 31);
-        ElectricitySpotPriceMonitor.IntervalPrice[] summerValues = monitor.cache.getEntryImpl(firstSummerTimeDate);
+        ElectricitySpotPriceMonitor.RawIntervalPrice[] summerValues = monitor.cache.getEntryImpl(firstSummerTimeDate);
         printHourPrices(summerValues);
-        Assert.assertEquals(23*4, Objects.requireNonNull(summerValues).length);
+        Assert.assertEquals(23 * 4, Objects.requireNonNull(summerValues).length);
 
         Calendar firstWinterTimeDate = new GregorianCalendar(2024, Calendar.OCTOBER, 27);
-        ElectricitySpotPriceMonitor.IntervalPrice[] winterValues = monitor.cache.getEntryImpl(firstWinterTimeDate);
+        ElectricitySpotPriceMonitor.RawIntervalPrice[] winterValues = monitor.cache.getEntryImpl(firstWinterTimeDate);
         printHourPrices(winterValues);
-        Assert.assertEquals(25*4, Objects.requireNonNull(winterValues).length);
+        Assert.assertEquals(25 * 4, Objects.requireNonNull(winterValues).length);
 
         Calendar today = new GregorianCalendar();
-        ElectricitySpotPriceMonitor.IntervalPrice[] todayValues = monitor.cache.getEntryImpl(today);
+        ElectricitySpotPriceMonitor.RawIntervalPrice[] todayValues = monitor.cache.getEntryImpl(today);
         printHourPrices(todayValues);
-        Assert.assertEquals(24*4, Objects.requireNonNull(todayValues).length);
+        Assert.assertEquals(24 * 4, Objects.requireNonNull(todayValues).length);
     }
 }

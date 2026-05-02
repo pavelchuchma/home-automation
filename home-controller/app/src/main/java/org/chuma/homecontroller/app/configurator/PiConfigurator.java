@@ -759,6 +759,12 @@ public class PiConfigurator extends AbstractConfigurator {
         GenericInputDevice cidlaRozvadec = new GenericInputDevice("cidlaRozvadec", rozvadecDole, 3);
         setupMagneticSensor(cidlaRozvadec.getIn1AndActivate(), "mgntCrpd", "Cerpadlo", waterPumpMonitor.getOnAction(), waterPumpMonitor.getOffAction());
 
+        ElectricitySpotPriceMonitor priceMonitor = new ElectricitySpotPriceMonitor(
+                OptionsSingleton.getDouble("electricity.price.distribution-fee"),
+                OptionsSingleton.getDouble("electricity.price.sell-fee"),
+                OptionsSingleton.getDouble("electricity.price.vat")
+        );
+
 
         InverterManager inverterManager = null;
         SolaxInverterMonitor inverterMonitor = null;
@@ -767,7 +773,7 @@ public class PiConfigurator extends AbstractConfigurator {
             inverterMonitor = new SolaxInverterMonitor(inverterModbusClient, 5_000, 60_000);
             inverterMonitor.start();
 
-            inverterManager = configureInverterRemoteControl(inverterModbusClient, inverterMonitor);
+            inverterManager = new InverterManager(inverterModbusClient, OptionsSingleton.getInstance(), priceMonitor, 8500);
         } catch (Exception e) {
             log.error("Failed to init solax inverter client", e);
         }
@@ -784,13 +790,6 @@ public class PiConfigurator extends AbstractConfigurator {
         RobonectMonitor robonectMonitor = new RobonectMonitor(
                 robonectClient, 2_500, 3600_000);
         robonectMonitor.start();
-
-        ElectricitySpotPriceMonitor priceMonitor = new ElectricitySpotPriceMonitor(
-                OptionsSingleton.getDouble("electricity.price.distribution-fee"),
-                OptionsSingleton.getDouble("electricity.price.sell-fee"),
-                OptionsSingleton.getDouble("electricity.price.vat")
-        );
-
 
         List<ServletAction> servletActions = new ArrayList<>();
         servletActions.add(new ServletAction("openDoor", "Bzučák", bzucakAction));
@@ -860,11 +859,6 @@ public class PiConfigurator extends AbstractConfigurator {
             log.error("Failed to init inverter client", e);
             return null;
         }
-    }
-
-    private static InverterManager configureInverterRemoteControl(SolaxInverterModbusClient client, InverterMonitor inverterMonitor) {
-        final Options options = OptionsSingleton.getInstance();
-        return new InverterManager(client, options);
     }
 
     @Override
