@@ -84,7 +84,7 @@ public class SolaxInverterModbusClient {
 
         @Override
         public BatteryMode getBatteryMode() {
-            return BatteryMode.values()[client.input.getUnsignedInt(0x008B)];
+            return BatteryMode.values()[client.holding.getUnsignedInt(0x008B)];
         }
 
         @Override

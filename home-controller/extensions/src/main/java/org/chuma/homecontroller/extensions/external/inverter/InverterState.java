@@ -120,9 +120,9 @@ public interface InverterState {
 
     enum BatteryMode {
         SelfUse,
-        ForceTime,
+        FeedInPriority,
         BackUp,
-        FeedInPriority
+        Manual
     }
 
     enum PgridBias {
