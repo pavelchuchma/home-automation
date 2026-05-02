@@ -27,12 +27,14 @@ class InverterItem extends AdditionalSvgToolItem {
     }
 
     drawImpl() {
-        this.textLines[0].text((this.mode === 'Idle') ? "💤"
-            : (this.pvPwr === 0) ? '☁'
-                : ((this.pvPwr < 1000) ? '🌥'
-                    : (this.pvPwr < 3500) ? '🌤'
-                        : '😎')
-                + ' ' + this.pvPwr + ' W');
+        this.textLines[0].text((this.mode === 'Waiting') ? "⊘"
+            : (this.mode === 'Checking') ? "↻"
+                : (this.mode === 'Idle') ? "💤"
+                    : (this.pvPwr === 0) ? '☁'
+                        : ((this.pvPwr < 1000) ? '🌥'
+                            : (this.pvPwr < 3500) ? '🌤'
+                                : '😎')
+                        + ' ' + this.pvPwr + ' W');
         this.textLines[1].text((this.mode === 'EPSMode') ? '🏡 ❌ 🏭 ' :
             (this.feedInPwr > 0) ? '🏡 ▶ 🏭 ' + this.feedInPwr + ' W' : '🏡 ◀ 🏭 ' + -this.feedInPwr + ' W');
 

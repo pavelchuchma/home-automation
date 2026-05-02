@@ -14,6 +14,7 @@ public class InverterManager {
     private static final String CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE = "inverter.manager.high.tariff.battery.reserve";
     private static final String CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES = "inverter.manager.high.tariff.times";
     private static final String CFG_INVERTER_MANAGER_MINIMAL_SOC = "inverter.manager.minimal.soc";
+    private static final String CFG_INVERTER_MANAGER_TURNOFF_ON_NEGATIVE_PRICE = "inverter.manager.turnoff.on.negative.price";
 
     static Logger log = LoggerFactory.getLogger(InverterManager.class.getName());
     private final SolaxInverterModbusClient client;
@@ -21,6 +22,7 @@ public class InverterManager {
     private final int hardMaxExportPower;
     private int minimalSoc = -1;
     private int batteryReserve = -1;
+    private boolean turnOffOnNegativePrice;
     private final IntervalScheduler intervalScheduler = new IntervalScheduler(
             () -> applyMinBatterySoc(true),
             () -> applyMinBatterySoc(false)
@@ -34,6 +36,7 @@ public class InverterManager {
         setMinimalSoc(options.getInt(CFG_INVERTER_MANAGER_MINIMAL_SOC));
         setBatteryReserve(options.getInt(CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE));
         setHighTariffRanges(options.get(CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES));
+        setTurnOffOnNegativePrice(options.getBoolean(CFG_INVERTER_MANAGER_TURNOFF_ON_NEGATIVE_PRICE));
         applyConfiguration();
 
         Scheduler.getInstance().scheduleTask("0,15,30,45 * * * *", this::doPowerManagement);
@@ -47,6 +50,8 @@ public class InverterManager {
                     setBatteryReserve(Integer.parseInt(value));
                 } else if (CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES.equals(key)) {
                     setHighTariffRanges(value);
+                } else if (CFG_INVERTER_MANAGER_TURNOFF_ON_NEGATIVE_PRICE.equals(key)) {
+                    setTurnOffOnNegativePrice(Boolean.parseBoolean(value));
                 }
             }
 
@@ -92,6 +97,11 @@ public class InverterManager {
         intervalScheduler.setIntervals(intervals);
     }
 
+    public void setTurnOffOnNegativePrice(boolean turnOffOnNegativePrice) {
+        log.debug("setTurnOffOnNegativePrice({})", turnOffOnNegativePrice);
+        this.turnOffOnNegativePrice = turnOffOnNegativePrice;
+    }
+
     public void applyConfiguration() {
         intervalScheduler.applyCallback();
     }
@@ -107,6 +117,21 @@ public class InverterManager {
             return;
         }
 
+        log.debug("buy price: {}, inverterMode: {}", currentPrice.price(), state.getMode());
+        if (turnOffOnNegativePrice) {
+            if (currentPrice.price() < 0) {
+                if (state.getMode() == InverterState.Mode.Normal) {
+                    client.setInverterOn(false);
+                }
+            } else {
+                if (state.getMode() == InverterState.Mode.Waiting) {
+                    log.info("turning on inverter");
+                }
+                client.setInverterOn(true);
+            }
+        }
+
+        // turn off export
         if (hardMaxExportPower > 0) {
             double netSellPrice = currentPrice.price() - currentPrice.distributionFee() - currentPrice.sellFee();
             int maxExport = (netSellPrice > 0) ? hardMaxExportPower : 0;

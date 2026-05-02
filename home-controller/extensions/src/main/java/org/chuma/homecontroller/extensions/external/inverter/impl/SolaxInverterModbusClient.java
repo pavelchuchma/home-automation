@@ -38,7 +38,7 @@ public class SolaxInverterModbusClient {
     }
 
     public synchronized void setInverterOn(boolean on) {
-        log.debug("setInverterOn({})", on);
+        log.info("setInverterOn({})", on);
         client.writeSingleRegisterValue(0x001C, on ? 1 : 0);
     }
 
