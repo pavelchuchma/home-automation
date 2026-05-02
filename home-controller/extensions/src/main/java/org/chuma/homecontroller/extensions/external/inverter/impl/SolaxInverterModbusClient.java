@@ -37,6 +37,11 @@ public class SolaxInverterModbusClient {
         return (int)(registers.getUnsignedInt(lsbIndex) + ((long)registers.getUnsignedInt(lsbIndex + 1) << 16));
     }
 
+    public synchronized void setInverterOn(boolean on) {
+        log.debug("setInverterOn({})", on);
+        client.writeSingleRegisterValue(0x001C, on ? 1 : 0);
+    }
+
     public synchronized void setSelfUseMinimalSoc(int value) {
         log.debug("setSelfUseMinimalSoc({})", value);
         Validate.inclusiveBetween(10, 100, value);

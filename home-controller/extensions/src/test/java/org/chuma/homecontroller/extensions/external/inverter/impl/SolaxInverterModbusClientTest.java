@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.chuma.homecontroller.base.utils.Utils;
 import org.chuma.homecontroller.extensions.external.inverter.InverterState;
 
 public class SolaxInverterModbusClientTest extends AbstractSolaxInverterTestBase {
@@ -14,6 +15,30 @@ public class SolaxInverterModbusClientTest extends AbstractSolaxInverterTestBase
         SolaxInverterModbusClient client = new SolaxInverterModbusClient(localIp);
         InverterState state = client.getState();
         log.debug("state: {}", state);
+    }
+
+    public void testSetSystemOff() throws Exception {
+        SolaxInverterModbusClient client = new SolaxInverterModbusClient(localIp);
+        log.debug("Mode: {}", client.getState().getMode());
+        client.setInverterOn(false);
+
+        while (client.getState().getMode() != InverterState.Mode.Waiting) {
+            log.debug("Waiting for standby Mode: {}", client.getState().getMode());
+            Utils.sleep(1000);
+        }
+        log.debug("Mode: {}", client.getState().getMode());
+    }
+
+    public void testSetSystemOn() throws Exception {
+        SolaxInverterModbusClient client = new SolaxInverterModbusClient(localIp);
+        log.debug("Mode: {}", client.getState().getMode());
+        client.setInverterOn(true);
+
+        while (client.getState().getMode() != InverterState.Mode.Normal) {
+            log.debug("Waiting for standby Mode: {}", client.getState().getMode());
+            Utils.sleep(1000);
+        }
+        log.debug("Mode: {}", client.getState().getMode());
     }
 
     public void testPerformance() throws Exception {
