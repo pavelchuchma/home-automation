@@ -25,6 +25,7 @@ public class InverterHandler extends AbstractMonitorRestHandler<SolaxInverterMon
         int feedInPower = state.getFeedInPower();
 
         jw.addAttribute("mode", state.getMode().toString());
+        jw.addAttribute("batMode", state.getBatteryMode().toString());
         jw.addAttribute("pvPwr", pv);
         jw.addAttribute("acPwr", acPower);
         jw.addAttribute("epsPwr", epsPower);

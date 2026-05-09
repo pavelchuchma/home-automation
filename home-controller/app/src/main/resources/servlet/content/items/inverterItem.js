@@ -4,6 +4,7 @@ class InverterItem extends AdditionalSvgToolItem {
     constructor() {
         super('inverter', 125)
         this.mode = undefined;
+        this.batMode = undefined;
         this.pvPwr = undefined;
         this.acPwr = undefined;
         this.feedInPwr = undefined;
@@ -22,8 +23,9 @@ class InverterItem extends AdditionalSvgToolItem {
         for (let i = 0; i < 7; i++) {
             this.textLines.push(this.svg.text('?').move(5, i * 17).font(this.baseFont));
         }
-        this.showOnData.push(...this.textLines);
-        this.hideOnNoData.push(...this.textLines);
+        this.batModeIcon = this.svg.text('?').move(92, 0).font(this.baseFont);
+        this.showOnData.push(...this.textLines, this.batModeIcon);
+        this.hideOnNoData.push(...this.textLines, this.batModeIcon);
     }
 
     drawImpl() {
@@ -47,5 +49,11 @@ class InverterItem extends AdditionalSvgToolItem {
         this.textLines[4].text('∑😎 ' + this.pvYieldToday + ' kWh');
         this.textLines[5].text('∑ ◀ 🏭 ' + this.consumedToday + ' kWh');
         this.textLines[6].text('∑ ▶ 🏭 ' + this.feedInToday + ' kWh');
+
+        this.batModeIcon.text(
+            (this.batMode === 'SelfUse') ? '🏡' :
+            (this.batMode === 'FeedInPriority') ? '🏭' :
+            (this.batMode === 'BackUp') ? '🔋' :
+            (this.batMode === 'Manual') ? '✋' : '?');
     }
 }
