@@ -5,6 +5,7 @@ class EPriceItem extends AdditionalSvgToolItem {
     data = {
         distFee: undefined,
         sellFee: undefined,
+        now: undefined,
         values: [{
             time: undefined,
             price: undefined
@@ -116,13 +117,13 @@ class EPriceItem extends AdditionalSvgToolItem {
 
         for (let h = 0; h < hourCount - 1; h++) {
             const t = this.data.values[0].time + (h + 1) * 3_600_000;
-            const date = new Date(t);
             const x = this.getXForTime(t);
+            const serverHour = (h + 1) % 24;
             this.hourLines[h]
                 .attr('x1', x)
                 .attr('x2', x)
                 .attr('id', 'hourLine' + h)
-                .stroke((date.getHours() % 12 === 0) ? this.twelveHourGridStyle : (date.getHours() % 3 === 0) ? this.threeHourGridStyle : this.hourGridStyle);
+                .stroke((serverHour % 12 === 0) ? this.twelveHourGridStyle : (serverHour % 3 === 0) ? this.threeHourGridStyle : this.hourGridStyle);
         }
 
         // price line parts
@@ -136,7 +137,7 @@ class EPriceItem extends AdditionalSvgToolItem {
     }
 
     drawImpl() {
-        const now = Date.now();
+        const now = this.data.now;
         const maxPrice = Math.max(...this.data.values.map(v => v.price));
         const minPrice = Math.min(...this.data.values.map(v => v.price));
         this.topYPrice = Math.round(maxPrice + 0.5);
