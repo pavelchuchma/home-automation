@@ -11,7 +11,7 @@ import org.chuma.homecontroller.extensions.external.utils.ModbusClient;
 
 /**
  * Client for local Modbus API of "Solax X3-Hybrid G4 Inverter"
- * Filed map: https://github.com/InfernoEmbedded/PowerScraper/blob/master/Inputs/SolaxXHybridModbus.py
+ * Modbus specification: doc/inverter/solax_modbus_spec_3.34.md
  */
 public class SolaxInverterModbusClient {
     protected static Logger log = LoggerFactory.getLogger(SolaxInverterModbusClient.class.getName());
@@ -60,6 +60,11 @@ public class SolaxInverterModbusClient {
     public synchronized void setPgridBias(InverterState.PgridBias value) {
         log.debug("setPgridBias({})", value);
         client.writeSingleRegisterValue(0x008D, value.ordinal());
+    }
+
+    public synchronized void setBatteryMode(InverterState.BatteryMode value) {
+        log.info("setBatteryMode({})", value);
+        client.writeSingleRegisterValue(0x001F, value.ordinal());
     }
 
     public class State extends AbstractInverterState {

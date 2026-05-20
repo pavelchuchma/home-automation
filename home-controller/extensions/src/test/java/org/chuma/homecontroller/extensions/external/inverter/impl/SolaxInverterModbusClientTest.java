@@ -17,6 +17,26 @@ public class SolaxInverterModbusClientTest extends AbstractSolaxInverterTestBase
         log.debug("state: {}", state);
     }
 
+    public void testSetBatteryMode() throws Exception {
+        SolaxInverterModbusClient client = new SolaxInverterModbusClient(localIp);
+        InverterState state = client.getState();
+        log.debug("current: {}", state.getBatteryMode());
+
+        InverterState.BatteryMode origMode = state.getBatteryMode();
+
+        client.setBatteryMode(InverterState.BatteryMode.FeedInPriority);
+        Thread.sleep(1000);
+        assertEquals(InverterState.BatteryMode.FeedInPriority, client.getState().getBatteryMode());
+
+        client.setBatteryMode(InverterState.BatteryMode.SelfUse);
+        Thread.sleep(1000);
+        assertEquals(InverterState.BatteryMode.SelfUse, client.getState().getBatteryMode());
+
+        client.setBatteryMode(origMode);
+        Thread.sleep(1000);
+        assertEquals(origMode, client.getState().getBatteryMode());
+    }
+
     public void testSetSystemOff() throws Exception {
         SolaxInverterModbusClient client = new SolaxInverterModbusClient(localIp);
         log.debug("Mode: {}", client.getState().getMode());

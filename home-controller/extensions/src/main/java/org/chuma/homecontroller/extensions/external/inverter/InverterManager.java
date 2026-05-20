@@ -23,7 +23,7 @@ public class InverterManager {
     private int minimalSoc = -1;
     private int batteryReserve = -1;
     private boolean turnOffOnNegativePrice;
-    private final IntervalScheduler intervalScheduler = new IntervalScheduler(
+    private final IntervalScheduler highTariffScheduler = new IntervalScheduler(
             () -> applyMinBatterySoc(true),
             () -> applyMinBatterySoc(false)
     );
@@ -94,7 +94,7 @@ public class InverterManager {
 
     public void setHighTariffRanges(String intervals) {
         log.debug("setHighTariffRanges({})", intervals);
-        intervalScheduler.setIntervals(intervals);
+        highTariffScheduler.setIntervals(intervals);
     }
 
     public void setTurnOffOnNegativePrice(boolean turnOffOnNegativePrice) {
@@ -103,12 +103,11 @@ public class InverterManager {
     }
 
     public void applyConfiguration() {
-        intervalScheduler.applyCallback();
+        highTariffScheduler.applyCallback();
     }
 
     void doPowerManagement() {
         log.debug("doPowerManagement");
-        // TODO: implement power management logic
         InverterState state = client.getState();
         ElectricitySpotPriceMonitor.IntervalPrice currentPrice = priceMonitor.getPriceAt(System.currentTimeMillis() + 5000);
 
@@ -118,6 +117,7 @@ public class InverterManager {
         }
 
         log.debug("buy price: {}, inverterMode: {}", currentPrice.price(), state.getMode());
+        // Turn inverter off on negative import price
         if (turnOffOnNegativePrice) {
             if (currentPrice.price() < 0) {
                 if (state.getMode() == InverterState.Mode.Normal) {
@@ -127,12 +127,14 @@ public class InverterManager {
                 if (state.getMode() == InverterState.Mode.Waiting) {
                     log.info("turning on inverter");
                 }
-                client.setInverterOn(true);
+                if (state.getMode() != InverterState.Mode.Normal) {
+                    client.setInverterOn(true);
+                }
             }
         }
 
-        // turn off export
         if (hardMaxExportPower > 0) {
+            // turn off export on negative export price
             double netSellPrice = currentPrice.price() - currentPrice.distributionFee() - currentPrice.sellFee();
             int maxExport = (netSellPrice > 0) ? hardMaxExportPower : 0;
             log.debug("maxExport: {} because (price - distributionFee - sellFee) = {} and allowedExport is {}", maxExport, netSellPrice, hardMaxExportPower);
