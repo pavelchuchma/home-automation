@@ -15,6 +15,8 @@ public class InverterManager {
     private static final String CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES = "inverter.manager.high.tariff.times";
     private static final String CFG_INVERTER_MANAGER_MINIMAL_SOC = "inverter.manager.minimal.soc";
     private static final String CFG_INVERTER_MANAGER_TURNOFF_ON_NEGATIVE_PRICE = "inverter.manager.turnoff.on.negative.price";
+    private static final String CFG_INVERTER_MANAGER_EXPORT_PRIORITY_TIMER_ENABLED = "inverter.manager.export.priority.timer.enabled";
+    private static final String CFG_INVERTER_MANAGER_EXPORT_PRIORITY_TIMES = "inverter.manager.export.priority.times";
 
     static Logger log = LoggerFactory.getLogger(InverterManager.class.getName());
     private final SolaxInverterModbusClient client;
@@ -23,9 +25,14 @@ public class InverterManager {
     private int minimalSoc = -1;
     private int batteryReserve = -1;
     private boolean turnOffOnNegativePrice;
+    private boolean exportPriorityTimerEnabled;
     private final IntervalScheduler highTariffScheduler = new IntervalScheduler(
             () -> applyMinBatterySoc(true),
             () -> applyMinBatterySoc(false)
+    );
+    private final IntervalScheduler exportPriorityScheduler = new IntervalScheduler(
+            () -> applyBatteryMode(true),
+            () -> applyBatteryMode(false)
     );
 
     public InverterManager(SolaxInverterModbusClient client, Options options, ElectricitySpotPriceMonitor priceMonitor, int hardMaxExportPower) {
@@ -37,6 +44,8 @@ public class InverterManager {
         setBatteryReserve(options.getInt(CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE));
         setHighTariffRanges(options.get(CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES));
         setTurnOffOnNegativePrice(options.getBoolean(CFG_INVERTER_MANAGER_TURNOFF_ON_NEGATIVE_PRICE));
+        setExportPriorityTimerEnabled(options.getBoolean(CFG_INVERTER_MANAGER_EXPORT_PRIORITY_TIMER_ENABLED));
+        setExportPriorityRanges(options.get(CFG_INVERTER_MANAGER_EXPORT_PRIORITY_TIMES));
         applyConfiguration();
 
         Scheduler.getInstance().scheduleTask("0,15,30,45 * * * *", this::doPowerManagement);
@@ -52,6 +61,10 @@ public class InverterManager {
                     setHighTariffRanges(value);
                 } else if (CFG_INVERTER_MANAGER_TURNOFF_ON_NEGATIVE_PRICE.equals(key)) {
                     setTurnOffOnNegativePrice(Boolean.parseBoolean(value));
+                } else if (CFG_INVERTER_MANAGER_EXPORT_PRIORITY_TIMER_ENABLED.equals(key)) {
+                    setExportPriorityTimerEnabled(Boolean.parseBoolean(value));
+                } else if (CFG_INVERTER_MANAGER_EXPORT_PRIORITY_TIMES.equals(key)) {
+                    setExportPriorityRanges(value);
                 }
             }
 
@@ -59,7 +72,9 @@ public class InverterManager {
             public void optionsSaved(Set<String> keys) {
                 if (keys.contains(CFG_INVERTER_MANAGER_MINIMAL_SOC)
                         || keys.contains(CFG_INVERTER_MANAGER_HIGH_TARIFF_BATTERY_RESERVE)
-                        || keys.contains(CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES)) {
+                        || keys.contains(CFG_INVERTER_MANAGER_HIGH_TARIFF_TIMES)
+                        || keys.contains(CFG_INVERTER_MANAGER_EXPORT_PRIORITY_TIMER_ENABLED)
+                        || keys.contains(CFG_INVERTER_MANAGER_EXPORT_PRIORITY_TIMES)) {
                     applyConfiguration();
                 }
             }
@@ -102,8 +117,19 @@ public class InverterManager {
         this.turnOffOnNegativePrice = turnOffOnNegativePrice;
     }
 
+    public void setExportPriorityTimerEnabled(boolean enabled) {
+        log.debug("setExportPriorityTimerEnabled({})", enabled);
+        this.exportPriorityTimerEnabled = enabled;
+    }
+
+    public void setExportPriorityRanges(String intervals) {
+        log.debug("setExportPriorityRanges({})", intervals);
+        exportPriorityScheduler.setIntervals(intervals);
+    }
+
     public void applyConfiguration() {
         highTariffScheduler.applyCallback();
+        exportPriorityScheduler.applyCallback();
     }
 
     void doPowerManagement() {
@@ -173,6 +199,27 @@ public class InverterManager {
             }
         } catch (Exception e) {
             log.error("Failed to set MinBatterySoc", e);
+        }
+    }
+
+    void applyBatteryMode(boolean enteringExportPriority) {
+        try {
+            if (!exportPriorityTimerEnabled) {
+                log.debug("applyBatteryMode skipped, export priority timer disabled");
+                return;
+            }
+            InverterState.BatteryMode desired = enteringExportPriority
+                    ? InverterState.BatteryMode.FeedInPriority
+                    : InverterState.BatteryMode.SelfUse;
+            InverterState.BatteryMode current = client.getState().getBatteryMode();
+            if (current != desired) {
+                log.debug("setBatteryMode: {} -> {}", current, desired);
+                client.setBatteryMode(desired);
+            } else {
+                log.debug("batteryMode already set to {}, no change needed", desired);
+            }
+        } catch (Exception e) {
+            log.error("Failed to set BatteryMode", e);
         }
     }
 }
