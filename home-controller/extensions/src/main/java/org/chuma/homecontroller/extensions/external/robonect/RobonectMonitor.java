@@ -21,6 +21,10 @@ public class RobonectMonitor extends AbstractStateMonitor<State> {
     final ArrayDeque<GpsHistoryEntry> gpsHistory = new ArrayDeque<>();
     private final Object gpsHistoryLock = new Object();
     static int GPS_HISTORY_LENGTH_SECS = 24 * 3600;
+    static int FAILURES_BEFORE_BACKOFF = 10;
+    static long BACKOFF_INTERVAL_MS = 10 * 60 * 1000L;
+    private int consecutiveFailures = 0;
+    private long nextAttemptAfter = 0;
 
     public record GpsHistoryEntry(
             double latitude,
@@ -42,6 +46,9 @@ public class RobonectMonitor extends AbstractStateMonitor<State> {
 
     @Override
     protected State getStateImpl(boolean firstCallAfterSleep) {
+        if (consecutiveFailures >= FAILURES_BEFORE_BACKOFF && System.currentTimeMillis() < nextAttemptAfter) {
+            return null;
+        }
         try {
             long startTime = 0;
             if (log.isTraceEnabled()) {
@@ -86,9 +93,16 @@ public class RobonectMonitor extends AbstractStateMonitor<State> {
             State state = new State(mowerStatus, mowerInfo.getTimer(), mowerInfo.getWlan(), mowerInfo.getHealth(),
                     mowerInfo.getBlades(), mowerInfo.getError(), gps, weather);
             log.trace("done in {} ms, mode: {}", System.currentTimeMillis() - startTime, status);
+            consecutiveFailures = 0;
             return state;
         } catch (Exception e) {
-            log.error("Failed to refresh Robonect state", e);
+            consecutiveFailures++;
+            if (consecutiveFailures >= FAILURES_BEFORE_BACKOFF) {
+                nextAttemptAfter = System.currentTimeMillis() + BACKOFF_INTERVAL_MS;
+                log.debug("Failed to refresh Robonect state (consecutive failures: {}): {}", consecutiveFailures, e.getMessage());
+            } else {
+                log.error("Failed to refresh Robonect state", e);
+            }
             return null;
         }
     }
