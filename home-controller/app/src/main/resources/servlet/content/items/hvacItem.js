@@ -18,7 +18,7 @@ class HvacItem extends AdditionalSvgToolItem {
     };
 
     constructor() {
-        super('hvac', 60)
+        super('hvac', 42)
     }
 
     updateToDataProperty() {
@@ -36,13 +36,15 @@ class HvacItem extends AdditionalSvgToolItem {
 
         let y = 3;
         items.push(this.onOffIcon = this.svg.image('img/onOff.svg').size(s, s).move(1, y + 2));
-        items.push(this.textTargetMode = this.svg.text('?').move(19, y).font(this.baseFont));
-        items.push(this.textTargetTemp = this.svg.text('?').move(70, y).font(this.baseFont));
-
-        y += step;
-        items.push(this.fanIcon = this.svg.image('img/fanIcon.svg').size(s, s).move(4, y + 2).rotate(45));
-        items.push(this.textFanSpeed = this.svg.text('?').move(19, y).font(this.baseFont));
-        items.push(this.textDefrost = this.svg.text('❄ Defrost!').move(60, y).font(this.baseFont));
+        // one icon per OperatingMode value — stacked at the same spot, drawImpl toggles visibility
+        this.modeIcons = {};
+        const modeIconFiles = {AUTO: 'hvacAuto', COOL: 'hvacCool', FAN: 'hvacFan', DRY: 'hvacDry', HEAT: 'hvacHeat', NONE: 'hvacNone'};
+        Object.entries(modeIconFiles).forEach(([mode, fname]) => {
+            this.modeIcons[mode] = this.svg.image(`img/${fname}.svg`).size(s, s).move(19, y + 2).attr({visibility: 'hidden'});
+        });
+        items.push(this.textTargetTemp = this.svg.text('?').move(38, y).font(this.baseFont));
+        items.push(this.fanIcon = this.svg.image('img/fanIcon.svg').size(s, s).move(72, y + 2).rotate(45));
+        items.push(this.textFanSpeed = this.svg.text('?').move(90, y).font(this.baseFont));
 
         y += step;
         items.push(this.textRoomAirTemp = this.svg.text('?').move(5, y).font(this.baseFont));
@@ -53,19 +55,18 @@ class HvacItem extends AdditionalSvgToolItem {
         this.offOverlay = this.svg.rect(this.canvasWidth - 2, this.canvasHeight - 2).move(1, 1).fill('lightgray').opacity(.9);
 
         this.showOnData.push(...items);
-        this.hideOnNoData.push(...items, this.offOverlay);
+        this.hideOnNoData.push(...items, this.offOverlay, ...Object.values(this.modeIcons));
     }
 
     drawImpl() {
         const d = this.data;
-        this.textTargetMode.text(d.targetMode);
+        Object.entries(this.modeIcons).forEach(([mode, icon]) => this.setVisibility(icon, d.currentMode === mode));
         this.textTargetTemp.text('▶ ' + this.formatTemp(d.targetTemperature));
         this.textFanSpeed.text((d.fanSpeed === 'AUTO') ? 'A' : (d.fanSpeed === 'NONE') ? '?' : d.fanSpeed.replace('SPEED_', ''));
         this.textRoomAirTemp.text('🏠 ' + this.formatTemp(d.roomTemperature) + ' 🌬 ' + this.formatTemp(d.airTemperature));
         this.textUnitTemp.text(this.formatTemp(d.unitTemperature) + '');
 
         this.setVisibility(this.offOverlay, !d.on);
-        this.setVisibility(this.textDefrost, !!d.defrost);
     }
 
     formatTemp(t) {
