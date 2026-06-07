@@ -788,7 +788,7 @@ public class PiConfigurator extends AbstractConfigurator {
                 OptionsSingleton.get("robonect.username"), OptionsSingleton.get("robonect.password"));
         RobonectClient robonectClient = new RobonectClient(robonectEndpoint);
         RobonectMonitor robonectMonitor = new RobonectMonitor(
-                robonectClient, 2_500, 3600_000);
+                robonectClient, 2_500, 5 * 3600_000);
         robonectMonitor.start();
 
         List<ServletAction> servletActions = new ArrayList<>();

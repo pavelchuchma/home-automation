@@ -20,7 +20,7 @@ class RobonectItem extends AdditionalSvgToolItem {
     mapMoveLeft = 12;
     mapRotate = -5.7;
     innerWH = Math.max(this.canvasWidth - 2 * this.border, this.canvasHeight - 2 * this.border) * 0.85;
-    maxPathAge = 40 * 60;
+    maxPathAge = 2 * 60 * 60;
 
     constructor() {
         super('robonect', 80)
