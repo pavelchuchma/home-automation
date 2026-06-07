@@ -132,17 +132,21 @@ public class BoilerManager {
             State state = bc.getState();
 
             if (state.isOn()) {
-                log.debug("Turn on: ON -> OFF");
+                log.debug("Turn off: ON -> OFF");
                 bc.setPowerOn(false);
+
+                // One-shot flags are cleared only when we actually power the boiler down,
+                // so that enabling disinfect/eheat outside an interval survives until the
+                // next scheduled turnOn() instead of being wiped by applyCallback().
+                log.debug("Disabling boiler disinfect and e-heat");
+                Options options = OptionsSingleton.getInstance();
+                options.put(CFG_BOILER_DISINFECT, false);
+                options.put(CFG_BOILER_EHEAT, false);
+                optionsSaveInProgress = true;
+                options.save();
             } else {
-                log.debug("Turn on: already OFF");
+                log.debug("Turn off: already OFF");
             }
-            log.debug("Disabling boiler disinfect and e-heat");
-            Options options = OptionsSingleton.getInstance();
-            options.put(CFG_BOILER_DISINFECT, false);
-            options.put(CFG_BOILER_EHEAT, false);
-            optionsSaveInProgress = true;
-            options.save();
         } catch (Exception e) {
             log.error("Turn off failed", e);
         } finally {
