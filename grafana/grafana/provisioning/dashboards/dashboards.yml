@@ -1,0 +1,17 @@
+# Loads dashboards from /etc/grafana/provisioning/dashboards (JSON files).
+# Drop exported dashboard JSON files here and they get loaded on startup.
+apiVersion: 1
+
+providers:
+  - name: 'default'
+    orgId: 1
+    folder: ''
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    # provisioned dashboards are read-only in the UI; edit them via the JSON
+    # files (or use "Save As" to fork an independent copy into the DB)
+    allowUiUpdates: false
+    options:
+      path: /etc/grafana/provisioning/dashboards
+      foldersFromFilesStructure: true
