@@ -21,7 +21,7 @@ public class InverterManagerTest extends AbstractSolaxInverterTestBase {
             log.info("Waiting for prices...");
             Thread.sleep(500);
         }
-        final InverterManager manager = new InverterManager(client, options, priceMonitor, 8500);
+        final InverterManager manager = new InverterManager(client, options, priceMonitor, 8500, 10000, 5900);
         manager.doPowerManagement();
     }
 
@@ -30,7 +30,7 @@ public class InverterManagerTest extends AbstractSolaxInverterTestBase {
         final SolaxInverterModbusClient client = new SolaxInverterModbusClient(localIp);
 
         String s = "6:55-8:25;17:55-19:05";
-        final InverterManager manager = new InverterManager(client, options, priceMonitor, 0);
+        final InverterManager manager = new InverterManager(client, options, priceMonitor, 0, 10000, 5900);
         manager.setHighTariffRanges(s);
 
         Thread.sleep(1200000);
@@ -40,7 +40,7 @@ public class InverterManagerTest extends AbstractSolaxInverterTestBase {
         final SolaxInverterModbusClient client = new SolaxInverterModbusClient(localIp);
         int origMinSocValue = client.getState().getSelfUseMinimalSoc();
 
-        InverterManager manager = new InverterManager(client, options, priceMonitor, 0);
+        InverterManager manager = new InverterManager(client, options, priceMonitor, 0, 10000, 5900);
         final int minSoc = 40;
         final int reserve = 13;
 

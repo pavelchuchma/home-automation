@@ -13,6 +13,8 @@ public interface InverterState {
 
     BatteryMode getBatteryMode();
 
+    ManualMode getManualMode();
+
     /**
      * Voltage on AC Power, phase 1
      */
@@ -123,6 +125,16 @@ public interface InverterState {
         FeedInPriority,
         BackUp,
         Manual
+    }
+
+    /**
+     * Behavior of the inverter while {@link BatteryMode#Manual} is active.
+     * Ordinals match the Solax ManualMode register (write 0x0020, read 0x008C).
+     */
+    enum ManualMode {
+        Stop,
+        ForceCharge,
+        ForceDischarge
     }
 
     enum PgridBias {

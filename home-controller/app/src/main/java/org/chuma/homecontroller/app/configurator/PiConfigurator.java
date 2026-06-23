@@ -773,7 +773,7 @@ public class PiConfigurator extends AbstractConfigurator {
             inverterMonitor = new SolaxInverterMonitor(inverterModbusClient, 5_000, 60_000);
             inverterMonitor.start();
 
-            inverterManager = new InverterManager(inverterModbusClient, OptionsSingleton.getInstance(), priceMonitor, 8500);
+            inverterManager = new InverterManager(inverterModbusClient, OptionsSingleton.getInstance(), priceMonitor, 8500, 10000, 5900);
         } catch (Exception e) {
             log.error("Failed to init solax inverter client", e);
         }

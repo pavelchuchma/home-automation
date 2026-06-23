@@ -18,6 +18,7 @@ public abstract class AbstractInverterState implements InverterState {
                 "\n  wifiSerialNumber='" + getWifiSerialNumber() + '\'' +
                 "\n  mode=" + getMode() +
                 "\n  batteryMode=" + getBatteryMode() +
+                "\n  manualMode=" + getManualMode() +
                 "\n  grid1Voltage=" + getGrid1Voltage() +
                 "\n  grid2Voltage=" + getGrid2Voltage() +
                 "\n  grid3Voltage=" + getGrid3Voltage() +

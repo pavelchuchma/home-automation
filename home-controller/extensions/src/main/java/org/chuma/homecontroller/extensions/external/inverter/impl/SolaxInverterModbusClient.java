@@ -67,6 +67,11 @@ public class SolaxInverterModbusClient {
         client.writeSingleRegisterValue(0x001F, value.ordinal());
     }
 
+    public synchronized void setManualMode(InverterState.ManualMode value) {
+        log.info("setManualMode({})", value);
+        client.writeSingleRegisterValue(0x0020, value.ordinal());
+    }
+
     public class State extends AbstractInverterState {
         @Override
         public String getVersion() {
@@ -95,6 +100,11 @@ public class SolaxInverterModbusClient {
         @Override
         public BatteryMode getBatteryMode() {
             return BatteryMode.values()[client.holding.getUnsignedInt(0x008B)];
+        }
+
+        @Override
+        public ManualMode getManualMode() {
+            return ManualMode.values()[client.holding.getUnsignedInt(0x008C)];
         }
 
         @Override
