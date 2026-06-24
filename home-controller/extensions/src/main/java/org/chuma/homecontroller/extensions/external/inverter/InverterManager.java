@@ -234,6 +234,12 @@ public class InverterManager {
                 log.trace("setExportControlUserLimit: already set to {}", maxExport);
             }
         }
+
+        // Re-assert the export-priority battery mode every cycle. A write at the window boundary (e.g. 5:00)
+        // can be ignored by the inverter while it is still powering up (right after setInverterOn at the start
+        // of the export window), leaving it in SelfUse. This corrects it on the next run once the inverter is up.
+        // applyBatteryMode() is a no-op while force discharge is active or the export-priority timer is disabled.
+        applyBatteryMode(exportPriorityScheduler.isInInterval());
     }
 
     void applyMinBatterySoc(boolean enteringHighTariff) {
@@ -281,6 +287,12 @@ public class InverterManager {
             if (current != desired) {
                 log.debug("setBatteryMode: {} -> {}", current, desired);
                 client.setBatteryMode(desired);
+                InverterState.BatteryMode storedValue = client.getState().getBatteryMode();
+                if (storedValue != desired) {
+                    // Typically happens when the inverter is still powering up; the next doPowerManagement
+                    // cycle re-asserts the mode once it is up.
+                    log.error("Failed to set BatteryMode to {}, stored value is {}", desired, storedValue);
+                }
             } else {
                 log.debug("batteryMode already set to {}, no change needed", desired);
             }
