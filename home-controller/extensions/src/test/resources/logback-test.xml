@@ -30,6 +30,9 @@
         <appender-ref ref="consoleAppender"/>
     </logger>
 
+    <!-- javampd logs "Override properties file not on classpath" at INFO on every MPDProperties access -->
+    <logger name="org.bff.javampd" level="WARN"/>
+
     <root level="info">
         <appender-ref ref="consoleAppender" additivity="false"/>
     </root>

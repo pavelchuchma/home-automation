@@ -33,6 +33,9 @@ Other notable directories:
 - `doc/inverter/solax_modbus_spec_3.34.md` — Solax X3-Hybrid G4 Modbus register
   specification. Read-side and write-side maps are separate; see the Solax
   section below.
+- `doc/mpd.md` — MPD (Music Player Daemon) setup on the Pi: hardware, current
+  `/etc/mpd.conf`, control over port 6600, and a troubleshooting section for the
+  USB audio "Kuchyn" going silent after reconnecting USB.
 - `out`, `*/out` — compiled outputs; treat as generated. Never edit or place
   source files here.
 
@@ -145,6 +148,11 @@ Look them up in the spec's "Write" section.
 - Keep changes minimal and localized; avoid broad refactors unless requested.
 - When adding a new module or dependency, update `settings.gradle` and the
   relevant Gradle build files.
+- Committed documentation (Markdown, code comments, this file) must not contain
+  local secrets, credentials, tokens, or private LAN IP addresses. Use
+  placeholders instead (e.g. `<mpd-host>`, `<inverter-ip>`,
+  `192.168.x.x`/`<local-ip>`). Real host IPs and secrets belong in local,
+  git-ignored config — never in git history.
 
 ## When unsure
 

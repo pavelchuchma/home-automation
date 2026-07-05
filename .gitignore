@@ -12,3 +12,6 @@ controller/out
 [Bb]in
 [Oo]bj
 .idea
+
+# macOS
+.DS_Store
