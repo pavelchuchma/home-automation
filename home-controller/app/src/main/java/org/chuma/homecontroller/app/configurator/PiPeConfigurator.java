@@ -34,15 +34,14 @@ import org.chuma.homecontroller.app.servlet.rest.ServletActionHandler;
 import org.chuma.homecontroller.app.servlet.rest.StatusHandler;
 import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
 import org.chuma.homecontroller.base.node.Node;
-import org.chuma.homecontroller.base.utils.Options;
 import org.chuma.homecontroller.base.utils.OptionsSingleton;
 import org.chuma.homecontroller.controller.controller.LouversController;
 import org.chuma.homecontroller.controller.device.Relay16BoardDevice;
+import org.chuma.homecontroller.controller.device.WallSwitch;
 import org.chuma.homecontroller.controller.nodeinfo.NodeInfoRegistry;
 import org.chuma.homecontroller.controller.persistence.StateMap;
 import org.chuma.homecontroller.extensions.external.inverter.ElectricitySpotPriceMonitor;
 import org.chuma.homecontroller.extensions.external.inverter.InverterManager;
-import org.chuma.homecontroller.extensions.external.inverter.InverterMonitor;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterModbusClient;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterMonitor;
 import org.chuma.hvaccontroller.device.HvacDevice;
@@ -64,12 +63,12 @@ public class PiPeConfigurator extends AbstractConfigurator {
         Node krb = nodeInfoRegistry.createNode(38, "Krb");
         Node kuchyn = nodeInfoRegistry.createNode(52, "Kuchyň");
         Node pracovna = nodeInfoRegistry.createNode(53, "Pracovna");
-        Node koupelnadole = nodeInfoRegistry.createNode(54, "KoupelnaDole");
+        Node koupelnaDole = nodeInfoRegistry.createNode(54, "KoupelnaDole");
         Node loznice = nodeInfoRegistry.createNode(55, "Ložnice");
         Node ochoz = nodeInfoRegistry.createNode(56, "Ochoz");
         Node dada = nodeInfoRegistry.createNode(57, "Dáda");
         Node mates = nodeInfoRegistry.createNode(58, "Mates");
-        Node koupelnahore = nodeInfoRegistry.createNode(59, "KoupelnaHore");
+        Node koupelnaHore = nodeInfoRegistry.createNode(59, "KoupelnaHore");
         Node juju = nodeInfoRegistry.createNode(60, "Juju");
 
 
@@ -125,6 +124,38 @@ public class PiPeConfigurator extends AbstractConfigurator {
 //        servletActions.add(new ServletAction("testRele16-46", "Rele16-46", new Relay16TestLoopAction(new Relay16BoardDevice("test46", rele1))));
 //        servletActions.add(new ServletAction("testRele16-47", "Rele16-47", new Relay16TestLoopAction(new Relay16BoardDevice("test47", rele2))));
 //        servletActions.add(new ServletAction("testRele16-48", "Rele16-48", new Relay16TestLoopAction(new Relay16BoardDevice("test48", rele3))));
+
+        WallSwitch jujuSw = new WallSwitch("jujuSw", juju, 1);
+        WallSwitch dadaSw = new WallSwitch("dadaSw", dada, 1);
+        WallSwitch matesSw = new WallSwitch("matesSw", mates, 1);
+        WallSwitch koupelnaHoreSw = new WallSwitch("koupelnaHoreSw", koupelnaHore, 1);
+        WallSwitch ochozSw1 = new WallSwitch("ochozSw", ochoz, 1);
+        WallSwitch ochozSw2 = new WallSwitch("ochozSw", ochoz, 2);
+        WallSwitch lozniceSw = new WallSwitch("lozniceSw", loznice, 1);
+        WallSwitch dvorekSw = new WallSwitch("dvorekSw", loznice, 2);
+        WallSwitch pracovnaSw = new WallSwitch("pracovnaSw", pracovna, 1);
+        WallSwitch koupelnaDoleSw = new WallSwitch("koupelnaDoleSw", koupelnaDole, 1);
+
+
+        configureLouvers(jujuSw, WallSwitch.Side.LEFT, zJuju);
+        configureLouvers(jujuSw, WallSwitch.Side.RIGHT, zJuju);
+        configureLouvers(dadaSw, WallSwitch.Side.LEFT, zDada);
+        configureLouvers(dadaSw, WallSwitch.Side.RIGHT, zDada);
+        configureLouvers(matesSw, WallSwitch.Side.LEFT, zMates1);
+        configureLouvers(matesSw, WallSwitch.Side.RIGHT, zMates2);
+        configureLouvers(koupelnaHoreSw, WallSwitch.Side.LEFT, zKoupelnaHore);
+        configureLouvers(koupelnaHoreSw, WallSwitch.Side.RIGHT, zKoupelnaHore);
+        configureLouvers(ochozSw1, WallSwitch.Side.LEFT, zOchoz);
+        configureLouvers(ochozSw1, WallSwitch.Side.RIGHT, zOchoz);
+
+        configureLouvers(lozniceSw, WallSwitch.Side.LEFT, zLoznice);
+        configureLouvers(lozniceSw, WallSwitch.Side.RIGHT, zLoznice);
+        configureLouvers(dvorekSw, WallSwitch.Side.LEFT, zDvorek);
+        configureLouvers(dvorekSw, WallSwitch.Side.RIGHT, zDvorek);
+        configureLouvers(pracovnaSw, WallSwitch.Side.LEFT, zPracovna);
+        configureLouvers(pracovnaSw, WallSwitch.Side.RIGHT, zPracovnaDvere);
+        configureLouvers(koupelnaDoleSw, WallSwitch.Side.LEFT, zKoupelnaDole);
+        configureLouvers(koupelnaDoleSw, WallSwitch.Side.RIGHT, zKoupelnaDole);
 
         List<WebSocketHandler> wsHandlers = new ArrayList<>();
         // page handlers
