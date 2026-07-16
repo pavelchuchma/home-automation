@@ -3,7 +3,6 @@ package org.chuma.homecontroller.app.configurator;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +40,6 @@ import org.chuma.homecontroller.app.servlet.rest.StatusHandler;
 import org.chuma.homecontroller.app.servlet.rest.WaterPumpHandler;
 import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
 import org.chuma.homecontroller.base.node.Node;
-import org.chuma.homecontroller.base.utils.Options;
 import org.chuma.homecontroller.base.utils.OptionsSingleton;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.Action;
@@ -87,12 +85,12 @@ import org.chuma.homecontroller.extensions.external.futura.FuturaMonitor;
 import org.chuma.homecontroller.extensions.external.garage.GarageManager;
 import org.chuma.homecontroller.extensions.external.inverter.ElectricitySpotPriceMonitor;
 import org.chuma.homecontroller.extensions.external.inverter.InverterManager;
-import org.chuma.homecontroller.extensions.external.inverter.InverterMonitor;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterModbusClient;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterMonitor;
 import org.chuma.homecontroller.extensions.external.robonect.RobonectMonitor;
 import org.chuma.homecontroller.extensions.external.robonect.client.RobonectClient;
 import org.chuma.homecontroller.extensions.external.robonect.client.RobonectEndpoint;
+import org.chuma.homecontroller.extensions.external.watertank.WaterTankMonitor;
 import org.chuma.hvaccontroller.device.HvacDevice;
 
 @SuppressWarnings({"unused", "DuplicatedCode", "SpellCheckingInspection"})
@@ -784,6 +782,16 @@ public class PiConfigurator extends AbstractConfigurator {
 
         BoilerManager boilerManager = new BoilerManager(10 * 60_000, 60 * 60_000);
 
+        String waterTankHost = OptionsSingleton.get("waterTank.host");
+        // Tank sensor reads distance from the top: full = 45 cm, empty = 45+170 cm.
+        WaterTankMonitor waterTankMonitor = new WaterTankMonitor(waterTankHost,
+                450, 2150, 5 * 60_000, 60 * 60_000, 15 * 60_000);
+        if (waterTankHost != null && !waterTankHost.trim().isEmpty()) {
+            waterTankMonitor.start();
+        } else {
+            log.info("WaterTankMonitor disabled, no host configured");
+        }
+
         RobonectEndpoint robonectEndpoint = new RobonectEndpoint(OptionsSingleton.get("robonect.host"),
                 OptionsSingleton.get("robonect.username"), OptionsSingleton.get("robonect.password"));
         RobonectClient robonectClient = new RobonectClient(robonectEndpoint);
@@ -827,7 +835,7 @@ public class PiConfigurator extends AbstractConfigurator {
                 new PwmLightsHandler(lddActors),
                 new OnOffHandler(onOffActors),
                 new PirHandler(pirStatusList),
-                new WaterPumpHandler(waterPumpMonitor),
+                new WaterPumpHandler(waterPumpMonitor, waterTankMonitor),
                 new HvacHandler(hvacActor),
                 new InverterHandler(inverterMonitor),
                 new FuturaHandler(futuraMonitor),

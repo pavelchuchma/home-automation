@@ -7,6 +7,7 @@ class WaterPumpItem extends AdditionalSvgToolItem {
         this.recCount = undefined;
         this.lastPeriodRecCount = undefined;
         this.lastRecords = undefined;
+        this.tankFillPercent = undefined;
     }
 
     onCanvasCreatedImpl() {
@@ -14,13 +15,15 @@ class WaterPumpItem extends AdditionalSvgToolItem {
         for (let i = 0; i < 2; i++) {
             this.textLines.push(this.svg.text('?').move(5, i * 17).font(this.baseFont));
         }
+        this.tankBadge = this.svg.text('?').move(60, 0).font(this.baseFont);
 
-        this.showOnData.push(...this.textLines);
-        this.hideOnNoData.push(...this.textLines);
+        this.showOnData.push(...this.textLines, this.tankBadge);
+        this.hideOnNoData.push(...this.textLines, this.tankBadge);
     }
 
     drawImpl() {
         this.textLines[0].text('⟳ ' + this.lastPeriodRecCount + '/' + this.recCount);
+        this.tankBadge.text((this.tankFillPercent >= 0) ? ('🛢️ ' + this.tankFillPercent + '%') : '');
 
         let lastRecordDuration = -1;
         if (this.lastRecords !== undefined && this.lastRecords.length > 0) {

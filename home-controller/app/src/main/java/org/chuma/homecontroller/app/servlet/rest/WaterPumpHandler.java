@@ -6,10 +6,14 @@ import java.util.Map;
 
 import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
 import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
+import org.chuma.homecontroller.extensions.external.watertank.WaterTankMonitor;
 
 public class WaterPumpHandler extends AbstractRestHandler<WaterPumpMonitor> {
-    public WaterPumpHandler(WaterPumpMonitor monitor) {
+    private final WaterTankMonitor tankMonitor;
+
+    public WaterPumpHandler(WaterPumpMonitor monitor, WaterTankMonitor tankMonitor) {
         super("wpump", monitor);
+        this.tankMonitor = tankMonitor;
     }
 
     @Override
@@ -21,6 +25,7 @@ public class WaterPumpHandler extends AbstractRestHandler<WaterPumpMonitor> {
         jw.addAttribute("on", monitor.isOn());
         jw.addAttribute("recCount", monitor.getRecordCount());
         jw.addAttribute("lastPeriodRecCount", monitor.getRecordCountInLastHours(lastHours));
+        jw.addAttribute("tankFillPercent", tankMonitor.getFillPercent());
         if (recordCount > 0) {
             try (JsonWriter arr = jw.startArrayAttribute("lastRecords")) {
                 for (WaterPumpMonitor.Record r : monitor.getLastRecords(recordCount)) {
