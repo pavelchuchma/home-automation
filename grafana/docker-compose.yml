@@ -3,6 +3,9 @@ services:
     image: influxdb:2.9.1
     container_name: influxdb
     restart: unless-stopped
+    # cap memory so a hungry InfluxDB gets OOM-killed and restarted by Docker
+    # instead of starving the whole 2GB Pi (see RaspberryPI/Install.md)
+    mem_limit: 400m
     ports:
       - "8086:8086"
     environment:
@@ -29,6 +32,7 @@ services:
     image: grafana/grafana-oss:13.0.2
     container_name: grafana
     restart: unless-stopped
+    mem_limit: 250m
     ports:
       - "3000:3000"
     depends_on:
