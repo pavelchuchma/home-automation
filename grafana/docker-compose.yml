@@ -32,7 +32,11 @@ services:
     image: grafana/grafana-oss:13.0.2
     container_name: grafana
     restart: unless-stopped
-    mem_limit: 250m
+    # 250m was too tight for Grafana 13 (unified storage, bleve search index,
+    # authz-grpc-server): the Go heap alone filled the cap, leaving ~17 MB for
+    # page cache, so the container permanently re-read its own binary from the
+    # SD card. See RaspberryPI/Install.md section 6.
+    mem_limit: 400m
     ports:
       - "3000:3000"
     depends_on:
