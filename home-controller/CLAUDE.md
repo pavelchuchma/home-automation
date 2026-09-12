@@ -36,6 +36,11 @@ Other notable directories:
 - `doc/mpd.md` — MPD (Music Player Daemon) setup on the Pi: hardware, current
   `/etc/mpd.conf`, control over port 6600, and a troubleshooting section for the
   USB audio "Kuchyn" going silent after reconnecting USB.
+- `doc/log-analysis.md` — reading the app log on the Pi to reconstruct PIR /
+  sensor activity: where the rotated logs live, how a pin edge is split across
+  two log lines, and the three gotchas that silently corrupt counts (pair edges
+  by thread; PIRs are active HIGH but magnetic sensors active LOW; a urinal
+  fires its valve on both edges). Ships `script/sensor_events.py`.
 - `out`, `*/out` — compiled outputs; treat as generated. Never edit or place
   source files here.
 
