@@ -132,7 +132,13 @@ issue.
   path, `POST /rest/wtank/push` → 200, `/rest/wtank/status` and the pump widget show the
   level, 400/405 on bad requests. A cycle takes ~4.5 s with Wi-Fi already up, ~6 s from a
   cold boot including association.
-- Remaining: production constants, D0/RST wire, GitHub publication.
+- 2026-09-12 (later): the ~50 % invalid-sample rate turned out to be trigger spacing, not
+  noise — the sensor drops a trigger sooner than ~80-100 ms after the previous one, so with
+  60 ms spacing exactly every second sample was lost. Spacing raised to 100 ms, now 25/25
+  valid per cycle. D0/RST wire installed, deep sleep enabled and production constants set
+  (60 s boot delay, 5 min cycle); a wake cycle takes ~7 s including Wi-Fi association.
+  README added to the firmware repo.
+- Remaining: GitHub publication (repo not created yet).
 
 ## Resolution
 
