@@ -2,10 +2,11 @@
 id: 002
 title: Water level meter: switch from polled web server to deep-sleep push model
 type: enhancement
-status: in-progress
+status: done
 priority: medium
 component: infra
 created: 2026-08-19
+resolved: 2026-09-12
 ---
 
 # Water level meter: switch from polled web server to deep-sleep push model
@@ -138,8 +139,14 @@ issue.
   valid per cycle. D0/RST wire installed, deep sleep enabled and production constants set
   (60 s boot delay, 5 min cycle); a wake cycle takes ~7 s including Wi-Fi association.
   README added to the firmware repo.
-- Remaining: GitHub publication (repo not created yet).
+- 2026-09-12: firmware published at https://github.com/pavelchuchma/water-level-meter (public, `main`).
 
 ## Resolution
 
-_Not resolved yet._
+Done 2026-09-12. Push model in production: the ESP deep-sleeps 5 min between cycles, waits 60 s
+after a cold boot, and POSTs to `/rest/wtank/push`; home-controller keeps the last reading in
+`WaterTankMonitor` and serves `/rest/wtank/status` (commits `c72dd7c`, `615f459`). The D0/RST
+wire is installed and the measured wake interval matches the configured 5 minutes. As a side
+result the long-standing ~50 % invalid-sample rate was traced to trigger spacing (sensor needs
+~100 ms, not the datasheet's 60 ms) and fixed in the firmware. Firmware repo:
+https://github.com/pavelchuchma/water-level-meter.
