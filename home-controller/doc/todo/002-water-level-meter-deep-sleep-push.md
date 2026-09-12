@@ -2,7 +2,7 @@
 id: 002
 title: Water level meter: switch from polled web server to deep-sleep push model
 type: enhancement
-status: open
+status: in-progress
 priority: medium
 component: infra
 created: 2026-08-19
@@ -37,39 +37,82 @@ As part of this refactor, publish the `water-level-meter` project to GitHub.
 
 ## Proposed change
 
-ESP side:
+Agreed design (2026-09-12), superseding the first draft:
 
-1. On wake: read the sensor (median of N samples as today, but a simple
-   blocking loop is fine now), connect to Wi-Fi, POST the result as JSON to a
-   home-controller HTTP endpoint on pi.local, then `ESP.deepSleep(5 min)`.
-   (Requires the D0/GPIO16 → RST wire for deep-sleep wakeup.)
-2. Keep the payload compatible with today's `/api/get` JSON where practical
-   (`distance`, `samples`, `validSamples`) so the server-side parsing stays
-   trivial.
-3. Failure handling: if Wi-Fi or the POST fails, don't retry forever — give up
-   after a bounded time and go back to sleep (battery/power budget beats one
-   lost sample).
-4. Power-on delay: after a cold boot (power-up, as opposed to a deep-sleep
-   wakeup), sleep for 60 s before entering the measure/push loop. The ESP
-   shares a single 5 V supply rail with the Raspberry Pi (pi.local) and its
-   disk; after a power outage everything boots at once, and the ESP's Wi-Fi
-   radio init on top of the Pi + disk spin-up inrush can brown out the rail.
-   Delaying the ESP's Wi-Fi activity spreads the load peaks apart.
+ESP side (`src/main.cpp`):
+
+1. Each cycle: start Wi-Fi (`WiFi.begin()`) first, then take the blocking
+   median-of-samples measurement while the radio associates in the
+   background, wait for the connection (bounded), POST the result to
+   home-controller, then sleep `CYCLE_INTERVAL_MS`. Connect time (2-5 s) and
+   measurement (1.5-6 s) overlap instead of adding up.
+2. Payload is `application/x-www-form-urlencoded`, POSTed to
+   `http://<pi-ip>/rest/wtank/push`: `distance` (mm), `status` (`OK`/`FAIL`),
+   `samples`, `validSamples`, plus diagnostics `rssi` and `resetReason`. A
+   failed measurement is posted too, so the server can tell "sensor alive but
+   no echo" from "sensor dead".
+3. Target URL is a fixed IP in the gitignored `include/credentials.h`
+   (`PUSH_URL`). `pi.local` cannot be used: the ESP8266 mDNS library is a
+   responder only, lwIP has no `.local` resolver.
+4. Failure handling: Wi-Fi connect and HTTP each have a bounded timeout
+   (15 s / 5 s); on failure log to Serial and go to sleep, no retries.
+5. Cold boot vs. wake: `ESP.getResetInfoPtr()->reason`. Anything other than
+   `REASON_DEEP_SLEEP_AWAKE` (power-on, RST button, reset after flashing) is a
+   cold boot: turn the radio off (`WiFi.mode(WIFI_OFF)`, persisted so the SDK
+   does not bring RF up on its own at the next boot either), sleep
+   `BOOT_DELAY_MS`, then enter the normal cycle. The ESP shares the 5 V rail
+   with the Pi and its disk; delaying Wi-Fi after a power outage spreads the
+   inrush peaks apart.
+6. No periodic 24 h reboot: a deep-sleep wake already is a full chip reset
+   (only RTC memory survives), so an explicit `ESP.restart()` adds nothing.
+7. Timing constants with a debug and a production value:
+
+   | constant                 | debug (now) | production |
+   | ------------------------ | ----------- | ---------- |
+   | `USE_DEEP_SLEEP`         | `false`     | `true`     |
+   | `BOOT_DELAY_MS`          | 1 000       | 60 000     |
+   | `CYCLE_INTERVAL_MS`      | 10 000      | 300 000    |
+
+   In debug mode the sleep is a plain `delay()` and Wi-Fi stays connected
+   between cycles (`WiFi.begin()` is skipped while connected). Deep sleep
+   needs the D0/GPIO16 -> RST wire, which is not installed yet; both are
+   switched on together at the end.
+8. The HTML status page, `/api/get` and the mDNS responder go away. The
+   `SENSOR_MODE_SERIAL` branch stays in the file, disabled, as before.
 
 home-controller side:
 
-1. Add a small REST endpoint (servlet handler) accepting the pushed
-   measurement and feeding it into `WaterTankMonitor`'s state.
-2. Replace the polling logic in `WaterTankClient`/`WaterTankMonitor` with
-   "last received sample + age" bookkeeping; report FAIL when no sample
-   arrives for several push periods (e.g. > 15 min).
+1. `WaterTankMonitor` no longer extends `AbstractStateMonitor` (no polling
+   thread): it is a passive holder of the last pushed reading with
+   `recordReading(...)` and `getFillPercent()`, which returns -1 when the last
+   `OK` reading is older than the 15 min validity window (three missed
+   cycles). Injectable clock for tests.
+2. `WaterTankClient` is deleted.
+3. New `WaterTankHandler` (`/rest/wtank`): `POST .../push` records a reading
+   (200, or 400 on a missing/invalid parameter), `GET .../status` reports fill
+   percent, last distance, age and the diagnostics from the last push. Listed
+   in `/rest/all` like the other device handlers.
+4. `waterTank.host` is dropped from `app.properties`; the monitor always
+   exists and reports -1 until the first push arrives. `WaterPumpHandler` and
+   the pump widget are unchanged.
+5. Unit test `WaterTankMonitorTest` (percent maths, `FAIL` keeps the last good
+   value, validity window expiry). No hardware involved.
+
+Rollout order: server first (`b c b` + `script/deploy-pi.sh`, restarts the
+service on the Pi), then flash the ESP (`pio run -t upload`) and watch the
+Serial monitor and the Pi log. Bogus readings during development (sensor
+measuring while the firmware is being tuned) are acceptable.
 
 GitHub:
 
 1. Create a GitHub repository for `water-level-meter` and push the project.
-2. Before publishing, verify no secrets are committed — Wi-Fi credentials are
-   in the gitignored `include/credentials.h` with a `.example` template, and
-   docs must not contain private LAN IPs.
+2. Before publishing, verify no secrets are committed — Wi-Fi credentials and
+   `PUSH_URL` are in the gitignored `include/credentials.h` with a `.example`
+   template, and docs must not contain private LAN IPs.
+
+Final phase, once the push model is debugged: switch the constants to the
+production column, install the D0/RST wire, publish to GitHub, close this
+issue.
 
 ## Notes
 
@@ -80,6 +123,16 @@ GitHub:
   wider network-outage context of that day).
 - The interactive status page at `http://<sensor-host>/` goes away; the
   current level is still visible in the home-controller UI (pump widget).
+
+## Progress
+
+- 2026-09-12: server side (`WaterTankMonitor`, `WaterTankHandler`, `WaterTankMonitorTest`)
+  deployed to the Pi; firmware rewritten to the push model and flashed with the debug
+  constants (no deep sleep, 1 s boot delay, 10 s cycle). Verified end to end: cold boot
+  path, `POST /rest/wtank/push` → 200, `/rest/wtank/status` and the pump widget show the
+  level, 400/405 on bad requests. A cycle takes ~4.5 s with Wi-Fi already up, ~6 s from a
+  cold boot including association.
+- Remaining: production constants, D0/RST wire, GitHub publication.
 
 ## Resolution
 

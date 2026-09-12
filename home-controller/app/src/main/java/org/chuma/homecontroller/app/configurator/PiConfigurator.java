@@ -38,6 +38,7 @@ import org.chuma.homecontroller.app.servlet.rest.RobonectHandler;
 import org.chuma.homecontroller.app.servlet.rest.ServletActionHandler;
 import org.chuma.homecontroller.app.servlet.rest.StatusHandler;
 import org.chuma.homecontroller.app.servlet.rest.WaterPumpHandler;
+import org.chuma.homecontroller.app.servlet.rest.WaterTankHandler;
 import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.utils.OptionsSingleton;
@@ -782,15 +783,10 @@ public class PiConfigurator extends AbstractConfigurator {
 
         BoilerManager boilerManager = new BoilerManager(10 * 60_000, 60 * 60_000);
 
-        String waterTankHost = OptionsSingleton.get("waterTank.host");
-        // Tank sensor reads distance from the top: full = 45 cm, empty = 45+170 cm.
-        WaterTankMonitor waterTankMonitor = new WaterTankMonitor(waterTankHost,
-                450, 2150, 5 * 60_000, 60 * 60_000, 15 * 60_000);
-        if (waterTankHost != null && !waterTankHost.trim().isEmpty()) {
-            waterTankMonitor.start();
-        } else {
-            log.info("WaterTankMonitor disabled, no host configured");
-        }
+        // Tank sensor reads distance from the top: full = 45 cm, empty = 45+170 cm. Readings are
+        // pushed by the water-level-meter ESP every 5 minutes (see WaterTankHandler); the last
+        // good one stays valid for 15 minutes, i.e. three missed pushes.
+        WaterTankMonitor waterTankMonitor = new WaterTankMonitor(450, 2150, 15 * 60_000);
 
         RobonectEndpoint robonectEndpoint = new RobonectEndpoint(OptionsSingleton.get("robonect.host"),
                 OptionsSingleton.get("robonect.username"), OptionsSingleton.get("robonect.password"));
@@ -836,6 +832,7 @@ public class PiConfigurator extends AbstractConfigurator {
                 new OnOffHandler(onOffActors),
                 new PirHandler(pirStatusList),
                 new WaterPumpHandler(waterPumpMonitor, waterTankMonitor),
+                new WaterTankHandler(waterTankMonitor),
                 new HvacHandler(hvacActor),
                 new InverterHandler(inverterMonitor),
                 new FuturaHandler(futuraMonitor),
