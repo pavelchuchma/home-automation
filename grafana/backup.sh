@@ -73,6 +73,15 @@ else
   rsync -a "${SRC[@]}" "$SNAP/"
 fi
 
+# Make the snapshot readable over SMB.
+# rsync -a preserves the Docker volume dirs' original root:root 0701 mode, and
+# the Samba share runs as user 'pi' (force user = pi) - so "other" gets only
+# --x: you can traverse into the dir but not list it, and the snapshot looks
+# empty from the Mac. Relax just these three wrapper dirs; everything below
+# them (including _data) keeps its original modes, and directories are never
+# hardlinked, so --link-dest dedup is unaffected.
+chmod 0755 "$SNAP"/*
+
 log "starting stack..."
 docker compose start
 trap - EXIT   # clean shutdown reached; drop the safety trap

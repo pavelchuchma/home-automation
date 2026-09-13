@@ -232,6 +232,20 @@ Backup layout on the HDD:
 └── backup.log
 ```
 
+After the rsync the script does `chmod 0755 "$SNAP"/*` on the three volume
+wrapper dirs. `rsync -a` copies them with their original Docker mode
+`root:root 0701`, and the Samba share exports `/mnt/External4T` with
+`force user = pi` — so over SMB the dirs can be traversed but not listed, and
+every snapshot looks empty from the Mac. Only the wrapper dirs are relaxed;
+everything below (including `_data`) keeps its original modes, and directories
+are never hardlinked, so `--link-dest` dedup is unaffected.
+
+Snapshots created before this was added stay unreadable over SMB until fixed
+once on the Pi:
+```bash
+sudo chmod 0755 /mnt/External4T/backup/pi/grafana/20*/*
+```
+
 **Restore** (stack must be down): stop the stack, copy a snapshot's volume
 contents back into `/var/lib/docker/volumes/`, then start:
 ```bash
