@@ -4,7 +4,8 @@
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 # Configuration
-host=pi2
+# pi-petr is reached over its WireGuard address
+host=10.200.0.152
 version=0.1.0
 
 # Paths

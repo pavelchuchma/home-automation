@@ -1,6 +1,5 @@
 package org.chuma.homecontroller.app.configurator;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,8 +27,6 @@ import org.chuma.homecontroller.app.servlet.rest.StatusHandler;
 import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.utils.OptionsSingleton;
-import org.chuma.homecontroller.controller.action.Action;
-import org.chuma.homecontroller.controller.actor.Actor;
 import org.chuma.homecontroller.controller.controller.LouversController;
 import org.chuma.homecontroller.controller.device.Relay16BoardDevice;
 import org.chuma.homecontroller.controller.device.WallSwitch;
@@ -46,28 +43,6 @@ public class OndraConfigurator extends AbstractConfigurator {
 
     public OndraConfigurator(NodeInfoRegistry nodeInfoRegistry, StateMap stateMap) {
         super(nodeInfoRegistry, stateMap);
-    }
-
-    private static class NgrokAction implements Action {
-        private final int port;
-
-        public NgrokAction(int port) {
-            this.port = port;
-        }
-
-        @Override
-        public void perform(int timeSinceLastAction) {
-            try {
-                Runtime.getRuntime().exec("/usr/local/bin/ngrok tcp " + port);
-            } catch (IOException e) {
-                log.error("Failed to start ngrok process", e);
-            }
-        }
-
-        @Override
-        public Actor getActor() {
-            return null;
-        }
     }
 
     @Override
@@ -135,9 +110,6 @@ public class OndraConfigurator extends AbstractConfigurator {
 
 
         List<ServletAction> servletActions = new ArrayList<>();
-        servletActions.add(new ServletAction("ngrokSsh", "Start ngrok SSH", new NgrokAction(22)));
-        servletActions.add(new ServletAction("ngrokHttp", "Start ngrok HTTP", new NgrokAction(80)));
-        servletActions.add(new ServletAction("ngrokKodiWeb", "Start ngrok KodiWeb", new NgrokAction(8080)));
 
         List<WebSocketHandler> wsHandlers = new ArrayList<>();
         // page handlers
