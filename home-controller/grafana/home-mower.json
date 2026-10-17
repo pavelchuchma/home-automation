@@ -18,7 +18,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": 3795358611660800,
   "liveNow": false,
   "panels": [
     {
@@ -1327,6 +1326,5 @@
   },
   "timezone": "browser",
   "title": "Home – Mower",
-  "uid": "home-mower",
-  "version": 2
+  "uid": "home-mower"
 }

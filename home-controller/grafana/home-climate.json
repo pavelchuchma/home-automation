@@ -18,7 +18,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": 3795356682280960,
   "liveNow": false,
   "panels": [
     {
@@ -2263,6 +2262,5 @@
   },
   "timezone": "browser",
   "title": "Home – Climate and air",
-  "uid": "home-climate",
-  "version": 3
+  "uid": "home-climate"
 }
