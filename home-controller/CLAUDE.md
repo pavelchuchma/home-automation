@@ -41,6 +41,11 @@ Other notable directories:
   two log lines, and the three gotchas that silently corrupt counts (pair edges
   by thread; PIRs are active HIGH but magnetic sensors active LOW; a urinal
   fires its valve on both edges). Ships `script/sensor_events.py`.
+- `doc/boiler.md` — the boiler heat pump: the ESP32 Modbus gateway (every
+  write is a self-verifying key sequence, so repeating a rejected write is
+  safe), the controller classes and `boiler.*` options, the write retry, and
+  how to read the boiler lines in the log (`Mode:`, `lastFail:`, retry
+  warnings). Gateway firmware lives in a separate GitHub repo linked there.
 - `out`, `*/out` — compiled outputs; treat as generated. Never edit or place
   source files here.
 
