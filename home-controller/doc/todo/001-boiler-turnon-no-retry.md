@@ -164,6 +164,30 @@ Options, roughly in order of preference:
 Open question: should a repeated failure raise a user-visible alert (web UI /
 notification) instead of just an ERROR log line?
 
+## Progress
+
+### 2026-10-17 — gateway firmware fixed, write retry added in the controller
+
+- Gateway firmware (coolwex-remote-control, commit `397a2e5`, `doc/todo/001`
+  there): key sequences wait for the expected display mode, every sequence
+  starts and the refresh ends with `ensureUnlocked()`, the refresh write
+  succeeds only with the display unlocked, and input registers 109–111 report
+  the last failed sequence / step / display mode. Fix option 3 above (wait for
+  `unlocked` before writing) is therefore no longer needed on the controller
+  side.
+- Controller: `BoilerController` repeats every gateway write (refresh, power,
+  target temp, eHeat) up to 3 times in a plain retry loop (same shape as
+  `AbstractPinActor.setPinValueImpl()`). Only
+  `ModbusSlaveException` (gateway rejected the sequence, 5 s pause) and
+  `ModbusIOException` (network, 15 s pause) are retried; each failed attempt is
+  logged at WARN together with the gateway's lastFail registers, and a success
+  after a retry is logged at WARN too so glitches can be counted from the log.
+  Modbus TCP timeout raised from 20 s to 30 s. `State` carries the lastFail
+  diagnostics and `getState()` prints them in its debug line.
+- Not done: retry of the whole `turnOn()` / `turnOff()` after all three write
+  attempts fail, and periodic reconciliation inside the heating interval (fix
+  options 1–2). Scheduling is deliberately left unchanged for now.
+
 ## Resolution
 
 _Not resolved yet._

@@ -40,9 +40,22 @@ public class State {
     private final boolean eHeat;
     private final boolean pump;
     private final boolean vacation;
+    private final LastFailure lastFailure;
+
+    /**
+     * Diagnostics of the last key sequence that failed in the gateway since its boot; sequence {@code none}
+     * means no failure so far. Overwritten by every new failure.
+     */
+    public record LastFailure(KeySequence sequence, int step, MODE mode) {
+        @Override
+        public String toString() {
+            return (sequence == KeySequence.none) ? "none" : sequence + "/" + step + "/" + mode;
+        }
+    }
 
     public State(MODE displayMode, int statusAge, int tempT5U, int tempT5L, int tempT3, int tempT4, int tempTP,
-                 int tempTh, int targetTemp, boolean on, boolean hot, boolean eHeat, boolean pump, boolean vacation) {
+                 int tempTh, int targetTemp, boolean on, boolean hot, boolean eHeat, boolean pump, boolean vacation,
+                 LastFailure lastFailure) {
         this.displayMode = displayMode;
         this.statusAge = statusAge;
         this.tempT5U = tempT5U;
@@ -57,6 +70,7 @@ public class State {
         this.eHeat = eHeat;
         this.pump = pump;
         this.vacation = vacation;
+        this.lastFailure = lastFailure;
     }
 
     public MODE getDisplayMode() {
@@ -113,5 +127,9 @@ public class State {
 
     public boolean isVacation() {
         return vacation;
+    }
+
+    public LastFailure getLastFailure() {
+        return lastFailure;
     }
 }
