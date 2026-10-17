@@ -12,20 +12,20 @@ import org.chuma.homecontroller.extensions.external.inverter.InverterState;
  * <p>
  * It runs periodic refresh in a background thread because inverter response time is ~1.2s.
  * <p>
- * Refresh thread is stopped if monitor is not used for a specified time and restarted after next request.
+ * The refresh rate drops to the idle interval when the monitor is not used for a specified time.
  */
 public class SolaxInverterMonitor extends AbstractStateMonitor<InverterState> implements InverterMonitor {
     protected static Logger log = LoggerFactory.getLogger(SolaxInverterMonitor.class.getName());
 
     protected final SolaxInverterModbusClient client;
 
-    public SolaxInverterMonitor(SolaxInverterModbusClient client, int refreshInternalMs, int maxUnusedRunTimeMs) {
-        super("SolaxInverterMonitor", refreshInternalMs, maxUnusedRunTimeMs);
+    public SolaxInverterMonitor(SolaxInverterModbusClient client, int refreshIntervalMs, int fastRateDurationMs, int idleRefreshIntervalMs) {
+        super("SolaxInverterMonitor", refreshIntervalMs, fastRateDurationMs, idleRefreshIntervalMs);
         this.client = client;
     }
 
     @Override
-    protected InverterState getStateImpl(boolean firstCallAfterSleep) {
+    protected InverterState getStateImpl(boolean firstRefresh) {
         try {
             long startTime = 0;
             if (log.isTraceEnabled()) {

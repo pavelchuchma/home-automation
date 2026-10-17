@@ -41,6 +41,11 @@ Other notable directories:
   two log lines, and the three gotchas that silently corrupt counts (pair edges
   by thread; PIRs are active HIGH but magnetic sensors active LOW; a urinal
   fires its valve on both edges). Ships `script/sensor_events.py`.
+- `doc/metrics.md` — metrics reporting to InfluxDB / Grafana: the `influx.*` options
+  (off unless `influx.url` is set), the reporter and the two-rate `AbstractStateMonitor`,
+  the measurement reference, and the list of things deliberately not recorded (sensors,
+  lights, louvers, valves, garage). Design and reasoning in
+  `doc/todo/003-influxdb-metrics-grafana.md`.
 - `doc/boiler.md` — the boiler heat pump: the ESP32 Modbus gateway (every
   write is a self-verifying key sequence, so repeating a rejected write is
   safe), the controller classes and `boiler.*` options, the write retry, and

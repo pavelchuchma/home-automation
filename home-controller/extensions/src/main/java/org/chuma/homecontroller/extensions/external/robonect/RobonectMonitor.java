@@ -33,8 +33,8 @@ public class RobonectMonitor extends AbstractStateMonitor<State> {
     ) {
     }
 
-    public RobonectMonitor(RobonectClient client, int refreshInternalMs, int maxUnusedRunTimeMs) {
-        super("RobonectMonitor", refreshInternalMs, maxUnusedRunTimeMs);
+    public RobonectMonitor(RobonectClient client, int refreshIntervalMs, int fastRateDurationMs, int idleRefreshIntervalMs) {
+        super("RobonectMonitor", refreshIntervalMs, fastRateDurationMs, idleRefreshIntervalMs);
         log.info("Creating RobonectMonitor");
 
         this.client = client;
@@ -45,7 +45,7 @@ public class RobonectMonitor extends AbstractStateMonitor<State> {
     }
 
     @Override
-    protected State getStateImpl(boolean firstCallAfterSleep) {
+    protected State getStateImpl(boolean firstRefresh) {
         if (consecutiveFailures >= FAILURES_BEFORE_BACKOFF && System.currentTimeMillis() < nextAttemptAfter) {
             return null;
         }
@@ -75,7 +75,7 @@ public class RobonectMonitor extends AbstractStateMonitor<State> {
             }
 
             synchronized (gpsHistoryLock) {
-                if (firstCallAfterSleep) {
+                if (firstRefresh) {
                     gpsHistory.clear();
                 }
 

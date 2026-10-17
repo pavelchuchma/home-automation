@@ -44,6 +44,9 @@ import org.chuma.homecontroller.extensions.external.inverter.ElectricitySpotPric
 import org.chuma.homecontroller.extensions.external.inverter.InverterManager;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterModbusClient;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterMonitor;
+import org.chuma.homecontroller.extensions.metrics.InverterMetrics;
+import org.chuma.homecontroller.extensions.metrics.MetricsReporter;
+import org.chuma.homecontroller.extensions.metrics.PriceMetrics;
 import org.chuma.hvaccontroller.device.HvacDevice;
 
 @SuppressWarnings({"unused", "DuplicatedCode", "SpellCheckingInspection"})
@@ -109,12 +112,21 @@ public class PiPeConfigurator extends AbstractConfigurator {
         SolaxInverterMonitor inverterMonitor = null;
         try {
             SolaxInverterModbusClient inverterModbusClient = new SolaxInverterModbusClient(OptionsSingleton.get("inverter.ip"));
-            inverterMonitor = new SolaxInverterMonitor(inverterModbusClient, 5_000, 60_000);
+            inverterMonitor = new SolaxInverterMonitor(inverterModbusClient, 5_000, 60_000, 60_000);
             inverterMonitor.start();
 
             inverterManager = new InverterManager(inverterModbusClient, OptionsSingleton.getInstance(), priceMonitor, 0, 0, 0);
         } catch (Exception e) {
             log.error("Failed to init solax inverter client", e);
+        }
+
+        MetricsReporter metricsReporter = MetricsReporter.fromOptions(OptionsSingleton.getInstance());
+        if (metricsReporter != null) {
+            if (inverterMonitor != null) {
+                metricsReporter.addSource(new InverterMetrics(inverterMonitor, inverterManager, priceMonitor));
+            }
+            metricsReporter.addSource(new PriceMetrics(priceMonitor));
+            metricsReporter.start();
         }
 
         List<ServletAction> servletActions = new ArrayList<>();

@@ -142,7 +142,7 @@ public class BoilerControllerTest extends TestCase {
     }
 
     public void testBoilerMonitor() throws InterruptedException {
-        BoilerMonitor monitor = new BoilerMonitor(BOILER_ADDRESS, 60_000, 5 * 60_000);
+        BoilerMonitor monitor = new BoilerMonitor(BOILER_ADDRESS, 60_000, 5 * 60_000, 5 * 60_000);
         monitor.start();
 
         State state;

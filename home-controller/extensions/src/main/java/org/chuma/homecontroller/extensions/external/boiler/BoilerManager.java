@@ -29,10 +29,10 @@ public class BoilerManager {
             this::turnOff
     );
 
-    public BoilerManager(int refreshInternalMs, int maxUnusedRunTimeMs) {
+    public BoilerManager(int refreshIntervalMs, int fastRateDurationMs, int idleRefreshIntervalMs) {
         Options options = OptionsSingleton.getInstance();
         String ipAddress = options.get(CFG_BOILER_IP);
-        boilerMonitor = new BoilerMonitor(options.get(CFG_BOILER_IP), refreshInternalMs, maxUnusedRunTimeMs);
+        boilerMonitor = new BoilerMonitor(ipAddress, refreshIntervalMs, fastRateDurationMs, idleRefreshIntervalMs);
         if (ipAddress == null || ipAddress.trim().isEmpty()) {
             log.info("BoilerMonitor disabled, no IP address configured");
             return;
@@ -71,6 +71,25 @@ public class BoilerManager {
 
     public BoilerMonitor getBoilerMonitor() {
         return boilerMonitor;
+    }
+
+    public int getTargetTemp() {
+        return targetTemp;
+    }
+
+    public boolean isDisinfect() {
+        return disinfect;
+    }
+
+    public boolean isEHeat() {
+        return eHeat;
+    }
+
+    /**
+     * @return true when the current time is inside one of the configured operating intervals
+     */
+    public boolean isScheduledOn() {
+        return intervalScheduler.isInInterval();
     }
 
     public void setTargetTemp(int targetTemp) {

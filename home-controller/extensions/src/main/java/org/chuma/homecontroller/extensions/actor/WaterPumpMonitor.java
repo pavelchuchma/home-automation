@@ -2,22 +2,35 @@ package org.chuma.homecontroller.extensions.actor;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import org.chuma.homecontroller.base.node.ListenerManager;
 
 import org.chuma.homecontroller.controller.action.Action;
 import org.chuma.homecontroller.controller.action.GenericCodeAction;
 import org.chuma.homecontroller.controller.actor.IReadableOnOff;
 
 public class WaterPumpMonitor implements IReadableOnOff {
+    public interface Listener {
+        void onPumpStateChanged(boolean on, long timestampMs);
+    }
+
     private final ArrayList<Record> records = new ArrayList<>();
+    private final ListenerManager<Listener> listeners = new ListenerManager<>();
     private boolean isOn;
-    private final Action onAction = new GenericCodeAction(timeSinceLastAction -> isOn = true);
+    private final Action onAction = new GenericCodeAction(timeSinceLastAction -> {
+        isOn = true;
+        notifyListeners(true, System.currentTimeMillis());
+    });
     private final Action offAction = new GenericCodeAction(timeSinceLastAction -> {
         isOn = false;
+        long now = System.currentTimeMillis();
         if (timeSinceLastAction > 0) {
             synchronized (records) {
-                records.add(new Record(new Date(System.currentTimeMillis() - timeSinceLastAction), timeSinceLastAction / 1000.0));
+                records.add(new Record(new Date(now - timeSinceLastAction), timeSinceLastAction / 1000.0));
             }
         }
+        notifyListeners(false, now);
     });
 
     public WaterPumpMonitor() {
@@ -29,6 +42,31 @@ public class WaterPumpMonitor implements IReadableOnOff {
 
     public Action getOffAction() {
         return offAction;
+    }
+
+    public void addListener(Listener listener) {
+        listeners.add(listener);
+    }
+
+    private void notifyListeners(boolean on, long timestampMs) {
+        listeners.callListeners(l -> l.onPumpStateChanged(on, timestampMs));
+    }
+
+    /**
+     * @return cycles that ended after the given time, oldest first
+     */
+    public List<Record> getRecordsEndedAfter(long timestampMs) {
+        List<Record> result = new ArrayList<>();
+        synchronized (records) {
+            for (int i = records.size() - 1; i >= 0; i--) {
+                Record r = records.get(i);
+                if (r.time.getTime() + (long)(r.duration * 1000) <= timestampMs) {
+                    break;
+                }
+                result.add(0, r);
+            }
+        }
+        return result;
     }
 
     public int getRecordCount() {

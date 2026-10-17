@@ -11,8 +11,8 @@ public class BoilerMonitor extends AbstractStateMonitor<State> {
     private static final Logger log = LoggerFactory.getLogger(BoilerMonitor.class.getName());
     final BoilerController controller;
 
-    public BoilerMonitor(String ipAddress, int refreshInternalMs, int maxUnusedRunTimeMs) {
-        super("BoilerMonitor", refreshInternalMs, maxUnusedRunTimeMs);
+    public BoilerMonitor(String ipAddress, int refreshIntervalMs, int fastRateDurationMs, int idleRefreshIntervalMs) {
+        super("BoilerMonitor", refreshIntervalMs, fastRateDurationMs, idleRefreshIntervalMs);
         log.info("Creating BoilerMonitor for {}", ipAddress);
 
         BoilerController ctrl;
@@ -30,7 +30,7 @@ public class BoilerMonitor extends AbstractStateMonitor<State> {
     }
 
     @Override
-    protected State getStateImpl(boolean firstCallAfterSleep) {
+    protected State getStateImpl(boolean firstRefresh) {
         try {
             long startTime = 0;
             if (log.isTraceEnabled()) {

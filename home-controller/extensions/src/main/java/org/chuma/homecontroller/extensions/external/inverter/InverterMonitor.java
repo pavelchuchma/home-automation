@@ -6,7 +6,7 @@ public interface InverterMonitor {
     void stop();
 
     /**
-     * Get last known state. Can be null in case of the first request or if it was not used longer than maxUnusedRunTimeMs time.
+     * Get last known state. Can be null before the first refresh or when the last refresh failed.
      */
     InverterState getState();
 

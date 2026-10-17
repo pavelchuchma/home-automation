@@ -11,8 +11,8 @@ public class FuturaMonitor extends AbstractStateMonitor<State> {
     private static final Logger log = LoggerFactory.getLogger(FuturaMonitor.class.getName());
     final FuturaController controller;
 
-    public FuturaMonitor(String ipAddress, int refreshInternalMs, int maxUnusedRunTimeMs) {
-        super("FuturaMonitor", refreshInternalMs, maxUnusedRunTimeMs);
+    public FuturaMonitor(String ipAddress, int refreshIntervalMs, int fastRateDurationMs, int idleRefreshIntervalMs) {
+        super("FuturaMonitor", refreshIntervalMs, fastRateDurationMs, idleRefreshIntervalMs);
         log.info("Creating FuturaMonitor for {}", ipAddress);
 
         FuturaController ctrl;
@@ -26,7 +26,7 @@ public class FuturaMonitor extends AbstractStateMonitor<State> {
     }
 
     @Override
-    protected State getStateImpl(boolean firstCallAfterSleep) {
+    protected State getStateImpl(boolean firstRefresh) {
         try {
             long startTime = 0;
             if (log.isTraceEnabled()) {

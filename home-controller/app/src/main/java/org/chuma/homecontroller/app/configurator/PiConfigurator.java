@@ -92,10 +92,22 @@ import org.chuma.homecontroller.extensions.external.robonect.RobonectMonitor;
 import org.chuma.homecontroller.extensions.external.robonect.client.RobonectClient;
 import org.chuma.homecontroller.extensions.external.robonect.client.RobonectEndpoint;
 import org.chuma.homecontroller.extensions.external.watertank.WaterTankMonitor;
+import org.chuma.homecontroller.extensions.metrics.BoilerMetrics;
+import org.chuma.homecontroller.extensions.metrics.FuturaMetrics;
+import org.chuma.homecontroller.extensions.metrics.HvacMetrics;
+import org.chuma.homecontroller.extensions.metrics.HvacPacketClock;
+import org.chuma.homecontroller.extensions.metrics.InverterMetrics;
+import org.chuma.homecontroller.extensions.metrics.MetricsReporter;
+import org.chuma.homecontroller.extensions.metrics.MowerMetrics;
+import org.chuma.homecontroller.extensions.metrics.PriceMetrics;
+import org.chuma.homecontroller.extensions.metrics.PumpMetrics;
+import org.chuma.homecontroller.extensions.metrics.TankMetrics;
+import org.chuma.hvaccontroller.IPacketProcessor;
 import org.chuma.hvaccontroller.device.HvacDevice;
 
 @SuppressWarnings({"unused", "DuplicatedCode", "SpellCheckingInspection"})
 public class PiConfigurator extends AbstractConfigurator {
+    private final HvacPacketClock hvacPacketClock = new HvacPacketClock();
     static Logger log = LoggerFactory.getLogger(PiConfigurator.class.getName());
 
     public PiConfigurator(NodeInfoRegistry nodeInfoRegistry, StateMap stateMap) {
@@ -769,7 +781,7 @@ public class PiConfigurator extends AbstractConfigurator {
         SolaxInverterMonitor inverterMonitor = null;
         try {
             SolaxInverterModbusClient inverterModbusClient = new SolaxInverterModbusClient(OptionsSingleton.get("inverter.ip"));
-            inverterMonitor = new SolaxInverterMonitor(inverterModbusClient, 5_000, 60_000);
+            inverterMonitor = new SolaxInverterMonitor(inverterModbusClient, 5_000, 60_000, 60_000);
             inverterMonitor.start();
 
             inverterManager = new InverterManager(inverterModbusClient, OptionsSingleton.getInstance(), priceMonitor, 8500, 10000, 5900);
@@ -778,10 +790,11 @@ public class PiConfigurator extends AbstractConfigurator {
         }
 
         FuturaMonitor futuraMonitor = new FuturaMonitor(
-                OptionsSingleton.get("futura.ipAddress"), 5_000, 60_000);
+                OptionsSingleton.get("futura.ipAddress"), 5_000, 60_000, 60_000);
         futuraMonitor.start();
 
-        BoilerManager boilerManager = new BoilerManager(10 * 60_000, 60 * 60_000);
+        // a boiler refresh is a 15 s key sequence on its display, so it stays at 10 min even when idle
+        BoilerManager boilerManager = new BoilerManager(10 * 60_000, 60 * 60_000, 10 * 60_000);
 
         // Tank sensor reads distance from the top: full = 45 cm, empty = 45+170 cm. Readings are
         // pushed by the water-level-meter ESP every 5 minutes (see WaterTankHandler); the last
@@ -792,8 +805,23 @@ public class PiConfigurator extends AbstractConfigurator {
                 OptionsSingleton.get("robonect.username"), OptionsSingleton.get("robonect.password"));
         RobonectClient robonectClient = new RobonectClient(robonectEndpoint);
         RobonectMonitor robonectMonitor = new RobonectMonitor(
-                robonectClient, 2_500, 5 * 3600_000);
+                robonectClient, 2_500, 60_000, 60_000);
         robonectMonitor.start();
+
+        MetricsReporter metricsReporter = MetricsReporter.fromOptions(OptionsSingleton.getInstance());
+        if (metricsReporter != null) {
+            if (inverterMonitor != null) {
+                metricsReporter.addSource(new InverterMetrics(inverterMonitor, inverterManager, priceMonitor));
+            }
+            metricsReporter.addSource(new PriceMetrics(priceMonitor));
+            metricsReporter.addSource(new FuturaMetrics(futuraMonitor));
+            metricsReporter.addSource(new BoilerMetrics(boilerManager));
+            metricsReporter.addSource(new HvacMetrics(hvacActor, hvacPacketClock));
+            metricsReporter.addSource(new PumpMetrics(waterPumpMonitor, metricsReporter));
+            new TankMetrics(waterTankMonitor, metricsReporter);
+            metricsReporter.addSource(new MowerMetrics(robonectMonitor));
+            metricsReporter.start();
+        }
 
         List<ServletAction> servletActions = new ArrayList<>();
         servletActions.add(new ServletAction("openDoor", "Bzučák", bzucakAction));
@@ -877,7 +905,7 @@ public class PiConfigurator extends AbstractConfigurator {
             log.warn("HVAC Device port not set, not starting");
             return null;
         }
-        HvacDevice hvacDevice = new HvacDevice(hvacPort, 0x85, 0x20, null);
+        HvacDevice hvacDevice = new HvacDevice(hvacPort, 0x85, 0x20, new IPacketProcessor[]{hvacPacketClock});
         try {
             hvacDevice.start();
         } catch (IOException | Error e) {

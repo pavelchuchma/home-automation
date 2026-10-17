@@ -1,5 +1,8 @@
 package org.chuma.homecontroller.extensions.external.watertank;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.LongSupplier;
 
 import org.slf4j.Logger;
@@ -26,6 +29,7 @@ public class WaterTankMonitor {
     private final long validityWindowMs;
     private final LongSupplier clock;
 
+    private final List<Consumer<Reading>> listeners = new ArrayList<>();
     private Reading lastReading;
     private int lastGoodPercent = -1;
     private long lastGoodTimestampMs;
@@ -48,6 +52,13 @@ public class WaterTankMonitor {
     }
 
     /**
+     * Registers a listener called after every recorded reading, good or failed.
+     */
+    public synchronized void addListener(Consumer<Reading> listener) {
+        listeners.add(listener);
+    }
+
+    /**
      * Records a reading pushed by the ESP.
      */
     public synchronized void recordReading(Reading reading) {
@@ -62,6 +73,9 @@ public class WaterTankMonitor {
         } else {
             log.warn("Water tank status {} (samples={}, validSamples={}, rssi={}, resetReason={})",
                     reading.status, reading.samples, reading.validSamples, reading.rssi, reading.resetReason);
+        }
+        for (Consumer<Reading> listener : listeners) {
+            listener.accept(reading);
         }
     }
 

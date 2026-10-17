@@ -23,7 +23,7 @@ public class RobonectMonitorTest {
     @Test
     public void testMonitor() {
         RobonectClient client = new RobonectClient(robonectEndpoint);
-        RobonectMonitor monitor = new RobonectMonitor(client, 5_000, 100_000);
+        RobonectMonitor monitor = new RobonectMonitor(client, 5_000, 100_000, 100_000);
         monitor.start();
         {
             sleep(1_000);
@@ -46,7 +46,7 @@ public class RobonectMonitorTest {
     @Test
     public void testGpsHistory() {
         RobonectClient client = new RobonectClient(robonectEndpoint);
-        RobonectMonitor monitor = new RobonectMonitor(client, 5_000, 100_000);
+        RobonectMonitor monitor = new RobonectMonitor(client, 5_000, 100_000, 100_000);
         for (int i = 0; i < 100; i++) {
             monitor.gpsHistory.addLast(new RobonectMonitor.GpsHistoryEntry(i * 100, i * 200, i + 100));
         }
@@ -67,7 +67,7 @@ public class RobonectMonitorTest {
     @Test
     public void testRelativeGpsHistory() {
         RobonectClient client = new RobonectClient(robonectEndpoint);
-        RobonectMonitor monitor = new RobonectMonitor(client, 5_000, 100_000);
+        RobonectMonitor monitor = new RobonectMonitor(client, 5_000, 100_000, 100_000);
         for (int i = 0; i < 5; i++) {
             monitor.gpsHistory.addLast(new RobonectMonitor.GpsHistoryEntry(i * 100, i * 200, monitor.getTimestamp()));
             sleep(1010);

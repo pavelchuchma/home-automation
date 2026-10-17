@@ -114,6 +114,30 @@ public class InverterManager {
         });
     }
 
+    public boolean isHighTariff() {
+        return highTariffScheduler.isInInterval();
+    }
+
+    public boolean isExportPriority() {
+        return exportPriorityScheduler.isInInterval();
+    }
+
+    public boolean isForceDischargeActive() {
+        return forceDischargeActive;
+    }
+
+    public boolean isTurnOffOnNegativePrice() {
+        return turnOffOnNegativePrice;
+    }
+
+    /**
+     * Minimal SoC the manager wants on the inverter right now: the configured minimum, plus the battery reserve
+     * outside high tariff hours.
+     */
+    public int getDesiredMinimalSoc() {
+        return isHighTariff() ? minimalSoc : minimalSoc + batteryReserve;
+    }
+
     public int getMinimalSoc() {
         return minimalSoc;
     }
@@ -373,7 +397,7 @@ public class InverterManager {
      * Net revenue per kWh actually earned by exporting this segment to the grid:
      * buy price minus the distribution fee (a buy-side cost, not earned on export) and the sell fee.
      */
-    static double netSellPrice(IntervalPrice p) {
+    public static double netSellPrice(IntervalPrice p) {
         return p.price() - p.distributionFee() - p.sellFee();
     }
 

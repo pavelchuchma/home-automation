@@ -2,34 +2,46 @@ package org.chuma.homecontroller.extensions.external;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static java.lang.Math.min;
 
-
+/**
+ * Periodically refreshes a device state in a background thread.
+ * <p>
+ * The thread runs nonstop at two rates: {@code refreshIntervalMs} for {@code fastRateDurationMs} after the last
+ * {@link #getState()} / {@link #getStateSync(boolean)} call (somebody is watching the device in the UI), then
+ * {@code idleRefreshIntervalMs}. {@link #peekState()} reads the last state without switching to the fast rate.
+ */
 public abstract class AbstractStateMonitor<S> {
-    static class State<S> {
-        final long timestamp;
-        final S value;
+    public static class Snapshot<S> {
+        public final long timestamp;
+        public final S value;
 
-        public State(S value) {
+        public Snapshot(S value) {
             timestamp = System.currentTimeMillis();
             this.value = value;
         }
     }
 
-    private static final Object refreshLoopLock = new Object();
+    private final Object refreshLoopLock = new Object();
     private static final Logger log = LoggerFactory.getLogger(AbstractStateMonitor.class.getName());
-    protected final int refreshInternalMs;
-    protected final int maxUnusedRunTimeMs;
+    protected final int refreshIntervalMs;
+    protected final int fastRateDurationMs;
+    protected final int idleRefreshIntervalMs;
     private final String name;
-    protected boolean running;
-    State<S> state;
+    protected volatile boolean running;
+    volatile Snapshot<S> state;
     private long lastUseTime;
 
-    public AbstractStateMonitor(String name, int refreshInternalMs, int maxUnusedRunTimeMs) {
+    /**
+     * @param refreshIntervalMs     refresh period while the state is being watched (fast rate)
+     * @param fastRateDurationMs    how long the fast rate stays on after the last getState() call
+     * @param idleRefreshIntervalMs refresh period when nobody is watching
+     */
+    public AbstractStateMonitor(String name, int refreshIntervalMs, int fastRateDurationMs, int idleRefreshIntervalMs) {
         this.name = name;
         running = false;
-        this.refreshInternalMs = refreshInternalMs;
-        this.maxUnusedRunTimeMs = maxUnusedRunTimeMs;
+        this.refreshIntervalMs = refreshIntervalMs;
+        this.fastRateDurationMs = fastRateDurationMs;
+        this.idleRefreshIntervalMs = idleRefreshIntervalMs;
     }
 
     public boolean isRunning() {
@@ -52,24 +64,14 @@ public abstract class AbstractStateMonitor<S> {
         while (true) {
             synchronized (refreshLoopLock) {
                 try {
-                    final long now = System.currentTimeMillis();
-                    if (lastUseTime + maxUnusedRunTimeMs < now) {
-                        log.trace("nobody needs me. Cleaning state and going to sleep");
-                        state = null;
-                        refreshLoopLock.wait();
-                        log.trace("woke up");
-                    } else {
-                        long sleepTime = getSleepTime(now);
-                        if (sleepTime <= 0) {
-                            // time to try next refresh
-                            break;
-                        } else {
-                            log.trace("going to sleep for {} ms before next refresh", sleepTime);
-                            // wait a moment for next refresh time
-                            refreshLoopLock.wait(sleepTime);
-                            log.trace("woke up");
-                        }
+                    long sleepTime = getSleepTime(System.currentTimeMillis());
+                    if (sleepTime <= 0) {
+                        // time to try next refresh
+                        break;
                     }
+                    log.trace("going to sleep for {} ms before next refresh", sleepTime);
+                    refreshLoopLock.wait(sleepTime);
+                    log.trace("woke up");
                 } catch (InterruptedException e) {
                     //no action
                 }
@@ -80,18 +82,27 @@ public abstract class AbstractStateMonitor<S> {
             }
         }
 
-        state = new State<>(getStateImpl(state == null));
+        Snapshot<S> s = state;
+        state = new Snapshot<>(getStateImpl(s == null));
     }
 
     private long getSleepTime(long now) {
-        if (state == null) {
+        Snapshot<S> s = state;
+        if (s == null) {
             return -1;
-        } else {
-            return min(state.timestamp + refreshInternalMs, lastUseTime + maxUnusedRunTimeMs) - now;
         }
+        int interval = isFastRate(now) ? refreshIntervalMs : idleRefreshIntervalMs;
+        return s.timestamp + interval - now;
     }
 
-    protected abstract S getStateImpl(boolean firstCallAfterSleep);
+    private boolean isFastRate(long now) {
+        return lastUseTime + fastRateDurationMs > now;
+    }
+
+    /**
+     * @param firstRefresh true for the first refresh after {@link #start()}
+     */
+    protected abstract S getStateImpl(boolean firstRefresh);
 
     public synchronized void stop() {
         log.trace("stopping {}", name);
@@ -102,24 +113,43 @@ public abstract class AbstractStateMonitor<S> {
         state = null;
     }
 
+    /**
+     * Returns the last known state and switches the monitor to the fast rate.
+     * Null before the first refresh or when the last refresh failed.
+     */
     public synchronized S getState() {
         log.trace("getting {} state", name);
         if (!running) {
             throw new IllegalStateException("Monitor is not running");
         }
 
+        boolean wasFast = isFastRate(System.currentTimeMillis());
         lastUseTime = System.currentTimeMillis();
-        State<S> s = state;
+        Snapshot<S> s = state;
         if (s == null) {
-            synchronized (refreshLoopLock) {
-                // wake up thread to start refresh
-                refreshLoopLock.notify();
-            }
             log.trace("getting state - not value ready, returning null");
             return null;
         }
+        if (!wasFast) {
+            synchronized (refreshLoopLock) {
+                // switching to fast rate, let the thread recompute its sleep time
+                refreshLoopLock.notify();
+            }
+        }
         log.trace("getting state - done, returning state {} ms old", System.currentTimeMillis() - s.timestamp);
         return s.value;
+    }
+
+    /**
+     * Returns the last known state without affecting the refresh rate. Intended for background consumers
+     * (metrics reporting). Null when not running, before the first refresh, or when the last refresh failed.
+     */
+    public Snapshot<S> peekState() {
+        if (!running) {
+            return null;
+        }
+        Snapshot<S> s = state;
+        return (s == null || s.value == null) ? null : s;
     }
 
     /**
@@ -130,7 +160,7 @@ public abstract class AbstractStateMonitor<S> {
     public synchronized S getStateSync(boolean forceRefresh) {
         log.trace("getting {} state sync", name);
         lastUseTime = System.currentTimeMillis();
-        State<S> s = state;
+        Snapshot<S> s = state;
         if (s != null && !forceRefresh) {
             // fresh enough
             log.trace("getting state sync - done, returning state {} ms old", System.currentTimeMillis() - s.timestamp);
@@ -138,9 +168,9 @@ public abstract class AbstractStateMonitor<S> {
         }
         S stateImpl = getStateImpl(s == null);
         if (running) {
-            state = new State<>(stateImpl);
+            state = new Snapshot<>(stateImpl);
             synchronized (refreshLoopLock) {
-                // wake up thread to schedule cleanup
+                // wake up thread to reschedule the next refresh
                 refreshLoopLock.notify();
             }
         }
