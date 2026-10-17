@@ -99,6 +99,39 @@ Secondary cause (case 2): `turnOn()` writes to the gateway right after reading
 the state without checking `State.getDisplayMode()`. A write issued while the
 display is not `unlocked` is rejected by the gateway.
 
+### Gateway firmware behaviour (coolwex-remote-control)
+
+The boiler gateway is an ESP32 hooked between the boiler CPU and its display
+controller (SPI sniffing) and between the CPU and the keyboard matrix (key
+emulation). Firmware lives in the `coolwex-remote-control` repo
+(`src/keySequences.cpp`, `src/modbusImpl.cpp`). Relevant findings:
+
+- The refresh-status sequence leaves the last info screen (`infoTh`) with a
+  1.1 s long press of EHeater+Disinfect, then finishes after three display
+  frames **without verifying that the display is back in `unlocked`**. The
+  Modbus write to `cregRefreshStatus` therefore returns success while
+  `iregDisplayMode` can still read `infoTh` — exactly what the controller saw
+  in case 2.
+- Every write sequence (power, target temp, eHeat) starts with
+  `commonGetStateSteps0to3()`, which only recovers from `displayOff` and
+  `locked`. Any `info*` mode fails the sequence on the first loop iteration;
+  the callback returns `0xFFFF` and the modbus-esp8266 library turns that
+  into a Modbus exception 4 (`Slave Device Failure`). There is no attempt to
+  leave the info screen and retry.
+- Key emulation depends on an ISR servicing each keyboard scan pulse within
+  a microsecond window; a late interrupt is deliberately ignored. Wi-Fi or
+  other background activity on the ESP can therefore shorten or interrupt a
+  long press, so the boiler may miss or misread it. **Occasional glitches
+  are an expected property of this setup, not a rare fault.** The earlier
+  `Slave Device Failure` responses to the refresh coil itself (2026-07-27,
+  2026-08-21 17:00) are most likely the same class of glitch.
+
+Consequences for the fix: the firmware should verify the end state of each
+sequence (wait for `unlocked`, repeat the exit key press, leave `info*` modes
+before acting), but a residual failure rate will remain. The controller side
+must therefore be tolerant on its own — retry and periodic reconciliation are
+needed regardless of firmware improvements.
+
 Relevant code:
 
 - `BoilerManager.turnOn()` / `turnOff()` — one-shot, exception swallowed
