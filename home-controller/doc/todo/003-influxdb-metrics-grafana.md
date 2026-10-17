@@ -2,7 +2,8 @@
 id: 003
 title: Report home-controller state to InfluxDB and build Grafana dashboards
 type: enhancement
-status: in-progress
+status: done
+resolved: 2026-10-17
 priority: medium
 component: app
 created: 2026-10-17
@@ -20,9 +21,8 @@ the app log.
 
 Goal: push the **technical** state home-controller already holds (energy, heating,
 ventilation, water, mower) to InfluxDB on a one-minute grid, plus exact-time events
-where a device reports by push, and build dashboards on top. The reporter, sources and
-options are implemented (`doc/metrics.md` is the measurement reference as built);
-dashboards are the open part.
+where a device reports by push, and build dashboards on top. Implemented: reporter, sources and options (`doc/metrics.md` is the measurement
+reference as built) and the four dashboards in `grafana/`.
 
 ## Scope: what is deliberately not recorded
 
@@ -223,3 +223,15 @@ exception (fixed cadence, `stepAfter`, bounded `spanNulls`).
 - Downsampling tasks and retention tuning — revisit once the bucket has a few months of data.
 - Alerting (Grafana alerts on tank sensor silence or boiler `lastFail` changes) — possible
   follow-up; failures of the monitors themselves stay in the app log.
+
+## Resolution
+
+- Reporter, sources, options and the two-rate `AbstractStateMonitor` in commit
+  `81698c6`; deployed on `pi.local` 2026-10-17, first points at 17:20.
+- Dashboards `home-energy`, `home-climate`, `home-water`, `home-mower` generated, pushed
+  and exported to `grafana/*.json`; every Flux target checked through `/api/ds/query`
+  (0 errors) and the panels checked visually in the browser.
+- Dropped during the design: sensors, lights, louvers, valves, garage, node health, the
+  monitor health series and JVM metrics, mower blade counters, a computed sun position.
+- Open: a panel-level time shift into the future is not supported by Grafana, so
+  tomorrow's prices need a dashboard range ending after now.

@@ -3,7 +3,8 @@
 home-controller pushes the technical state it already holds (energy, heating, ventilation,
 water, mower) to the InfluxDB 2 instance of the Grafana stack
 (`~/work/HomeAutomation/grafana/`) once a minute. Grafana dashboards live in `grafana/` in
-this repo. Design notes and the reasoning behind what is and is not recorded are in
+this repo (`home-energy`, `home-climate`, `home-water`, `home-mower`; see
+`grafana/README.md` for the export/push workflow). Design notes and the reasoning behind what is and is not recorded are in
 `doc/todo/003-influxdb-metrics-grafana.md`.
 
 **Not recorded, on purpose:** motion and magnetic sensors, lights, louvers, air valves,

@@ -26,7 +26,15 @@ re-export diffs cleanly.
 
 | uid | What |
 | --- | --- |
-| *(none yet)* | to be created once the first data is in the bucket |
+| `home-energy` | PV / load / grid / battery flows, SoC and the minimal SoC the manager wants, day-ahead spot price, today's energy, export limit, a state timeline of inverter and battery modes with the manager's decisions, boiler and HVAC on; grid voltages, battery voltage and temperature |
+| `home-climate` | recuperation temperatures, CO₂, heat recovery efficiency, speed and power; HVAC temperatures and state; boiler temperatures and state |
+| `home-water` | rainwater tank level and sensor diagnostics, pump cycles and run time per hour and per day |
+| `home-mower` | Robonect position (geomap), status, battery, Wi-Fi, "last seen"; empty off season |
+
+All four use a hidden constant variable `prefix` (`home`) in the measurement names, so a
+second deployment with its own `influx.measurement.prefix` can reuse them. The spot price
+panel shows the future only when the dashboard range ends after now (e.g. `now-12h` to
+`now+1d`); Grafana does not allow a panel-level shift into the future.
 
 Conventions (same as the chajda dashboard in `mps-inverter-controller`): `spanNulls: false`
 and `createEmpty: true` wherever a gap is meaningful; `home-boiler` (10 min) and
