@@ -1,5 +1,35 @@
 'use strict';
 
+const INVERTER_SETTINGS = {
+    title: 'Inverter settings',
+    lanes: [
+        {key: 'inverter.manager.high.tariff.times', label: 'High tariff', color: '#c0392b'},
+        {key: 'inverter.manager.export.priority.times', label: 'Feed-in priority', color: '#2e6fb7'},
+    ],
+    groups: [
+        {title: 'Battery', fields: [
+            {type: 'stepper', key: 'inverter.manager.minimal.soc', label: 'Minimal SoC', hint: 'Battery never discharges below this',
+                step: 5, min: 0, max: 100, unit: '%'},
+        ]},
+        {title: 'High tariff', fields: [
+            {type: 'ranges', key: 'inverter.manager.high.tariff.times'},
+            {type: 'stepper', key: 'inverter.manager.high.tariff.battery.reserve', label: 'Reserve',
+                hint: 'Battery kept for the high tariff hours', step: 5, min: 0, max: 100, unit: '%'},
+        ]},
+        {title: 'Feed-in priority timer', toggle: 'inverter.manager.export.priority.timer.enabled',
+            hint: 'FeedInPriority in these ranges, SelfUse outside', fields: [
+                {type: 'ranges', key: 'inverter.manager.export.priority.times'},
+            ]},
+        {title: 'Force discharge', toggle: 'inverter.manager.force.discharge',
+            hint: 'Sell to the grid in the most expensive segments of the day', fields: [
+                {type: 'stepper', key: 'inverter.manager.force.discharge.minimal.price', label: 'Minimal net price',
+                    hint: 'CZK/kWh after fees, incl. VAT', step: 0.5, min: 0, max: 50, unit: '', decimals: 1},
+                {type: 'stepper', key: 'inverter.manager.force.discharge.minimal.soc', label: 'Discharge down to',
+                    step: 5, min: 0, max: 100, unit: '%'},
+            ]},
+    ],
+};
+
 class InverterItem extends AdditionalSvgToolItem {
     constructor() {
         super('inverter', 125)
@@ -23,7 +53,8 @@ class InverterItem extends AdditionalSvgToolItem {
         for (let i = 0; i < 7; i++) {
             this.textLines.push(this.svg.text('?').move(5, i * 17).font(this.baseFont));
         }
-        this.batModeIcon = this.svg.text('?').move(92, 0).font(this.baseFont);
+        this.batModeIcon = this.svg.text('?').move(74, 0).font(this.baseFont);
+        this.createSettingsIcon(INVERTER_SETTINGS);
         this.showOnData.push(...this.textLines, this.batModeIcon);
         this.hideOnNoData.push(...this.textLines, this.batModeIcon);
     }

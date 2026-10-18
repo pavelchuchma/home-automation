@@ -109,6 +109,20 @@ class AdditionalSvgToolItem extends AdditionalToolItem {
     drawImpl() {
     }
 
+    /**
+     * Gear icon in the top right corner opening the settings dialog. The click does not reach the canvas handlers.
+     */
+    createSettingsIcon(settingsConfig) {
+        const gear = this.svg.group().css('cursor', 'pointer');
+        gear.rect(20, 20).move(this.canvasWidth - 20, 0).fill('transparent');
+        gear.text('⚙').move(this.canvasWidth - 17, 0).font({...this.baseFont, size: 14});
+        gear.on('click', e => {
+            e.stopPropagation();
+            SettingsSheet.open(settingsConfig);
+        });
+        return gear;
+    }
+
     setVisibility(e, value) {
         if (Array.isArray(e)) {
             e.forEach(i => this.setVisibility(i, value));

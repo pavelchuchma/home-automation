@@ -32,6 +32,7 @@ import org.chuma.homecontroller.app.servlet.rest.InverterHandler;
 import org.chuma.homecontroller.app.servlet.rest.LouversHandler;
 import org.chuma.homecontroller.app.servlet.rest.NodeHandler;
 import org.chuma.homecontroller.app.servlet.rest.OnOffHandler;
+import org.chuma.homecontroller.app.servlet.rest.OptionsHandler;
 import org.chuma.homecontroller.app.servlet.rest.PirHandler;
 import org.chuma.homecontroller.app.servlet.rest.PwmLightsHandler;
 import org.chuma.homecontroller.app.servlet.rest.RobonectHandler;
@@ -876,6 +877,7 @@ public class PiConfigurator extends AbstractConfigurator {
         handlers.add(new GetBackendUrlJs());
         handlers.add(new NodeHandler(nodeInfoRegistry));
         handlers.add(new ServletActionHandler(servletActions));
+        handlers.add(new OptionsHandler(OptionsSingleton.getInstance()));
         handlers.addAll(deviceRestHandlers);
         handlers.add(new AllStatusHandler(deviceRestHandlers));
         servlet = new Servlet(handlers, floorsPage.getPath(), wsHandlers);

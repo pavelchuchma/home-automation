@@ -1,0 +1,489 @@
+/* Settings dialog opened from the widget gear icons, see settingsSheet.js */
+.settings-overlay {
+    position: fixed;
+    z-index: 100;
+    overflow: hidden;
+    font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.4;
+    color: #1d2420;
+}
+
+.settings-backdrop {
+    transform-origin: 0 0;
+    background: rgba(20, 28, 24, .45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-sheet {
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 460px;
+    max-height: 90%;
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, .3);
+    transition: transform .2s ease;
+}
+
+.settings-backdrop:has(.settings-sheet.narrow) {
+    align-items: flex-end;
+}
+
+.settings-sheet.narrow {
+    max-width: none;
+    max-height: 92%;
+    border-radius: 16px 16px 0 0;
+}
+
+.settings-grab-area {
+    touch-action: none;
+}
+
+.settings-grab {
+    display: none;
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background: #c9cfca;
+    margin: 8px auto 0;
+}
+
+.settings-sheet.narrow .settings-grab {
+    display: block;
+}
+
+.settings-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px 10px;
+    border-bottom: 1px solid #c9cfca;
+}
+
+.settings-head h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    flex: 1;
+}
+
+.settings-body {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0 14px 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-foot {
+    display: flex;
+    gap: 8px;
+    padding: 10px 14px;
+    border-top: 1px solid #c9cfca;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.settings-status {
+    flex: 1 1 120px;
+    font-size: .8rem;
+    color: #5b665f;
+}
+
+.settings-err {
+    font-size: .8rem;
+    color: #b3261e;
+}
+
+.settings-overlay button,
+.settings-overlay select,
+.settings-overlay input {
+    font: inherit;
+}
+
+.settings-btn {
+    border: 1px solid #c9cfca;
+    background: #ffffff;
+    color: #1d2420;
+    border-radius: 6px;
+    padding: 8px 14px;
+    min-height: 40px;
+    cursor: pointer;
+}
+
+.settings-btn-primary {
+    background: #1f6f4a;
+    color: #ffffff;
+    border-color: #1f6f4a;
+    font-weight: 600;
+}
+
+.settings-btn-danger {
+    color: #b3261e;
+    border-color: #b3261e;
+}
+
+.settings-btn:disabled {
+    opacity: .45;
+    cursor: default;
+}
+
+.settings-icon-btn {
+    border: 0;
+    background: transparent;
+    color: #5b665f;
+    font-size: 1.1rem;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.settings-overlay :focus-visible {
+    outline: 2px solid #1f6f4a;
+    outline-offset: 2px;
+}
+
+.settings-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid #c9cfca;
+}
+
+.settings-group:last-child {
+    border-bottom: 0;
+}
+
+.settings-group-title {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #5b665f;
+    font-weight: 600;
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.settings-label {
+    flex: 1;
+    min-width: 0;
+}
+
+.settings-hint {
+    display: block;
+    font-size: .78rem;
+    color: #5b665f;
+    line-height: 1.35;
+}
+
+.settings-dep {
+    padding-left: 12px;
+    border-left: 2px solid #c9cfca;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.settings-dep[hidden],
+.settings-err[hidden] {
+    display: none;
+}
+
+.settings-switch {
+    position: relative;
+    width: 46px;
+    height: 28px;
+    flex: none;
+}
+
+.settings-switch input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    margin: 0;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.settings-switch span {
+    position: absolute;
+    inset: 0;
+    background: #c9cfca;
+    border-radius: 14px;
+    transition: background .15s;
+}
+
+.settings-switch span::after {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #ffffff;
+    transition: transform .15s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+}
+
+.settings-switch input:checked + span {
+    background: #1f6f4a;
+}
+
+.settings-switch input:checked + span::after {
+    transform: translateX(18px);
+}
+
+.settings-switch input:focus-visible + span {
+    outline: 2px solid #1f6f4a;
+    outline-offset: 2px;
+}
+
+.settings-stepper {
+    display: flex;
+    align-items: center;
+    border: 1px solid #c9cfca;
+    border-radius: 8px;
+    overflow: hidden;
+    flex: none;
+}
+
+.settings-stepper button {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    background: #eef0ee;
+    color: #1d2420;
+    font-size: 1.2rem;
+    cursor: pointer;
+    touch-action: manipulation;
+    user-select: none;
+}
+
+.settings-stepper button:disabled {
+    color: #c9cfca;
+    cursor: default;
+}
+
+.settings-stepper input {
+    width: 52px;
+    height: 40px;
+    border: 0;
+    padding: 0 2px;
+    text-align: right;
+    font-size: 16px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    background: #ffffff;
+    color: #1d2420;
+}
+
+.settings-unit {
+    padding-right: 8px;
+    min-width: 22px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    color: #5b665f;
+    font-size: .85rem;
+}
+
+.settings-ranges {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.settings-range-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.settings-swatch {
+    width: 4px;
+    align-self: stretch;
+    border-radius: 2px;
+}
+
+.settings-time {
+    flex: 1;
+    min-width: 0;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 4px 8px;
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+    border: 1px solid #c9cfca;
+    border-radius: 6px;
+    background: #eef0ee;
+    color: #1d2420;
+    cursor: pointer;
+}
+
+.settings-time.bad {
+    border-color: #b3261e;
+}
+
+.settings-clock {
+    flex: none;
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid #1d2420;
+    border-radius: 50%;
+    position: relative;
+}
+
+.settings-clock::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 2px;
+    width: 3px;
+    height: 4px;
+    border-left: 1.5px solid #1d2420;
+    border-bottom: 1.5px solid #1d2420;
+}
+
+.settings-picker {
+    position: absolute;
+    z-index: 1;
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    background: #ffffff;
+    border: 1px solid #c9cfca;
+    border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .2);
+    box-sizing: border-box;
+}
+
+.settings-picker-col {
+    flex: 1;
+    max-height: 220px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-picker-col button {
+    border: 0;
+    background: transparent;
+    color: #1d2420;
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+    min-width: 52px;
+    min-height: 36px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.settings-picker-col button:hover {
+    background: #eef0ee;
+}
+
+.settings-picker-col button[aria-selected="true"] {
+    background: #1f6f4a;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.settings-range-row .settings-icon-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+}
+
+.settings-add-range {
+    align-self: flex-start;
+    border: 1px dashed #c9cfca;
+    background: transparent;
+    color: #1f6f4a;
+    border-radius: 6px;
+    padding: 6px 10px;
+    min-height: 36px;
+    cursor: pointer;
+}
+
+.settings-timeline svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.settings-legend {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: .75rem;
+    color: #5b665f;
+}
+
+.settings-legend i {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    margin-right: 4px;
+    vertical-align: -1px;
+}
+
+.settings-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 0;
+}
+
+.settings-skeleton div {
+    height: 18px;
+    border-radius: 4px;
+    background: #eef0ee;
+}
+
+.settings-confirm {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.settings-confirm span {
+    flex: 1 1 120px;
+    font-weight: 600;
+}
+
+.settings-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    z-index: 101;
+    background: #1d2420;
+    color: #ffffff;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font: 14px system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .settings-overlay * {
+        transition: none !important;
+    }
+}

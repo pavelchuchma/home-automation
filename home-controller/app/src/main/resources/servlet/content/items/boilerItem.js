@@ -1,5 +1,25 @@
 'use strict';
 
+const BOILER_SETTINGS = {
+    title: 'Boiler settings',
+    lanes: [
+        {key: 'boiler.times', label: 'Heating', color: '#c46a12'},
+        {key: 'inverter.manager.high.tariff.times', label: 'High tariff', color: '#b8bfba', readOnly: true},
+    ],
+    groups: [
+        {title: 'Temperature', fields: [
+            {type: 'stepper', key: 'boiler.target.temp', label: 'Target', hint: 'Allowed 38–60 °C', step: 1, min: 38, max: 60, unit: '°C'},
+        ]},
+        {title: 'Operating times', hint: 'The heat pump heats water only in these ranges', fields: [
+            {type: 'ranges', key: 'boiler.times'},
+        ]},
+        {title: 'Options', hint: 'One-shot, cleared when the boiler turns off after the operating time', fields: [
+            {type: 'switch', key: 'boiler.disinfect', label: 'Disinfection', hint: 'Heat to 60 °C instead of the target'},
+            {type: 'switch', key: 'boiler.eheat', label: 'Electric heater', hint: 'Also turn on the electric heater'},
+        ]},
+    ],
+};
+
 class BoilerItem extends AdditionalSvgToolItem {
     constructor() {
         super('boiler', 43)
@@ -28,16 +48,9 @@ class BoilerItem extends AdditionalSvgToolItem {
         }).bind(this));
 
         const s = 14;
-        let y = 3;
+        let y = 4;
         const step = 19;
         let items = [];
-        let hidingBoxes = [];
-        items.push(this.tempIcon = this.svg.image('img/tempIcon.svg').size(s, s).move(1, y + 2));
-        items.push(this.textCurrentTemp = this.svg.text('??/?? °C').move(19, y).font(this.baseFont));
-        items.push(this.textTargetTemp = this.svg.text('??').move(80, y).font(this.baseFont));
-
-        y += step;
-        y += 2;
         let x = 4 - step;
         items.push(this.onOffIcon = this.svg.image('img/onOff.svg').size(s, s).move(x += step, y));
         this.createHideBox(this.onOffIcon);
@@ -47,6 +60,12 @@ class BoilerItem extends AdditionalSvgToolItem {
         this.createHideBox(this.eHeatIcon);
         items.push(this.palmIcon = this.svg.image('img/palm.svg').size(s, s).move(x += step, y));
         this.createHideBox(this.palmIcon);
+        this.createSettingsIcon(BOILER_SETTINGS);
+
+        y += step;
+        items.push(this.tempIcon = this.svg.image('img/tempIcon.svg').size(s, s).move(1, y + 2));
+        items.push(this.textCurrentTemp = this.svg.text('??/?? °C').move(19, y).font(this.baseFont));
+        items.push(this.textTargetTemp = this.svg.text('??').move(80, y).font(this.baseFont));
 
         this.showOnData.push(...items);
         this.hideOnNoData.push(...items);
