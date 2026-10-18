@@ -9,6 +9,7 @@ let floorImages = [];
 window.onload = function () {
     try {
         toolbar = new Toolbar('toolsContainer');
+        toolbar.createMenuIcon('/nodes');
 
         let imgIndex = 0;
         for (const imageSrc of getFloorImages()) {
@@ -51,7 +52,6 @@ function onLoadContinue() {
             drawItems();
         }, getComponents().concat(additionalToolbars), getBaseUrl());
         status.startRefresh();
-        initConfiguration();
     } catch (e) {
         printException(e);
     }

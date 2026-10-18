@@ -4,12 +4,6 @@ function getFloorImages() {
     return ['img/1stFloor-ondra.png'];
 }
 
-function initConfiguration() {
-    document.getElementById(new WaterPumpItem().canvasId).addEventListener("click", (function () {
-        window.location = '/nodes'
-    }));
-}
-
 function getLouversComponents() {
     return [
         new LouversItem('lvKoupelna',70, 260, 0),
@@ -47,6 +41,5 @@ function getToolbarItems() {
 
 function getAdditionalToolbars() {
     return[
-        new WaterPumpItem(),
     ]
 }

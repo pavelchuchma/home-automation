@@ -4,12 +4,6 @@ function getFloorImages() {
     return ['img/1stFloor-petr.jpg', 'img/2ndFloor-petr.jpg'];
 }
 
-function initConfiguration() {
-    document.getElementById(new WaterPumpItem().canvasId).addEventListener("click", (function () {
-        window.location = '/nodes'
-    }));
-}
-
 function getLouversComponents() {
     return [
         new LouversItem('lvLoznice', 38, 106, 0),
@@ -71,7 +65,6 @@ function getToolbarItems() {
 
 function getAdditionalToolbars() {
     return [
-        new WaterPumpItem(),
         new InverterItem(),
         new EPriceItem(),
     ]

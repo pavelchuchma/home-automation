@@ -4,12 +4,6 @@ function getFloorImages() {
     return ['img/1stFloor.jpg', 'img/2ndFloor.jpg'];
 }
 
-function initConfiguration() {
-    document.getElementById(new WaterPumpItem().canvasId).addEventListener("click", (function () {
-        window.location = '/nodes'
-    }));
-}
-
 function getLouversComponents() {
     return [
         new LouversItem('lvKoupH', 530, 473, 1),

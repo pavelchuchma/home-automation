@@ -7,7 +7,7 @@ class Toolbar {
 
         const width = 110;
         const totalHeight = this.items.reduce((sum, item) => sum + item.height, 0);
-        const svg = SVG().addTo('#' + containerId).size(width, totalHeight);
+        const svg = this.svg = SVG().addTo('#' + containerId).size(width, totalHeight);
         svg.rect(width, totalHeight).fill('lightgray').stroke({width: 1, color: 'black'});
 
         let top = 0;
@@ -16,6 +16,21 @@ class Toolbar {
             top += item.height;
         }
         this.#setSelected(this.selectedItem, true);
+    }
+
+    /**
+     * Menu icon in the bottom right corner navigating to the given page. The click does not select the tool below it.
+     */
+    createMenuIcon(url) {
+        const width = this.svg.width();
+        const height = this.svg.height();
+        const menu = this.svg.group().css('cursor', 'pointer');
+        menu.rect(20, 20).move(width - 20, height - 20).fill('transparent');
+        menu.text('☰').move(width - 15, height - 18).font({fill: 'black', family: 'Arial', size: 14});
+        menu.on('click', e => {
+            e.stopPropagation();
+            window.location = url;
+        });
     }
 
     #createItem(svg, item, top, width) {
