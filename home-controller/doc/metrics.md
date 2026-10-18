@@ -48,7 +48,7 @@ happened, *refresh* = one point per successful device read.
 
 | Measurement | Fields | Cadence |
 | --- | --- | --- |
-| `home-inverter` | mode, battery_mode, manual_mode, pgrid_bias (str); pv1_w, pv2_w, grid_w (inverter AC output, all phases), grid1_w..grid3_w (per phase), feed_in_w (+export / −import), battery_w (+charge), eps_w; soc, batt_temp_c, batt_v, grid1_v..grid3_v; yield_today_kwh, pv_yield_today_kwh, feed_in_today_kwh, consumed_today_kwh, yield_total_kwh, feed_in_total_kwh, consumed_total_kwh; min_soc, export_limit_w | grid |
+| `home-inverter` | mode, battery_mode, manual_mode, pgrid_bias (str); pv1_w, pv2_w, grid_w (inverter AC output, all phases), grid1_w..grid3_w (per phase), feed_in_w (+export / −import), feed_in1_w..feed_in3_w (grid meter per phase), battery_w (+charge), eps_w, eps1_w..eps3_w; soc, batt_temp_c, batt_v, grid1_v..grid3_v; yield_today_kwh, pv_yield_today_kwh, feed_in_today_kwh, consumed_today_kwh, yield_total_kwh, feed_in_total_kwh, consumed_total_kwh; min_soc, export_limit_w | grid |
 | `home-inverter-manager` | high_tariff, export_priority, force_discharge, inverter_off_negative_price (bool); desired_min_soc; buy_price, sell_price_net (CZK/kWh) | grid |
 | `home-price` | buy (incl. distribution fee and VAT), spot (buy − distribution fee), sell_net (buy − fees), all CZK/kWh | event: one point per 15 min interval, written ahead once the day is published |
 | `home-futura` | speed (0 off, 1–5, 6 auto), temp_ambient_c (outdoor), temp_fresh_c, temp_indoor_c, temp_waste_c, filter_pct, power_w, heat_recovery_w, co2_ppm, wall_temp_c, time_program (bool) | grid |

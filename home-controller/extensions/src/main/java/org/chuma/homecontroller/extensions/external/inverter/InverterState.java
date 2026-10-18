@@ -67,6 +67,15 @@ public interface InverterState {
     int getFeedInPower();
 
     /**
+     * Feed-in power on phase 1 measured by the grid meter; positive = export, negative = import
+     */
+    int getFeedIn1Power();
+
+    int getFeedIn2Power();
+
+    int getFeedIn3Power();
+
+    /**
      * Positive value means battery charging
      */
     int getBatteryPower();

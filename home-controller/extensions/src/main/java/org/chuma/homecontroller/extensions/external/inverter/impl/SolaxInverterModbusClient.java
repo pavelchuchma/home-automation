@@ -165,6 +165,21 @@ public class SolaxInverterModbusClient {
         }
 
         @Override
+        public int getFeedIn1Power() {
+            return getWideInt(client.input, 0x0082);
+        }
+
+        @Override
+        public int getFeedIn2Power() {
+            return getWideInt(client.input, 0x0084);
+        }
+
+        @Override
+        public int getFeedIn3Power() {
+            return getWideInt(client.input, 0x0086);
+        }
+
+        @Override
         public int getBatteryPower() {
             return client.input.getSignedInt(0x0016);
         }

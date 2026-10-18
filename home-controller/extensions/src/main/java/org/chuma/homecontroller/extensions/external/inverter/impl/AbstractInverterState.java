@@ -31,6 +31,9 @@ public abstract class AbstractInverterState implements InverterState {
                 "\n  eps2Power=" + getEps2Power() +
                 "\n  eps3Power=" + getEps3Power() +
                 "\n  feedInPower=" + getFeedInPower() +
+                "\n  feedIn1Power=" + getFeedIn1Power() +
+                "\n  feedIn2Power=" + getFeedIn2Power() +
+                "\n  feedIn3Power=" + getFeedIn3Power() +
                 "\n  batteryPower=" + getBatteryPower() +
                 "\n  yieldTotal=" + getYieldTotal() +
                 "\n  yieldToday=" + getYieldToday() +

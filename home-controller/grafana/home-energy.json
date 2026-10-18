@@ -154,7 +154,7 @@
             "type": "influxdb",
             "uid": "P951FEA4DE68E13C5"
           },
-          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"grid_w\" or r[\"_field\"] == \"feed_in_w\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: true)\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> map(fn: (r) => ({_time: r._time, _value: r.grid_w - r.feed_in_w}))",
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"grid_w\" or r[\"_field\"] == \"feed_in_w\" or r[\"_field\"] == \"eps_w\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: true)\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> map(fn: (r) => ({_time: r._time, _value: r.grid_w - r.feed_in_w + r.eps_w}))",
           "refId": "A"
         }
       ],
@@ -586,7 +586,7 @@
         "type": "influxdb",
         "uid": "P951FEA4DE68E13C5"
       },
-      "description": "House load = inverter AC output − grid feed-in.",
+      "description": "House load = inverter AC output − grid feed-in + EPS output.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -717,6 +717,33 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "E"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "EPS output"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              }
+            ]
           }
         ]
       },
@@ -756,7 +783,7 @@
             "type": "influxdb",
             "uid": "P951FEA4DE68E13C5"
           },
-          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"grid_w\" or r[\"_field\"] == \"feed_in_w\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: true)\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> map(fn: (r) => ({_time: r._time, _value: r.grid_w - r.feed_in_w}))",
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"grid_w\" or r[\"_field\"] == \"feed_in_w\" or r[\"_field\"] == \"eps_w\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: true)\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> map(fn: (r) => ({_time: r._time, _value: r.grid_w - r.feed_in_w + r.eps_w}))",
           "refId": "B"
         },
         {
@@ -774,6 +801,14 @@
           },
           "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_w\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: true)",
           "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "P951FEA4DE68E13C5"
+          },
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"eps_w\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: true)",
+          "refId": "E"
         }
       ],
       "title": "Power flows",
@@ -1779,7 +1814,7 @@
         "type": "influxdb",
         "uid": "P951FEA4DE68E13C5"
       },
-      "description": "AC output of the inverter per phase (sum = grid_w).",
+      "description": "House load per phase = inverter AC output − grid meter feed-in + EPS output on that phase. Dashed: inverter AC output per phase.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1839,7 +1874,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "L1"
+                "value": "House load L1"
               },
               {
                 "id": "color",
@@ -1858,7 +1893,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "L2"
+                "value": "House load L2"
               },
               {
                 "id": "color",
@@ -1877,13 +1912,112 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "L3"
+                "value": "House load L3"
               },
               {
                 "id": "color",
                 "value": {
                   "fixedColor": "blue",
                   "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "D"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Inverter L1"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    10,
+                    10
+                  ],
+                  "fill": "dash"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "E"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Inverter L2"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-yellow",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    10,
+                    10
+                  ],
+                  "fill": "dash"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "F"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Inverter L3"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-blue",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    10,
+                    10
+                  ],
+                  "fill": "dash"
                 }
               }
             ]
@@ -1918,7 +2052,7 @@
             "type": "influxdb",
             "uid": "P951FEA4DE68E13C5"
           },
-          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"grid1_w\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: true)",
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"grid1_w\" or r[\"_field\"] == \"feed_in1_w\" or r[\"_field\"] == \"eps1_w\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: true)\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> map(fn: (r) => ({_time: r._time, _value: r.grid1_w - r.feed_in1_w + r.eps1_w}))",
           "refId": "A"
         },
         {
@@ -1926,7 +2060,7 @@
             "type": "influxdb",
             "uid": "P951FEA4DE68E13C5"
           },
-          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"grid2_w\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: true)",
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"grid2_w\" or r[\"_field\"] == \"feed_in2_w\" or r[\"_field\"] == \"eps2_w\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: true)\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> map(fn: (r) => ({_time: r._time, _value: r.grid2_w - r.feed_in2_w + r.eps2_w}))",
           "refId": "B"
         },
         {
@@ -1934,11 +2068,35 @@
             "type": "influxdb",
             "uid": "P951FEA4DE68E13C5"
           },
-          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"grid3_w\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: true)",
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"grid3_w\" or r[\"_field\"] == \"feed_in3_w\" or r[\"_field\"] == \"eps3_w\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: true)\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> map(fn: (r) => ({_time: r._time, _value: r.grid3_w - r.feed_in3_w + r.eps3_w}))",
           "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "P951FEA4DE68E13C5"
+          },
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"grid1_w\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: true)",
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "P951FEA4DE68E13C5"
+          },
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"grid2_w\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: true)",
+          "refId": "E"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "P951FEA4DE68E13C5"
+          },
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"grid3_w\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: true)",
+          "refId": "F"
         }
       ],
-      "title": "Inverter output per phase",
+      "title": "Per phase: house load and inverter output",
       "type": "timeseries"
     },
     {
@@ -2315,118 +2473,6 @@
               }
             ]
           },
-          "unit": "watt"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byFrameRefID",
-              "options": "A"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "EPS"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "purple",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 12,
-        "y": 47
-      },
-      "id": 21,
-      "interval": "1m",
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "13.0.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
-          },
-          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"eps_w\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: true)",
-          "refId": "A"
-        }
-      ],
-      "title": "EPS power",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "P951FEA4DE68E13C5"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 8,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
           "unit": "suffix: Kč/kWh"
         },
         "overrides": [
@@ -2488,11 +2534,11 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 24,
-        "x": 0,
-        "y": 54
+        "w": 12,
+        "x": 12,
+        "y": 47
       },
-      "id": 22,
+      "id": 21,
       "interval": "1m",
       "options": {
         "legend": {
@@ -2579,5 +2625,5 @@
   "timezone": "browser",
   "title": "Home – Energy",
   "uid": "home-energy",
-  "version": 4
+  "version": 5
 }
