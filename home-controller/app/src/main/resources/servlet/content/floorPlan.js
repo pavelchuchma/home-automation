@@ -1,5 +1,6 @@
-let mainCtx;
 let planSvg;
+let planImage;
+let planItems;
 let currentFloor = 0;
 let status;
 let toolbar;
@@ -27,16 +28,12 @@ window.onload = function () {
 
 function onLoadContinue() {
     try {
-        const planCanvas = document.getElementById('planCanvas');
-        planCanvas.width = floorImages[currentFloor].naturalWidth;
-        planCanvas.height = floorImages[currentFloor].naturalHeight;
-        planCanvas.addEventListener("click", function (event) {
-            onPlanClick(event);
-        });
-        mainCtx = planCanvas.getContext("2d");
-        drawPlanCanvas();
-        planSvg = SVG().addTo('#planCanvasContainer').size(planCanvas.width, planCanvas.height);
+        const floorImage = floorImages[currentFloor];
+        planSvg = SVG().addTo('#planContainer').size(floorImage.naturalWidth, floorImage.naturalHeight);
         planSvg.attr('id', 'floorPlanSvg');
+        planSvg.on('click', event => onPlanClick(event));
+        planImage = planSvg.image(floorImage.src).size(floorImage.naturalWidth, floorImage.naturalHeight);
+        planItems = planSvg.group();
 
         const toolbarTable = document.getElementById('toolbarTable');
         const additionalToolbars = getAdditionalToolbars();
@@ -44,15 +41,7 @@ function onLoadContinue() {
             let tr = document.createElement('tr');
             let td = document.createElement('td');
             toolbarTable.appendChild(tr).appendChild(td)
-            if (additionalToolbar.type === 'canvas') {
-                let canvas = document.createElement('canvas');
-                canvas.id = additionalToolbar.canvasId;
-                canvas.width = additionalToolbar.canvasWidth;
-                canvas.height = additionalToolbar.canvasHeight;
-                toolbarTable.appendChild(canvas);
-            } else if (additionalToolbar.type === 'svg') {
-                td.id = 'td-' + additionalToolbar.canvasId;
-            }
+            td.id = 'td-' + additionalToolbar.canvasId;
             additionalToolbar.onCanvasCreated();
         }
 
@@ -67,12 +56,11 @@ function onLoadContinue() {
 }
 
 function drawItems() {
-    drawPlanCanvas();
-    planSvg.clear();
+    planItems.clear();
     for (const item of status.components) {
         if (item.floor === currentFloor || item.floor < 0) {
             try {
-                item.draw(planSvg);
+                item.draw(planItems);
             } catch (e) {
                 printException(e);
             }
@@ -80,27 +68,25 @@ function drawItems() {
     }
 }
 
-function drawPlanCanvas() {
-    mainCtx.drawImage(floorImages[currentFloor], 0, 0);
-}
-
 function onPlanClick(event) {
+    // plan coordinates of the click, independent of which SVG element was hit
+    const point = planSvg.point(event.clientX, event.clientY);
 
     let selectedToolbar = toolbar.getCurrent();
-    const item = findNearestItem(event.offsetX, event.offsetY, status.componentMap.values(),
+    const item = findNearestItem(point.x, point.y, status.componentMap.values(),
         item => selectedToolbar.isApplicable(item));
 
     if (item instanceof StairsItem) {
         currentFloor = item.targetFloor;
-        drawPlanCanvas();
+        planImage.load(floorImages[currentFloor].src);
         drawItems();
         return;
     }
-    // console.log(`new LouversItem('lv', ${+Math.round(parseFloat(event.offsetX))}, ${Math.round(parseFloat(event.offsetY))}, ${currentFloor}),`);
+    // console.log(`new LouversItem('lv', ${Math.round(point.x)}, ${Math.round(point.y)}, ${currentFloor}),`);
     // return;
 
     item.doAction(selectedToolbar.onClickAction);
-    item.afterAction(planSvg);
+    item.afterAction(planItems);
 }
 
 function findNearestItem(x, y, items, filter) {

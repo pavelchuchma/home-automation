@@ -53,25 +53,12 @@ class BaseItem extends AbstractItem {
     }
 }
 
-class AdditionalToolItem extends BaseItem {
-    constructor(id, canvasHeight, type = 'canvas') {
+class AdditionalSvgToolItem extends BaseItem {
+    constructor(id, canvasHeight) {
         super(id, 0, 0, -1);
-        this.type = type;
-        this.canvasId = id + '_' + type;
+        this.canvasId = id + '_svg';
         this.canvasWidth = 110;
         this.canvasHeight = canvasHeight;
-    }
-
-    /**
-     * Called after canvas creation is done
-     */
-    onCanvasCreated() {
-    }
-}
-
-class AdditionalSvgToolItem extends AdditionalToolItem {
-    constructor(id, canvasHeight) {
-        super(id, canvasHeight, 'svg');
         this.baseFont = {fill: 'black', family: 'Arial', size: 12};
         this.hideOnNoData = [];
         this.showOnData = [];
