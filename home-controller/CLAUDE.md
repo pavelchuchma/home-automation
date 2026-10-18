@@ -51,6 +51,11 @@ Other notable directories:
   safe), the controller classes and `boiler.*` options, the write retry, and
   how to read the boiler lines in the log (`Mode:`, `lastFail:`, retry
   warnings). Gateway firmware lives in a separate GitHub repo linked there.
+- `doc/nodes.md` — the PIC nodes on the CAN bus: firmware in `pic/node` at the
+  repo root (node ID is compiled in), node 1 as the USB/CAN bridge, the UART
+  framing and CAN mapping, the reboot/initialization lifecycle, connector pin
+  layout and the pins reserved by the firmware (CAN on every node; UART and
+  LED on the bridge, so its connector 3 is unusable), and known caveats.
 - `out`, `*/out` — compiled outputs; treat as generated. Never edit or place
   source files here.
 

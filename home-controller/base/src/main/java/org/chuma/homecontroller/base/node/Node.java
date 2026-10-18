@@ -41,6 +41,12 @@ public class Node implements PacketReceivedListener {
     private static final Object typeInitializationLock = new Object();
     private static final Logger log = LoggerFactory.getLogger(Node.class.getName());
 
+    // Pins driven by the node firmware itself, as 32-bit masks of ports A..D
+    private static final int CAN_OUTPUT_PINS = pinMask(Pin.pinB2);
+    private static final int CAN_INPUT_PINS = pinMask(Pin.pinB3);
+    private static final int BRIDGE_OUTPUT_PINS = pinMask(Pin.pinC6, Pin.pinB1); // UART TX, packet LED
+    private static final int BRIDGE_INPUT_PINS = pinMask(Pin.pinC7); // UART RX
+
     private final ListenerManager<Listener> listenerManager = new ListenerManager<>();
     private final long[] lastChangeTimes = new long[32];
     private final int nodeId;
@@ -70,6 +76,28 @@ public class Node implements PacketReceivedListener {
 
     private static String registerToString(int address, int value) {
         return Pic.toString(address) + "=" + value + " (" + asBinary(value) + ")";
+    }
+
+    private static int pinMask(Pin... pins) {
+        int mask = 0;
+        for (Pin pin : pins) {
+            mask |= 1 << pin.ordinal();
+        }
+        return mask;
+    }
+
+    /**
+     * Pins the firmware uses as outputs (CAN TX, on the bridge also UART TX and packet LED). Devices cannot use them.
+     */
+    int getReservedOutputMask() {
+        return isBridgeNode() ? CAN_OUTPUT_PINS | BRIDGE_OUTPUT_PINS : CAN_OUTPUT_PINS;
+    }
+
+    /**
+     * Pins the firmware uses as inputs (CAN RX, on the bridge also UART RX). Devices cannot use them.
+     */
+    int getReservedInputMask() {
+        return isBridgeNode() ? CAN_INPUT_PINS | BRIDGE_INPUT_PINS : CAN_INPUT_PINS;
     }
 
     /**
@@ -107,6 +135,11 @@ public class Node implements PacketReceivedListener {
         if ((device.getEventMask() & device.getOutputMask()) != 0) {
             throw new NodeConfigurationException(String.format("Event and output masks of device %s are not disjunctive: %s vs. %s",
                     device, intAsBinaryString(device.getEventMask()), intAsBinaryString(device.getOutputMask())), "DeviceEventOutputClash");
+        }
+        int reservedPins = (device.getEventMask() | device.getOutputMask()) & (getReservedOutputMask() | getReservedInputMask());
+        if (reservedPins != 0) {
+            throw new NodeConfigurationException(String.format("Cannot add device %s on node %s because it uses pins [%s] reserved by the node firmware",
+                    device, this, intAsBinaryString(reservedPins)), "DeviceUsesReservedPins");
         }
 
         validatePortMask(device, ConnectedDevice::getEventMask, "event", ConnectedDevice::getEventMask, "event", "ConflictingEventMask");
@@ -479,14 +512,12 @@ public class Node implements PacketReceivedListener {
                     int trisMask = (valueMask ^ 0xFF) & 0xFF;
                     int eventMask = (aggregatedEventMask >> port * 8) & 0xFF;
                     int value = (aggregatedInitialOutputValues >> port * 8) & 0xFF;
+                    int reservedMask = ((getReservedOutputMask() | getReservedInputMask()) >> port * 8) & 0xFF;
+                    int reservedInputMask = (getReservedInputMask() >> port * 8) & 0xFF;
 
                     if (valueMask != 0 || eventMask != 0) {
-                        if (port == 1) {
-                            // don't modify tris for Can port
-                            //TRISB3 = 1; //CAN RX
-                            //TRISB2 = 0; //CAN TX
-                            trisMask = trisMask & 0xF3 | 0x08; //11110011 | 00001000;
-                        }
+                        // keep TRIS of pins driven by the firmware (CAN, bridge UART and LED)
+                        trisMask = (trisMask & ~reservedMask) | reservedInputMask;
                         if (setPortValue((char) ('A' + port), valueMask, value, eventMask, trisMask) == null) {
                             //todo: validate response value. Existence of response does not need to be enough
                             log.error("Setting of port {} of node {} failed", (char) ('A' + port), this);
