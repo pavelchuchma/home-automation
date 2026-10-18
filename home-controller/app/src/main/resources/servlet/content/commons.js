@@ -1,30 +1,12 @@
 'use strict';
 
-function prepareCanvasContext(canvasId) {
-    const ctx = document.getElementById(canvasId).getContext("2d");
-    ctx.beginPath();
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = 'black';
-    ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.fillStyle = 'lightgray';
-    ctx.fill();
-    ctx.stroke();
-    return ctx;
-}
-
-function drawLightToolSign(x, y, ctx, drawVertical) {
-    ctx.beginPath();
+function drawLightToolSign(parent, x, y, drawVertical) {
     const r = 15;
-    ctx.moveTo(x - r, y);
-    ctx.lineTo(x + r, y);
+    const stroke = {width: 7, color: 'red'};
+    parent.line(x - r, y, x + r, y).stroke(stroke);
     if (drawVertical) {
-        ctx.moveTo(x, y - r);
-        ctx.lineTo(x, y + r);
+        parent.line(x, y - r, x, y + r).stroke(stroke);
     }
-
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 7;
-    ctx.stroke();
 }
 
 function printException(e) {

@@ -46,6 +46,20 @@ class PwmLightItem extends OnOffItem {
         }
     }
 
+    static drawLightIconSvg(parent, x, y, power) {
+        const r = 20;
+        parent.circle(2 * r).center(x, y).fill((power >= 1) ? 'yellow' : 'black');
+        if (power > 0 && power < 1) {
+            const endAngle = (1.5 + 2 * power) * Math.PI;
+            const largeArc = (power > .5) ? 1 : 0;
+            parent.path(`M ${x} ${y} L ${x} ${y - r} A ${r} ${r} 0 ${largeArc} 1 ${x + r * Math.cos(endAngle)} ${y + r * Math.sin(endAngle)} Z`)
+                .fill('yellow');
+            parent.circle(14).center(x, y).fill('yellow');
+        }
+        // single outline on top so the yellow and black parts share the same radius
+        parent.circle(2 * r).center(x, y).fill('none').stroke({width: 1, color: 'black'});
+    }
+
     doAction(action) {
         const path = `/rest/pwmLights/action?id=${this.id}&action=${action}`;
         BaseItem._send(path);

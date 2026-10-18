@@ -62,6 +62,28 @@ class AirValveItem extends BaseItem {
         }
     }
 
+    static drawIconSvg(parent, x, y, pos, color) {
+        const r = 17;
+        parent.rect(2 * r - 2, 2 * r - 2).move(x - r + 1, y - r + 1).fill('lightgray').stroke({width: 1, color: 'lightgray'});
+
+        // lines around
+        const lineStroke = {width: 5, color: color};
+        parent.line(x - r, y - r + 2, x + r, y - r + 2).stroke(lineStroke);
+        parent.line(x - r, y + r - 2, x + r, y + r - 2).stroke(lineStroke);
+
+        // valve core
+        if (pos !== -1) {
+            const angle = Math.PI * pos / -2;
+            const dx = (r - 5) * Math.cos(angle);
+            const dy = (r - 5) * Math.sin(angle);
+            parent.circle(7).center(x, y).fill(color);
+            parent.line(x - dx, y - dy, x + dx, y + dy).stroke({width: 3, color: color});
+        } else {
+            parent.plain('?').font({family: 'Arial', size: 1.5 * r, weight: 'bold', anchor: 'middle'})
+                .attr({x: x, y: y, 'dominant-baseline': 'central'}).fill(color);
+        }
+    }
+
     #getValveColor() {
         switch (this.#getValveState()) {
             case 0:

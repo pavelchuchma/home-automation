@@ -6,7 +6,7 @@ let floorImages = [];
 
 window.onload = function () {
     try {
-        toolbar = new Toolbar('toolsCanvas');
+        toolbar = new Toolbar('toolsContainer');
 
         let imgIndex = 0;
         for (const imageSrc of getFloorImages()) {

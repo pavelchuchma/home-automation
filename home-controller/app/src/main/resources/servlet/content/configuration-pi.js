@@ -163,44 +163,44 @@ function getComponents() {
 
 function getToolbarItems() {
     return [
-        new ToolBarItem('lightToggle', function (x, y, ctx) {
-            PwmLightItem.drawLightIcon(x - 10, y, 0, ctx);
-            PwmLightItem.drawLightIcon(x + 10, y, .75, ctx);
+        new ToolBarItem('lightToggle', function (x, y, svg) {
+            PwmLightItem.drawLightIconSvg(svg, x - 10, y, 0);
+            PwmLightItem.drawLightIconSvg(svg, x + 10, y, .75);
         }, [PwmLightItem.name, LightItem.name, InfraHeaterItem.name, StairsItem.name], 'toggle'),
 
-        new ToolBarItem('lightPlus', function (x, y, ctx) {
-            PwmLightItem.drawLightIcon(x, y, .66, ctx);
-            drawLightToolSign(x, y, ctx, true);
+        new ToolBarItem('lightPlus', function (x, y, svg) {
+            PwmLightItem.drawLightIconSvg(svg, x, y, .66);
+            drawLightToolSign(svg, x, y, true);
         }, [PwmLightItem.name, LightItem.name, InfraHeaterItem.name, StairsItem.name], 'plus'),
 
-        new ToolBarItem('lightMinus', function (x, y, ctx) {
-            PwmLightItem.drawLightIcon(x, y, .25, ctx);
-            drawLightToolSign(x, y, ctx, false);
+        new ToolBarItem('lightMinus', function (x, y, svg) {
+            PwmLightItem.drawLightIconSvg(svg, x, y, .25);
+            drawLightToolSign(svg, x, y, false);
         }, [PwmLightItem.name, LightItem.name, InfraHeaterItem.name, StairsItem.name], 'minus'),
 
-        new ToolBarItem('lightFull', function (x, y, ctx) {
-            PwmLightItem.drawLightIcon(x, y, 1, ctx);
+        new ToolBarItem('lightFull', function (x, y, svg) {
+            PwmLightItem.drawLightIconSvg(svg, x, y, 1);
         }, [PwmLightItem.name, LightItem.name, InfraHeaterItem.name, StairsItem.name], 'full'),
 
-        new ToolBarItem('lightOff', function (x, y, ctx) {
-            PwmLightItem.drawLightIcon(x, y, 0, ctx);
+        new ToolBarItem('lightOff', function (x, y, svg) {
+            PwmLightItem.drawLightIconSvg(svg, x, y, 0);
         }, [PwmLightItem.name, LightItem.name, InfraHeaterItem.name, StairsItem.name], 'off'),
 
-        new ToolBarItem('louversUp', function (x, y, ctx) {
-            LouversItem.drawIcon(x, y, .3, 0, 'stopped', ctx, 50, 60)
+        new ToolBarItem('louversUp', function (x, y, svg) {
+            LouversItem.drawIconSvg(svg, x, y, .3, 0, 50, 60)
         }, [LouversItem.name, StairsItem.name], 'up'),
 
-        new ToolBarItem('louversOutshine', function (x, y, ctx) {
-            LouversItem.drawIcon(x, y, 1, 0, 'stopped', ctx, 50, 60);
+        new ToolBarItem('louversOutshine', function (x, y, svg) {
+            LouversItem.drawIconSvg(svg, x, y, 1, 0, 50, 60);
         }, [LouversItem.name, StairsItem.name], 'outshine'),
 
-        new ToolBarItem('louversDown', function (x, y, ctx) {
-            LouversItem.drawIcon(x, y, 1, 1, 'stopped', ctx, 50, 60);
+        new ToolBarItem('louversDown', function (x, y, svg) {
+            LouversItem.drawIconSvg(svg, x, y, 1, 1, 50, 60);
         }, [LouversItem.name, StairsItem.name], 'blind'),
 
-        new ToolBarItem('valveToggle', function (x, y, ctx) {
-            AirValveItem.drawIcon(x + 10, y - 5, 1, 'stopped', 'red', ctx);
-            AirValveItem.drawIcon(x - 10, y + 5, 0, 'stopped', 'green', ctx);
+        new ToolBarItem('valveToggle', function (x, y, svg) {
+            AirValveItem.drawIconSvg(svg, x + 10, y - 5, 1, 'red');
+            AirValveItem.drawIconSvg(svg, x - 10, y + 5, 0, 'green');
         }, [AirValveItem.name, StairsItem.name], 'toggle')
     ];
 }

@@ -1,54 +1,43 @@
 'use strict';
 
 class Toolbar {
-    constructor(canvasId) {
-        this.canvasId = canvasId;
+    constructor(containerId) {
         this.items = getToolbarItems();
         this.selectedItem = this.items[0];
 
-        let totalHeight = 0;
-        for (const item of this.items) {
-            item.toolbarYPosition = totalHeight + 0.5 * item.height;
-            totalHeight += item.height;
-        }
+        const width = 110;
+        const totalHeight = this.items.reduce((sum, item) => sum + item.height, 0);
+        const svg = SVG().addTo('#' + containerId).size(width, totalHeight);
+        svg.rect(width, totalHeight).fill('lightgray').stroke({width: 1, color: 'black'});
 
-        let canvas = document.getElementById(canvasId);
-        canvas.height = totalHeight;
-        canvas.width = 110;
-        canvas.addEventListener("click", (function (event) {
-            this.onClick(event);
-        }).bind(this));
-
-        this.ctx = prepareCanvasContext(this.canvasId);
+        let top = 0;
         for (const item of this.items) {
-            this.#drawItem(item, item === this.items[0])
+            this.#createItem(svg, item, top, width);
+            top += item.height;
         }
+        this.#setSelected(this.selectedItem, true);
     }
 
-    #drawItem(item, selected) {
+    #createItem(svg, item, top, width) {
         const border = 2;
-        this.ctx.beginPath();
-        this.ctx.lineWidth = 1;
-        this.ctx.strokeStyle = 'lightgray';
-        this.ctx.rect(border, item.toolbarYPosition - item.height/2 + border, this.ctx.canvas.width - 2*border, item.height - 2*border);
-        this.ctx.fillStyle = (selected) ? '#FF7B2B' : 'lightgray';
-        this.ctx.fill();
-        this.ctx.stroke();
-
-        item.drawFunction(this.ctx.canvas.width / 2, item.toolbarYPosition, this.ctx)
+        const group = svg.group().css('cursor', 'pointer');
+        item.toolbarBackground = group.rect(width - 2 * border, item.height - 2 * border).move(border, top + border)
+            .stroke({width: 1, color: 'lightgray'});
+        this.#setSelected(item, false);
+        item.drawFunction(width / 2, top + item.height / 2, group);
+        group.on('click', () => this.#select(item));
     }
 
-    onClick(event) {
-        for (const item of this.items) {
-            if (event.offsetY > item.toolbarYPosition - item.height / 2 && event.offsetY < item.toolbarYPosition + item.height / 2) {
-                if (this.selectedItem !== item) {
-                    this.#drawItem(this.selectedItem, false)
-                    this.selectedItem = item;
-                    this.#drawItem(this.selectedItem, true)
-                }
-                break;
-            }
+    #select(item) {
+        if (this.selectedItem !== item) {
+            this.#setSelected(this.selectedItem, false);
+            this.selectedItem = item;
+            this.#setSelected(this.selectedItem, true);
         }
+    }
+
+    #setSelected(item, selected) {
+        item.toolbarBackground.fill((selected) ? '#FF7B2B' : 'lightgray');
     }
 
     getCurrent() {
