@@ -4,6 +4,7 @@ td {
 
 #floorPlanSvg {
     display: block; /* remove inline gaps */
+    height: auto;
 }
 
 div.gray {

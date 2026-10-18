@@ -29,7 +29,9 @@ window.onload = function () {
 function onLoadContinue() {
     try {
         const floorImage = floorImages[currentFloor];
-        planSvg = SVG().addTo('#planContainer').size(floorImage.naturalWidth, floorImage.naturalHeight);
+        // fits next to the toolbar in narrow windows, never above the natural image size
+        planSvg = SVG().addTo('#planContainer').viewbox(0, 0, floorImage.naturalWidth, floorImage.naturalHeight)
+            .css('width', `min(${floorImage.naturalWidth}px, calc(100vw - 150px))`);
         planSvg.attr('id', 'floorPlanSvg');
         planSvg.on('click', event => onPlanClick(event));
         planImage = planSvg.image(floorImage.src).size(floorImage.naturalWidth, floorImage.naturalHeight);
