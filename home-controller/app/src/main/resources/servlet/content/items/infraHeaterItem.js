@@ -8,24 +8,20 @@ class InfraHeaterItem extends OnOffItem {
         this.secondaryHeater = secondaryHeater;
     }
 
-    draw(ctx) {
-        this.drawImpl(ctx, false);
+    draw(svg) {
+        this.drawImpl(svg, false);
     }
 
-    drawImpl(ctx, onTouch) {
-        this.drawTube(ctx, 0, onTouch, this.secondaryHeater.val !== 0);
-        this.drawTube(ctx, 1, onTouch, this.val !== 0);
-        this.drawTube(ctx, 2, onTouch, this.secondaryHeater.val !== 0);
+    drawImpl(svg, onTouch) {
+        this.drawTube(svg, 0, onTouch, this.secondaryHeater.val !== 0);
+        this.drawTube(svg, 1, onTouch, this.val !== 0);
+        this.drawTube(svg, 2, onTouch, this.secondaryHeater.val !== 0);
     }
 
-    drawTube(ctx, index, onTouch, isOn) {
-        let yy = this.y + (index - 1) * 7;
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = (onTouch) ? 'lightgray' : (isOn) ? 'red' : 'gray';
-        ctx.beginPath();
-        ctx.moveTo(this.x - 25, yy);
-        ctx.lineTo(this.x + 25, yy);
-        ctx.stroke();
+    drawTube(svg, index, onTouch, isOn) {
+        const yy = this.y + (index - 1) * 7;
+        const color = (onTouch) ? 'lightgray' : (isOn) ? 'red' : 'gray';
+        svg.line(this.x - 25, yy, this.x + 25, yy).stroke({width: 4, color: color});
     }
 
     doAction(action) {
@@ -34,8 +30,8 @@ class InfraHeaterItem extends OnOffItem {
         BaseItem._send(`/rest/onOff/action?id=${this.secondaryHeater.id}&action=${action}&timeout=900`);
     }
 
-    afterAction(ctx) {
-        this.drawImpl(ctx, true)
+    afterAction(svg) {
+        this.drawImpl(svg, true)
     }
 }
 

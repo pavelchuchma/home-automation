@@ -1,4 +1,5 @@
 let mainCtx;
+let planSvg;
 let currentFloor = 0;
 let status;
 let toolbar;
@@ -34,6 +35,8 @@ function onLoadContinue() {
         });
         mainCtx = planCanvas.getContext("2d");
         drawPlanCanvas();
+        planSvg = SVG().addTo('#planCanvasContainer').size(planCanvas.width, planCanvas.height);
+        planSvg.attr('id', 'floorPlanSvg');
 
         const toolbarTable = document.getElementById('toolbarTable');
         const additionalToolbars = getAdditionalToolbars();
@@ -58,31 +61,18 @@ function onLoadContinue() {
         }, getComponents().concat(additionalToolbars), getBaseUrl());
         status.startRefresh();
         initConfiguration();
-        // justTry()
     } catch (e) {
         printException(e);
     }
 }
 
-function justTry() {
-    const planCanvas = document.getElementById('planCanvas');
-    const width = planCanvas.width;
-    const height = planCanvas.height;
-
-    this.svg = SVG().addTo('#planCanvasContainer').size(width, height);
-    this.svg.attr('id', 'floorPlanSvg');
-
-    // sample content to verify overlay alignment
-    const rect = this.svg.rect(40, 40).move(10, 10);
-    rect.fill('green').stroke({width: 1, color: 'red'});
-}
-
 function drawItems() {
     drawPlanCanvas();
+    planSvg.clear();
     for (const item of status.components) {
         if (item.floor === currentFloor || item.floor < 0) {
             try {
-                item.draw(mainCtx);
+                item.draw(planSvg);
             } catch (e) {
                 printException(e);
             }
@@ -110,7 +100,7 @@ function onPlanClick(event) {
     // return;
 
     item.doAction(selectedToolbar.onClickAction);
-    item.afterAction(mainCtx);
+    item.afterAction(planSvg);
 }
 
 function findNearestItem(x, y, items, filter) {

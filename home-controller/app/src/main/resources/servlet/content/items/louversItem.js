@@ -9,55 +9,11 @@ class LouversItem extends BaseItem {
         this.act = undefined;
     }
 
-    draw(ctx) {
-        LouversItem.drawIcon(this.x, this.y, this.pos, this.off, this.act, ctx, 70, 80);
+    draw(svg) {
+        LouversItem.drawIcon(svg, this.x, this.y, this.pos, this.off, 70, 80);
     }
 
-    static drawIcon(x, y, position, offset, action, ctx, w, h) {
-        const louverHeight = 7;
-        // white rectangle
-        ctx.beginPath();
-        ctx.rect(x - w / 2, y - h / 2, w, h);
-        ctx.fillStyle = 'white';
-        ctx.fill();
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        if (position >= 0) {
-            // louvers background box
-            ctx.beginPath();
-            ctx.rect(x - w / 2, y - h / 2, w, h * position);
-            ctx.fillStyle = 'lightgray';
-            ctx.fill();
-
-            ctx.strokeStyle = 'black';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // louvers
-            const lineWidth = louverHeight * offset;
-            ctx.beginPath();
-            for (let i = h * position - lineWidth / 2; i >= lineWidth / 2; i -= louverHeight) {
-                const yy = y - h / 2 + i;
-                ctx.moveTo(x - w / 2, yy);
-                ctx.lineTo(x + w / 2, yy);
-            }
-            ctx.strokeStyle = 'black';
-            ctx.lineWidth = lineWidth;
-            ctx.stroke();
-        } else {
-            ctx.beginPath();
-            ctx.font = h + "px Arial Bold";
-            ctx.fillStyle = 'black';
-            ctx.textAlign = "center";
-            ctx.textBaseline = 'middle';
-            ctx.fillText("?", x, y);
-            ctx.stroke();
-        }
-    }
-
-    static drawIconSvg(parent, x, y, position, offset, w, h) {
+    static drawIcon(parent, x, y, position, offset, w, h) {
         const louverHeight = 7;
         const left = x - w / 2;
         const top = y - h / 2;
@@ -73,8 +29,7 @@ class LouversItem extends BaseItem {
                 parent.line(left, top + i, left + w, top + i).stroke({width: lineWidth || 2, color: 'black'});
             }
         } else {
-            parent.plain('?').font({family: 'Arial', size: h, weight: 'bold', anchor: 'middle'})
-                .attr({x: x, y: y, 'dominant-baseline': 'central'}).fill('black');
+            drawCenteredText(parent, '?', x, y, h * .6, 'gray');
         }
     }
 

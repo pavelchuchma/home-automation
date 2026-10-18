@@ -5,8 +5,8 @@ class LightItem extends OnOffItem {
         super(id, x, y, floor)
     }
 
-    draw(ctx) {
-        PwmLightItem.drawLightIcon(this.x, this.y, this.val, ctx);
+    draw(svg) {
+        PwmLightItem.drawLightIcon(svg, this.x, this.y, this.val);
     }
 
     doAction(action) {

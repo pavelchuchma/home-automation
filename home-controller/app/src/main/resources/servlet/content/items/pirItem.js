@@ -5,29 +5,15 @@ class PirItem extends SensorItem {
         super(id, x, y, floor)
     }
 
-    draw(ctx) {
-        ctx.strokeStyle = 'orange';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, 7, 0, 2 * Math.PI);
-        ctx.fillStyle = 'orange';
-        ctx.fill();
-        ctx.stroke();
+    draw(svg) {
+        const r = 7;
+        drawPieSlice(svg, this.x, this.y, r, 0, 2 * Math.PI).fill('orange').stroke({width: 1, color: 'orange'});
 
         const maxAge = 60.0;
 
         if (this.age >= 0 && this.age < maxAge) {
             const startAngle = (1.5 - 2 * (1 - this.age / maxAge)) * Math.PI;
-            const endAngle = 1.5 * Math.PI;
-
-            ctx.beginPath();
-            ctx.strokeStyle = 'red';
-            ctx.moveTo(this.x, this.y);
-            ctx.arc(this.x, this.y, 7, startAngle, endAngle);
-            ctx.lineTo(this.x, this.y);
-            ctx.fillStyle = 'red';
-            ctx.fill();
-            ctx.stroke();
+            drawPieSlice(svg, this.x, this.y, r, startAngle, 1.5 * Math.PI).fill('red').stroke({width: 1, color: 'red'});
         }
     }
 }

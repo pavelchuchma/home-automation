@@ -38,7 +38,7 @@ class BaseItem extends AbstractItem {
         this.floor = floor;
     }
 
-    draw(ctx) {
+    draw(svg) {
     }
 
     static _send(path) {
@@ -47,13 +47,9 @@ class BaseItem extends AbstractItem {
         request.send();
     }
 
-    afterAction(ctx) {
+    afterAction(svg) {
         // draw changed item as gray
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, 15, 0, 2 * Math.PI);
-        ctx.fillStyle = 'gray';
-        ctx.fill();
-        ctx.stroke();
+        svg.circle(30).center(this.x, this.y).fill('gray').stroke({width: 1, color: 'black'});
     }
 }
 

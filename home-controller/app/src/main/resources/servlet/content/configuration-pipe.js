@@ -56,15 +56,15 @@ function getComponents() {
 function getToolbarItems() {
     return [
         new ToolBarItem('louversUp', function (x, y, svg) {
-            LouversItem.drawIconSvg(svg, x, y, .3, 0, 50, 60)
+            LouversItem.drawIcon(svg, x, y, .3, 0, 50, 60)
         }, [LouversItem.name, StairsItem.name], 'up'),
 
         new ToolBarItem('louversOutshine', function (x, y, svg) {
-            LouversItem.drawIconSvg(svg, x, y, 1, 0, 50, 60);
+            LouversItem.drawIcon(svg, x, y, 1, 0, 50, 60);
         }, [LouversItem.name, StairsItem.name], 'outshine'),
 
         new ToolBarItem('louversDown', function (x, y, svg) {
-            LouversItem.drawIconSvg(svg, x, y, 1, 1, 50, 60);
+            LouversItem.drawIcon(svg, x, y, 1, 1, 50, 60);
         }, [LouversItem.name, StairsItem.name], 'blind'),
     ];
 }
