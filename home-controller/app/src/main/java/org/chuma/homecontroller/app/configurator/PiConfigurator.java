@@ -50,7 +50,6 @@ import org.chuma.homecontroller.controller.action.GenericCodeAction;
 import org.chuma.homecontroller.controller.action.IndicatorAction;
 import org.chuma.homecontroller.controller.action.InvertAction;
 import org.chuma.homecontroller.controller.action.InvertActionWithTimer;
-import org.chuma.homecontroller.controller.action.Relay16TestLoopAction;
 import org.chuma.homecontroller.controller.action.SwitchAllOffWithMemory;
 import org.chuma.homecontroller.controller.action.SwitchOffAction;
 import org.chuma.homecontroller.controller.action.SwitchOffActionWithTimer;
@@ -70,7 +69,6 @@ import org.chuma.homecontroller.controller.controller.ValveControllerImpl;
 import org.chuma.homecontroller.controller.device.GenericInputDevice;
 import org.chuma.homecontroller.controller.device.GenericOutputDevice;
 import org.chuma.homecontroller.controller.device.LddBoardDevice;
-import org.chuma.homecontroller.controller.device.Relay16BoardDevice;
 import org.chuma.homecontroller.controller.device.RelayBoardDevice;
 import org.chuma.homecontroller.controller.device.SwitchIndicator;
 import org.chuma.homecontroller.controller.device.TriacBoardDevice;
@@ -153,8 +151,6 @@ public class PiConfigurator extends AbstractConfigurator {
         Node lozniceZed = nodeInfoRegistry.createNode(35, "LozniceZed");
         Node chodbaOkno = nodeInfoRegistry.createNode(39, "ChodbaOkno");
         Node switchTestNode = nodeInfoRegistry.createNode(53, "SwitchTestNode");
-        Node relay16testNode45 = nodeInfoRegistry.createNode(45, "Relay16testNode45");
-        Node relay16testNode46 = nodeInfoRegistry.createNode(46, "Relay16testNode46");
 
         WallSwitch chodbaOkno1Sw = new WallSwitch("chodbaOkno1Sw", chodbaOkno, 1);
         WallSwitch chodbaOkno2Sw = new WallSwitch("chodbaOkno2Sw", chodbaOkno, 2);
@@ -837,9 +833,6 @@ public class PiConfigurator extends AbstractConfigurator {
         nodeListener.addActionBinding(new ActionBinding(testSw.getRightUpperButton(), new SwitchOnAction(testingRightOnOffActor), null));
         nodeListener.addActionBinding(new ActionBinding(testSw.getLeftUpperButton(), new SwitchOnAction(testingLeftOnOffActor), null));
         nodeListener.addActionBinding(new ActionBinding(testSw.getLeftBottomButton(), new SwitchOffAction(testingLeftOnOffActor), null));
-
-        servletActions.add(new ServletAction("testRele16-45", "Rele16-45", new Relay16TestLoopAction(new Relay16BoardDevice("test45", relay16testNode45))));
-        servletActions.add(new ServletAction("testRele16-46", "Rele16-46", new Relay16TestLoopAction(new Relay16BoardDevice("test46", relay16testNode46))));
 
         List<WebSocketHandler> wsHandlers = new ArrayList<>();
         // page handlers
