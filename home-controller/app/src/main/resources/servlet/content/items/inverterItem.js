@@ -4,8 +4,27 @@ const PHASE_VOLTAGE = 230;
 const PHASE_WARN_RATIO = 0.8;
 const MANUAL_MODE_LABELS = {Stop: 'Stop', ForceCharge: 'Force charge', ForceDischarge: 'Force discharge'};
 
+// dialog keys written to the inverter by the REST action, see InverterHandler; the rest are options
+const INVERTER_DEVICE_KEYS = ['pgridBias'];
+
+const INVERTER_STORE = {
+    load: (keys, item) => SettingsSheet.OPTIONS_STORE.load(keys.filter(k => !INVERTER_DEVICE_KEYS.includes(k)))
+        .then(values => ({...values, pgridBias: String(item.pgridBias !== 'Disable')})),
+    save: (changes, item) => {
+        const device = {};
+        const options = {};
+        Object.entries(changes).forEach(([k, v]) => (INVERTER_DEVICE_KEYS.includes(k) ? device : options)[k] = v);
+        return Promise.all([
+            Object.keys(device).length ? fetch(`${getBaseUrl()}/rest/inverter/action?id=${item.id}&${new URLSearchParams(device)}`)
+                .then(SettingsSheet.checkResponse) : null,
+            Object.keys(options).length ? SettingsSheet.OPTIONS_STORE.save(options) : null,
+        ]);
+    },
+};
+
 const INVERTER_SETTINGS = {
     title: 'Inverter',
+    store: INVERTER_STORE,
     details: {optionKeys: ['inverter.phase.breaker.amps'], render: inverterDetailsHtml},
     lanes: [
         {key: 'inverter.manager.high.tariff.times', label: 'High tariff', color: '#c0392b'},
@@ -32,6 +51,10 @@ const INVERTER_SETTINGS = {
                 {type: 'stepper', key: 'inverter.manager.force.discharge.minimal.soc', label: 'Discharge down to',
                     step: 5, min: 0, max: 100, unit: '%'},
             ]},
+        {title: 'Grid', fields: [
+            {type: 'switch', key: 'pgridBias', label: 'Pgrid bias',
+                hint: 'Keep ~40 W flowing to the grid instead of ~0 W, so the house never draws from it'},
+        ]},
     ],
 };
 
@@ -41,6 +64,7 @@ class InverterItem extends AdditionalSvgToolItem {
         this.mode = undefined;
         this.batMode = undefined;
         this.manualMode = undefined;
+        this.pgridBias = undefined;
         this.pvPwr = undefined;
         this.acPwr = undefined;
         this.feedInPwr = undefined;
@@ -138,6 +162,7 @@ function inverterDetailsHtml(item, options) {
             <span class="settings-group-title">Mode</span>
             <div class="settings-row"><span class="settings-label">Inverter</span><span class="settings-value">${item.mode}</span></div>
             <div class="settings-row"><span class="settings-label">Battery</span><span class="settings-value">${item.batMode}</span></div>
+            <div class="settings-row"><span class="settings-label">Pgrid bias</span><span class="settings-value">${item.pgridBias}</span></div>
             <div class="settings-row"><span class="settings-label">Manual mode<span class="settings-hint">Applies only while the battery mode is Manual</span></span>
                 ${manual ? `<span class="settings-chip">${manualLabel}</span>` : `<span class="settings-muted">${manualLabel}</span>`}</div>
         </div>

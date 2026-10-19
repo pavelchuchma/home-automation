@@ -1,9 +1,11 @@
 package org.chuma.homecontroller.app.servlet.rest;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
 import org.chuma.homecontroller.extensions.external.inverter.InverterState;
+import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterModbusClient;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterMonitor;
 
 public class InverterHandler extends AbstractMonitorRestHandler<SolaxInverterMonitor> {
@@ -27,6 +29,7 @@ public class InverterHandler extends AbstractMonitorRestHandler<SolaxInverterMon
         jw.addAttribute("mode", state.getMode().toString());
         jw.addAttribute("batMode", state.getBatteryMode().toString());
         jw.addAttribute("manualMode", state.getManualMode().toString());
+        jw.addAttribute("pgridBias", state.getPgridBias().toString());
         jw.addAttribute("pvPwr", pv);
         jw.addAttribute("acPwr", acPower);
         jw.addAttribute("epsPwr", epsPower);
@@ -45,6 +48,23 @@ public class InverterHandler extends AbstractMonitorRestHandler<SolaxInverterMon
         jw.addAttribute("pvYieldToday", state.getPvYieldToday());
         jw.addAttribute("consumedToday", state.getConsumedEnergyToday());
         jw.addAttribute("feedInToday", state.getFeedInEnergyToday());
+    }
+
+    @Override
+    void processAction(SolaxInverterMonitor monitor, Map<String, String[]> requestParameters) {
+        applyAction(monitor.getClient(), requestParameters);
+        // show the result without waiting for the next periodic refresh
+        monitor.getStateSync(true);
+    }
+
+    /**
+     * Optional pgridBias: true targets the feed-in to ~+40 W (Grid), false to ~0 W (Disable).
+     */
+    static void applyAction(SolaxInverterModbusClient client, Map<String, String[]> requestParameters) {
+        Boolean pgridBias = getBooleanParam(requestParameters, "pgridBias");
+        if (pgridBias != null) {
+            client.setPgridBias(pgridBias ? InverterState.PgridBias.Grid : InverterState.PgridBias.Disable);
+        }
     }
 
     /**

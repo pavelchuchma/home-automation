@@ -24,6 +24,10 @@ public class SolaxInverterMonitor extends AbstractStateMonitor<InverterState> im
         this.client = client;
     }
 
+    public SolaxInverterModbusClient getClient() {
+        return client;
+    }
+
     @Override
     protected InverterState getStateImpl(boolean firstRefresh) {
         try {
