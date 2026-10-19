@@ -59,7 +59,14 @@ public interface InverterState {
 
     int getPv1Power();
 
+    /**
+     * PV string 1 DC voltage
+     */
+    double getPv1Voltage();
+
     int getPv2Power();
+
+    double getPv2Voltage();
 
     /**
      * Positive value means feeding energy to the public grid

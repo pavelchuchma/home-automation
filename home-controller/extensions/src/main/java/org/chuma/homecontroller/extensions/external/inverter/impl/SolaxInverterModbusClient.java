@@ -143,8 +143,18 @@ public class SolaxInverterModbusClient {
         }
 
         @Override
+        public double getPv1Voltage() {
+            return client.input.getUnsignedInt(0x0003) / 10d;
+        }
+
+        @Override
         public int getPv2Power() {
             return client.input.getUnsignedInt(0x000B);
+        }
+
+        @Override
+        public double getPv2Voltage() {
+            return client.input.getUnsignedInt(0x0004) / 10d;
         }
 
         public int getEps1Power() {

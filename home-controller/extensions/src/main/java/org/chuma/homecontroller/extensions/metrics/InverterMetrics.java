@@ -34,6 +34,8 @@ public class InverterMetrics implements MetricSource {
                     .field("pgrid_bias", s.getPgridBias())
                     .field("pv1_w", s.getPv1Power())
                     .field("pv2_w", s.getPv2Power())
+                    .field("pv1_v", s.getPv1Voltage())
+                    .field("pv2_v", s.getPv2Voltage())
                     .field("grid_w", s.getGridPower())
                     .field("grid1_w", s.getGrid1Power())
                     .field("grid2_w", s.getGrid2Power())
@@ -61,7 +63,6 @@ public class InverterMetrics implements MetricSource {
                     .field("feed_in_total_kwh", s.getFeedInEnergyTotal())
                     .field("consumed_total_kwh", s.getConsumedEnergyTotal())
                     .field("min_soc", s.getSelfUseMinimalSoc())
-                    .field("export_limit_w", s.getExportControlUserLimit())
                     .end();
         }
         if (manager != null) {

@@ -26,7 +26,7 @@ re-export diffs cleanly.
 
 | uid | What |
 | --- | --- |
-| `home-energy` | PV / load / grid / battery flows, SoC and the minimal SoC the manager wants, day-ahead spot price, today's energy, export limit, a state timeline of inverter and battery modes with the manager's decisions, boiler and HVAC on; grid voltages, battery voltage and temperature |
+| `home-energy` | PV / load / grid / battery flows, SoC and the minimal SoC the manager wants, day-ahead spot price, today's energy, PV1 string voltage and power, a state timeline of inverter and battery modes with the manager's decisions, boiler and HVAC on; grid voltages, battery voltage and temperature |
 | `home-climate` | recuperation temperatures, CO₂, heat recovery efficiency, speed and power; HVAC temperatures and state; boiler temperatures and state |
 | `home-water` | rainwater tank level and sensor diagnostics, pump cycles and run time per hour and per day |
 | `home-mower` | Robonect position (geomap), status, battery, Wi-Fi, "last seen"; empty off season |

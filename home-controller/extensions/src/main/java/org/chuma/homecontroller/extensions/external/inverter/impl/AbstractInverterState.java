@@ -26,7 +26,9 @@ public abstract class AbstractInverterState implements InverterState {
                 "\n  grid2Power=" + getGrid2Power() +
                 "\n  grid3Power=" + getGrid3Power() +
                 "\n  pv1Power=" + getPv1Power() +
+                "\n  pv1Voltage=" + getPv1Voltage() +
                 "\n  pv2Power=" + getPv2Power() +
+                "\n  pv2Voltage=" + getPv2Voltage() +
                 "\n  eps1Power=" + getEps1Power() +
                 "\n  eps2Power=" + getEps2Power() +
                 "\n  eps3Power=" + getEps3Power() +
