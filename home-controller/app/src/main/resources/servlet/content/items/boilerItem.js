@@ -1,7 +1,8 @@
 'use strict';
 
 const BOILER_SETTINGS = {
-    title: 'Boiler settings',
+    title: 'Boiler',
+    details: {optionKeys: [], render: boilerDetailsHtml},
     lanes: [
         {key: 'boiler.times', label: 'Heating', color: '#c46a12'},
         {key: 'inverter.manager.high.tariff.times', label: 'High tariff', color: '#b8bfba', readOnly: true},
@@ -60,7 +61,7 @@ class BoilerItem extends AdditionalSvgToolItem {
         this.createHideBox(this.eHeatIcon);
         items.push(this.palmIcon = this.svg.image('img/palm.svg').size(s, s).move(x += step, y));
         this.createHideBox(this.palmIcon);
-        this.createSettingsIcon(BOILER_SETTINGS);
+        this.createMenuIcon(BOILER_SETTINGS);
 
         y += step;
         items.push(this.tempIcon = this.svg.image('img/tempIcon.svg').size(s, s).move(1, y + 2));
@@ -79,4 +80,38 @@ class BoilerItem extends AdditionalSvgToolItem {
         this.setVisibility(this.eHeatIcon.hideBox, !this.eHeat);
         this.setVisibility(this.palmIcon.hideBox, !this.vacation);
     }
+}
+
+function boilerTileHtml(label, sensor, temp) {
+    return `<div class="settings-tile"><span>${label}<span class="settings-hint">${sensor}</span></span>
+        <span class="settings-value">${temp} °C</span></div>`;
+}
+
+/**
+ * Details tab: water temperatures in the tank and the heat pump sensors.
+ */
+function boilerDetailsHtml(item) {
+    return `<div class="settings-group">
+            <span class="settings-group-title">Water</span>
+            <div class="settings-water">
+                <span class="settings-tank" aria-hidden="true"><i></i><i></i></span>
+                <div class="settings-temps">
+                    <div class="settings-row"><span class="settings-label">Upper<span class="settings-hint">T5U</span></span>
+                        <span class="settings-temp-big">${item.t5U} °C</span></div>
+                    <div class="settings-row"><span class="settings-label">Lower<span class="settings-hint">T5L</span></span>
+                        <span class="settings-temp-big">${item.t5L} °C</span></div>
+                    <div class="settings-row"><span class="settings-label settings-muted">Target</span>
+                        <span class="settings-value">${item.targetTemp} °C</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="settings-group">
+            <span class="settings-group-title">Heat pump</span>
+            <div class="settings-tiles">
+                ${boilerTileHtml('Outdoor air', 'T4', item.t4)}
+                ${boilerTileHtml('Evaporator', 'T3', item.t3)}
+                ${boilerTileHtml('Discharge', 'TP', item.tP)}
+                ${boilerTileHtml('Suction', 'Th', item.th)}
+            </div>
+        </div>`;
 }

@@ -1,4 +1,4 @@
-/* Settings dialog opened from the widget gear icons, see settingsSheet.js */
+/* Details and settings dialog opened from the widget menu icons, see settingsSheet.js */
 .settings-overlay {
     position: fixed;
     z-index: 100;
@@ -77,6 +77,44 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+}
+
+.settings-body[hidden],
+.settings-foot[hidden] {
+    display: none;
+}
+
+.settings-head:has(+ .settings-tabs) {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.settings-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 0 14px;
+    border-bottom: 1px solid #c9cfca;
+}
+
+.settings-tab {
+    border: 0;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    background: transparent;
+    color: #5b665f;
+    padding: 10px 12px;
+    min-height: 44px;
+    cursor: pointer;
+}
+
+.settings-tab[aria-selected="true"] {
+    color: #1f6f4a;
+    border-bottom-color: #1f6f4a;
+    font-weight: 600;
+}
+
+.settings-sheet.narrow .settings-tab {
+    flex: 1;
 }
 
 .settings-foot {
@@ -441,6 +479,158 @@
     border-radius: 2px;
     margin-right: 4px;
     vertical-align: -1px;
+}
+
+.settings-value {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.settings-muted {
+    color: #5b665f;
+}
+
+.settings-chip {
+    font-weight: 600;
+    background: #e4efe9;
+    color: #1f6f4a;
+    border-radius: 12px;
+    padding: 3px 10px;
+    font-size: .88rem;
+}
+
+.settings-group-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    font-size: .75rem;
+    color: #5b665f;
+}
+
+.settings-export {
+    color: #2e6fb7;
+}
+
+.settings-import {
+    color: #a8540b;
+}
+
+.settings-phases {
+    display: grid;
+    grid-template-columns: 32px minmax(0, 2.2fr) minmax(0, 1fr);
+    column-gap: 12px;
+    align-items: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.settings-phases > * {
+    padding: 8px 0;
+    border-top: 1px solid #eef0ee;
+}
+
+.settings-phases > .settings-th {
+    padding: 0 0 6px;
+    border-top: 0;
+    font-size: .78rem;
+    color: #5b665f;
+}
+
+.settings-phases > .settings-total {
+    border-top-color: #c9cfca;
+    font-weight: 600;
+}
+
+.settings-phases .settings-num {
+    text-align: right;
+}
+
+.settings-phase-load {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.settings-phase-load .settings-value {
+    min-width: 64px;
+    text-align: right;
+}
+
+.settings-bar {
+    flex: 1;
+    height: 10px;
+    background: #eef0ee;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.settings-bar i {
+    display: block;
+    height: 100%;
+    background: #1f6f4a;
+    border-radius: 5px;
+}
+
+.settings-bar.warn i {
+    background: #c46a12;
+}
+
+.settings-water {
+    display: flex;
+    gap: 18px;
+}
+
+.settings-tank {
+    width: 64px;
+    height: 132px;
+    flex: none;
+    border: 2px solid #5b665f;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-tank i {
+    flex: 1;
+    background: #e9a15f;
+}
+
+.settings-tank i + i {
+    background: #f4d3b0;
+}
+
+.settings-temps {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.settings-temp-big {
+    font-size: 1.5rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.settings-tiles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.settings-tile {
+    background: #f5f6f5;
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.settings-tile .settings-value {
+    font-size: 1.25rem;
 }
 
 .settings-skeleton {

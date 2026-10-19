@@ -4,7 +4,9 @@
  * Settings dialog for options of a floor plan widget: a bottom sheet on narrow screens, a centered dialog otherwise.
  * Values are loaded from /rest/options on open and only the changed ones are saved.
  *
- * Config: {title, lanes: [{key, label, color, readOnly}], groups: [{title, hint, toggle, fields: [...]}]}
+ * Config: {title, details, lanes: [{key, label, color, readOnly}], groups: [{title, hint, toggle, fields: [...]}]}
+ * Optional details: {optionKeys, render(item, options)} adds a Details tab before the settings, re-rendered from the
+ * widget's live data on every refresh; options holds the loaded values of optionKeys.
  * Field types: 'stepper' {key, label, hint, step, min, max, unit, decimals}, 'switch' {key, label, hint},
  * 'ranges' {key} (time ranges "H:mm-H:mm;..." drawn on the timeline in the color of the lane with the same key).
  */
@@ -12,15 +14,24 @@ class SettingsSheet {
     static TIME_STEP_MIN = 15;
     static current = null;
 
-    static open(cfg) {
+    static open(cfg, item) {
         if (SettingsSheet.current) {
             SettingsSheet.current.close();
         }
-        SettingsSheet.current = new SettingsSheet(cfg);
+        SettingsSheet.current = new SettingsSheet(cfg, item);
     }
 
-    constructor(cfg) {
+    static itemDrawn(item) {
+        if (SettingsSheet.current && SettingsSheet.current.item === item) {
+            SettingsSheet.current.renderDetails();
+        }
+    }
+
+    constructor(cfg, item) {
         this.cfg = cfg;
+        this.item = item;
+        this.tab = cfg.details ? 'details' : 'settings';
+        this.detailsHtml = null;
         this.loaded = null;
         this.state = null;
         this.confirming = false;
@@ -29,17 +40,23 @@ class SettingsSheet {
 
         this.overlay = document.createElement('div');
         this.overlay.className = 'settings-overlay';
+        const tabs = cfg.details ? `<div class="settings-tabs" role="tablist">
+                <button type="button" class="settings-tab" role="tab" data-tab="details">Details</button>
+                <button type="button" class="settings-tab" role="tab" data-tab="settings">Settings</button></div>` : '';
         this.overlay.innerHTML = `<div class="settings-backdrop">
             <div class="settings-sheet" role="dialog" aria-modal="true" aria-label="${cfg.title}">
                 <div class="settings-grab-area"><div class="settings-grab"></div>
                     <div class="settings-head"><h3>${cfg.title}</h3>
-                    <button type="button" class="settings-icon-btn settings-close" aria-label="Close">✕</button></div></div>
-                <div class="settings-body"></div><div class="settings-foot"></div></div></div>`;
+                    <button type="button" class="settings-icon-btn settings-close" aria-label="Close">✕</button></div>${tabs}</div>
+                <div class="settings-body settings-details" role="tabpanel"></div>
+                <div class="settings-body settings-main" role="tabpanel"></div><div class="settings-foot"></div></div></div>`;
         document.body.appendChild(this.overlay);
         this.backdrop = this.overlay.querySelector('.settings-backdrop');
         this.sheet = this.overlay.querySelector('.settings-sheet');
-        this.body = this.overlay.querySelector('.settings-body');
+        this.detailsBody = this.overlay.querySelector('.settings-details');
+        this.body = this.overlay.querySelector('.settings-main');
         this.foot = this.overlay.querySelector('.settings-foot');
+        this.overlay.querySelectorAll('.settings-tab').forEach(t => t.addEventListener('click', () => this.showTab(t.dataset.tab)));
 
         this.backdrop.addEventListener('click', e => {
             if (e.target === this.backdrop) this.requestClose();
@@ -59,8 +76,29 @@ class SettingsSheet {
         this.fitToViewport();
 
         this.body.innerHTML = '<div class="settings-skeleton"><div></div><div></div><div></div></div>';
-        this.renderFoot();
+        this.showTab(this.tab);
         this.load();
+    }
+
+    showTab(tab) {
+        this.closeTimePicker();
+        this.tab = tab;
+        this.overlay.querySelectorAll('.settings-tab').forEach(t => t.setAttribute('aria-selected', String(t.dataset.tab === tab)));
+        this.detailsBody.hidden = tab !== 'details';
+        this.body.hidden = tab !== 'settings';
+        this.renderDetails();
+        this.renderFoot();
+    }
+
+    renderDetails() {
+        if (this.tab !== 'details') return;
+        const html = this.item.hasData() ? this.cfg.details.render(this.item, this.loaded || {})
+            : '<p class="settings-hint">Waiting for data…</p>';
+        // redrawn on every refresh, so the DOM is touched only when something changed
+        if (html !== this.detailsHtml) {
+            this.detailsHtml = html;
+            this.detailsBody.innerHTML = html;
+        }
     }
 
     /**
@@ -96,12 +134,14 @@ class SettingsSheet {
     }
 
     load() {
-        fetch(getBaseUrl() + '/rest/options?keys=' + encodeURIComponent(this.allKeys().join(',')))
+        const keys = this.allKeys().concat(this.cfg.details ? this.cfg.details.optionKeys : []);
+        fetch(getBaseUrl() + '/rest/options?keys=' + encodeURIComponent(keys.join(',')))
             .then(r => r.ok ? r.json() : r.text().then(t => Promise.reject(new Error(t))))
             .then(values => {
                 this.loaded = values;
                 this.state = {...values};
                 this.renderBody();
+                this.renderDetails();
             })
             .catch(e => {
                 this.loadFailed = true;
@@ -452,6 +492,8 @@ class SettingsSheet {
     }
 
     renderFoot() {
+        // the details tab has nothing to save, the foot shows up there only to confirm discarding changes
+        this.foot.hidden = this.tab === 'details' && !this.confirming;
         if (this.confirming) {
             this.foot.innerHTML = `<div class="settings-confirm"><span>Discard changes?</span>
                 <button type="button" class="settings-btn settings-keep">Keep editing</button>
