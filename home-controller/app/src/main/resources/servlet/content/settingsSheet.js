@@ -4,15 +4,36 @@
  * Settings dialog for options of a floor plan widget: a bottom sheet on narrow screens, a centered dialog otherwise.
  * Values are loaded from /rest/options on open and only the changed ones are saved.
  *
- * Config: {title, details, lanes: [{key, label, color, readOnly}], groups: [{title, hint, toggle, fields: [...]}]}
+ * Config: {title, details, live, store, lanes: [{key, label, color, readOnly}], groups: [{title, hint, toggle, enabledIf, fields: [...]}]}
+ * Optional enabledIf(state) of a group disables its controls while it returns false.
  * Optional details: {optionKeys, render(item, options)} adds a Details tab before the settings, re-rendered from the
  * widget's live data on every refresh; options holds the loaded values of optionKeys.
+ * Optional live: {render(item, sheet), bind(element, sheet)} is a block above the settings, re-rendered on every
+ * refresh and on every edit.
+ * Optional store: {load(keys, item), save(changes, item)} returning promises replaces /rest/options.
+ * Optional instant: true sends all values of the form after every change (a burst of edits is sent once they stop),
+ * so a device that fills missing values from its last reported state cannot revert a change still in flight.
+ * The foot has only a Close button.
+ * The timeline is drawn only when there are lanes.
  * Field types: 'stepper' {key, label, hint, step, min, max, unit, decimals}, 'switch' {key, label, hint},
+ * 'choice' {key, label, options: [{value, label, icon}]} (one of buttons),
  * 'ranges' {key} (time ranges "H:mm-H:mm;..." drawn on the timeline in the color of the lane with the same key).
  */
 class SettingsSheet {
     static TIME_STEP_MIN = 15;
+    static APPLY_DELAY_MS = 500;
     static current = null;
+    static OPTIONS_STORE = {
+        load: keys => fetch(getBaseUrl() + '/rest/options?keys=' + encodeURIComponent(keys.join(',')))
+            .then(SettingsSheet.checkResponse)
+            .then(r => r.json()),
+        save: changes => fetch(getBaseUrl() + '/rest/options/save', {method: 'POST', body: new URLSearchParams(changes)})
+            .then(SettingsSheet.checkResponse),
+    };
+
+    static checkResponse(r) {
+        return r.ok ? r : r.text().then(t => Promise.reject(new Error(t)));
+    }
 
     static open(cfg, item) {
         if (SettingsSheet.current) {
@@ -24,6 +45,7 @@ class SettingsSheet {
     static itemDrawn(item) {
         if (SettingsSheet.current && SettingsSheet.current.item === item) {
             SettingsSheet.current.renderDetails();
+            SettingsSheet.current.renderLive();
         }
     }
 
@@ -32,6 +54,9 @@ class SettingsSheet {
         this.item = item;
         this.tab = cfg.details ? 'details' : 'settings';
         this.detailsHtml = null;
+        this.liveHtml = null;
+        this.applyTimer = null;
+        this.applying = 0;
         this.loaded = null;
         this.state = null;
         this.confirming = false;
@@ -133,10 +158,13 @@ class SettingsSheet {
         return keys;
     }
 
+    store() {
+        return this.cfg.store || SettingsSheet.OPTIONS_STORE;
+    }
+
     load() {
         const keys = this.allKeys().concat(this.cfg.details ? this.cfg.details.optionKeys : []);
-        fetch(getBaseUrl() + '/rest/options?keys=' + encodeURIComponent(keys.join(',')))
-            .then(r => r.ok ? r.json() : r.text().then(t => Promise.reject(new Error(t))))
+        this.store().load(keys, this.item)
             .then(values => {
                 this.loaded = values;
                 this.state = {...values};
@@ -151,6 +179,7 @@ class SettingsSheet {
     }
 
     close() {
+        if (this.applyTimer) this.apply();
         document.removeEventListener('keydown', this.onKeyDown);
         if (window.visualViewport) {
             window.visualViewport.removeEventListener('resize', this.onViewportChange);
@@ -163,7 +192,7 @@ class SettingsSheet {
     }
 
     requestClose() {
-        if (this.dirtyKeys().length === 0) {
+        if (this.cfg.instant || this.dirtyKeys().length === 0) {
             this.close();
         } else {
             this.confirming = true;
@@ -191,13 +220,12 @@ class SettingsSheet {
     }
 
     save() {
-        const params = new URLSearchParams();
-        this.dirtyKeys().forEach(k => params.append(k, this.state[k]));
+        const changes = {};
+        this.dirtyKeys().forEach(k => changes[k] = this.state[k]);
         this.saving = true;
         this.error = '';
         this.renderFoot();
-        fetch(getBaseUrl() + '/rest/options/save', {method: 'POST', body: params})
-            .then(r => r.ok ? null : r.text().then(t => Promise.reject(new Error(t))))
+        this.store().save(changes, this.item)
             .then(() => {
                 this.close();
                 SettingsSheet.showToast('Saved');
@@ -205,6 +233,40 @@ class SettingsSheet {
             .catch(e => {
                 this.saving = false;
                 this.error = e.message || 'Saving failed';
+                this.renderFoot();
+            });
+    }
+
+    scheduleApply() {
+        clearTimeout(this.applyTimer);
+        this.applyTimer = null;
+        if (this.dirtyKeys().length === 0 || Object.keys(this.errors()).length > 0) return;
+        this.applyTimer = setTimeout(() => this.apply(), SettingsSheet.APPLY_DELAY_MS);
+    }
+
+    /**
+     * Instant mode: sends all values of the form together with the extra ones.
+     * @returns {Promise<boolean>} whether sending succeeded
+     */
+    apply(extra = {}) {
+        clearTimeout(this.applyTimer);
+        this.applyTimer = null;
+        if (!this.state || (this.dirtyKeys().length === 0 && Object.keys(extra).length === 0)) {
+            return Promise.resolve(true);
+        }
+        const values = {...this.state, ...extra};
+        Object.assign(this.loaded, this.state);
+        this.applying++;
+        this.error = '';
+        this.renderFoot();
+        return this.store().save(values, this.item)
+            .then(() => true)
+            .catch(e => {
+                this.error = e.message || 'Sending failed';
+                return false;
+            })
+            .finally(() => {
+                this.applying--;
                 this.renderFoot();
             });
     }
@@ -244,14 +306,17 @@ class SettingsSheet {
     }
 
     renderBody() {
-        const legend = this.cfg.lanes
-            .map(l => `<span><i style="background:${l.color}"></i>${l.label}${l.readOnly ? ' (read-only)' : ''}</span>`)
-            .join('');
-        let html = `<div class="settings-group settings-timeline"><div class="settings-tl"></div>
-            <div class="settings-legend">${legend}<span>│ now</span></div></div>`;
-        for (const g of this.cfg.groups) {
+        let html = this.cfg.live ? '<div class="settings-live"></div>' : '';
+        if (this.cfg.lanes.length) {
+            const legend = this.cfg.lanes
+                .map(l => `<span><i style="background:${l.color}"></i>${l.label}${l.readOnly ? ' (read-only)' : ''}</span>`)
+                .join('');
+            html += `<div class="settings-group settings-timeline"><div class="settings-tl"></div>
+                <div class="settings-legend">${legend}<span>│ now</span></div></div>`;
+        }
+        this.cfg.groups.forEach((g, i) => {
             const hint = g.hint ? `<span class="settings-hint">${g.hint}</span>` : '';
-            html += '<div class="settings-group">';
+            html += `<div class="settings-group" data-group="${i}">`;
             if (g.toggle) {
                 html += `<div class="settings-row"><span class="settings-label"><span class="settings-group-title">${g.title}</span>${hint}</span>
                     ${this.switchHtml(g.toggle, g.title)}</div><div class="settings-dep" data-dep="${g.toggle}">`;
@@ -261,10 +326,23 @@ class SettingsSheet {
             html += g.fields.map(f => this.fieldHtml(f)).join('');
             if (g.toggle) html += '</div>';
             html += '</div>';
-        }
+        });
         this.body.innerHTML = html;
+        this.liveHtml = null;
         this.bindBody();
         this.refresh();
+    }
+
+    renderLive() {
+        const el = this.body.querySelector('.settings-live');
+        if (!el) return;
+        const html = this.item.hasData() ? this.cfg.live.render(this.item, this)
+            : '<p class="settings-hint">Waiting for data…</p>';
+        if (html !== this.liveHtml) {
+            this.liveHtml = html;
+            el.innerHTML = html;
+            this.cfg.live.bind(el, this);
+        }
     }
 
     switchHtml(key, label) {
@@ -276,6 +354,12 @@ class SettingsSheet {
         if (f.type === 'switch') {
             return `<div class="settings-row"><span class="settings-label">${f.label}<span class="settings-hint">${f.hint}</span></span>
                 ${this.switchHtml(f.key, f.label)}</div>`;
+        }
+        if (f.type === 'choice') {
+            const buttons = f.options.map(o => `<button type="button" data-v="${o.value}" aria-pressed="${this.state[f.key] === o.value}">
+                ${o.icon ? `<img src="${o.icon}" alt="">` : ''}<span>${o.label}</span></button>`).join('');
+            return `<div class="settings-choice" role="group" aria-label="${f.label}" data-key="${f.key}"
+                style="grid-template-columns: repeat(${f.options.length}, minmax(0, 1fr))">${buttons}</div>`;
         }
         if (f.type === 'stepper') {
             const hint = f.hint ? `<span class="settings-hint">${f.hint}</span>` : '';
@@ -318,6 +402,12 @@ class SettingsSheet {
     bindBody() {
         this.body.querySelectorAll('input[type="checkbox"]').forEach(el => el.addEventListener('change', () => {
             this.state[el.dataset.key] = String(el.checked);
+            this.refresh();
+        }));
+        this.body.querySelectorAll('.settings-choice').forEach(ch => ch.addEventListener('click', e => {
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            this.state[ch.dataset.key] = btn.dataset.v;
             this.refresh();
         }));
         this.body.querySelectorAll('.settings-stepper').forEach(st => this.bindStepper(st));
@@ -471,12 +561,26 @@ class SettingsSheet {
         this.body.querySelectorAll('.settings-dep').forEach(d => {
             d.hidden = this.state[d.dataset.dep] !== 'true';
         });
-        this.body.querySelector('.settings-tl').innerHTML = this.timelineSvg();
+        const tl = this.body.querySelector('.settings-tl');
+        if (tl) tl.innerHTML = this.timelineSvg();
+        this.body.querySelectorAll('.settings-choice').forEach(ch => ch.querySelectorAll('button')
+            .forEach(b => b.setAttribute('aria-pressed', String(this.state[ch.dataset.key] === b.dataset.v))));
         this.body.querySelectorAll('.settings-stepper').forEach(st => {
             const f = this.fieldDef(st.dataset.key);
             const v = Number(this.state[f.key]);
             st.querySelector('[data-d="-1"]').disabled = v <= f.min;
             st.querySelector('[data-d="1"]').disabled = v >= f.max;
+        });
+        // after the steppers, so an enabled group keeps their min/max state
+        this.body.querySelectorAll('[data-group]').forEach(el => {
+            const g = this.cfg.groups[Number(el.dataset.group)];
+            if (!g.enabledIf) return;
+            const enabled = g.enabledIf(this.state);
+            el.classList.toggle('settings-disabled', !enabled);
+            el.querySelectorAll('button, input').forEach(c => {
+                if (!enabled) c.disabled = true;
+                else if (!c.matches('.settings-stepper button')) c.disabled = false;
+            });
         });
         const errs = this.errors();
         this.body.querySelectorAll('.settings-ranges-box').forEach(box => {
@@ -488,10 +592,16 @@ class SettingsSheet {
         });
         this.confirming = false;
         this.error = '';
+        if (this.cfg.instant) this.scheduleApply();
         this.renderFoot();
+        if (this.cfg.live) this.renderLive();
     }
 
     renderFoot() {
+        if (this.cfg.instant) {
+            this.renderInstantFoot();
+            return;
+        }
         // the details tab has nothing to save, the foot shows up there only to confirm discarding changes
         this.foot.hidden = this.tab === 'details' && !this.confirming;
         if (this.confirming) {
@@ -525,6 +635,19 @@ class SettingsSheet {
         this.foot.prepend(statusSpan);
         this.foot.querySelector('.settings-cancel').addEventListener('click', () => this.requestClose());
         this.foot.querySelector('.settings-save').addEventListener('click', () => this.save());
+    }
+
+    renderInstantFoot() {
+        let status = '';
+        if (this.error) status = this.error;
+        else if (this.applying || this.applyTimer) status = 'Sending…';
+        const statusSpan = document.createElement('span');
+        statusSpan.className = 'settings-status' + (this.error ? ' settings-err' : '');
+        statusSpan.setAttribute('role', 'status');
+        statusSpan.textContent = status;
+        this.foot.innerHTML = '<button type="button" class="settings-btn settings-cancel">Close</button>';
+        this.foot.prepend(statusSpan);
+        this.foot.querySelector('.settings-cancel').addEventListener('click', () => this.requestClose());
     }
 
     timelineSvg() {

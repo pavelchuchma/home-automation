@@ -1,7 +1,5 @@
 package org.chuma.homecontroller.extensions.actor;
 
-import java.util.Calendar;
-
 import org.chuma.homecontroller.controller.actor.AbstractActor;
 import org.chuma.homecontroller.controller.actor.ActorListener;
 import org.chuma.homecontroller.controller.actor.IOnOffActor;
@@ -19,24 +17,25 @@ public class HvacActor extends AbstractActor implements IOnOffActor {
 
     @Override
     public boolean switchOn(Object actionData) {
-        return setValue(true, actionData);
+        return set(true, OperatingMode.NONE, FanSpeed.NONE, 0, null, null, actionData);
     }
 
     @Override
     public boolean switchOff(Object actionData) {
-        return setValue(false, actionData);
+        return set(false, OperatingMode.NONE, FanSpeed.NONE, 0, null, null, actionData);
     }
 
-    private boolean setValue(boolean switchOn, Object actionData) {
-        if (hvacDevice == null) {
+    /**
+     * Sends the given values to the unit; null, NONE and 0 keep the current value.
+     *
+     * @return false when there is no device or it has not reported its state yet
+     */
+    public boolean set(Boolean on, OperatingMode mode, FanSpeed fanSpeed, int temp, Boolean sleep, Boolean quiet, Object actionData) {
+        // the set packet always carries mode and fan speed, unknown ones cannot be serialized
+        if (hvacDevice == null || hvacDevice.getCurrentMode() == OperatingMode.NONE || hvacDevice.getFanSpeed() == FanSpeed.NONE) {
             return false;
         }
-        int currentMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
-        if (currentMonth >= 6 && currentMonth <= 9) {
-            hvacDevice.set(switchOn, OperatingMode.COOL, FanSpeed.SPEED_1, 23, false, false);
-        } else {
-            hvacDevice.set(switchOn, OperatingMode.HEAT, FanSpeed.SPEED_1, 23, false, false);
-        }
+        hvacDevice.set(on, mode, fanSpeed, temp, sleep, quiet);
         callListenersAndSetActionData(actionData);
         return true;
     }

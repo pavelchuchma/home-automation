@@ -238,6 +238,11 @@
     display: none;
 }
 
+.settings-group.settings-disabled > * {
+    opacity: .45;
+    pointer-events: none;
+}
+
 .settings-switch {
     position: relative;
     width: 46px;
@@ -631,6 +636,112 @@
 
 .settings-tile .settings-value {
     font-size: 1.25rem;
+}
+
+.settings-choice {
+    display: grid;
+    gap: 6px;
+}
+
+.settings-choice button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-height: 44px;
+    padding: 6px 2px;
+    border: 1px solid #c9cfca;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1d2420;
+    font-size: .9rem;
+    cursor: pointer;
+}
+
+.settings-choice button[aria-pressed="true"] {
+    border: 2px solid #1f6f4a;
+    background: #e4efe9;
+    color: #1f6f4a;
+    font-weight: 600;
+}
+
+.settings-choice img {
+    width: 22px;
+    height: 22px;
+}
+
+.settings-hvac {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.settings-hvac-temps {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+}
+
+.settings-hvac-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.settings-hvac-chips .settings-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.settings-hvac-chips img {
+    width: 16px;
+    height: 16px;
+}
+
+.settings-chip.settings-off {
+    background: #eef0ee;
+    color: #5b665f;
+}
+
+.settings-power {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 92px;
+    min-height: 72px;
+    border: 1px solid #c9cfca;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #1d2420;
+    font-weight: 600;
+    font-size: .9rem;
+    cursor: pointer;
+}
+
+.settings-power img {
+    width: 24px;
+    height: 24px;
+}
+
+.settings-power[aria-pressed="false"] {
+    background: #1f6f4a;
+    border-color: #1f6f4a;
+    color: #ffffff;
+}
+
+.settings-power[aria-pressed="false"] img {
+    filter: invert(1);
+}
+
+.settings-power:disabled {
+    opacity: .6;
+    cursor: default;
 }
 
 .settings-skeleton {
