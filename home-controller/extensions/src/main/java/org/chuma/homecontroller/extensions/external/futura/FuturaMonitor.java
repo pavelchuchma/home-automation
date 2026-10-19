@@ -25,6 +25,13 @@ public class FuturaMonitor extends AbstractStateMonitor<State> {
         this.controller = ctrl;
     }
 
+    /**
+     * Shares the monitor's connection, the unit accepts only one.
+     */
+    public FuturaController getController() {
+        return controller;
+    }
+
     @Override
     protected State getStateImpl(boolean firstRefresh) {
         try {

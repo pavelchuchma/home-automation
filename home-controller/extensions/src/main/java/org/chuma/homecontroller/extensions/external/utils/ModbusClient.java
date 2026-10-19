@@ -177,5 +177,12 @@ public class ModbusClient {
         public int getSignedInt(int index) {
             return (short)data[index];
         }
+
+        /**
+         * Two registers, the low word first
+         */
+        public long getUnsignedInt32(int index) {
+            return ((long)data[index + 1] << 16) | data[index];
+        }
     }
 }

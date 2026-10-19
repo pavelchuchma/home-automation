@@ -33,6 +33,10 @@ Other notable directories:
 - `doc/inverter/solax_modbus_spec_3.34.md` — Solax X3-Hybrid G4 Modbus register
   specification. Read-side and write-side maps are separate; see the Solax
   section below.
+- `doc/recuperation/futura_modbus_tcp.md` — Jablotron Futura (recuperation
+  unit) Modbus TCP register map: input and holding registers, bit tables, the
+  single-socket limit, and which registers `FuturaController` already polls.
+  Look addresses up there before adding a `State` getter or a setter.
 - `doc/mpd.md` — MPD (Music Player Daemon) setup on the Pi: hardware, current
   `/etc/mpd.conf`, control over port 6600, and a troubleshooting section for the
   USB audio "Kuchyn" going silent after reconnecting USB.

@@ -60,9 +60,4 @@ public class HvacHandler extends AbstractRestHandler<HvacActor> {
                 null);
         Validate.isTrue(sent, "HVAC unit state is not known yet, nothing sent");
     }
-
-    private static Boolean getBooleanParam(Map<String, String[]> requestParameters, String name) {
-        String val = getStringParam(requestParameters, name);
-        return (val != null) ? Boolean.valueOf(val) : null;
-    }
 }

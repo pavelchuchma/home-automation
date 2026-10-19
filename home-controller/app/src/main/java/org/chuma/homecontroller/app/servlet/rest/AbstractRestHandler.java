@@ -75,6 +75,11 @@ public abstract class AbstractRestHandler<T> implements Handler, StatusHandler {
         return Integer.parseInt(val);
     }
 
+    static Boolean getBooleanParam(Map<String, String[]> requestParams, String name) {
+        String val = getStringParam(requestParams, name);
+        return (val != null) ? Boolean.valueOf(val) : null;
+    }
+
     static long getLongParam(Map<String, String[]> requestParams, String name, long defaultValue) {
         String val = getStringParam(requestParams, name);
         if (val == null) {
