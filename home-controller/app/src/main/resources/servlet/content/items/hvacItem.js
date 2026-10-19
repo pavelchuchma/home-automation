@@ -75,11 +75,7 @@ class HvacItem extends AdditionalSvgToolItem {
     }
 
     onCanvasCreatedImpl() {
-        const canvas = document.getElementById(this.canvasId);
-        canvas.style.cursor = 'pointer';
-        canvas.addEventListener("click", (function () {
-            this.onClick();
-        }).bind(this));
+        this.openSettingsOnClick(HVAC_SETTINGS);
 
         const s = 14;
         const step = 19;
@@ -119,12 +115,6 @@ class HvacItem extends AdditionalSvgToolItem {
 
     formatTemp(t) {
         return Math.round(t);
-    }
-
-    onClick() {
-        if (this.hasData()) {
-            SettingsSheet.open(HVAC_SETTINGS, this);
-        }
     }
 }
 

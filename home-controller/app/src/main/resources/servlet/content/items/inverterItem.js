@@ -63,8 +63,8 @@ class InverterItem extends AdditionalSvgToolItem {
         for (let i = 0; i < 7; i++) {
             this.textLines.push(this.svg.text('?').move(5, i * 17).font(this.baseFont));
         }
-        this.batModeIcon = this.svg.text('?').move(74, 0).font(this.baseFont);
-        this.createMenuIcon(INVERTER_SETTINGS);
+        this.batModeIcon = this.svg.text('?').move(this.canvasWidth - 17, 0).font(this.baseFont);
+        this.openSettingsOnClick(INVERTER_SETTINGS);
         this.showOnData.push(...this.textLines, this.batModeIcon);
         this.hideOnNoData.push(...this.textLines, this.batModeIcon);
     }

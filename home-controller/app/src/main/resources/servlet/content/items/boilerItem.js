@@ -1,8 +1,11 @@
 'use strict';
 
+// a refresh is a key sequence on the boiler display, the widget shows no data until it is done
+const BOILER_REFRESH_PENDING_MS = 20_000;
+
 const BOILER_SETTINGS = {
     title: 'Boiler',
-    details: {optionKeys: [], render: boilerDetailsHtml},
+    details: {optionKeys: [], render: boilerDetailsHtml, bind: bindBoilerDetails},
     lanes: [
         {key: 'boiler.times', label: 'Heating', color: '#c46a12'},
         {key: 'inverter.manager.high.tariff.times', label: 'High tariff', color: '#b8bfba', readOnly: true},
@@ -38,15 +41,8 @@ class BoilerItem extends AdditionalSvgToolItem {
         this.vacation = undefined;
     }
 
-    onClick() {
-        const path = `/rest/boiler/action?id=${this.id}&action=refresh`;
-        BaseItem._send(path)
-    }
-
     onCanvasCreatedImpl() {
-        document.getElementById(this.canvasId).addEventListener("click", (function () {
-            this.onClick();
-        }).bind(this));
+        this.openSettingsOnClick(BOILER_SETTINGS);
 
         const s = 14;
         let y = 4;
@@ -61,7 +57,6 @@ class BoilerItem extends AdditionalSvgToolItem {
         this.createHideBox(this.eHeatIcon);
         items.push(this.palmIcon = this.svg.image('img/palm.svg').size(s, s).move(x += step, y));
         this.createHideBox(this.palmIcon);
-        this.createMenuIcon(BOILER_SETTINGS);
 
         y += step;
         items.push(this.tempIcon = this.svg.image('img/tempIcon.svg').size(s, s).move(1, y + 2));
@@ -113,5 +108,26 @@ function boilerDetailsHtml(item) {
                 ${boilerTileHtml('Discharge', 'TP', item.tP)}
                 ${boilerTileHtml('Suction', 'Th', item.th)}
             </div>
+        </div>
+        <div class="settings-group">
+            <div class="settings-row"><span class="settings-label">Read the state again
+                <span class="settings-hint">Goes through the boiler display, takes about 15 s</span></span>
+                <button type="button" class="settings-btn settings-boiler-refresh" ${boilerRefreshPending(item) ? 'disabled' : ''}>
+                    ${boilerRefreshPending(item) ? 'Refreshing…' : 'Refresh'}</button></div>
         </div>`;
+}
+
+function boilerRefreshPending(item) {
+    return item.refreshRequestedAt !== undefined && Date.now() - item.refreshRequestedAt < BOILER_REFRESH_PENDING_MS;
+}
+
+function bindBoilerDetails(el, sheet) {
+    const button = el.querySelector('.settings-boiler-refresh');
+    button.addEventListener('click', () => {
+        const item = sheet.item;
+        item.refreshRequestedAt = Date.now();
+        BaseItem._send(`/rest/boiler/action?id=${item.id}&action=refresh`);
+        sheet.renderDetails();
+        setTimeout(() => sheet.renderDetails(), BOILER_REFRESH_PENDING_MS);
+    });
 }

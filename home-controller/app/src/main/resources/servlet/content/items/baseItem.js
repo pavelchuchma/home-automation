@@ -94,18 +94,16 @@ class AdditionalSvgToolItem extends BaseItem {
     }
 
     /**
-     * Menu icon in the top right corner opening the details and settings dialog. The click does not reach the canvas
-     * handlers.
+     * A click anywhere on the widget opens the details and settings dialog, once there is data to show.
      */
-    createMenuIcon(sheetConfig) {
-        const menu = this.svg.group().css('cursor', 'pointer');
-        menu.rect(20, 20).move(this.canvasWidth - 20, 0).fill('transparent');
-        menu.text('☰').move(this.canvasWidth - 15, 2).font({...this.baseFont, size: 14});
-        menu.on('click', e => {
-            e.stopPropagation();
-            SettingsSheet.open(sheetConfig, this);
+    openSettingsOnClick(sheetConfig) {
+        const canvas = document.getElementById(this.canvasId);
+        canvas.style.cursor = 'pointer';
+        canvas.addEventListener('click', () => {
+            if (this.hasData()) {
+                SettingsSheet.open(sheetConfig, this);
+            }
         });
-        return menu;
     }
 
     setVisibility(e, value) {

@@ -125,11 +125,7 @@ class RecuperationItem extends AdditionalSvgToolItem {
     }
 
     onCanvasCreatedImpl() {
-        const canvas = document.getElementById(this.canvasId);
-        canvas.style.cursor = 'pointer';
-        canvas.addEventListener("click", (function () {
-            this.onClick();
-        }).bind(this));
+        this.openSettingsOnClick(FUTURA_SETTINGS);
 
         const s = 14;
         let y = 3;
@@ -164,12 +160,6 @@ class RecuperationItem extends AdditionalSvgToolItem {
         this.textConsumption.text('💡' + this.powerConsumption + ' W');
 
         this.setVisibility(this.clockIcon.hideBox, !this.timeProgramActive);
-    }
-
-    onClick() {
-        if (this.hasData()) {
-            SettingsSheet.open(FUTURA_SETTINGS, this);
-        }
     }
 }
 

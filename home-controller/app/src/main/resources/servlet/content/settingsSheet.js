@@ -6,8 +6,9 @@
  *
  * Config: {title, details, live, store, lanes: [{key, label, color, readOnly}], groups: [{title, hint, toggle, enabledIf, fields: [...]}]}
  * Optional enabledIf(state) of a group disables its controls while it returns false.
- * Optional details: {optionKeys, render(item, options)} adds a Details tab before the settings, re-rendered from the
- * widget's live data on every refresh; options holds the loaded values of optionKeys.
+ * Optional details: {optionKeys, render(item, options), bind(element, sheet)} adds a Details tab before the settings,
+ * re-rendered from the widget's live data on every refresh; options holds the loaded values of optionKeys, the
+ * optional bind attaches handlers after each render.
  * Optional live: {render(item, sheet), bind(element, sheet)} is a block above the settings, re-rendered on every
  * refresh and on every edit.
  * Optional store: {load(keys, item), save(changes, item)} returning promises replaces /rest/options.
@@ -123,6 +124,7 @@ class SettingsSheet {
         if (html !== this.detailsHtml) {
             this.detailsHtml = html;
             this.detailsBody.innerHTML = html;
+            if (this.item.hasData() && this.cfg.details.bind) this.cfg.details.bind(this.detailsBody, this);
         }
     }
 
