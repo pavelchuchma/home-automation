@@ -125,6 +125,11 @@ function getSensorComponents() {
     ];
 }
 
+function getFloorHeaterComponents() {
+    return ['pdlKoupH', 'pdlKrys', 'pdlPata', 'pdlMarek', 'pdlLoz', 'pdlPrc2', 'pdlChH', 'pdlVrt', 'pdlObyv', 'pdlKoupD', 'pdlChD']
+        .map(id => new FloorHeaterItem(id));
+}
+
 function getInfraHeaters() {
     let secondaryHeater = new SecondaryInfraHeaterItem('zaricKoupelnaHore2Trubice', 445, 520, 1);
     return [

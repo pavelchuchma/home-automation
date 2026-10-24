@@ -13,6 +13,8 @@ import static org.chuma.homecontroller.app.servlet.pages.AbstractPage.VIRTUAL_CO
 import org.chuma.homecontroller.app.servlet.Handler;
 import org.chuma.homecontroller.app.servlet.Servlet;
 import org.chuma.homecontroller.app.servlet.ServletAction;
+import org.chuma.homecontroller.app.servlet.pages.FloorHeatersPage;
+import org.chuma.homecontroller.app.servlet.pages.FloorHeatersPage.FloorHeater;
 import org.chuma.homecontroller.app.servlet.pages.GetBackendUrlJs;
 import org.chuma.homecontroller.app.servlet.pages.LightsPage;
 import org.chuma.homecontroller.app.servlet.pages.LouversPage;
@@ -42,6 +44,7 @@ import org.chuma.homecontroller.app.servlet.rest.WaterPumpHandler;
 import org.chuma.homecontroller.app.servlet.rest.WaterTankHandler;
 import org.chuma.homecontroller.app.servlet.ws.WebSocketHandler;
 import org.chuma.homecontroller.base.node.Node;
+import org.chuma.homecontroller.base.node.OutputNodePin;
 import org.chuma.homecontroller.base.utils.OptionsSingleton;
 import org.chuma.homecontroller.controller.ActionBinding;
 import org.chuma.homecontroller.controller.action.Action;
@@ -69,6 +72,7 @@ import org.chuma.homecontroller.controller.controller.ValveControllerImpl;
 import org.chuma.homecontroller.controller.device.GenericInputDevice;
 import org.chuma.homecontroller.controller.device.GenericOutputDevice;
 import org.chuma.homecontroller.controller.device.LddBoardDevice;
+import org.chuma.homecontroller.controller.device.Relay12BoardDevice;
 import org.chuma.homecontroller.controller.device.RelayBoardDevice;
 import org.chuma.homecontroller.controller.device.SwitchIndicator;
 import org.chuma.homecontroller.controller.device.TriacBoardDevice;
@@ -151,6 +155,7 @@ public class PiConfigurator extends AbstractConfigurator {
         Node lozniceZed = nodeInfoRegistry.createNode(35, "LozniceZed");
         Node chodbaOkno = nodeInfoRegistry.createNode(39, "ChodbaOkno");
         Node switchTestNode = nodeInfoRegistry.createNode(53, "SwitchTestNode");
+        Node podlahovkaActor = nodeInfoRegistry.createNode(61, "Podlahovka-Actor");
 
         WallSwitch chodbaOkno1Sw = new WallSwitch("chodbaOkno1Sw", chodbaOkno, 1);
         WallSwitch chodbaOkno2Sw = new WallSwitch("chodbaOkno2Sw", chodbaOkno, 2);
@@ -404,6 +409,8 @@ public class PiConfigurator extends AbstractConfigurator {
         LddActor spajzPwmActor = addLddLight("pwmSpjz", "Špajz", lddDevice9.getLdd4(), 1, prizemiVzaduKuchynSw2Indicator, chodbaDoleSpajzSw3.getRedLedIndicator(SwitchIndicator.Mode.SIGNAL_ANY_ON)); // 1.05
         LddActor garaz3PwmActor = addLddLight("pwmG3", "Garáž 3", lddDevice9.getLdd5(), 0.6, garazZadveriSwAIndicator, garazGarazSwAIndicator); // .6
         LddActor drevnikPwmActor = addLddLight("pwmDrv", "Dřevník", lddDevice9.getLdd6(), 0.7, drevnikSwIndicator); // .72
+
+        Relay12BoardDevice releFloorHeater = new Relay12BoardDevice("relayFloorHeater", podlahovkaActor);
 
         //groups
         IOnOffActor[] svetlaDoleVzadu = {chodbaDolePwmActor, zadveriDolePwmActor,
@@ -748,6 +755,22 @@ public class PiConfigurator extends AbstractConfigurator {
         setupPir(pirA3Prizemi.getIn5AndActivate(), "pirSpa", "Spajza", new ContinuousValueSwitchOnActionWithTimer(spajzPwmActor, 600, 1.0), new SwitchOffActionWithTimer(spajzPwmActor, 20));
         setupPir(pirA3Prizemi.getIn6AndActivate(), "pirZadD", "Zadveri dole", new ContinuousValueSwitchOnActionWithTimer(zadveriDolePwmActor, 600, 1.0, new SunCondition(-15, -30)), new SwitchOffActionWithTimer(zadveriDolePwmActor, 15));
 
+        FloorHeater podlahaKoupelnaHore = addFloorHeater("pdlKoupH", "Koupelna hore", releFloorHeater.getRelay(5), 550);
+        FloorHeater podlahaKoupelnaDole = addFloorHeater("pdlKoupD", "Koupelna dole", releFloorHeater.getRelay(6), 280);
+        FloorHeater podlahaVratnice = addFloorHeater("pdlVrt", "Vrátnice", releFloorHeater.getRelay(1), 720);
+        FloorHeater podlahaMarek = addFloorHeater("pdlMarek", "Marek", releFloorHeater.getRelay(7), 450);
+        FloorHeater podlahaPata = addFloorHeater("pdlPata", "Paťa", releFloorHeater.getRelay(8), 350);
+        FloorHeater podlahaObyvak = addFloorHeater("pdlObyv", "Obývák", releFloorHeater.getRelay(2), 3000);
+        FloorHeater podlahaPracovna2 = addFloorHeater("pdlPrc2", "Pracovna", releFloorHeater.getRelay(11), 280);
+        FloorHeater podlahaChodbaHore = addFloorHeater("pdlChH", "Chodba hore", releFloorHeater.getRelay(3), 720);
+        FloorHeater podlahaLoznice = addFloorHeater("pdlLoz", "Ložnice", releFloorHeater.getRelay(12), 450);
+        FloorHeater podlahaKrystof = addFloorHeater("pdlKrys", "Kryštof", releFloorHeater.getRelay(9), 350);
+        FloorHeater podlahaChodbaDole = addFloorHeater("pdlChD", "Chodba dole", releFloorHeater.getRelay(10), 280);
+        List<FloorHeater> floorHeaters = List.of(
+                podlahaKoupelnaHore, podlahaKrystof, podlahaPata, podlahaMarek,
+                podlahaLoznice, podlahaPracovna2, podlahaChodbaHore, podlahaVratnice,
+                podlahaObyvak, podlahaKoupelnaDole, podlahaChodbaDole);
+
         GenericInputDevice cidlaGaraz = new GenericInputDevice("cidlaGaraz", garazVzadu, 3);
         setupMagneticSensor(cidlaGaraz.getIn1AndActivate(), "mgntGH", "Garaz hore",
                 new GenericCodeAction(t -> garageManager.onOpenContactPressed()),
@@ -843,6 +866,7 @@ public class PiConfigurator extends AbstractConfigurator {
                 floorsPage,
                 new LightsPage(lddActors, pages),
                 new LouversPage(louversControllers, pages),
+                new FloorHeatersPage(floorHeaters, pages),
                 new PirPage(pirStatusList, pages),
                 new NodeInfoPage(nodeInfoRegistry, pages, servletActions),
                 new OptionsPage(OptionsSingleton.getInstance(), pages)));
@@ -887,6 +911,10 @@ public class PiConfigurator extends AbstractConfigurator {
             log.error("Failed to init inverter client", e);
             return null;
         }
+    }
+
+    private FloorHeater addFloorHeater(String id, String room, OutputNodePin output, int powerW) {
+        return new FloorHeater(room, powerW, addOnOffActor(id, "Podlaha " + room, output));
     }
 
     @Override
