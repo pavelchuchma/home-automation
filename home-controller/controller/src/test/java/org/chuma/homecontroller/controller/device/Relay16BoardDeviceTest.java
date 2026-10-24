@@ -20,6 +20,35 @@ public class Relay16BoardDeviceTest extends TestCase {
         }
     }
 
+    public void testMapping() {
+        Node n = new Node(33, "testA", new PacketUartIOMock());
+        Relay16BoardDevice d = new Relay16BoardDevice("test", n);
+        for (int i = 1; i <= 16; i++) {
+            assertEquals("test-out" + i, d.getRelay(i).getName());
+        }
+        for (int i = 1; i <= 4; i++) {
+            assertEquals(AbstractConnectedDevice.getPin(3, i), d.getRelay(i).getPin());
+        }
+        for (int i = 5; i <= 10; i++) {
+            assertEquals(AbstractConnectedDevice.getPin(1, 11 - i), d.getRelay(i).getPin());
+        }
+        for (int i = 11; i <= 16; i++) {
+            assertEquals(AbstractConnectedDevice.getPin(2, 17 - i), d.getRelay(i).getPin());
+        }
+    }
+
+    public void testUnusedPort() {
+        Node n = new Node(33, "testA", new PacketUartIOMock());
+        Relay16BoardDevice d = new Relay16BoardDevice("test", n, true, false, true);
+        assertNotNull(d.getRelay(10));
+        try {
+            d.getRelay(11);
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException expected) {
+            // relay on unused port 2
+        }
+    }
+
     public void testSwitching() throws IOException {
         try (SimulatedPacketUartIO sim = new SimulatedPacketUartIO()) {
             sim.start();
