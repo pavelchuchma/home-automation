@@ -41,7 +41,7 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
     private final Node node;
     private final CpuFrequency requiredCpuFrequency;
     private final int connectorNumber;
-    private final boolean highValueMeansOn;
+    private final int highValueMeansOnMask;
 
     /**
      * Create new device with unknown CPU frequency automatically adding itself to node.
@@ -65,11 +65,24 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
      * @param requiredCpuFrequency PIC CPU frequency required by the device
      */
     public AbstractConnectedDevice(String id, Node node, int connectorNumber, boolean highValueMeansOn, CpuFrequency requiredCpuFrequency) {
+        this(id, node, connectorNumber, highValueMeansOn ? 0b0011_1111 : 0, requiredCpuFrequency);
+    }
+
+    /**
+     * Create new device with per-pin output polarity, automatically adding itself to node.
+     *
+     * @param id                   device ID
+     * @param node                 node (PIC) to which device is connected
+     * @param connectorNumber      on which connector (1-3)
+     * @param highValueMeansOnMask bit N set means that value 1 represents logical ON on connector pin N+1
+     * @param requiredCpuFrequency PIC CPU frequency required by the device
+     */
+    public AbstractConnectedDevice(String id, Node node, int connectorNumber, int highValueMeansOnMask, CpuFrequency requiredCpuFrequency) {
         this.connectorNumber = connectorNumber;
         this.id = id;
         this.node = node;
         this.requiredCpuFrequency = requiredCpuFrequency;
-        this.highValueMeansOn = highValueMeansOn;
+        this.highValueMeansOnMask = highValueMeansOnMask;
     }
 
     /**
@@ -96,7 +109,7 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
             final Pin pin = getPin(connectorNumber, i + 1);
             final String pinId = String.format("%s:%d.%s", id, connectorNumber, names[i]);
             if ((mask & 1) == 1) {
-                pins[i] = createOutputNodePin(pinId, names[i], node, pin);
+                pins[i] = createOutputNodePin(pinId, names[i], node, pin, isHighValueMeansOn(i));
             } else {
                 pins[i] = new NodePin(pinId, names[i], node, pin);
             }
@@ -104,8 +117,12 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
         }
     }
 
-    protected NodePin createOutputNodePin(String pinId, String name, Node node, Pin pin) {
+    protected NodePin createOutputNodePin(String pinId, String name, Node node, Pin pin, boolean highValueMeansOn) {
         return new OutputNodePin(pinId, name, node, pin, highValueMeansOn);
+    }
+
+    private boolean isHighValueMeansOn(int pinIndex) {
+        return ((highValueMeansOnMask >> pinIndex) & 1) == 1;
     }
 
     protected void finishInit() {
@@ -168,6 +185,14 @@ public abstract class AbstractConnectedDevice implements org.chuma.homecontrolle
 
     @Override
     public int getInitialOutputValues() {
-        return (highValueMeansOn) ? 0 : getOutputMask();
+        int initialValues = 0;
+        int mask = getDevicePinOutputMask();
+        for (int i = 0; i < 6; i++) {
+            if ((mask & 1) == 1 && !isHighValueMeansOn(i)) {
+                initialValues |= createMask(pins[i]);
+            }
+            mask >>= 1;
+        }
+        return initialValues;
     }
 }

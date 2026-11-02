@@ -760,9 +760,9 @@ public class PiConfigurator extends AbstractConfigurator {
         FloorHeater podlahaVratnice = addFloorHeater("pdlVrt", "Vrátnice", releFloorHeater.getRelay(1), 720);
         FloorHeater podlahaMarek = addFloorHeater("pdlMarek", "Marek", releFloorHeater.getRelay(7), 450);
         FloorHeater podlahaPata = addFloorHeater("pdlPata", "Paťa", releFloorHeater.getRelay(8), 350);
-        FloorHeater podlahaObyvak = addFloorHeater("pdlObyv", "Obývák", releFloorHeater.getRelay(2), 3000);
+        FloorHeater podlahaObyvak = addFloorHeater("pdlObyv", "Obývák", releFloorHeater.getRelay(3), 3000);
         FloorHeater podlahaPracovna2 = addFloorHeater("pdlPrc2", "Pracovna", releFloorHeater.getRelay(11), 280);
-        FloorHeater podlahaChodbaHore = addFloorHeater("pdlChH", "Chodba hore", releFloorHeater.getRelay(3), 720);
+        FloorHeater podlahaChodbaHore = addFloorHeater("pdlChH", "Chodba hore", releFloorHeater.getRelay(2), 720);
         FloorHeater podlahaLoznice = addFloorHeater("pdlLoz", "Ložnice", releFloorHeater.getRelay(12), 450);
         FloorHeater podlahaKrystof = addFloorHeater("pdlKrys", "Kryštof", releFloorHeater.getRelay(9), 350);
         FloorHeater podlahaChodbaDole = addFloorHeater("pdlChD", "Chodba dole", releFloorHeater.getRelay(10), 280);

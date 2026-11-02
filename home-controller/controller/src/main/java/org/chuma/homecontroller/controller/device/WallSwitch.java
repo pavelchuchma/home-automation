@@ -31,7 +31,7 @@ public class WallSwitch extends AbstractConnectedDevice {
     }
 
     @Override
-    protected PwmOutputNodePin createOutputNodePin(String pinId, String name, Node node, Pin pin) {
+    protected PwmOutputNodePin createOutputNodePin(String pinId, String name, Node node, Pin pin, boolean highValueMeansOn) {
         return new PwmOutputNodePin(pinId, name, node, pin, 48);
     }
 

@@ -1,10 +1,11 @@
 package org.chuma.homecontroller.controller.device;
 
+import org.chuma.homecontroller.base.node.CpuFrequency;
 import org.chuma.homecontroller.base.node.Node;
 import org.chuma.homecontroller.base.node.OutputNodePin;
 
 /**
- * Device with all six pins configured as output. All pins are initially set to 1.
+ * Device with all six pins configured as output. All pins are initially set to logical OFF.
  */
 public class GenericOutputDevice extends AbstractConnectedDevice {
     private static final String[] PIN_NAMES = new String[]{"out1", "out2", "out3", "out4", "out5", "out6"};
@@ -15,6 +16,16 @@ public class GenericOutputDevice extends AbstractConnectedDevice {
 
     public GenericOutputDevice(String id, Node node, int connectorNumber, String[] names, boolean highValueMeansOn) {
         super(id, node, connectorNumber, highValueMeansOn);
+
+        createPins(names);
+        finishInit();
+    }
+
+    /**
+     * @param highValueMeansOnMask bit N set means that value 1 represents logical ON on outN+1
+     */
+    public GenericOutputDevice(String id, Node node, int connectorNumber, String[] names, int highValueMeansOnMask) {
+        super(id, node, connectorNumber, highValueMeansOnMask, CpuFrequency.unknown);
 
         createPins(names);
         finishInit();
