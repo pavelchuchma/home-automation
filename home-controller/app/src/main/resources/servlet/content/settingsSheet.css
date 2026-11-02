@@ -523,7 +523,7 @@
 
 .settings-phases {
     display: grid;
-    grid-template-columns: 32px minmax(0, 2.2fr) minmax(0, 1fr);
+    grid-template-columns: 32px auto minmax(0, 1fr);
     column-gap: 12px;
     align-items: center;
     font-variant-numeric: tabular-nums;
@@ -559,6 +559,14 @@
 .settings-phase-load .settings-value {
     min-width: 64px;
     text-align: right;
+}
+
+.settings-phase-load .settings-num {
+    min-width: 72px;
+}
+
+.settings-phase-load .settings-amps {
+    min-width: 48px;
 }
 
 .settings-bar {

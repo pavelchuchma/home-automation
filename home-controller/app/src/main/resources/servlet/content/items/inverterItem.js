@@ -1,7 +1,8 @@
 'use strict';
 
-const PHASE_VOLTAGE = 230;
 const PHASE_WARN_RATIO = 0.8;
+// used while the inverter reports no grid voltage, e.g. in Idle mode
+const NOMINAL_PHASE_VOLTAGE = 230;
 const MANUAL_MODE_LABELS = {Stop: 'Stop', ForceCharge: 'Force charge', ForceDischarge: 'Force discharge'};
 
 // dialog keys written to the inverter by the REST action, see InverterHandler; the rest are options
@@ -136,10 +137,25 @@ function gridCellHtml(w, cls) {
 }
 
 /**
- * Details tab: modes and the house load per phase, bars scaled to the main breaker.
+ * Grid meter power with a bar of the phase current (|P| / U, power factor ignored) against the main breaker.
+ * Without a measured voltage the nominal one is used and the current is marked as approximate.
+ */
+function gridPhaseHtml(w, voltage, breakerAmps) {
+    const measured = voltage > 0;
+    const amps = Math.abs(w) / (measured ? voltage : NOMINAL_PHASE_VOLTAGE);
+    const ratio = breakerAmps > 0 ? amps / breakerAmps : 0;
+    const title = measured ? `${voltage.toFixed(1)} V` : `no voltage reported, ${NOMINAL_PHASE_VOLTAGE} V assumed`;
+    return `<div class="settings-phase-load">
+            <span class="settings-bar${ratio > PHASE_WARN_RATIO ? ' warn' : ''}" aria-hidden="true"><i style="width:${Math.min(100, ratio * 100)}%"></i></span>
+            <span class="settings-value settings-amps" title="${title}">${measured ? '' : '≈'}${amps.toFixed(1)} A</span>
+            ${gridCellHtml(w, '')}</div>`;
+}
+
+/**
+ * Details tab: modes, the house load per phase and the grid current per phase, bars scaled to the main breaker.
  */
 function inverterDetailsHtml(item, options) {
-    const maxW = Number(options['inverter.phase.breaker.amps']) * PHASE_VOLTAGE;
+    const breakerAmps = Number(options['inverter.phase.breaker.amps']);
     const manual = item.batMode === 'Manual';
     const manualLabel = MANUAL_MODE_LABELS[item.manualMode] || item.manualMode;
     let rows = '';
@@ -150,14 +166,11 @@ function inverterDetailsHtml(item, options) {
         const grid = item['feedIn' + i];
         totalLoad += load;
         totalGrid += grid;
-        const ratio = maxW > 0 ? Math.max(0, load) / maxW : 0;
         rows += `<div class="settings-value">L${i}</div>
-            <div class="settings-phase-load">
-                <span class="settings-bar${ratio > PHASE_WARN_RATIO ? ' warn' : ''}" aria-hidden="true"><i style="width:${Math.min(100, ratio * 100)}%"></i></span>
-                <span class="settings-value">${formatWatts(load)}</span></div>
-            ${gridCellHtml(grid, '')}`;
+            <div class="settings-value settings-num">${formatWatts(load)}</div>
+            ${gridPhaseHtml(grid, item['voltage' + i], breakerAmps)}`;
     }
-    const scale = maxW > 0 ? `${options['inverter.phase.breaker.amps']} A breaker, ${(maxW / 1000).toFixed(2)} kW per phase` : 'loading…';
+    const scale = breakerAmps > 0 ? `grid current |P| / U against the ${breakerAmps} A breaker` : 'loading…';
     return `<div class="settings-group">
             <span class="settings-group-title">Mode</span>
             <div class="settings-row"><span class="settings-label">Inverter</span><span class="settings-value">${item.mode}</span></div>
@@ -167,10 +180,10 @@ function inverterDetailsHtml(item, options) {
                 ${manual ? `<span class="settings-chip">${manualLabel}</span>` : `<span class="settings-muted">${manualLabel}</span>`}</div>
         </div>
         <div class="settings-group">
-            <div class="settings-group-head"><span class="settings-group-title">House load per phase</span>
+            <div class="settings-group-head"><span class="settings-group-title">Load per phase</span>
                 <span><span class="settings-export">+ export</span> · <span class="settings-import">− import</span></span></div>
             <div class="settings-phases">
-                <div class="settings-th"></div><div class="settings-th">House load</div><div class="settings-th settings-num">Grid</div>
+                <div class="settings-th"></div><div class="settings-th settings-num">House load</div><div class="settings-th settings-num">Grid</div>
                 ${rows}
                 <div class="settings-total">Σ</div><div class="settings-total settings-num">${formatWatts(totalLoad)}</div>
                 ${gridCellHtml(totalGrid, 'settings-total')}

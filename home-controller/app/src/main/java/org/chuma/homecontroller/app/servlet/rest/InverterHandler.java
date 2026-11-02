@@ -68,15 +68,17 @@ public class InverterHandler extends AbstractMonitorRestHandler<SolaxInverterMon
     }
 
     /**
-     * House load and grid meter power per phase, load computed the same way as the total one.
+     * House load, grid meter power and phase voltage per phase, load computed the same way as the total one.
      */
     private static void writePhases(JsonWriter jw, InverterState state) {
         int[] grid = {state.getGrid1Power(), state.getGrid2Power(), state.getGrid3Power()};
         int[] eps = {state.getEps1Power(), state.getEps2Power(), state.getEps3Power()};
         int[] feedIn = {state.getFeedIn1Power(), state.getFeedIn2Power(), state.getFeedIn3Power()};
+        double[] voltage = {state.getGrid1Voltage(), state.getGrid2Voltage(), state.getGrid3Voltage()};
         for (int i = 0; i < 3; i++) {
             jw.addAttribute("load" + (i + 1), grid[i] + eps[i] - feedIn[i]);
             jw.addAttribute("feedIn" + (i + 1), feedIn[i]);
+            jw.addAttribute("voltage" + (i + 1), voltage[i]);
         }
     }
 }
