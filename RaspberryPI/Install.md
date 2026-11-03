@@ -298,6 +298,24 @@ make them executable and add to the crontab of user `pi`:
 
 What they do and the data format: `home-controller/doc/weather-forecast.md`.
 
+## 8. Home automation backup
+
+`usr/local/bin/homeAutomation/backupHomeAutomation.sh` copies `/usr/local/bin/homeAutomation`
+(`cfg/`, logs, `out/weather/`, `out/weather-archive/`) to `/mnt/External4T/backup/pi/homeAutomation/`
+with `rsync -a` and no `--delete`, so files removed from the SD card stay in the backup. The
+deployed application (`home-controller-*`) is skipped because it can be rebuilt from git.
+It aborts if `/mnt/External4T` is not mounted or `backup/.backup_marker` is missing. It runs at
+23:30, before `/usr/local/bin/backup_external.sh` (00:00) mirrors `/mnt/External4T/backup/` to the
+1T disk, so the data ends up on both disks. Copy it like the forecast scripts and add to the
+crontab of user `pi`:
+
+```
+30 23 * * * /usr/local/bin/homeAutomation/backupHomeAutomation.sh >> /home/pi/backupHomeAutomation.log 2>&1
+```
+
+The external disks must be in `/etc/fstab` with `x-systemd.automount`, see
+`home-controller/doc/rpi-oa-installation.md` (External USB disks).
+
 ## Change log
 
 | Date | Change | Reason |

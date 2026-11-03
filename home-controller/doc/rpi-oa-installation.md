@@ -118,6 +118,27 @@ udevadm trigger --subsystem-match=tty
 ls -l /dev/ttyUSB*
 ```
 
+### External USB disks
+The ext4 disks are mounted from `/etc/fstab` by UUID under `/mnt/External1T`, `/mnt/External4T` and
+`/mnt/External4T-2`. Each line needs `nofail` (boot does not wait for a missing disk) and
+`x-systemd.automount` (systemd mounts the disk on first access, so it comes back after it lost power or was
+replugged while the Pi kept running; without it fstab mounts only at boot):
+```
+UUID=<uuid>  /mnt/External4T  ext4  defaults,noatime,nofail,x-systemd.automount,x-systemd.device-timeout=20s  0  2
+```
+Apply with `systemctl daemon-reload && systemctl start mnt-External4T.automount`.
+
+After a disk lost power while it was mounted, the kernel log shows `Aborting journal on device sdX1`. Check
+the filesystem before it is used again (the `sdX` name can change on replug, so use the UUID):
+```
+systemctl stop mnt-External4T.mount
+e2fsck -f -p /dev/disk/by-uuid/<uuid>
+ls /mnt/External4T    # triggers the automount
+```
+`usb ...: device not accepting address, error -62` or `can't set config #1, error -110` means the disk never
+showed up on USB at all. Check its power supply, cable and hub. `Undervoltage detected!` in the kernel log
+means the Pi supply itself is too weak.
+
 ## Install Home automation
 ```
 install -d -o pi -g pi -m 755 /usr/local/bin/homeAutomation

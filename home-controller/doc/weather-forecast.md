@@ -7,7 +7,7 @@ use the forecast yet.
 
 ## Scripts
 
-Both live in `RaspberryPI/usr/local/bin/homeAutomation/` at the repo root (a mirror of
+All three (with `backupHomeAutomation.sh`) live in `RaspberryPI/usr/local/bin/homeAutomation/` at the repo root (a mirror of
 the Pi file system) and are installed by hand to the same path on the Pi; the deploy
 scripts do not copy them. Installation steps: `RaspberryPI/Install.md`.
 
@@ -30,6 +30,12 @@ scripts do not copy them. Installation steps: `RaspberryPI/Install.md`.
 42 * * * * /usr/local/bin/homeAutomation/downloadForecast.sh
 15 1 1 * * /usr/local/bin/homeAutomation/archiveForecast.sh >> /usr/local/bin/homeAutomation/out/weather-archive/archive.log 2>&1
 ```
+
+## Backup
+
+`backupHomeAutomation.sh` (cron 23:30) copies the whole `/usr/local/bin/homeAutomation`
+including `out/weather/` and `out/weather-archive/` to the external disk every night; see
+`RaspberryPI/Install.md` §8.
 
 ## Data notes
 
