@@ -60,4 +60,22 @@ public class PersistentStateMapTest extends TestCase {
             Assert.assertEquals(0, sp2.getValue("bbb").intValue());
         }
     }
+
+    public void testStringValues() {
+        File file = new File("build/tmp/testStringValue.tmp");
+        if (file.exists()) {
+            file.delete();
+        }
+        PersistentStateMap sp = new PersistentStateMap(file.getPath(), 0);
+        sp.setValue("ranges", "P2026-11-04T02:15/2026-11-04T02:30;M2026-11-03T21:45/2026-11-04T03:45");
+        sp.setValue("withEquals", "a=b=c");
+        sp.setValue("count", 7);
+
+        PersistentStateMap sp2 = new PersistentStateMap(file.getPath(), 0);
+        Assert.assertEquals("P2026-11-04T02:15/2026-11-04T02:30;M2026-11-03T21:45/2026-11-04T03:45", sp2.getString("ranges"));
+        Assert.assertEquals("a=b=c", sp2.getString("withEquals"));
+        Assert.assertEquals(7, sp2.getValue("count").intValue());
+        Assert.assertEquals("7", sp2.getString("count"));
+        Assert.assertNull(sp2.getString("missing"));
+    }
 }

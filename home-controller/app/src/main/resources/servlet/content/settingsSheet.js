@@ -15,14 +15,22 @@
  * Optional instant: true sends all values of the form after every change (a burst of edits is sent once they stop),
  * so a device that fills missing values from its last reported state cannot revert a change still in flight.
  * The foot has only a Close button.
+ * Optional sync(item) returns the current values of the keys from the widget's live data; on every refresh the
+ * values the user has not changed follow it, so the dialog shows what the server did (e.g. a one-shot that ended).
+ * Optional enabledIf(state, item) of a group disables its controls while it returns false.
  * The timeline is drawn only when there are lanes.
- * Field types: 'stepper' {key, label, hint, step, min, max, unit, decimals}, 'switch' {key, label, hint},
+ * Field types: 'stepper' {key, label, hint, step, min, max, unit, decimals, format} (format(value) renders the text,
+ * the input is then read-only), 'switch' {key, label, hint},
  * 'choice' {key, label, options: [{value, label, icon}]} (one of buttons),
- * 'ranges' {key} (time ranges "H:mm-H:mm;..." drawn on the timeline in the color of the lane with the same key).
+ * 'ranges' {key} (time ranges "H:mm-H:mm;..." drawn on the timeline in the color of the lane with the same key),
+ * 'dateRanges' {key, colors: {kind: color}, labels, newKind, summary} (absolute ranges
+ * "P2026-11-04T02:15/2026-11-04T02:30;M...", the prefix is the kind of the range, a new one is added with the kind of
+ * newKind; the optional summary(value, item) returns HTML shown under a valid list).
  */
 class SettingsSheet {
     static TIME_STEP_MIN = 15;
     static APPLY_DELAY_MS = 500;
+    static SYNC_GRACE_MS = 1500;
     static current = null;
     static OPTIONS_STORE = {
         load: keys => fetch(getBaseUrl() + '/rest/options?keys=' + encodeURIComponent(keys.join(',')))
@@ -45,9 +53,47 @@ class SettingsSheet {
 
     static itemDrawn(item) {
         if (SettingsSheet.current && SettingsSheet.current.item === item) {
+            SettingsSheet.current.syncFromItem();
             SettingsSheet.current.renderDetails();
             SettingsSheet.current.renderLive();
         }
+    }
+
+    /**
+     * Takes over the values the user has not changed from the widget's live data. Skipped while a change is being
+     * sent and shortly after, so that a poll started before the change does not show the old value for a moment.
+     */
+    syncFromItem() {
+        if (!this.cfg.sync || !this.state || !this.item.hasData()) return;
+        if (this.applying || this.applyTimer || Date.now() < this.syncBlockedUntil) return;
+        const values = this.cfg.sync(this.item);
+        const changed = [];
+        for (const [k, v] of Object.entries(values)) {
+            if (this.loaded[k] === v) continue;
+            const dirty = this.state[k] !== this.loaded[k];
+            this.loaded[k] = v;
+            if (!dirty) {
+                this.state[k] = v;
+                changed.push(k);
+            }
+        }
+        if (changed.length) this.updateFields(changed);
+    }
+
+    /**
+     * Redraws only the controls of the keys, so the scroll position and the focus stay where they are.
+     */
+    updateFields(keys) {
+        for (const key of keys) {
+            const f = this.fieldDef(key);
+            const stepper = this.body.querySelector(`.settings-stepper[data-key="${key}"]`);
+            if (stepper) stepper.querySelector('input').value = this.stepperText(f);
+            const sw = this.body.querySelector(`input[type="checkbox"][data-key="${key}"]`);
+            if (sw) sw.checked = this.state[key] === 'true';
+            const box = this.body.querySelector(`.settings-ranges-box[data-key="${key}"]`);
+            if (box) box.innerHTML = f.type === 'dateRanges' ? this.dateRangesHtml(key) : this.rangesHtml(key);
+        }
+        this.refresh();
     }
 
     constructor(cfg, item) {
@@ -58,6 +104,7 @@ class SettingsSheet {
         this.liveHtml = null;
         this.applyTimer = null;
         this.applying = 0;
+        this.syncBlockedUntil = 0;
         this.loaded = null;
         this.state = null;
         this.confirming = false;
@@ -213,8 +260,9 @@ class SettingsSheet {
         for (const g of this.cfg.groups) {
             if (g.toggle && this.state[g.toggle] !== 'true') continue;
             for (const f of g.fields) {
-                if (f.type !== 'ranges') continue;
-                const e = SettingsSheet.validateRanges(this.state[f.key]);
+                let e = null;
+                if (f.type === 'ranges') e = SettingsSheet.validateRanges(this.state[f.key]);
+                else if (f.type === 'dateRanges') e = SettingsSheet.validateDateRanges(this.state[f.key]);
                 if (e) errs[f.key] = e;
             }
         }
@@ -269,6 +317,7 @@ class SettingsSheet {
             })
             .finally(() => {
                 this.applying--;
+                this.syncBlockedUntil = Date.now() + SettingsSheet.SYNC_GRACE_MS;
                 this.renderFoot();
             });
     }
@@ -368,11 +417,38 @@ class SettingsSheet {
             return `<div class="settings-row"><span class="settings-label">${f.label}${hint}</span>
                 <span class="settings-stepper" data-key="${f.key}">
                     <button type="button" data-d="-1" aria-label="Decrease">−</button>
-                    <input inputmode="decimal" value="${this.state[f.key]}" aria-label="${f.label}">
-                    <span class="settings-unit">${f.unit}</span>
+                    <input inputmode="decimal" value="${this.stepperText(f)}" ${f.format ? 'readonly' : ''} aria-label="${f.label}">
+                    <span class="settings-unit">${f.unit || ''}</span>
                     <button type="button" data-d="1" aria-label="Increase">+</button></span></div>`;
         }
+        if (f.type === 'dateRanges') {
+            return `<div class="settings-ranges-box" data-key="${f.key}">${this.dateRangesHtml(f.key)}</div>`;
+        }
         return `<div class="settings-ranges-box" data-key="${f.key}">${this.rangesHtml(f.key)}</div>`;
+    }
+
+    stepperText(f) {
+        const v = this.state[f.key];
+        return f.format ? f.format(Number(v)) : v;
+    }
+
+    dateRangesHtml(key) {
+        const f = this.fieldDef(key);
+        const rows = SettingsSheet.parseDateRanges(this.state[key]).map((r, i) => {
+            const minutes = (SettingsSheet.localMillis(r.to) - SettingsSheet.localMillis(r.from)) / 60_000;
+            const info = (minutes > 0 ? SettingsSheet.fmtMin(minutes) + ' h · ' : '') + SettingsSheet.fmtDay(r.from)
+                + (f.labels && f.labels[r.kind] ? ' · ' + f.labels[r.kind] : '');
+            return `<div class="settings-range-row">
+                <span class="settings-swatch" style="background:${f.colors[r.kind] || '#5b665f'}"></span>
+                ${SettingsSheet.timeFieldHtml(r.from.slice(11), i, 0)}<span>–</span>${SettingsSheet.timeFieldHtml(r.to.slice(11), i, 1)}
+                <button type="button" class="settings-icon-btn" data-remove="${i}" aria-label="Remove range ${i + 1}">✕</button></div>
+                <span class="settings-hint settings-range-info">${info}</span>`;
+        }).join('');
+        const value = this.state[key];
+        const summary = f.summary && value && !SettingsSheet.validateDateRanges(value) ? f.summary(value, this.item) : '';
+        return `<div class="settings-ranges">${rows || '<span class="settings-hint">No ranges, the heating stays off.</span>'}
+            <span class="settings-err" hidden></span>
+            <button type="button" class="settings-add-range">+ Add range</button></div>${summary}`;
     }
 
     rangesHtml(key) {
@@ -423,13 +499,15 @@ class SettingsSheet {
         const set = v => {
             const clamped = Math.min(f.max, Math.max(f.min, Math.round(v / f.step) * f.step));
             this.state[key] = f.decimals ? clamped.toFixed(f.decimals) : String(Math.round(clamped));
-            input.value = this.state[key];
+            input.value = this.stepperText(f);
             this.refresh();
         };
-        input.addEventListener('change', () => {
-            const v = parseFloat(input.value.replace(',', '.'));
-            set(Number.isNaN(v) ? Number(this.state[key]) : v);
-        });
+        if (!f.format) {
+            input.addEventListener('change', () => {
+                const v = parseFloat(input.value.replace(',', '.'));
+                set(Number.isNaN(v) ? Number(this.state[key]) : v);
+            });
+        }
         st.querySelectorAll('button').forEach(btn => {
             let timer = null;
             const stepOnce = () => set(Number(this.state[key]) + f.step * Number(btn.dataset.d));
@@ -457,6 +535,10 @@ class SettingsSheet {
 
     bindRanges(box) {
         const key = box.dataset.key;
+        if (this.fieldDef(key).type === 'dateRanges') {
+            this.bindDateRanges(box);
+            return;
+        }
         box.addEventListener('click', e => {
             const ranges = SettingsSheet.parseRanges(this.state[key]);
             const time = e.target.closest('.settings-time');
@@ -481,15 +563,77 @@ class SettingsSheet {
         });
     }
 
-    /**
-     * Popup with an hour and a minute column, minutes in TIME_STEP_MIN steps. A stored minute off the grid is listed
-     * too, so the value stays unchanged until edited.
-     */
     openTimePicker(key, button) {
-        this.closeTimePicker();
         const i = Number(button.dataset.i);
         const part = Number(button.dataset.p);
         const value = () => SettingsSheet.parseRanges(this.state[key])[i][part].split(':').map(Number);
+        this.openPicker(button, value, (h, m) => {
+            const ranges = SettingsSheet.parseRanges(this.state[key]);
+            ranges[i][part] = SettingsSheet.fmtMin(h * 60 + m);
+            this.state[key] = SettingsSheet.formatRanges(ranges);
+            const box = this.body.querySelector(`.settings-ranges-box[data-key="${key}"]`);
+            box.innerHTML = this.rangesHtml(key);
+            this.refresh();
+            return box.querySelector(`.settings-time[data-i="${i}"][data-p="${part}"]`);
+        });
+    }
+
+    /**
+     * Edits the start or the end of an absolute range; the day of the value is kept.
+     */
+    openDatePicker(key, button) {
+        const i = Number(button.dataset.i);
+        const part = Number(button.dataset.p);
+        const field = () => SettingsSheet.parseDateRanges(this.state[key])[i][part === 0 ? 'from' : 'to'];
+        const value = () => field().slice(11).split(':').map(Number);
+        this.openPicker(button, value, (h, m) => {
+            const ranges = SettingsSheet.parseDateRanges(this.state[key]);
+            const r = ranges[i];
+            const time = field().slice(0, 11) + String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+            ranges[i] = part === 0 ? {...r, from: time} : {...r, to: time};
+            this.state[key] = SettingsSheet.formatDateRanges(ranges);
+            const box = this.body.querySelector(`.settings-ranges-box[data-key="${key}"]`);
+            box.innerHTML = this.dateRangesHtml(key);
+            this.refresh();
+            return box.querySelector(`.settings-time[data-i="${i}"][data-p="${part}"]`);
+        });
+    }
+
+    bindDateRanges(box) {
+        const key = box.dataset.key;
+        const f = this.fieldDef(key);
+        box.addEventListener('click', e => {
+            const ranges = SettingsSheet.parseDateRanges(this.state[key]);
+            const time = e.target.closest('.settings-time');
+            if (time) {
+                this.openDatePicker(key, time);
+                return;
+            }
+            const rm = e.target.closest('[data-remove]');
+            if (rm) {
+                ranges.splice(Number(rm.dataset.remove), 1);
+            } else if (e.target.closest('.settings-add-range')) {
+                // new range starts one hour after the last one ends, on the 15-minute grid
+                const last = ranges.length ? SettingsSheet.localMillis(ranges[ranges.length - 1].to) : Date.now();
+                const stepMs = SettingsSheet.TIME_STEP_MIN * 60_000;
+                const start = Math.ceil((last + 3_600_000) / stepMs) * stepMs;
+                ranges.push({from: SettingsSheet.localIso(start), to: SettingsSheet.localIso(start + 3_600_000), kind: f.newKind});
+            } else {
+                return;
+            }
+            this.state[key] = SettingsSheet.formatDateRanges(ranges);
+            box.innerHTML = this.dateRangesHtml(key);
+            this.refresh();
+        });
+    }
+
+    /**
+     * Popup with an hour and a minute column, minutes in TIME_STEP_MIN steps. A stored minute off the grid is listed
+     * too, so the value stays unchanged until edited. onPick(hour, minute) stores the value, redraws its box and
+     * returns the button to focus once the minute is chosen.
+     */
+    openPicker(button, value, onPick) {
+        this.closeTimePicker();
         const [hour, minute] = value();
         const minutes = [];
         for (let m = 0; m < 60; m += SettingsSheet.TIME_STEP_MIN) {
@@ -530,15 +674,10 @@ class SettingsSheet {
             let [h, m] = value();
             if (opt.dataset.u === 'h') h = Number(opt.dataset.v);
             else m = Number(opt.dataset.v);
-            const ranges = SettingsSheet.parseRanges(this.state[key]);
-            ranges[i][part] = SettingsSheet.fmtMin(h * 60 + m);
-            this.state[key] = SettingsSheet.formatRanges(ranges);
-            const box = this.body.querySelector(`.settings-ranges-box[data-key="${key}"]`);
-            box.innerHTML = this.rangesHtml(key);
-            this.refresh();
+            const focusTarget = onPick(h, m);
             if (opt.dataset.u === 'm') {
                 this.closeTimePicker();
-                box.querySelector(`.settings-time[data-i="${i}"][data-p="${part}"]`).focus();
+                if (focusTarget) focusTarget.focus();
             } else {
                 picker.querySelectorAll('[data-u="h"]').forEach(b => b.setAttribute('aria-selected', String(b === opt)));
             }
@@ -577,7 +716,7 @@ class SettingsSheet {
         this.body.querySelectorAll('[data-group]').forEach(el => {
             const g = this.cfg.groups[Number(el.dataset.group)];
             if (!g.enabledIf) return;
-            const enabled = g.enabledIf(this.state);
+            const enabled = g.enabledIf(this.state, this.item);
             el.classList.toggle('settings-disabled', !enabled);
             el.querySelectorAll('button, input').forEach(c => {
                 if (!enabled) c.disabled = true;
@@ -698,6 +837,60 @@ class SettingsSheet {
 
     static fmtMin(m) {
         return `${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}`;
+    }
+
+    /**
+     * Absolute ranges: "P2026-11-04T02:15/2026-11-04T02:30;M..." to [{from, to, kind}] with local ISO minutes.
+     */
+    static parseDateRanges(str) {
+        if (!str) return [];
+        return str.split(';').map(s => {
+            const t = s.trim();
+            const [from, to] = t.slice(1).split('/');
+            return {from, to, kind: t.charAt(0)};
+        });
+    }
+
+    static formatDateRanges(ranges) {
+        return ranges.map(r => `${r.kind}${r.from}/${r.to}`).join(';');
+    }
+
+    static localMillis(iso) {
+        return new Date(iso).getTime();
+    }
+
+    static localIso(millis) {
+        const d = new Date(millis);
+        const p = n => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
+
+    static fmtDay(iso) {
+        return new Date(iso).toLocaleDateString(undefined, {weekday: 'short', day: 'numeric', month: 'numeric'});
+    }
+
+    /**
+     * @returns {{msg: string, bad: Set<number>} | null}
+     */
+    static validateDateRanges(str) {
+        const ranges = SettingsSheet.parseDateRanges(str);
+        const isoRe = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+        if (ranges.some(r => !isoRe.test(r.from) || !isoRe.test(r.to) || !/^[A-Z]$/.test(r.kind))) {
+            return {msg: `Invalid ranges '${str}'.`, bad: new Set()};
+        }
+        for (let i = 0; i < ranges.length; i++) {
+            if (ranges[i].to <= ranges[i].from) {
+                return {msg: `Range ${i + 1} must end after it starts.`, bad: new Set([i])};
+            }
+        }
+        for (let i = 0; i < ranges.length; i++) {
+            for (let j = i + 1; j < ranges.length; j++) {
+                if (ranges[i].from < ranges[j].to && ranges[j].from < ranges[i].to) {
+                    return {msg: `Ranges ${i + 1} and ${j + 1} overlap. Merge them or move one.`, bad: new Set([i, j])};
+                }
+            }
+        }
+        return null;
     }
 
     static segments([a, b]) {

@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PersistentStateMap implements StateMap {
     static Logger log = LoggerFactory.getLogger(PersistentStateMap.class.getName());
-    private final Map<String, Integer> map = new ConcurrentHashMap<>();
+    private final Map<String, String> map = new ConcurrentHashMap<>();
     private final File file;
     private final int saveDelayMs;
     private Thread saveThread;
@@ -42,7 +42,7 @@ public class PersistentStateMap implements StateMap {
                 for (String key : keys) {
                     w.write(key);
                     w.write('=');
-                    w.write(Integer.toString(map.get(key)));
+                    w.write(map.get(key));
                     w.newLine();
                 }
                 log.debug("Saved {} entries", map.size());
@@ -59,8 +59,10 @@ public class PersistentStateMap implements StateMap {
         }
         try (BufferedReader r = new BufferedReader(new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8))) {
             for (String line; (line = r.readLine()) != null; ) {
-                String[] pair = line.trim().split("=");
-                map.put(pair[0], Integer.valueOf(pair[1]));
+                String[] pair = line.split("=", 2);
+                if (pair.length == 2) {
+                    map.put(pair[0].trim(), pair[1].trim());
+                }
             }
             log.debug("Loaded {} entries", map.size());
         } catch (IOException e) {
@@ -70,9 +72,14 @@ public class PersistentStateMap implements StateMap {
     }
 
     @Override
-    public synchronized void setValue(String key, int value) {
+    public void setValue(String key, int value) {
+        setValue(key, Integer.toString(value));
+    }
+
+    @Override
+    public synchronized void setValue(String key, String value) {
         log.debug("set {}={}", key, value);
-        if (!Integer.valueOf(value).equals(map.put(key, value))) {
+        if (!value.equals(map.put(key, value))) {
             save();
         }
     }
@@ -109,6 +116,12 @@ public class PersistentStateMap implements StateMap {
 
     @Override
     public Integer getValue(String key) {
+        String value = map.get(key);
+        return (value != null) ? Integer.valueOf(value) : null;
+    }
+
+    @Override
+    public String getString(String key) {
         return map.get(key);
     }
 }

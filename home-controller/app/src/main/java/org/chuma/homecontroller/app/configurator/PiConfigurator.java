@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.app.configurator;
 
 import java.io.IOException;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +15,6 @@ import org.chuma.homecontroller.app.servlet.Handler;
 import org.chuma.homecontroller.app.servlet.Servlet;
 import org.chuma.homecontroller.app.servlet.ServletAction;
 import org.chuma.homecontroller.app.servlet.pages.FloorHeatersPage;
-import org.chuma.homecontroller.app.servlet.pages.FloorHeatersPage.FloorHeater;
 import org.chuma.homecontroller.app.servlet.pages.GetBackendUrlJs;
 import org.chuma.homecontroller.app.servlet.pages.LightsPage;
 import org.chuma.homecontroller.app.servlet.pages.LouversPage;
@@ -28,6 +28,7 @@ import org.chuma.homecontroller.app.servlet.rest.AirValveHandler;
 import org.chuma.homecontroller.app.servlet.rest.AllStatusHandler;
 import org.chuma.homecontroller.app.servlet.rest.BoilerHandler;
 import org.chuma.homecontroller.app.servlet.rest.ElectricitySpotPriceHandler;
+import org.chuma.homecontroller.app.servlet.rest.FloorHeaterHandler;
 import org.chuma.homecontroller.app.servlet.rest.FuturaHandler;
 import org.chuma.homecontroller.app.servlet.rest.HvacHandler;
 import org.chuma.homecontroller.app.servlet.rest.InverterHandler;
@@ -85,6 +86,8 @@ import org.chuma.homecontroller.extensions.actor.RadioOnOffActor;
 import org.chuma.homecontroller.extensions.actor.WaterPumpMonitor;
 import org.chuma.homecontroller.extensions.external.SunCalculator;
 import org.chuma.homecontroller.extensions.external.boiler.BoilerManager;
+import org.chuma.homecontroller.extensions.external.floorheater.FloorHeaterManager;
+import org.chuma.homecontroller.extensions.external.floorheater.FloorHeaterManager.Room;
 import org.chuma.homecontroller.extensions.external.futura.FuturaMonitor;
 import org.chuma.homecontroller.extensions.external.garage.GarageManager;
 import org.chuma.homecontroller.extensions.external.inverter.ElectricitySpotPriceMonitor;
@@ -755,18 +758,18 @@ public class PiConfigurator extends AbstractConfigurator {
         setupPir(pirA3Prizemi.getIn5AndActivate(), "pirSpa", "Spajza", new ContinuousValueSwitchOnActionWithTimer(spajzPwmActor, 600, 1.0), new SwitchOffActionWithTimer(spajzPwmActor, 20));
         setupPir(pirA3Prizemi.getIn6AndActivate(), "pirZadD", "Zadveri dole", new ContinuousValueSwitchOnActionWithTimer(zadveriDolePwmActor, 600, 1.0, new SunCondition(-15, -30)), new SwitchOffActionWithTimer(zadveriDolePwmActor, 15));
 
-        FloorHeater podlahaKoupelnaHore = addFloorHeater("pdlKoupH", "Koupelna hore", releFloorHeater.getRelay(5), 550);
-        FloorHeater podlahaKoupelnaDole = addFloorHeater("pdlKoupD", "Koupelna dole", releFloorHeater.getRelay(6), 280);
-        FloorHeater podlahaVratnice = addFloorHeater("pdlVrt", "Vrátnice", releFloorHeater.getRelay(1), 720);
-        FloorHeater podlahaMarek = addFloorHeater("pdlMarek", "Marek", releFloorHeater.getRelay(7), 450);
-        FloorHeater podlahaPata = addFloorHeater("pdlPata", "Paťa", releFloorHeater.getRelay(8), 350);
-        FloorHeater podlahaObyvak = addFloorHeater("pdlObyv", "Obývák", releFloorHeater.getRelay(3), 3000);
-        FloorHeater podlahaPracovna2 = addFloorHeater("pdlPrc2", "Pracovna", releFloorHeater.getRelay(11), 280);
-        FloorHeater podlahaChodbaHore = addFloorHeater("pdlChH", "Chodba hore", releFloorHeater.getRelay(2), 720);
-        FloorHeater podlahaLoznice = addFloorHeater("pdlLoz", "Ložnice", releFloorHeater.getRelay(12), 450);
-        FloorHeater podlahaKrystof = addFloorHeater("pdlKrys", "Kryštof", releFloorHeater.getRelay(9), 350);
-        FloorHeater podlahaChodbaDole = addFloorHeater("pdlChD", "Chodba dole", releFloorHeater.getRelay(10), 280);
-        List<FloorHeater> floorHeaters = List.of(
+        Room podlahaKoupelnaHore = addFloorHeater("pdlKoupH", "Koupelna hore", releFloorHeater.getRelay(5), 550);
+        Room podlahaKoupelnaDole = addFloorHeater("pdlKoupD", "Koupelna dole", releFloorHeater.getRelay(6), 280);
+        Room podlahaVratnice = addFloorHeater("pdlVrt", "Vrátnice", releFloorHeater.getRelay(1), 720);
+        Room podlahaMarek = addFloorHeater("pdlMarek", "Marek", releFloorHeater.getRelay(7), 450);
+        Room podlahaPata = addFloorHeater("pdlPata", "Paťa", releFloorHeater.getRelay(8), 350);
+        Room podlahaObyvak = addFloorHeater("pdlObyv", "Obývák", releFloorHeater.getRelay(3), 3000);
+        Room podlahaPracovna2 = addFloorHeater("pdlPrc2", "Pracovna", releFloorHeater.getRelay(11), 280);
+        Room podlahaChodbaHore = addFloorHeater("pdlChH", "Chodba hore", releFloorHeater.getRelay(2), 720);
+        Room podlahaLoznice = addFloorHeater("pdlLoz", "Ložnice", releFloorHeater.getRelay(12), 450);
+        Room podlahaKrystof = addFloorHeater("pdlKrys", "Kryštof", releFloorHeater.getRelay(9), 350);
+        Room podlahaChodbaDole = addFloorHeater("pdlChD", "Chodba dole", releFloorHeater.getRelay(10), 280);
+        List<Room> floorHeaters = List.of(
                 podlahaKoupelnaHore, podlahaKrystof, podlahaPata, podlahaMarek,
                 podlahaLoznice, podlahaPracovna2, podlahaChodbaHore, podlahaVratnice,
                 podlahaObyvak, podlahaKoupelnaDole, podlahaChodbaDole);
@@ -815,6 +818,12 @@ public class PiConfigurator extends AbstractConfigurator {
 
         // a boiler refresh is a 15 s key sequence on its display, so it stays at 10 min even when idle
         BoilerManager boilerManager = new BoilerManager(10 * 60_000, 60 * 60_000, 10 * 60_000);
+
+        FloorHeaterManager floorHeaterManager = new FloorHeaterManager(floorHeaters, () -> {
+            ElectricitySpotPriceMonitor.Prices prices = priceMonitor.getDayPrices();
+            return (prices != null) ? prices.prices() : null;
+        }, stateMap, Clock.systemDefaultZone());
+        floorHeaterManager.start();
 
         // Tank sensor reads distance from the top: full = 45 cm, empty = 45+170 cm. Readings are
         // pushed by the water-level-meter ESP every 5 minutes (see WaterTankHandler); the last
@@ -866,7 +875,7 @@ public class PiConfigurator extends AbstractConfigurator {
                 floorsPage,
                 new LightsPage(lddActors, pages),
                 new LouversPage(louversControllers, pages),
-                new FloorHeatersPage(floorHeaters, pages),
+                new FloorHeatersPage(floorHeaterManager.getRooms(), pages),
                 new PirPage(pirStatusList, pages),
                 new NodeInfoPage(nodeInfoRegistry, pages, servletActions),
                 new OptionsPage(OptionsSingleton.getInstance(), pages)));
@@ -883,6 +892,7 @@ public class PiConfigurator extends AbstractConfigurator {
                 new InverterHandler(inverterMonitor),
                 new FuturaHandler(futuraMonitor),
                 new BoilerHandler(boilerManager.getBoilerMonitor()),
+                new FloorHeaterHandler(floorHeaterManager),
                 new ElectricitySpotPriceHandler(priceMonitor),
                 new RobonectHandler(robonectMonitor));
 //        configureSimulator(pages, wsHandlers, false);
@@ -913,8 +923,8 @@ public class PiConfigurator extends AbstractConfigurator {
         }
     }
 
-    private FloorHeater addFloorHeater(String id, String room, OutputNodePin output, int powerW) {
-        return new FloorHeater(room, powerW, addOnOffActor(id, "Podlaha " + room, output));
+    private Room addFloorHeater(String id, String room, OutputNodePin output, int powerW) {
+        return new Room(id, room, powerW, addOnOffActor(id, "Podlaha " + room, output));
     }
 
     @Override

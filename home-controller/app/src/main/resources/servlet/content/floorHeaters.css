@@ -27,3 +27,12 @@ div.floorHeaterPower {
     font-size: 1em;
     color: gray;
 }
+
+div.floorHeaterSchedule {
+    position: absolute;
+    left: .3em;
+    bottom: .2em;
+    font-size: 1em;
+    color: #c46a12;
+    font-variant-numeric: tabular-nums;
+}

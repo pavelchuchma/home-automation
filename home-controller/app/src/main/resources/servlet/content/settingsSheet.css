@@ -940,3 +940,90 @@
         transition: none !important;
     }
 }
+
+.settings-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.35rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.settings-state i {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #c9cfca;
+}
+
+.settings-state.on {
+    color: #c46a12;
+}
+
+.settings-state.on i {
+    background: #c46a12;
+    box-shadow: 0 0 0 4px rgba(196, 106, 18, .28);
+}
+
+.settings-chart {
+    position: relative;
+}
+
+.settings-chart svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    touch-action: pan-y;
+}
+
+.settings-chart-tip {
+    position: absolute;
+    pointer-events: none;
+    transform: translate(-50%, -110%);
+    background: #1d2420;
+    color: #ffffff;
+    font-size: .76rem;
+    padding: 5px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.settings-chart-tip[hidden] {
+    display: none;
+}
+
+.settings-legend-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.settings-legend-dash {
+    background: repeating-linear-gradient(90deg, #5b665f 0 3px, transparent 3px 6px);
+    height: 3px;
+    width: 14px;
+}
+
+.settings-range-info {
+    margin: -4px 0 0 10px;
+}
+
+.settings-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.settings-summary div {
+    background: #eef0ee;
+    border-radius: 8px;
+    padding: 8px 10px;
+}
+
+.settings-summary .settings-value {
+    font-size: 1.05rem;
+}

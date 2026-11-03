@@ -55,6 +55,11 @@ Other notable directories:
   safe), the controller classes and `boiler.*` options, the write retry, and
   how to read the boiler lines in the log (`Mode:`, `lastFail:`, retry
   warnings). Gateway firmware lives in a separate GitHub repo linked there.
+- `doc/floor-heating.md` — the electric floor heating: relays follow absolute
+  heating ranges (planned / manual), the morning pre-heating planner (cheapest
+  15-minute slots before a target time with a later-is-better bonus), the
+  `floorHeater.*` keys in `cfg/app-state.properties`, the REST handler, the
+  dialog and the INFO log lines. Design in `doc/todo/004-floor-heating-planner.md`.
 - `doc/nodes.md` — the PIC nodes on the CAN bus: firmware in `pic/node` at the
   repo root (node ID is compiled in), node 1 as the USB/CAN bridge, the UART
   framing and CAN mapping, the reboot/initialization lifecycle, connector pin
