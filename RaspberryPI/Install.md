@@ -285,6 +285,19 @@ Raised to 400m (`mem_limit` in the compose file, which is configuration-as-code
 — edit it in git and redeploy, not on the Pi). Grafana then settles at ~270 MB
 of 400 MB, `memory.events max` stays at 0 and major faults drop to 0.
 
+## 7. Weather forecast cron jobs
+
+Copy `usr/local/bin/homeAutomation/downloadForecast.sh` and `archiveForecast.sh`
+from this directory to the same path on the Pi (no deploy script copies them),
+make them executable and add to the crontab of user `pi`:
+
+```
+42 * * * * /usr/local/bin/homeAutomation/downloadForecast.sh
+15 1 1 * * /usr/local/bin/homeAutomation/archiveForecast.sh >> /usr/local/bin/homeAutomation/out/weather-archive/archive.log 2>&1
+```
+
+What they do and the data format: `home-controller/doc/weather-forecast.md`.
+
 ## Change log
 
 | Date | Change | Reason |

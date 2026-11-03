@@ -65,6 +65,10 @@ Other notable directories:
   framing and CAN mapping, the reboot/initialization lifecycle, connector pin
   layout and the pins reserved by the firmware (CAN on every node; UART and
   LED on the bridge, so its connector 3 is unusable), and known caveats.
+- `doc/weather-forecast.md` — hourly weather forecast download on the Pi (met.no and
+  Aladin) by `downloadForecast.sh`, monthly archiving by `archiveForecast.sh`
+  (both in `RaspberryPI/usr/local/bin/homeAutomation/` at the repo root), the
+  cron entries, and the file formats.
 - `out`, `*/out` — compiled outputs; treat as generated. Never edit or place
   source files here.
 
