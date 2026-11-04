@@ -70,8 +70,8 @@ floorHeater.laterBonusHaler=20
 
 Package `org.chuma.homecontroller.extensions.external.floorheater`. No I/O, unit-tested.
 
-- `nextDeadline(LocalDateTime now, LocalTime target, int minutes)`: the next target time after now; when
-  fewer than `minutes` remain until it, the target time one day later.
+- `nextDeadline(LocalDateTime now, LocalTime target)`: the nearest target time with at least one whole slot
+  ahead of it, otherwise the target time one day later; a duration that does not fit is shortened by the plan.
 - `plan(IntervalPrice[] prices, long nowMillis, long deadlineMillis, int minutes, double bonusPerHour)`:
   slots are the 15-minute intervals from the next slot boundary to the deadline. When any slot has no
   price, returns `null` (prices for the window are not published). Otherwise the slot key is

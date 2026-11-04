@@ -44,9 +44,10 @@ rooms and is the only writer of their relays:
 
 `FloorHeaterPlanner` is pure (no I/O) and unit-tested:
 
-1. **Deadline**: the next target time (`Target time` in the dialog, default
-   10:00). When fewer than the requested minutes remain until it, the target
-   time of the following day.
+1. **Deadline**: the nearest target time (`Target time` in the dialog, default
+   10:00) with at least one whole slot still ahead of it, otherwise the target
+   time of the following day. A duration that no longer fits is shortened to
+   the slots left, it does not move the plan to the next day.
 2. **Slots**: the 15-minute slots from the next slot boundary to the deadline.
    When any slot has no published price, planning is refused: the dialog
    disables the schedule switch and the action answers 400 "Prices until … are

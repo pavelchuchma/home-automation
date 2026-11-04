@@ -289,7 +289,7 @@ public class FloorHeaterManager {
     }
 
     private Plan planRoom(Room r, LocalDateTime now, IntervalPrice[] p, int minutes, int targetMinutes, int bonusHaler) {
-        LocalDateTime deadline = FloorHeaterPlanner.nextDeadline(now, LocalTime.ofSecondOfDay(targetMinutes * 60L), minutes);
+        LocalDateTime deadline = FloorHeaterPlanner.nextDeadline(now, LocalTime.ofSecondOfDay(targetMinutes * 60L));
         List<HeatingRange> planned = FloorHeaterPlanner.plan(p, now, deadline, minutes, bonusHaler / 100.0);
         if (planned == null) {
             throw new IllegalStateException("Prices until " + deadline.toLocalDate() + " " + deadline.toLocalTime()
@@ -309,7 +309,7 @@ public class FloorHeaterManager {
 
     private boolean canPlan(Room r, LocalDateTime now, IntervalPrice[] p) {
         int minutes = getMinutes(r.id());
-        LocalDateTime deadline = FloorHeaterPlanner.nextDeadline(now, LocalTime.ofSecondOfDay(getTargetMinutes() * 60L), minutes);
+        LocalDateTime deadline = FloorHeaterPlanner.nextDeadline(now, LocalTime.ofSecondOfDay(getTargetMinutes() * 60L));
         return FloorHeaterPlanner.plan(p, now, deadline, minutes, getLaterBonusHaler() / 100.0) != null;
     }
 

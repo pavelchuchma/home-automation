@@ -24,14 +24,12 @@ public final class FloorHeaterPlanner {
     }
 
     /**
-     * The next target time after now; the one a day later when fewer than {@code minutes} remain until it.
+     * The nearest target time with at least one whole slot still ahead of it; otherwise the one a day later.
+     * A duration that does not fit before it is shortened by the plan, not moved to the next day.
      */
-    public static LocalDateTime nextDeadline(LocalDateTime now, LocalTime target, int minutes) {
+    public static LocalDateTime nextDeadline(LocalDateTime now, LocalTime target) {
         LocalDateTime deadline = now.toLocalDate().atTime(target);
-        if (!deadline.isAfter(now)) {
-            deadline = deadline.plusDays(1);
-        }
-        if (Duration.between(nextSlotStart(now), deadline).toMinutes() < minutes) {
+        if (Duration.between(nextSlotStart(now), deadline).toMinutes() < SLOT_MINUTES) {
             deadline = deadline.plusDays(1);
         }
         return deadline;

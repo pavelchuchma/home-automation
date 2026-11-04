@@ -62,7 +62,7 @@ function floorHeaterSettings(item) {
                     summary: floorHeaterSummaryHtml},
             ]},
             {title: 'Planner', hint: 'Shared by all rooms', fields: [
-                {type: 'stepper', key: 'target', label: 'Target time', hint: 'Warm by this time', step: 15, min: 4 * 60, max: 12 * 60,
+                {type: 'stepper', key: 'target', label: 'Target time', hint: 'Warm by this time', step: 15, min: 0, max: 24 * 60 - 15,
                     format: SettingsSheet.fmtMin},
                 {type: 'stepper', key: 'laterBonus', label: 'Later-is-better bonus', hint: 'Kč/kWh per hour before target', step: 5, min: 0, max: 100,
                     format: v => (v / 100).toFixed(2).replace('.', ',')},
@@ -140,16 +140,15 @@ function fmtWhen(millis) {
 }
 
 /**
- * Next target time after now; a day later when fewer than the heating minutes remain until it
+ * The nearest target time with at least one whole slot still ahead of it, otherwise the one a day later
  * (the same rule as FloorHeaterPlanner.nextDeadline).
  */
-function floorHeaterDeadline(now, targetMinutes, minutes) {
+function floorHeaterDeadline(now, targetMinutes) {
     const d = new Date(now);
     d.setHours(0, 0, 0, 0);
     let deadline = d.getTime() + targetMinutes * 60_000;
-    if (deadline <= now) deadline += 24 * 3_600_000;
     const firstSlot = Math.ceil(now / SLOT_MS) * SLOT_MS;
-    if (deadline - firstSlot < minutes * 60_000) deadline += 24 * 3_600_000;
+    if (deadline - firstSlot < SLOT_MS) deadline += 24 * 3_600_000;
     return deadline;
 }
 
@@ -214,7 +213,7 @@ function floorHeaterChartSvg(item, now) {
         const v = prices.values.find(p => p.time <= t && t < p.time + SLOT_MS);
         return v ? v.price : null;
     };
-    const deadline = item.scheduleUntil > 0 ? item.scheduleUntil : floorHeaterDeadline(now, item.target, item.minutes);
+    const deadline = item.scheduleUntil > 0 ? item.scheduleUntil : floorHeaterDeadline(now, item.target);
     const dayStart = new Date(deadline);
     dayStart.setHours(0, 0, 0, 0);
     const x0 = new Date(now).setMinutes(0, 0, 0), x1 = dayStart.getTime() + 24 * 3_600_000;

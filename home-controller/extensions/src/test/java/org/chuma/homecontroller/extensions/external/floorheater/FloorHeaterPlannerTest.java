@@ -39,15 +39,14 @@ public class FloorHeaterPlannerTest {
 
     @Test
     public void testNextDeadline() {
-        Assert.assertEquals(t("2026-11-04T10:00"), FloorHeaterPlanner.nextDeadline(t("2026-11-03T20:00"), TARGET, 180));
-        Assert.assertEquals(t("2026-11-03T10:00"), FloorHeaterPlanner.nextDeadline(t("2026-11-03T02:00"), TARGET, 180));
-        // exactly at the target the next one is tomorrow
-        Assert.assertEquals(t("2026-11-04T10:00"), FloorHeaterPlanner.nextDeadline(t("2026-11-03T10:00"), TARGET, 15));
-        // not enough time left for the requested duration
-        Assert.assertEquals(t("2026-11-04T10:00"), FloorHeaterPlanner.nextDeadline(t("2026-11-03T08:00"), TARGET, 180));
-        Assert.assertEquals(t("2026-11-03T10:00"), FloorHeaterPlanner.nextDeadline(t("2026-11-03T07:00"), TARGET, 180));
-        // 07:01 -> first slot 07:15, only 165 minutes left
-        Assert.assertEquals(t("2026-11-04T10:00"), FloorHeaterPlanner.nextDeadline(t("2026-11-03T07:01"), TARGET, 180));
+        Assert.assertEquals(t("2026-11-04T10:00"), FloorHeaterPlanner.nextDeadline(t("2026-11-03T20:00"), TARGET));
+        Assert.assertEquals(t("2026-11-03T10:00"), FloorHeaterPlanner.nextDeadline(t("2026-11-03T02:00"), TARGET));
+        // the nearest target counts even when the duration does not fit any more
+        Assert.assertEquals(t("2026-11-03T10:00"), FloorHeaterPlanner.nextDeadline(t("2026-11-03T08:00"), TARGET));
+        Assert.assertEquals(t("2026-11-03T10:00"), FloorHeaterPlanner.nextDeadline(t("2026-11-03T09:45"), TARGET));
+        // 09:46 -> first slot 10:00, no whole slot left before the target
+        Assert.assertEquals(t("2026-11-04T10:00"), FloorHeaterPlanner.nextDeadline(t("2026-11-03T09:46"), TARGET));
+        Assert.assertEquals(t("2026-11-04T10:00"), FloorHeaterPlanner.nextDeadline(t("2026-11-03T10:00"), TARGET));
     }
 
     @Test
