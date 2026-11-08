@@ -17,6 +17,11 @@ public class BoilerManager {
     private static final String CFG_BOILER_TARGET_TEMP = "boiler.target.temp";
     private static final String CFG_BOILER_DISINFECT = "boiler.disinfect";
     private static final String CFG_BOILER_EHEAT = "boiler.eheat";
+    private static final int DISINFECT_TEMP = 60;
+
+    enum Correction {
+        NONE, TURN_ON, TURN_OFF
+    }
 
     static Logger log = LoggerFactory.getLogger(InverterManager.class.getName());
     private final BoilerMonitor boilerMonitor;
@@ -32,17 +37,19 @@ public class BoilerManager {
     public BoilerManager(int refreshIntervalMs, int fastRateDurationMs, int idleRefreshIntervalMs) {
         Options options = OptionsSingleton.getInstance();
         String ipAddress = options.get(CFG_BOILER_IP);
-        boilerMonitor = new BoilerMonitor(ipAddress, refreshIntervalMs, fastRateDurationMs, idleRefreshIntervalMs);
+        boilerMonitor = new BoilerMonitor(ipAddress, refreshIntervalMs, fastRateDurationMs, idleRefreshIntervalMs,
+                this::checkState);
         if (ipAddress == null || ipAddress.trim().isEmpty()) {
             log.info("BoilerMonitor disabled, no IP address configured");
             return;
         }
-        boilerMonitor.start();
 
         setTargetTemp(options.getInt(CFG_BOILER_TARGET_TEMP));
         setOperatingTimes(options.get(CFG_BOILER_TIMES));
         setDisinfect(options.getBoolean(CFG_BOILER_DISINFECT));
         setEHeat(options.getBoolean(CFG_BOILER_EHEAT));
+        // started after the configuration is loaded, checkState() needs it
+        boilerMonitor.start();
         applyConfiguration();
 
         options.addListener(new Options.OptionChangeListener() {
@@ -116,12 +123,50 @@ public class BoilerManager {
         intervalScheduler.applyCallback();
     }
 
-    public void turnOn() {
+    private int getDesiredTemp() {
+        return (disinfect) ? DISINFECT_TEMP : targetTemp;
+    }
+
+    /**
+     * Compares the boiler state with the schedule: inside an interval the boiler must be on with the desired
+     * target temperature, outside it must be off. eHeat is not checked.
+     */
+    static Correction getCorrection(boolean scheduledOn, int desiredTemp, State state) {
+        if (scheduledOn) {
+            return (!state.isOn() || state.getTargetTemp() != desiredTemp) ? Correction.TURN_ON : Correction.NONE;
+        }
+        return (state.isOn()) ? Correction.TURN_OFF : Correction.NONE;
+    }
+
+    /**
+     * Called after each periodic state refresh. Repeats turnOn() / turnOff() when the boiler differs from the
+     * schedule, e.g. after a failed write at the interval edge or a manual change on the panel. Both re-read
+     * the state before writing, so a stale state or a concurrent interval edge ends as a no-op.
+     */
+    void checkState(State state) {
+        boolean scheduledOn = isScheduledOn();
+        int desiredTemp = getDesiredTemp();
+        switch (getCorrection(scheduledOn, desiredTemp, state)) {
+            case TURN_ON -> {
+                log.warn("Boiler differs from the schedule (on: {}, targetTemp: {}, desired: {}), turning on",
+                        state.isOn(), state.getTargetTemp(), desiredTemp);
+                turnOn();
+            }
+            case TURN_OFF -> {
+                log.warn("Boiler is on outside the scheduled intervals, turning off");
+                turnOff();
+            }
+            case NONE -> {
+            }
+        }
+    }
+
+    public synchronized void turnOn() {
         try {
             BoilerController bc = boilerMonitor.getController();
             bc.refreshStatus();
             State state = bc.getState();
-            int temp = (disinfect) ? 60 : targetTemp;
+            int temp = getDesiredTemp();
             if (state.getTargetTemp() != temp) {
                 log.debug("Turn on: targetTemp: {} -> {}", state.getTargetTemp(), temp);
                 bc.setTargetTemp(temp);
@@ -144,7 +189,7 @@ public class BoilerManager {
         }
     }
 
-    public void turnOff() {
+    public synchronized void turnOff() {
         try {
             BoilerController bc = boilerMonitor.getController();
             bc.refreshStatus();

@@ -1,6 +1,7 @@
 package org.chuma.homecontroller.extensions.external.boiler;
 
 import java.net.UnknownHostException;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,9 +11,12 @@ import org.chuma.homecontroller.extensions.external.AbstractStateMonitor;
 public class BoilerMonitor extends AbstractStateMonitor<State> {
     private static final Logger log = LoggerFactory.getLogger(BoilerMonitor.class.getName());
     final BoilerController controller;
+    private final Consumer<State> periodicStateListener;
 
-    public BoilerMonitor(String ipAddress, int refreshIntervalMs, int fastRateDurationMs, int idleRefreshIntervalMs) {
+    public BoilerMonitor(String ipAddress, int refreshIntervalMs, int fastRateDurationMs, int idleRefreshIntervalMs,
+                         Consumer<State> periodicStateListener) {
         super("BoilerMonitor", refreshIntervalMs, fastRateDurationMs, idleRefreshIntervalMs);
+        this.periodicStateListener = periodicStateListener;
         log.info("Creating BoilerMonitor for {}", ipAddress);
 
         BoilerController ctrl;
@@ -44,6 +48,13 @@ public class BoilerMonitor extends AbstractStateMonitor<State> {
         } catch (Exception e) {
             log.error("Failed to refresh Boiler state", e);
             return null;
+        }
+    }
+
+    @Override
+    protected void onPeriodicRefresh(State state) {
+        if (periodicStateListener != null) {
+            periodicStateListener.accept(state);
         }
     }
 }

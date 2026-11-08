@@ -2,7 +2,7 @@
 
 How the boiler is driven from the controller, how the Modbus gateway behaves,
 and how to read the boiler lines in the app log. Companion to
-`doc/todo/001-boiler-turnon-no-retry.md`, which tracks the open reliability
+`doc/todo/001-boiler-turnon-no-retry.md`, which tracks the reliability
 work.
 
 ## Hardware chain
@@ -71,18 +71,27 @@ Classes in `extensions/.../external/boiler/`:
   differs (target temp, power, eHeat). `turnOff()` powers down and clears the
   one-shot `disinfect` / `eheat` flags. Changing any of the options re-applies
   the state for the current time.
-- `BoilerMonitor` — `AbstractStateMonitor` refreshing the state every 10 min,
-  but only while somebody asked for it within the last hour (the web UI
-  `/rest/boiler`). At night it sleeps, so its log lines are not a heartbeat.
+- `BoilerMonitor` — `AbstractStateMonitor` refreshing the state every 10 min
+  nonstop (fast and idle rate are both 10 min), so its log lines are a
+  heartbeat. After each periodic read it calls `BoilerManager.checkState()`.
+- **State check** — `checkState()` compares the read state with the schedule:
+  inside an interval the boiler must be on with the desired target temperature
+  (60 with `disinfect`), outside it must be off. On a mismatch it logs a WARN
+  and runs `turnOn()` / `turnOff()` again; both re-read the state first and
+  write only what differs, so a stale read or a concurrent interval edge ends
+  as a no-op. eHeat is deliberately not checked. A failed edge is therefore
+  repeated within 10 min, and a manual change on the boiler panel (power or
+  set temperature) is overridden at the next read. The check runs only after
+  periodic reads, not after the UI `refresh` action. `turnOn()` / `turnOff()`
+  are `synchronized`.
 - `BoilerController` — the Modbus client. Every write goes through
   `writeWithRetry()`: up to 3 attempts, repeated only for `ModbusSlaveException`
   (5 s pause) and `ModbusIOException` (15 s pause). Anything else, or the third
   failure, propagates to `BoilerManager`, which logs it and gives up for that
   interval edge.
 
-Known gap (todo 001): if all three attempts fail, nothing retries later and
-the boiler stays in the wrong state until the next interval edge. There is no
-periodic reconciliation yet.
+If all three attempts fail, the state check after the next periodic read
+(within 10 min) repeats the whole `turnOn()` / `turnOff()`.
 
 ## Reading the log
 
@@ -111,6 +120,12 @@ DEBUG [BoilerController] Setting power on: true
   start, `flags[on` in the `Mode:` lines inside the interval, and
   `Turn off: ON -> OFF` at the end. `Turn off: already OFF` at the end means it
   never ran.
+- **State check lines** (WARN, `[BoilerMonitor]` thread):
+  `Boiler differs from the schedule (on: false, targetTemp: 42, desired: 42), turning on`
+  or `Boiler is on outside the scheduled intervals, turning off`, followed by
+  the usual `Turn on` / `Turn off` lines. One right after an interval edge
+  means the edge failed; one in the middle of an interval means somebody
+  changed the boiler on the panel or the boiler rebooted.
 - **Retry lines** (WARN):
   `Boiler set power on true failed (attempt 1/3): ...ModbusSlaveException: Slave Device Failure; gateway lastFail: powerOn/4/infoTh; next attempt in 5000 ms`
   followed by either `Boiler set power on true succeeded on attempt 2/3` or,
@@ -124,7 +139,7 @@ Quick checks over SSH:
 
 ```sh
 # today's edges, retries and failures
-grep -a -E 'Turn on|Turn off|Boiler .* attempt|lastFail: [^n]' /usr/local/bin/homeAutomation/out/app.log
+grep -a -E 'Turn on|Turn off|Boiler .* attempt|Boiler differs|outside the scheduled|lastFail: [^n]' /usr/local/bin/homeAutomation/out/app.log
 
 # display modes seen at state reads (anything but "unlocked" is suspicious)
 grep -a -o 'BoilerController\] Mode: [A-Za-z0-9]*' /usr/local/bin/homeAutomation/out/app.log | sort | uniq -c

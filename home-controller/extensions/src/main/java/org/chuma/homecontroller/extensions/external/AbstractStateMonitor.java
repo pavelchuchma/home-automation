@@ -83,7 +83,15 @@ public abstract class AbstractStateMonitor<S> {
         }
 
         Snapshot<S> s = state;
-        state = new Snapshot<>(getStateImpl(s == null));
+        S newState = getStateImpl(s == null);
+        state = new Snapshot<>(newState);
+        if (newState != null) {
+            try {
+                onPeriodicRefresh(newState);
+            } catch (Exception e) {
+                log.error("{}: onPeriodicRefresh failed", name, e);
+            }
+        }
     }
 
     private long getSleepTime(long now) {
@@ -103,6 +111,13 @@ public abstract class AbstractStateMonitor<S> {
      * @param firstRefresh true for the first refresh after {@link #start()}
      */
     protected abstract S getStateImpl(boolean firstRefresh);
+
+    /**
+     * Called from the background thread after each successful periodic refresh, not after
+     * {@link #getStateSync(boolean)}, so a slow handler never blocks a caller waiting for the state.
+     */
+    protected void onPeriodicRefresh(S state) {
+    }
 
     public synchronized void stop() {
         log.trace("stopping {}", name);

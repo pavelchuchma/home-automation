@@ -2,10 +2,11 @@
 id: 001
 title: Boiler stays off for the whole day when turnOn() fails at interval start
 type: bug
-status: open
+status: done
 priority: high
 component: boiler
 created: 2026-08-19
+resolved: 2026-11-08
 ---
 
 # Boiler stays off for the whole day when turnOn() fails at interval start
@@ -188,6 +189,20 @@ notification) instead of just an ERROR log line?
   attempts fail, and periodic reconciliation inside the heating interval (fix
   options 1–2). Scheduling is deliberately left unchanged for now.
 
+### 2026-11-08 — periodic state check (fix option 1)
+
+- `BoilerMonitor` reads the state every 10 min nonstop and after each periodic
+  read calls `BoilerManager.checkState()`. Inside an interval a boiler that is
+  off or has a different target temperature gets `turnOn()` again; outside an
+  interval a boiler that is on gets `turnOff()`. eHeat is not checked.
+- `turnOn()` / `turnOff()` are `synchronized` and re-read the state before
+  writing, so a stale read or a concurrent interval edge is harmless.
+- Side effect: manual power / set-temperature changes on the boiler panel are
+  overridden at the next read.
+
 ## Resolution
 
-_Not resolved yet._
+Resolved by the periodic state check above: a failed `turnOn()` / `turnOff()`
+is repeated within 10 min. The open question about a user-visible alert for
+repeated failures remains; repeated failures show as WARN / ERROR lines every
+10 min.
