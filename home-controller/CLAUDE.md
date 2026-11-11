@@ -33,6 +33,10 @@ Other notable directories:
 - `doc/inverter/solax_modbus_spec_3.34.md` — Solax X3-Hybrid G4 Modbus register
   specification. Read-side and write-side maps are separate; see the Solax
   section below.
+- `doc/inverter/solax_vpp_protocol.md` — SolaX VPP / remote control protocol
+  (RAM-side control without EEPROM writes): new 0x00A0 and legacy 0x007C
+  blocks (FC 0x10 only), modes 0–12, duration / timeout / next-motion rules,
+  firmware requirement, and the inconsistencies in SolaX's own document.
 - `doc/recuperation/futura_modbus_tcp.md` — Jablotron Futura (recuperation
   unit) Modbus TCP register map: input and holding registers, bit tables, the
   single-socket limit, and which registers `FuturaController` already polls.

@@ -1363,6 +1363,9 @@ Error code: `0x90`. Register count limited to `0x0001–0x007B`.
 
 ### Remote Power Control (V3.33)
 
+This is the legacy VPP block. The full mode semantics and the newer 0x00A0 protocol are in
+`solax_vpp_protocol.md`.
+
 | Register | Variable | Unit | Format | Description |
 |---|---|---|---|---|
 | 0x007C | ModbusPowerControl | 1 | uint16 | 0:disable 1:powerCtrl 2:electricQty 3:SOCTarget 4:PushPower±Mode 5:PushPowerZeroMode 6:SelfConsume Charge-Discharge 7:SelfConsume ChargeOnly |
