@@ -4,6 +4,12 @@ const PHASE_WARN_RATIO = 0.8;
 // used while the inverter reports no grid voltage, e.g. in Idle mode
 const NOMINAL_PHASE_VOLTAGE = 230;
 const MANUAL_MODE_LABELS = {Stop: 'Stop', ForceCharge: 'Force charge', ForceDischarge: 'Force discharge'};
+// VPP (remote control) modes, see doc/inverter/solax_vpp_protocol.md
+const VPP_MODE_LABELS = {
+    1: 'Power control', 2: 'Energy target', 3: 'SoC target', 4: 'Push power', 5: 'Battery idle',
+    6: 'Self-consume', 7: 'Self-consume, charge only', 8: 'PV and battery', 9: 'PV and battery to SoC',
+    11: 'Max input', 12: 'Max output',
+};
 
 // dialog keys written to the inverter by the REST action, see InverterHandler; the rest are options
 const INVERTER_DEVICE_KEYS = ['pgridBias'];
@@ -65,6 +71,7 @@ class InverterItem extends AdditionalSvgToolItem {
         this.mode = undefined;
         this.batMode = undefined;
         this.manualMode = undefined;
+        this.vppMode = undefined;
         this.pgridBias = undefined;
         this.pvPwr = undefined;
         this.acPwr = undefined;
@@ -116,7 +123,9 @@ class InverterItem extends AdditionalSvgToolItem {
         this.textLines[5].text('∑ ◀ 🏭 ' + this.consumedToday + ' kWh');
         this.textLines[6].text('∑ ▶ 🏭 ' + this.feedInToday + ' kWh');
 
+        // a running VPP mode overrides the battery mode
         this.batModeIcon.text(
+            (this.vppMode > 0) ? '📡' :
             (this.batMode === 'SelfUse') ? '🏡' :
             (this.batMode === 'FeedInPriority') ? '🏭' :
             (this.batMode === 'BackUp') ? '🔋' :
@@ -158,6 +167,7 @@ function inverterDetailsHtml(item, options) {
     const breakerAmps = Number(options['inverter.phase.breaker.amps']);
     const manual = item.batMode === 'Manual';
     const manualLabel = MANUAL_MODE_LABELS[item.manualMode] || item.manualMode;
+    const vppLabel = VPP_MODE_LABELS[item.vppMode] || `Mode ${item.vppMode}`;
     let rows = '';
     let totalLoad = 0;
     let totalGrid = 0;
@@ -175,6 +185,8 @@ function inverterDetailsHtml(item, options) {
             <span class="settings-group-title">Mode</span>
             <div class="settings-row"><span class="settings-label">Inverter</span><span class="settings-value">${item.mode}</span></div>
             <div class="settings-row"><span class="settings-label">Battery</span><span class="settings-value">${item.batMode}</span></div>
+            <div class="settings-row"><span class="settings-label">Remote control<span class="settings-hint">A temporary VPP mode overrides the battery mode</span></span>
+                ${item.vppMode > 0 ? `<span class="settings-chip">${vppLabel}</span>` : '<span class="settings-muted">Off</span>'}</div>
             <div class="settings-row"><span class="settings-label">Pgrid bias</span><span class="settings-value">${item.pgridBias}</span></div>
             <div class="settings-row"><span class="settings-label">Manual mode<span class="settings-hint">Applies only while the battery mode is Manual</span></span>
                 ${manual ? `<span class="settings-chip">${manualLabel}</span>` : `<span class="settings-muted">${manualLabel}</span>`}</div>

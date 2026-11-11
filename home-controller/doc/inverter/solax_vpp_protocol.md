@@ -244,8 +244,8 @@ Findings:
   (`MeterFunction`, meter IDs, directions, `ExternalInv`, which FC 0x06 writes at 0x00A0–0x00A7) did not
   change. Whether the VPP registers themselves avoid EEPROM cannot be checked on the device.
 - **No unlock was needed:** input 0x0054 `LockState` read 1.
-- **Run mode 20.** While a VPP mode runs, input 0x0009 `RunMode` reads 20, a value missing in the run
-  mode table of `solax_modbus_spec_3.34.md`. It returns to 2 (`Normal`) when the mode ends.
+- **Run mode 20.** While a VPP mode runs, input 0x0009 `RunMode` reads 20, a value missing in SolaX's
+  run mode table (`InverterState.Mode.RemoteControl`). It returns to 2 (`Normal`) when the mode ends.
 - **Status registers.** Input 0x0100 shows the running mode of the new protocol (8, 4, 7 seen) and 0
   afterwards. It and the run mode follow the battery with a delay of up to about 13 s, at the start and
   at the end. 0x011E `RemoteCtrlTimeOut` holds the last commanded duration and does not count down.

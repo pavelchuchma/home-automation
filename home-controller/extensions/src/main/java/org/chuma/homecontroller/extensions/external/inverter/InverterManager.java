@@ -232,14 +232,14 @@ public class InverterManager {
         // Turn inverter off on negative import price
         if (turnOffOnNegativePrice) {
             if (currentPrice.price() < 0) {
-                if (state.getMode() == InverterState.Mode.Normal) {
+                if (state.getMode().isRunning()) {
                     client.setInverterOn(false);
                 }
             } else {
                 if (state.getMode() == InverterState.Mode.Waiting) {
                     log.info("turning on inverter");
                 }
-                if (state.getMode() != InverterState.Mode.Normal) {
+                if (!state.getMode().isRunning()) {
                     client.setInverterOn(true);
                 }
             }

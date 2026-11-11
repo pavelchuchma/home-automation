@@ -31,6 +31,7 @@ public class InverterMetrics implements MetricSource {
                     .field("mode", s.getMode())
                     .field("battery_mode", s.getBatteryMode())
                     .field("manual_mode", s.getManualMode())
+                    .field("vpp_mode", s.getVppMode())
                     .field("pgrid_bias", s.getPgridBias())
                     .field("pv1_w", s.getPv1Power())
                     .field("pv2_w", s.getPv2Power())

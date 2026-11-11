@@ -329,6 +329,7 @@ public class SolaxVppExperimentTest extends AbstractSolaxInverterTestBase {
         log.info("run mode {}, work mode {}, manual mode {}, SoC {} %, min SoC {} %, export limit {} W",
                 runMode(state), state.getBatteryMode(), state.getManualMode(), state.getBatterySoc(),
                 state.getSelfUseMinimalSoc(), state.getExportControlUserLimit());
+        log.info("VPP supported: {}, VPP mode polled by the client: {}", inverter.isVppSupported(), state.getVppMode());
         log.info("input   0x0054 LockState (0 locked, 1 unlocked): {}", hex(read(true, 0x0054, 0x0054)));
         log.info("holding 0x00B4 VPPExitIdleEn: {}", hex(read(false, 0x00B4, 0x00B4)));
         meterSettingsBefore = read(false, METER_SETTINGS_START, METER_SETTINGS_END);
@@ -417,11 +418,8 @@ public class SolaxVppExperimentTest extends AbstractSolaxInverterTestBase {
      * Run mode name, or the raw register value for a mode missing in {@link InverterState.Mode}.
      */
     private String runMode(InverterState state) {
-        try {
-            return state.getMode().name();
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return "#" + hex(read(true, 0x0009, 0x0009));
-        }
+        InverterState.Mode mode = state.getMode();
+        return mode == InverterState.Mode.Unknown ? "#" + hex(read(true, 0x0009, 0x0009)) : mode.name();
     }
 
     /**

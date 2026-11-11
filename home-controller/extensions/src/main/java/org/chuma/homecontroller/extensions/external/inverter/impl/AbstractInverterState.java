@@ -19,6 +19,7 @@ public abstract class AbstractInverterState implements InverterState {
                 "\n  mode=" + getMode() +
                 "\n  batteryMode=" + getBatteryMode() +
                 "\n  manualMode=" + getManualMode() +
+                "\n  vppMode=" + getVppMode() +
                 "\n  grid1Voltage=" + getGrid1Voltage() +
                 "\n  grid2Voltage=" + getGrid2Voltage() +
                 "\n  grid3Voltage=" + getGrid3Voltage() +

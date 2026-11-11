@@ -133,16 +133,21 @@ for the rest of the duration, which at 5.9 kW and 180 s is up to about 0.3 kWh (
   LSB word first), unit tested against SolaX's own example
   `0008 0001 0000 0000 EC78 FFFF 0708 00A0`. A recording client as in `InverterHandlerTest` overrides the
   setter itself and cannot check the layout.
-- Firmware gate: the VPP methods refuse to write when the ARM version is below 1.45 (holding 0x0080 /
-  0x0083, already read for `getVersion()`).
-- Status: input register 0x0100 is added to the polled ranges and exposed as `getVppMode()`. It shows
-  the modes of the new protocol, but up to about 13 s behind the battery (experiment), so it serves the
-  status display and the startup cleanup, not as a confirmation of a command just sent.
-- Run mode: while a VPP mode runs, input 0x0009 reads 20, which `InverterState.Mode` does not have, so
-  `getMode()` throws. That breaks the monitor, the metrics and the inverter dialog for as long as the
-  mode runs. `Mode` gets a value for it and `getMode()` maps the register by code instead of indexing
-  `Mode.values()`, with a fallback for unknown codes. `doPowerManagement` compares the mode with `Normal`
-  and `Waiting` and must take the new value as a running inverter.
+- Firmware gate: the application also runs in a deployment with an older inverter, where VPP need not
+  work but must fail the same way every time. `vppPvBattery` and `vppDisable` throw
+  `UnsupportedOperationException` before any write when the ARM version is below 1.45 (holding 0x0080 /
+  0x0083), and `isVppSupported()` lets the manager ask first. The version is the X3-Hybrid-G4
+  requirement; other models are not told apart.
+- Status: input register 0x0100 is exposed as `getVppMode()`. It shows the modes of the new protocol,
+  but up to about 13 s behind the battery (experiment), so it serves the status display and the startup
+  cleanup, not as a confirmation of a command just sent. An inverter without VPP may reject the read and
+  with it the whole poll, so the register is polled only where `isVppSupported()` holds; elsewhere
+  `getVppMode()` is 0.
+- Run mode: while a VPP mode runs, input 0x0009 reads 20. `getMode()` used to index `Mode.values()` and
+  threw on it, which broke the monitor, the metrics and the inverter dialog for as long as the mode ran.
+  It now maps the register by code: 20 is `Mode.RemoteControl`, any other unlisted code is
+  `Mode.Unknown` with one warning in the log. `doPowerManagement` takes `RemoteControl` as a running
+  inverter (`Mode.isRunning()`).
 - No unlock (0x0000 = password): the inverter reports unlocked (input 0x0054 = 1) and takes the blocks
   without it.
 
@@ -187,12 +192,14 @@ is the failsafe: an app crash or a lost Modbus connection ends the mode within o
 
 ### Metrics and status
 
-Report the owner as `battery_owner` (string) and the commanded VPP mode as `vpp_mode` (int) in
-`home-inverter-manager`; `force_discharge` and `inverter_off_negative_price` stay as derived bools for
-the existing Grafana panels. Document in `doc/metrics.md`.
+The mode the inverter itself reports (0x0100) is already there: `vpp_mode` in `home-inverter`, a
+"VPP mode" row in the "Modes and decisions" panel of the `home-energy` dashboard, `vppMode` in the
+`InverterHandler` status, and in the UI an icon on the inverter item and a "Remote control" row in the
+dialog.
 
-The stored work mode stays SelfUse while a VPP mode runs, so the `InverterHandler` status gets the owner
-too and the inverter dialog shows it.
+Still to add: the owner as `battery_owner` (string) in `home-inverter-manager`, with `force_discharge`
+and `inverter_off_negative_price` kept as derived bools for the existing Grafana panels, and the owner
+in the `InverterHandler` status and the dialog. Document in `doc/metrics.md`.
 
 ## Experiment on the real inverter
 
@@ -246,9 +253,9 @@ re-issued within 10 minutes and always ended with mode 0.
 
 1. Experiment (above), results recorded in `doc/inverter/solax_vpp_protocol.md`. Night part done; the
    open rows remain.
-2. Client layer. Done: `ModbusClient.writeMultipleRegisterValues`, the mode 8 block builder with its
-   layout test (`SolaxVppBlockTest`), `vppPvBattery` and `vppDisable`. Remaining: the firmware gate,
-   `getVppMode()` and the run mode 20.
+2. Client layer: `ModbusClient.writeMultipleRegisterValues`, the mode 8 block builder with its layout
+   test (`SolaxVppBlockTest`), `vppPvBattery` and `vppDisable` with the firmware gate, `getVppMode()`
+   and the run mode 20, shown in the metrics, Grafana and the UI. Done.
 3. Owner enum in `InverterManager`; force discharge on mode 8 with the SoC floor; leftovers of the old
    control; startup cleanup of a running VPP mode; tests.
 4. Negative price on mode 8 in a one-minute task, with the old turn-off kept behind an option until the

@@ -1675,6 +1675,88 @@
           {
             "matcher": {
               "id": "byFrameRefID",
+              "options": "I"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "VPP mode"
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "0": {
+                        "color": "transparent",
+                        "index": 0,
+                        "text": "off"
+                      },
+                      "1": {
+                        "color": "purple",
+                        "index": 1,
+                        "text": "Power control"
+                      },
+                      "11": {
+                        "color": "purple",
+                        "index": 10,
+                        "text": "Max input"
+                      },
+                      "12": {
+                        "color": "purple",
+                        "index": 11,
+                        "text": "Max output"
+                      },
+                      "2": {
+                        "color": "purple",
+                        "index": 2,
+                        "text": "Energy target"
+                      },
+                      "3": {
+                        "color": "purple",
+                        "index": 3,
+                        "text": "SoC target"
+                      },
+                      "4": {
+                        "color": "purple",
+                        "index": 4,
+                        "text": "Push power"
+                      },
+                      "5": {
+                        "color": "purple",
+                        "index": 5,
+                        "text": "Battery idle"
+                      },
+                      "6": {
+                        "color": "purple",
+                        "index": 6,
+                        "text": "Self-consume"
+                      },
+                      "7": {
+                        "color": "purple",
+                        "index": 7,
+                        "text": "Charge only"
+                      },
+                      "8": {
+                        "color": "purple",
+                        "index": 8,
+                        "text": "PV and battery"
+                      },
+                      "9": {
+                        "color": "purple",
+                        "index": 9,
+                        "text": "PV and battery to SoC"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
               "options": "D"
             },
             "properties": [
@@ -1787,6 +1869,14 @@
           },
           "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"manual_mode\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: true)",
           "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "P951FEA4DE68E13C5"
+          },
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"vpp_mode\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: true)",
+          "refId": "I"
         },
         {
           "datasource": {

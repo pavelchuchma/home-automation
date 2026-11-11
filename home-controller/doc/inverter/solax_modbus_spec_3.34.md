@@ -1530,6 +1530,7 @@ Notes from PDF (V3.34):
 | 8 | Self Testing |
 | 9 | Idle |
 | 10 | Standby |
+| 20 | A VPP (remote control) mode is running. Not in the SolaX document; observed on X3-Hybrid-G4, see `solax_vpp_protocol.md` |
 
 ### Inverter Error Codes (X3) — 32-bit bitmask
 

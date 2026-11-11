@@ -16,6 +16,12 @@ public interface InverterState {
     ManualMode getManualMode();
 
     /**
+     * Number of the running VPP (remote control) mode, see doc/inverter/solax_vpp_protocol.md;
+     * 0 when none runs or the inverter does not support VPP.
+     */
+    int getVppMode();
+
+    /**
      * Voltage on AC Power, phase 1
      */
     double getGrid1Voltage();
@@ -123,17 +129,50 @@ public interface InverterState {
     int getExportControlUserLimit();
 
     enum Mode {
-        Waiting,
-        Checking,
-        Normal,
-        Fault,
-        PermanentFault,
-        Updating,
-        EPSCheck,
-        EPSMode,
-        SelfTest,
-        Idle,
-        Standby
+        Waiting(0),
+        Checking(1),
+        Normal(2),
+        Fault(3),
+        PermanentFault(4),
+        Updating(5),
+        EPSCheck(6),
+        EPSMode(7),
+        SelfTest(8),
+        Idle(9),
+        Standby(10),
+        /**
+         * Running under a VPP (remote control) mode.
+         */
+        RemoteControl(20),
+        /**
+         * A run mode code this enum does not know.
+         */
+        Unknown(-1);
+
+        private final int code;
+
+        Mode(int code) {
+            this.code = code;
+        }
+
+        /**
+         * @param code value of the Solax RunMode register (read 0x0009)
+         */
+        public static Mode fromCode(int code) {
+            for (Mode mode : values()) {
+                if (mode.code == code) {
+                    return mode;
+                }
+            }
+            return Unknown;
+        }
+
+        /**
+         * The inverter is on the grid and converting power.
+         */
+        public boolean isRunning() {
+            return this == Normal || this == RemoteControl;
+        }
     }
 
     enum BatteryMode {

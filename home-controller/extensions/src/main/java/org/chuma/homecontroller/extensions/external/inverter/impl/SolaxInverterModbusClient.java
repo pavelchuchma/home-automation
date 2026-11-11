@@ -1,6 +1,8 @@
 package org.chuma.homecontroller.extensions.external.inverter.impl;
 
 import java.net.UnknownHostException;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -22,11 +24,28 @@ public class SolaxInverterModbusClient {
     private static final int VPP_SET_TYPE_RESET = 1;
     // after the duration leave VPP and return to the stored work mode
     private static final int VPP_NEXT_MOTION_EXIT = 0x00A0;
-    private final ModbusClient client;
+    private static final int VPP_STATUS_REGISTER = 0x0100;
+    private static final int VPP_STATUS_ATTEMPTS = 3;
+    private static final int ARM_VERSION_MAJOR_REGISTER = 0x0080;
+    private static final int ARM_VERSION_MINOR_REGISTER = 0x0083;
+    private final String host;
+    private final Set<Integer> reportedUnknownRunModes = ConcurrentHashMap.newKeySet();
+    private volatile ModbusClient client;
+    // the VPP status register is polled only once the firmware is known to have it
+    private volatile boolean vppStatusPolled;
+    private int vppStatusFailures;
 
     public SolaxInverterModbusClient(String host) throws UnknownHostException {
-        client = new ModbusClient(host, 502, true, 3000,
-                new int[][]{{0x0003, 0x0053}, {0x006A, 0x009B} /*, {0x0114, 0x0115}*/},
+        this.host = host;
+        client = createClient(false);
+    }
+
+    private ModbusClient createClient(boolean withVppStatus) throws UnknownHostException {
+        int[][] inputRanges = withVppStatus
+                ? new int[][]{{0x0003, 0x0053}, {0x006A, 0x009B}, {VPP_STATUS_REGISTER, VPP_STATUS_REGISTER}}
+                : new int[][]{{0x0003, 0x0053}, {0x006A, 0x009B}};
+        return new ModbusClient(host, 502, true, 3000,
+                inputRanges,
                 new int[][]{{0x007D, 0x0093}, {0x00B2, 0x00B6}},
                 new int[][]{{0x0000, 0x0006}}
         );
@@ -34,7 +53,55 @@ public class SolaxInverterModbusClient {
 
     public InverterState getState() {
         client.refreshData();
+        if (!vppStatusPolled) {
+            startVppStatusPolling();
+        }
         return new State();
+    }
+
+    /**
+     * Adds the VPP status register to the polled ones. An inverter without VPP may reject the whole read,
+     * so it is added only for a firmware that has VPP and dropped again when the read keeps failing.
+     */
+    private synchronized void startVppStatusPolling() {
+        if (vppStatusPolled || vppStatusFailures >= VPP_STATUS_ATTEMPTS || !isVppSupported()) {
+            return;
+        }
+        try {
+            ModbusClient extended = createClient(true);
+            extended.refreshData();
+            client = extended;
+            vppStatusPolled = true;
+        } catch (Exception e) {
+            vppStatusFailures++;
+            log.warn("Cannot read the VPP status register (attempt {} of {})", vppStatusFailures, VPP_STATUS_ATTEMPTS, e);
+        }
+    }
+
+    /**
+     * Whether the firmware has the VPP protocol at 0x00A0: ARM 1.45 or newer, the requirement of
+     * X3-Hybrid-G4. Other models are not told apart.
+     */
+    public synchronized boolean isVppSupported() {
+        if (client.holding.getUnsignedInt(ARM_VERSION_MAJOR_REGISTER) == Integer.MIN_VALUE) {
+            client.refreshData();
+        }
+        return isVppFirmware(client.holding.getUnsignedInt(ARM_VERSION_MAJOR_REGISTER),
+                client.holding.getUnsignedInt(ARM_VERSION_MINOR_REGISTER));
+    }
+
+    static boolean isVppFirmware(int armMajor, int armMinor) {
+        return armMajor > 1 || (armMajor == 1 && armMinor >= 45);
+    }
+
+    private void requireVpp() {
+        if (!isVppSupported()) {
+            int major = client.holding.getUnsignedInt(ARM_VERSION_MAJOR_REGISTER);
+            String version = major == Integer.MIN_VALUE ? "unknown"
+                    : major + "." + client.holding.getUnsignedInt(ARM_VERSION_MINOR_REGISTER);
+            throw new UnsupportedOperationException(
+                    "The inverter does not support VPP control: it needs ARM firmware 1.45 or newer, this one has " + version);
+        }
     }
 
     /**
@@ -81,9 +148,12 @@ public class SolaxInverterModbusClient {
 
     /**
      * Ends a running VPP mode; the inverter returns to its stored work mode.
+     *
+     * @throws UnsupportedOperationException when the inverter firmware has no VPP
      */
     public synchronized void vppDisable() {
         log.info("vppDisable()");
+        requireVpp();
         client.writeMultipleRegisterValues(VPP_BLOCK_ADDRESS, new int[]{0});
     }
 
@@ -93,9 +163,11 @@ public class SolaxInverterModbusClient {
      * @param pvLimitW  PV power limit in W, 0 turns PV off
      * @param batteryW  battery power in W, positive discharges, negative charges
      * @param durationS seconds after which the inverter returns to its stored work mode
+     * @throws UnsupportedOperationException when the inverter firmware has no VPP
      */
     public synchronized void vppPvBattery(int pvLimitW, int batteryW, int durationS) {
         log.info("vppPvBattery(pvLimitW={}, batteryW={}, durationS={})", pvLimitW, batteryW, durationS);
+        requireVpp();
         client.writeMultipleRegisterValues(VPP_BLOCK_ADDRESS, buildVppPvBatteryBlock(pvLimitW, batteryW, durationS));
     }
 
@@ -137,7 +209,17 @@ public class SolaxInverterModbusClient {
 
         @Override
         public Mode getMode() {
-            return Mode.values()[client.input.getUnsignedInt(0x0009)];
+            int code = client.input.getUnsignedInt(0x0009);
+            Mode mode = Mode.fromCode(code);
+            if (mode == Mode.Unknown && reportedUnknownRunModes.add(code)) {
+                log.warn("Unknown inverter run mode {}", code);
+            }
+            return mode;
+        }
+
+        @Override
+        public int getVppMode() {
+            return vppStatusPolled ? client.input.getUnsignedInt(VPP_STATUS_REGISTER) : 0;
         }
 
         @Override
