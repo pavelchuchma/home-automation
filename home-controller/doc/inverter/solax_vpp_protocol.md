@@ -32,8 +32,8 @@ The new protocol needs at least this ARM firmware (DSP upgraded to the matching 
 | X3-ULTRA / X3-ULTRA-GLV | V20.06 |
 | X3-AELIO | V6.00 |
 
-The home inverter (X3-Hybrid-G4) runs ARM 1.54 / DSP 1.56 (SolaX Cloud "ARM IC" / "DSP IC", 2026-11),
-so the new protocol should be available.
+The home inverter (X3-Hybrid-G4) runs ARM 1.54 / DSP 1.56 (SolaX Cloud "ARM IC" / "DSP IC", 2026-11)
+and accepts the new protocol, see "Verified on the home inverter".
 
 Caution: in the single-register write map (FC 0x06) 0x007C is `PowerFactor_Curve_PfLockInPoint` ★ and
 0x00A0 is `MeterFunction` ★. Write the VPP blocks only with FC 0x10, never with
@@ -146,8 +146,8 @@ Modes 5, 6, 7 – Push Power Zero, Self-Consume Charge/Discharge, Self-Consume C
 | Reg | Variable | Type | Meaning |
 | --- | --- | --- | --- |
 | 0xA0 | VPPModeNum | U16 | 5 / 6 / 7 |
-| 0xA1 | ExecDuration | U16, s | per the tables; the examples write it to 0xA3, see below |
-| 0xA2 | NextMotion | U16 | per the tables; the examples write it to 0xA4 |
+| 0xA1 | ExecDuration | U16, s | verified for mode 7; SolaX's examples wrongly write it to 0xA3 |
+| 0xA2 | NextMotion | U16 | SolaX's examples wrongly write it to 0xA4 |
 
 Mode 7 example: PV 1000 W, load 3000 W → battery 0 W, inverter outputs 1000 W, 2000 W from the grid.
 
@@ -202,12 +202,59 @@ mode 6 after 10 minutes), whose reporter still used 0x007C.
 
 `solax_modbus_spec_3.34.md` lists the legacy block under "Remote Power Control (V3.33)" and the legacy
 status input registers at 0x0100–0x0121 (`ModbusPowerControl`, `TargetFinishFlag`, …). The article
-defines no status registers for the new protocol.
+defines no status registers for the new protocol; on the home inverter 0x0100 shows the new protocol's
+mode as well.
 
 ## Inconsistencies in the source
 
 - Modes 5, 6, 7: the register tables put `ExecDuration` at 0xA1 and `NextMotion` at 0xA2, but the
-  examples write them to 0xA3 and 0xA4 (the mode 4 offsets). Verify on the device which one is right.
+  examples write them to 0xA3 and 0xA4 (the mode 4 offsets). The tables are right: verified with mode 7
+  on the home inverter.
 - The mode 9 example writes `VPPModeNum = 0x0008` although it describes mode 9.
 - The mode 12 example writes `0x000B` (mode 11).
 - The mode 7 example's "exit mode" line names mode 6.
+
+## Verified on the home inverter
+
+X3-Hybrid-G4, ARM 1.54 / DSP 1.56, stored work mode SelfUse, run mode `Normal`, no PV (night of
+2026-11-11), battery 39–45 %, house load 0.5–1.3 kW. Measured with `SolaxVppExperimentTest`, which
+samples the inverter every 3–6 s, so the times below are that coarse.
+
+| Command | Block from 0x00A0 | Observed |
+| --- | --- | --- |
+| Mode 8, PV 10000 W, battery −2000 W, 120 s | `0008 0001 2710 0000 F830 FFFF 0078 00A0` | accepted; battery charging 1950–1990 W within 3 s, the grid covers it and the house load |
+| Mode 8, PV 30000 W (above the PV peak), battery −2000 W, 60 s | `0008 0001 7530 0000 F830 FFFF 003C 00A0` | accepted, same behavior |
+| Mode 8, PV 10000 W, battery +2000 W, 900 s | `0008 0001 2710 0000 07D0 0000 0384 00A0` | accepted; battery discharging 2070–2100 W, the surplus above the house load exported |
+| Mode 4, battery +2000 W, 120 s | `0004 07D0 0000 0078 00A0` | accepted; battery discharging 2035–2065 W, the surplus above the house load exported |
+| Mode 7, 60 s | `0007 003C 00A0` | accepted; battery 0 W, the house runs from the grid |
+| Mode 0 | `0000` | ends a running mode: the battery leaves its target within about 5 s. With no mode running it is accepted and changes nothing. |
+
+Findings:
+
+- **The duration is honored.** Modes 4, 7 and 8 ended by themselves 5–15 s after the commanded duration
+  and the inverter continued in the stored work mode (SelfUse discharging to the house) within about
+  10 s, without a `Checking` phase. `NextMotion` was 0x00A0 in all commands.
+- **A re-issued command restarts the duration.** The same mode 8 command sent every 60 s kept the mode
+  running; it ended about 125 s after the last one. The battery power did not dip at a re-issue.
+- **A VPP discharge ignores `SelfUse_Discharge_MinSoC`.** With the min SoC stored as 42 %, mode 8 kept
+  discharging at full power from 43 % down to 39 %, where the test ended it with mode 0. SelfUse then
+  stopped the battery at once and the inverter went `Idle`. The controller has to watch the lower SoC
+  limit itself.
+- **Stored settings are untouched.** Holding 0x008B / 0x008C (work mode, manual mode) and 0x0108–0x010D
+  (`MeterFunction`, meter IDs, directions, `ExternalInv`, which FC 0x06 writes at 0x00A0–0x00A7) did not
+  change. Whether the VPP registers themselves avoid EEPROM cannot be checked on the device.
+- **No unlock was needed:** input 0x0054 `LockState` read 1.
+- **Run mode 20.** While a VPP mode runs, input 0x0009 `RunMode` reads 20, a value missing in the run
+  mode table of `solax_modbus_spec_3.34.md`. It returns to 2 (`Normal`) when the mode ends.
+- **Status registers.** Input 0x0100 shows the running mode of the new protocol (8, 4, 7 seen) and 0
+  afterwards. It and the run mode follow the battery with a delay of up to about 13 s, at the start and
+  at the end. 0x011E `RemoteCtrlTimeOut` holds the last commanded duration and does not count down.
+  0x0101 `TargetFinishFlag`, 0x0114 `Charge_Discharg_Power` and 0x011A `Time_of_Duration` stayed 0.
+- **Modes 5–7 take three registers,** as in SolaX's tables: mode 7 with 60 at 0xA1 ended after about
+  75 s. An earlier run with 120 s proved nothing, because the mode 4 command before it had left 120 at
+  0xA3.
+- `VPPExitIdleEn` (holding 0x00B4) reads 0 (disabled).
+
+Not tested yet: mode 8 with PV running (`PvWTarget = 0`, PV not limited by a high target, the time PV
+takes to go down and to come back), whether `ExportControl_User_Limit` caps the export of a VPP
+discharge, charging at SoC 100 %, and a command sent while the inverter is `Idle`.

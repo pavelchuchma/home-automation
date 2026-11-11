@@ -2,7 +2,7 @@
 id: 006
 title: Drive the inverter's temporary battery modes through the VPP interface instead of EEPROM settings
 type: enhancement
-status: open
+status: in-progress
 priority: medium
 component: inverter
 created: 2026-11-11
@@ -34,7 +34,7 @@ mode runs.
 2. **Grid charging** (`005-battery-grid-charge-planner.md`) costs 4–6 EEPROM writes per plan night as
    designed. It will be reworked on top of this separately.
 3. **Failsafe.** Today an app crash leaves the inverter turned off or in Manual / ForceDischarge until the
-   app is back. A VPP mode with a duration ends by itself (to be confirmed, see the experiment).
+   app is back. A VPP mode with a duration ends by itself (confirmed by the experiment).
 4. **No grid check after a negative price window:** the inverter stays on instead of spending ~5.5 min in
    `Checking`.
 
@@ -77,6 +77,10 @@ The integration drives Gen4 inverters through the same interface
 - "On the Gen4, these actions are not stored in EEPROM, so they can be executed frequently." This is the
   only source for the RAM claim and it cannot be verified on the device.
 
+The experiment on the home inverter (below) confirmed the block layout, the status register and the
+re-sending, and showed that mode 4 works through 0x00A0 as well. It did not reproduce the duration issue:
+modes 4, 7 and 8 ended on time.
+
 ## Scope
 
 **Moved to VPP:**
@@ -85,17 +89,23 @@ The integration drives Gen4 inverters through the same interface
   not limited), `BatWTarget = +dischargePowerW` (positive is discharge), `NextMotion = 0xA0` (back to the
   stored work mode). The stored work mode stays SelfUse / FeedInPriority, so 0x001F is no longer written
   for force discharge and Manual mode is not used at all. Mode 4 (Push Power) is the natural mode for
-  this, but it is unproven through 0x00A0; using mode 8 for both features also means one block layout
+  this and works through 0x00A0 too (experiment), but mode 8 for both features means one block layout
   and one client method.
 - **Negative buy price → VPP mode 8** instead of turning the inverter off: `PvWTarget = 0`,
   `BatWTarget = −chargePowerW` while SoC < 100 %, otherwise 0. The house runs from the grid as today, the
   battery additionally charges from the grid while the buy price is negative, and the inverter stays on.
   0x001C is no longer written.
 
-The export during force discharge must not exceed `hardMaxExportPower`. If the experiment shows that a
-VPP mode ignores `ExportControl_User_Limit` (0x0042), the manager limits the battery target itself every
-minute: `BatWTarget = min(dischargePowerW, hardMaxExportPower − PV power)`. Ignoring the house load keeps
-it on the safe side.
+The export during force discharge must not exceed `hardMaxExportPower`. Whether a VPP mode obeys
+`ExportControl_User_Limit` (0x0042) is not measured yet. If it does not, the manager limits the battery
+target itself every minute: `BatWTarget = min(dischargePowerW, hardMaxExportPower − PV power)`. Ignoring
+the house load keeps it on the safe side.
+
+A VPP discharge does not stop at `SelfUse_Discharge_MinSoC` (experiment: with the min SoC at 42 % it ran
+at full power from 43 % to 39 %, until the test ended it). The only floor is `forceDischargeMinimalSoc`,
+which `shouldDischargeNow` evaluates every minute; `manageForceDischarge` must end the mode with VPP
+mode 0 as soon as the SoC is at or below it, whatever the prices say. After a crash the discharge goes on
+for the rest of the duration, which at 5.9 kW and 180 s is up to about 0.3 kWh (3 % SoC) below the floor.
 
 **Kept as stored settings** (no VPP equivalent or not worth it):
 
@@ -125,10 +135,16 @@ it on the safe side.
   setter itself and cannot check the layout.
 - Firmware gate: the VPP methods refuse to write when the ARM version is below 1.45 (holding 0x0080 /
   0x0083, already read for `getVersion()`).
-- Status: input register 0x0100 is added to the polled ranges and exposed as `getVppMode()`, if the
-  experiment confirms that it reflects the 0x00A0 modes.
-- Unlock (0x0000 = password) only if the experiment shows the inverter is locked (0x0054). Today's 0x06
-  writes work without it.
+- Status: input register 0x0100 is added to the polled ranges and exposed as `getVppMode()`. It shows
+  the modes of the new protocol, but up to about 13 s behind the battery (experiment), so it serves the
+  status display and the startup cleanup, not as a confirmation of a command just sent.
+- Run mode: while a VPP mode runs, input 0x0009 reads 20, which `InverterState.Mode` does not have, so
+  `getMode()` throws. That breaks the monitor, the metrics and the inverter dialog for as long as the
+  mode runs. `Mode` gets a value for it and `getMode()` maps the register by code instead of indexing
+  `Mode.values()`, with a fallback for unknown codes. `doPowerManagement` compares the mode with `Normal`
+  and `Waiting` and must take the new value as a running inverter.
+- No unlock (0x0000 = password): the inverter reports unlocked (input 0x0054 = 1) and takes the blocks
+  without it.
 
 ### Owner state in `InverterManager`
 
@@ -156,20 +172,18 @@ state (Stop, ForceCharge) the manager leaves the inverter alone and logs a warni
 
 ### Duration and refresh
 
-Every VPP command carries `ExecDuration`; when it runs out the inverter should return to the stored work
-mode by itself. That is the failsafe: an app crash or a lost Modbus connection ends the mode within one
-duration. Whether the firmware honors the duration in mode 8 is not certain (see the evidence above) and
-is settled by the experiment.
+Every VPP command carries `ExecDuration`; when it runs out the inverter returns to the stored work mode
+by itself (experiment: 5–15 s after the duration, straight into SelfUse without a `Checking` phase). That
+is the failsafe: an app crash or a lost Modbus connection ends the mode within one duration.
 
 - `manageForceDischarge` and the negative price check run every minute; while the decision holds they
   re-issue the command with a short duration (proposed 180 s), so a crash leaves at most three minutes
-  of an unmanaged VPP mode. The writes are RAM-only, so re-issuing every minute is fine.
+  of an unmanaged VPP mode. A re-issued command restarts the duration and the battery power does not dip
+  (experiment). The writes are RAM-only, so re-issuing every minute is fine.
 - Alternative: one command per block with the duration up to the block end. Fewer writes, but a crash
   leaves the mode running until then.
-- At startup, and whenever the owner is `NONE`, a non-zero 0x0100 is cleared with VPP mode 0.
-- If the duration turns out to be ignored, the mode is ended only by the explicit mode 0. A crash then
-  leaves the mode running until the restart clears it, which is no worse than today's stored settings,
-  but the failsafe motivation is gone and the startup cleanup above becomes mandatory.
+- At startup, and whenever the owner is `NONE`, a non-zero 0x0100 is cleared with VPP mode 0. Mode 0
+  ends a running mode within about 5 s and is harmless when none runs (experiment).
 
 ### Metrics and status
 
@@ -180,33 +194,30 @@ the existing Grafana panels. Document in `doc/metrics.md`.
 The stored work mode stays SelfUse while a VPP mode runs, so the `InverterHandler` status gets the owner
 too and the inverter dialog shows it.
 
-## Prerequisite: experiment on the real inverter
+## Experiment on the real inverter
 
-Run by the owner (HW-touching, not run automatically), as a one-off test like the 2026-11-08 one. The
-order matters: the first write must not be mode 0. A single 0 written to 0x00A0 is a valid
-`MeterFunction = 0` ★ in the FC 0x06 map, should the firmware not know the VPP block; the mode 8 block
-starts with 8, which is out of range there.
+Run by the owner with `SolaxVppExperimentTest` (HW-touching, never run automatically), one test method
+per step. The night part was done on 2026-11-11 from SelfUse / `Normal` without PV; the measured values
+are in `doc/inverter/solax_vpp_protocol.md`, section "Verified on the home inverter".
 
-1. Snapshot before any write: input 0x0054 (lock state) and 0x0100–0x0121 (legacy VPP status), holding
-   0x008B / 0x008C (work mode, manual mode) and 0x0108–0x010D (`MeterFunction`, meter IDs, directions,
-   `ExternalInv`: the read side of what FC 0x06 has at 0x00A0–0x00A7).
-2. Mode 8, `PvWTarget` = PV peak power, `BatWTarget = −2000` (charge), 120 s, `NextMotion = 0xA0`.
-   Accepted? Battery charging? 0x0100 = 8? Holding 0x0108–0x010D and 0x008B / 0x008C unchanged?
-3. Send nothing for the 120 s: does the mode end by itself, 0x0100 back to 0 and the stored work mode
-   active again? This is the failsafe.
-4. The same command re-issued every 60 s, three times: does the duration restart, any dip in the battery
-   power at the re-issue?
-5. Mode 0 while a mode runs: immediate return to the stored mode?
-6. Mode 8, `PvWTarget` = PV peak power, `BatWTarget = +2000` (discharge) at a SoC near
-   `SelfUse_Discharge_MinSoC`: does it stop at min SoC? Does `ExportControl_User_Limit` (0x0042) cap the
-   export? Is PV really not limited, and is a `PvWTarget` above the PV peak accepted?
-7. Mode 8, `PvWTarget = 0`, `BatWTarget = −2000`, by day: PV off, battery charging from the grid? How long
-   does PV take to go down and to come back afterwards? What happens at SoC 100 %?
-8. Optional: mode 4 through 0x00A0 (`BatWTarget = +2000`, 120 s). Accepted? If so it is an alternative
-   for force discharge.
-9. For 005, not needed here: mode 5 or 7 with a 120 s duration, which settles the register offsets of
-   modes 5–7 that SolaX's document contradicts (tables: duration 0xA1 / next motion 0xA2; examples:
-   0xA3 / 0xA4); and a charge command from `Idle` (`VPPExitIdleEn`, read 0x00B4 / write 0x00F4 ★).
+| Step | Question | Result |
+| --- | --- | --- |
+| 1 | Snapshot before any write | unlocked, `VPPExitIdleEn` disabled, status block 0x0100–0x0121 readable |
+| 2 | Mode 8 charge: accepted, battery charging, 0x0100 = 8, stored settings unchanged? | yes to all; the run mode reads 20 meanwhile |
+| 3 | Does the mode end by itself after the duration? | yes, 5–15 s after it |
+| 4 | Does a re-issued command restart the duration, does the battery power dip? | it restarts, no dip |
+| 5 | Mode 0 while a mode runs | back in the stored mode within about 5 s |
+| 6 | Mode 8 discharge: does it stop at min SoC? | **no**, it discharges below it |
+| 6 | Is a `PvWTarget` above the PV peak accepted? | yes (30 kW) |
+| 6 | Does `ExportControl_User_Limit` cap the export? | **open**; needs the export limit lowered below the discharge power |
+| 6 | Is PV really not limited by a high `PvWTarget`? | **open**; needs PV |
+| 7 | Mode 8 with `PvWTarget = 0` by day: PV off, battery charging from the grid, how fast PV goes down and comes back, what happens at SoC 100 % | **open**; needs PV |
+| 8 | Mode 4 through 0x00A0 | works |
+| 9 | For 005: register offsets of modes 5–7 | as in SolaX's tables (duration at 0xA1) |
+| 9 | For 005: a charge command while `Idle` | **open**; `VPPExitIdleEn` (read 0x00B4 / write 0x00F4 ★) is disabled |
+
+The open rows of step 6 decide whether the manager has to limit the battery target itself; step 7 comes
+before the negative price case is implemented.
 
 Firmware: ARM 1.54 / DSP 1.56 (SolaX Cloud "ARM IC" / "DSP IC"); the new 0x00A0 protocol needs ARM
 ≥ 1.45 on X3-Hybrid-G4.
@@ -224,18 +235,24 @@ re-issued within 10 minutes and always ended with mode 0.
   the configured fee against an invoice before enabling mode 8 charging; the current turn-off relies on
   the same assumption.
 - **Import limit:** mode 8 charging adds ~4.8 kW to the house load; check against the main breaker.
+- **Start from `Idle`:** not measured. Negative prices come with PV, so the inverter is `Normal` then,
+  but a force discharge in the evening starts from `Idle` whenever the stored min SoC is above the SoC
+  (as now, with the min SoC at 100 %). A Manual / ForceCharge write wakes the inverter (measured on
+  2026-11-08, see 005); a VPP command may not, with `VPPExitIdleEn` disabled.
 - **Deployments:** `PiPeConfigurator` has no export (`hardMaxExportPower = 0`) and no battery parameters
   for force discharge; the negative price behavior there must stay as it is or be configurable.
 
 ## Implementation steps
 
-1. Experiment (above), results recorded in `doc/inverter/solax_vpp_protocol.md`.
-2. `ModbusClient.writeMultipleRegisterValues`, the VPP block builder and the `SolaxInverterModbusClient`
-   VPP methods with the firmware gate; unit tests of the block layout.
-3. Owner enum in `InverterManager`; force discharge on mode 8; leftovers of the old control; startup
-   cleanup of a running VPP mode; tests.
+1. Experiment (above), results recorded in `doc/inverter/solax_vpp_protocol.md`. Night part done; the
+   open rows remain.
+2. Client layer. Done: `ModbusClient.writeMultipleRegisterValues`, the mode 8 block builder with its
+   layout test (`SolaxVppBlockTest`), `vppPvBattery` and `vppDisable`. Remaining: the firmware gate,
+   `getVppMode()` and the run mode 20.
+3. Owner enum in `InverterManager`; force discharge on mode 8 with the SoC floor; leftovers of the old
+   control; startup cleanup of a running VPP mode; tests.
 4. Negative price on mode 8 in a one-minute task, with the old turn-off kept behind an option until the
-   first real negative day is checked.
+   first real negative day is checked. Needs step 7 of the experiment first.
 5. Metrics, `InverterHandler` status and `doc/metrics.md`.
 6. Inverter documentation section on VPP ownership (new `doc/inverter.md` or similar), referenced from
    `CLAUDE.md`.

@@ -143,6 +143,25 @@ public class ModbusClient {
         doModbusCall(new WriteMultipleRegistersRequest(address, new Register[]{new SimpleRegister(value)}));
     }
 
+    /**
+     * Writes consecutive registers in one FC 0x10 request.
+     */
+    public void writeMultipleRegisterValues(int address, int[] values) {
+        if (log.isDebugEnabled()) {
+            StringBuilder hex = new StringBuilder();
+            for (int value : values) {
+                hex.append(String.format(" %04X", value));
+            }
+            log.debug("writing multiple registers: {}:{}", String.format("0x%04X", address), hex);
+        }
+        Register[] registers = new Register[values.length];
+        for (int i = 0; i < values.length; i++) {
+            Validate.inclusiveBetween(0, 0xFFFF, values[i]);
+            registers[i] = new SimpleRegister(values[i]);
+        }
+        doModbusCall(new WriteMultipleRegistersRequest(address, registers));
+    }
+
     public void writeSingleRegisterValue(int address, int value) {
         log.debug("writing single register: {}={}", String.format("0x%04X", address), value);
         doModbusCall(new WriteSingleRegisterRequest(address, new SimpleRegister(value)));

@@ -15,6 +15,13 @@ import org.chuma.homecontroller.extensions.external.utils.ModbusClient;
  */
 public class SolaxInverterModbusClient {
     protected static Logger log = LoggerFactory.getLogger(SolaxInverterModbusClient.class.getName());
+    // VPP blocks are written with FC 0x10 only; FC 0x06 has unrelated stored settings at this address
+    private static final int VPP_BLOCK_ADDRESS = 0x00A0;
+    private static final int VPP_MODE_PV_BATTERY = 8;
+    // a new command restarts the target instead of updating the running one
+    private static final int VPP_SET_TYPE_RESET = 1;
+    // after the duration leave VPP and return to the stored work mode
+    private static final int VPP_NEXT_MOTION_EXIT = 0x00A0;
     private final ModbusClient client;
 
     public SolaxInverterModbusClient(String host) throws UnknownHostException {
@@ -70,6 +77,42 @@ public class SolaxInverterModbusClient {
     public synchronized void setManualMode(InverterState.ManualMode value) {
         log.info("setManualMode({})", value);
         client.writeSingleRegisterValue(0x0020, value.ordinal());
+    }
+
+    /**
+     * Ends a running VPP mode; the inverter returns to its stored work mode.
+     */
+    public synchronized void vppDisable() {
+        log.info("vppDisable()");
+        client.writeMultipleRegisterValues(VPP_BLOCK_ADDRESS, new int[]{0});
+    }
+
+    /**
+     * Starts VPP mode 8 (PV and battery controlled individually), see doc/inverter/solax_vpp_protocol.md.
+     *
+     * @param pvLimitW  PV power limit in W, 0 turns PV off
+     * @param batteryW  battery power in W, positive discharges, negative charges
+     * @param durationS seconds after which the inverter returns to its stored work mode
+     */
+    public synchronized void vppPvBattery(int pvLimitW, int batteryW, int durationS) {
+        log.info("vppPvBattery(pvLimitW={}, batteryW={}, durationS={})", pvLimitW, batteryW, durationS);
+        client.writeMultipleRegisterValues(VPP_BLOCK_ADDRESS, buildVppPvBatteryBlock(pvLimitW, batteryW, durationS));
+    }
+
+    /**
+     * Registers of the VPP mode 8 block; 32-bit values have the low word first.
+     */
+    static int[] buildVppPvBatteryBlock(int pvLimitW, int batteryW, int durationS) {
+        Validate.isTrue(pvLimitW >= 0, "Negative PV limit: %d", pvLimitW);
+        Validate.inclusiveBetween(1, 0xFFFF, durationS);
+        return new int[]{
+                VPP_MODE_PV_BATTERY,
+                VPP_SET_TYPE_RESET,
+                pvLimitW & 0xFFFF, pvLimitW >>> 16,
+                batteryW & 0xFFFF, batteryW >>> 16,
+                durationS,
+                VPP_NEXT_MOTION_EXIT
+        };
     }
 
     public class State extends AbstractInverterState {
