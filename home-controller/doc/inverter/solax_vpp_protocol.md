@@ -218,7 +218,8 @@ mode as well.
 
 X3-Hybrid-G4, ARM 1.54 / DSP 1.56, stored work mode SelfUse, run mode `Normal`, no PV (night of
 2026-11-11), battery 39–45 %, house load 0.5–1.3 kW. Measured with `SolaxVppExperimentTest`, which
-samples the inverter every 3–6 s, so the times below are that coarse.
+samples the inverter every 3–6 s, so the times below are that coarse. The export limit was measured on
+2026-11-12 at 66–68 % with a house load of about 0.5 kW.
 
 | Command | Block from 0x00A0 | Observed |
 | --- | --- | --- |
@@ -240,6 +241,11 @@ Findings:
   discharging at full power from 43 % down to 39 %, where the test ended it with mode 0. SelfUse then
   stopped the battery at once and the inverter went `Idle`. The controller has to watch the lower SoC
   limit itself.
+- **`ExportControl_User_Limit` caps a VPP discharge.** Mode 8 with the battery at +4000 W and the limit
+  at 8500 W exported 3470 W. With the limit lowered to 1000 W while the mode ran, the feed-in was at the
+  limit 3–5 s after the write and stayed at 780–1050 W (mean 1000 W over a minute); the inverter did it
+  by lowering the battery power to about 1530 W. The mode itself kept running (0x0100 = 8). Measured
+  without PV and with a limit above 0 only.
 - **Stored settings are untouched.** Holding 0x008B / 0x008C (work mode, manual mode) and 0x0108–0x010D
   (`MeterFunction`, meter IDs, directions, `ExternalInv`, which FC 0x06 writes at 0x00A0–0x00A7) did not
   change. Whether the VPP registers themselves avoid EEPROM cannot be checked on the device.
@@ -256,5 +262,5 @@ Findings:
 - `VPPExitIdleEn` (holding 0x00B4) reads 0 (disabled).
 
 Not tested yet: mode 8 with PV running (`PvWTarget = 0`, PV not limited by a high target, the time PV
-takes to go down and to come back), whether `ExportControl_User_Limit` caps the export of a VPP
-discharge, charging at SoC 100 %, and a command sent while the inverter is `Idle`.
+takes to go down and to come back), whether the export limit also holds with PV running and at 0 W,
+charging at SoC 100 %, and a command sent while the inverter is `Idle`.

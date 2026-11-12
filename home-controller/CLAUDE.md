@@ -191,7 +191,8 @@ VPP mode:
   Pgrid bias `Grid` (`InverterHandler.applyAction`); the export limit register is never written there.
   The inverter dialog hides these settings (`needsExport` in `inverterItem.js`).
 - Every new feature that writes to the inverter must check `isExportAllowed()` and have a test for the
-  no-export case. Do not rely on the inverter's own export limit: it is not known to apply to VPP modes.
+  no-export case. Do not rely on the inverter's own export limit: in VPP modes it is
+  measured only for a battery discharge without PV and with a limit above 0.
 - The application does not correct the inverter's own settings there. It logs an error, once, when the
   stored export limit is not 0 or Pgrid bias is `Grid`.
 

@@ -101,6 +101,11 @@ The export during force discharge must not exceed `hardMaxExportPower`. Whether 
 target itself every minute: `BatWTarget = min(dischargePowerW, hardMaxExportPower − PV power)`. Ignoring
 the house load keeps it on the safe side.
 
+Measured 2026-11-12: the inverter does obey the limit in mode 8 (4 kW discharge, limit lowered from
+8.5 kW to 1 kW, feed-in at 1 kW within 3–5 s). The manager's own limit of the battery target is already
+implemented (step 3) and stays as a second guard: the measurement was without PV and with a limit
+above 0.
+
 A VPP discharge does not stop at `SelfUse_Discharge_MinSoC` (experiment: with the min SoC at 42 % it ran
 at full power from 43 % to 39 %, until the test ended it). The only floor is `forceDischargeMinimalSoc`,
 which `shouldDischargeNow` evaluates every minute; `manageForceDischarge` must end the mode with VPP
@@ -196,7 +201,8 @@ VPP mode ask for; `InverterManager.isExportAllowed()` is the single switch.
 
 - ✅ `VppBatteryControl` refuses every mode that can export, with the reason "export is not allowed in
   this deployment": a discharging battery, and any PV limit above 0, because mode 8 sends what the house
-  does not take to the grid and the export limit is not known to apply to it (open experiment row).
+  does not take to the grid. The export limit caps a battery discharge in mode 8 (measured 2026-11-12),
+  but it is not measured with PV running or at 0 W, so the refusal stays.
   Charging with PV off passes, which is what the negative price case and 005 need.
 - ✅ Force discharge was already tied to `hardMaxExportPower > 0`; the battery target
   `min(dischargePowerW, hardMaxExportPower − PV power)` is never positive there either.
@@ -261,15 +267,15 @@ are in `doc/inverter/solax_vpp_protocol.md`, section "Verified on the home inver
 | 5 | Mode 0 while a mode runs | back in the stored mode within about 5 s |
 | 6 | Mode 8 discharge: does it stop at min SoC? | **no**, it discharges below it |
 | 6 | Is a `PvWTarget` above the PV peak accepted? | yes (30 kW) |
-| 6 | Does `ExportControl_User_Limit` cap the export? | **open**; needs the export limit lowered below the discharge power |
+| 6 | Does `ExportControl_User_Limit` cap the export? | **yes** (2026-11-12, `testStep6ExportLimit`): 4 kW discharge, feed-in 3.47 kW → 1.0 kW within 3–5 s of the limit lowered to 1 kW, by a lower battery power. Without PV and with a limit above 0 only |
 | 6 | Is PV really not limited by a high `PvWTarget`? | **open**; needs PV |
 | 7 | Mode 8 with `PvWTarget = 0` by day: PV off, battery charging from the grid, how fast PV goes down and comes back, what happens at SoC 100 % | **open**; needs PV |
 | 8 | Mode 4 through 0x00A0 | works |
 | 9 | For 005: register offsets of modes 5–7 | as in SolaX's tables (duration at 0xA1) |
 | 9 | For 005: a charge command while `Idle` | **open**, not needed for force discharge; `VPPExitIdleEn` (read 0x00B4 / write 0x00F4 ★) is disabled |
 
-The open rows of step 6 decide whether the manager has to limit the battery target itself; step 7 comes
-before the negative price case is implemented.
+The export limit row of step 6 says the manager need not limit the battery target itself; it does so
+anyway, as a second guard. Step 7 comes before the negative price case is implemented.
 
 Firmware: ARM 1.54 / DSP 1.56 (SolaX Cloud "ARM IC" / "DSP IC"); the new 0x00A0 protocol needs ARM
 ≥ 1.45 on X3-Hybrid-G4.
@@ -333,9 +339,14 @@ Next:
   `InverterHandler` status and the inverter dialog (2026-11-12).
 - The day part of the experiment needs PV and the owner's permission for every run:
   `testStep7PvOffGridCharge` and `testStep6PvTargetAbovePeak`. Step 4 waits for it.
-- The export limit row of step 6 needs no PV and can run at night: lower the export limit below the
-  discharge power, discharge in mode 8 and watch the feed-in. It has no test method yet and costs two
-  stored writes of 0x0042.
+- ✅ The export limit row of step 6: `testStep6ExportLimit` run on 2026-11-12 at 22:50, result in the
+  experiment table and in `doc/inverter/solax_vpp_protocol.md`. The stored limit was read back as
+  8500 W afterwards. It discharges 4 kW in mode 8 with the stored limit untouched, lowers
+  the limit to 1 kW, compares the mean feed-in of the two phases and logs a `RESULT:` line. It costs two
+  stored writes of 0x0042 and about 0.25 kWh from the battery. The application rewrites 0x0042 at every
+  quarter of an hour, so the test starts only 30 s to 9 min after one, and it refuses to start outside
+  the `Normal` run mode, below SoC 30 % or with the stored limit below 4 kW. With a feed-in below 2 kW
+  in the first phase (house load too high) it ends before any stored write.
 
 Loose ends:
 

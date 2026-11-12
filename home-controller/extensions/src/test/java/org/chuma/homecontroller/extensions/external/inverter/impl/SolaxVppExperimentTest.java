@@ -1,6 +1,8 @@
 package org.chuma.homecontroller.extensions.external.inverter.impl;
 
+import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +40,18 @@ public class SolaxVppExperimentTest extends AbstractSolaxInverterTestBase {
      * SelfUse_Discharge_MinSoC left behind by step 6.
      */
     private static final int MIN_SOC_AFTER_STEP6 = 100;
+    private static final int EXPORT_TEST_BATTERY_W = 4000;
+    private static final int EXPORT_TEST_LIMIT_W = 1000;
+    /**
+     * Feed-in needed with the stored limit untouched, so that the lowered limit shows clearly.
+     */
+    private static final int EXPORT_TEST_MIN_REFERENCE_W = 2000;
+    private static final int EXPORT_TEST_TOLERANCE_W = 300;
+    private static final int EXPORT_TEST_MIN_SOC = 30;
+    /**
+     * The application rewrites the export limit at every quarter of an hour; the test needs this long without it.
+     */
+    private static final int EXPORT_TEST_QUIET_S = 360;
 
     private static final int VPP_BLOCK_ADDRESS = 0x00A0;
     private static final int NEXT_MOTION_EXIT = 0x00A0;
@@ -136,9 +150,7 @@ public class SolaxVppExperimentTest extends AbstractSolaxInverterTestBase {
     /**
      * Step 6: discharge 2 kW. Does the discharge stop at SelfUse_Discharge_MinSoC? To keep the run short it
      * WRITES that stored setting: SoC - 1 % before the run and {@link #MIN_SOC_AFTER_STEP6} after it. The run
-     * ends itself 2 % below the min SoC. The export cap shows only when ExportControl_User_Limit is below the
-     * discharge power minus the house load, so lower the limit beforehand; this test does not write it. By
-     * day the log also shows whether PV stays unlimited.
+     * ends itself 2 % below the min SoC. By day the log also shows whether PV stays unlimited.
      */
     public void testStep6DischargeToMinSoc() {
         int minSoc = inverter.getState().getBatterySoc() - 1;
@@ -163,6 +175,74 @@ public class SolaxVppExperimentTest extends AbstractSolaxInverterTestBase {
         } finally {
             log.info("WRITE SelfUse_Discharge_MinSoC = {} %", MIN_SOC_AFTER_STEP6);
             inverter.setSelfUseMinimalSoc(MIN_SOC_AFTER_STEP6);
+        }
+    }
+
+    /**
+     * Step 6, export limit: does ExportControl_User_Limit cap the export of a VPP discharge? Discharges
+     * {@link #EXPORT_TEST_BATTERY_W} with the stored limit untouched, then WRITES the limit down to
+     * {@link #EXPORT_TEST_LIMIT_W} and compares the feed-in. The stored limit is written twice (lowered and
+     * restored). Run it without PV.
+     */
+    public void testStep6ExportLimit() {
+        InverterState before = inverter.getState();
+        int storedLimitW = before.getExportControlUserLimit();
+        if (before.getMode() != InverterState.Mode.Normal) {
+            fail("Run mode is " + before.getMode() + ", not Normal");
+        }
+        if (storedLimitW < EXPORT_TEST_BATTERY_W) {
+            fail("Stored export limit " + storedLimitW + " W is below the discharge power, the reference phase"
+                    + " would be capped already");
+        }
+        if (before.getBatterySoc() < EXPORT_TEST_MIN_SOC) {
+            fail("SoC " + before.getBatterySoc() + " % is below " + EXPORT_TEST_MIN_SOC + " %");
+        }
+        LocalTime now = LocalTime.now();
+        int intoQuarterS = (now.getMinute() % 15) * 60 + now.getSecond();
+        if (intoQuarterS < 30 || intoQuarterS > 900 - EXPORT_TEST_QUIET_S) {
+            fail("The application rewrites the export limit at every quarter of an hour; start the test 30 s to "
+                    + (900 - EXPORT_TEST_QUIET_S) / 60 + " min after one");
+        }
+
+        boolean[] limitLowered = {false};
+        try {
+            run(() -> {
+                startPvBattery(PV_NO_LIMIT_W, EXPORT_TEST_BATTERY_W, 300);
+                observe(30, 2);
+                Mean reference = observeMean(60, 2);
+                log.info("{} reference with the limit {} W: {}", elapsed(), storedLimitW, reference);
+                if (reference.feedInW < EXPORT_TEST_MIN_REFERENCE_W) {
+                    log.warn("RESULT: none. The feed-in is below {} W (house load too high), the limit is not written",
+                            EXPORT_TEST_MIN_REFERENCE_W);
+                    return;
+                }
+
+                log.info("{} WRITE ExportControl_User_Limit = {} W", elapsed(), EXPORT_TEST_LIMIT_W);
+                limitLowered[0] = true;
+                inverter.setExportControlUserLimit(EXPORT_TEST_LIMIT_W);
+                observe(60, 2);
+                Mean limited = observeMean(60, 2);
+                log.info("{} with the limit {} W: {}", elapsed(), EXPORT_TEST_LIMIT_W, limited);
+
+                int limitNowW = inverter.getState().getExportControlUserLimit();
+                if (limitNowW != EXPORT_TEST_LIMIT_W) {
+                    log.warn("RESULT: invalid. The export limit reads {} W, not the {} W written",
+                            limitNowW, EXPORT_TEST_LIMIT_W);
+                } else if (limited.feedInW <= EXPORT_TEST_LIMIT_W + EXPORT_TEST_TOLERANCE_W) {
+                    log.info("RESULT: the export limit CAPS a VPP discharge, feed-in {} W -> {} W",
+                            reference.feedInW, limited.feedInW);
+                } else if (limited.feedInW >= reference.feedInW - EXPORT_TEST_TOLERANCE_W) {
+                    log.info("RESULT: the export limit does NOT cap a VPP discharge, feed-in {} W -> {} W",
+                            reference.feedInW, limited.feedInW);
+                } else {
+                    log.warn("RESULT: unclear, feed-in {} W -> {} W; compare the battery power and the samples",
+                            reference.feedInW, limited.feedInW);
+                }
+            });
+        } finally {
+            if (limitLowered[0]) {
+                restoreExportLimit(storedLimitW);
+            }
         }
     }
 
@@ -323,6 +403,26 @@ public class SolaxVppExperimentTest extends AbstractSolaxInverterTestBase {
         log.error("VPP MODE MAY STILL BE RUNNING, run testVppDisable");
     }
 
+    private void restoreExportLimit(int limitW) {
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            try {
+                log.info("{} WRITE ExportControl_User_Limit = {} W (restore)", elapsed(), limitW);
+                inverter.setExportControlUserLimit(limitW);
+                Utils.sleep(2000);
+                int limitNowW = inverter.getState().getExportControlUserLimit();
+                if (limitNowW == limitW) {
+                    log.info("{} export limit reads {} W again", elapsed(), limitNowW);
+                    return;
+                }
+                log.error("Export limit reads {} W after the restore, attempt {}", limitNowW, attempt);
+            } catch (RuntimeException e) {
+                log.error("Cannot restore the export limit, attempt {}", attempt, e);
+                Utils.sleep(2000);
+            }
+        }
+        log.error("EXPORT LIMIT NOT RESTORED, set ExportControl_User_Limit to {} W by hand", limitW);
+    }
+
     private void snapshot() {
         InverterState state = inverter.getState();
         log.info("version: {}", state.getVersion());
@@ -359,6 +459,27 @@ public class SolaxVppExperimentTest extends AbstractSolaxInverterTestBase {
      * Logs a sample every {@code intervalS} seconds, returns the last one (null when no read succeeded).
      */
     private Sample observe(int seconds, int intervalS) {
+        return observe(seconds, intervalS, sample -> {
+        });
+    }
+
+    /**
+     * Observes and returns the mean feed-in and battery power of the samples.
+     */
+    private Mean observeMean(int seconds, int intervalS) {
+        long[] sums = new long[3];
+        observe(seconds, intervalS, sample -> {
+            sums[0] += sample.feedInW;
+            sums[1] += sample.batteryW;
+            sums[2]++;
+        });
+        if (sums[2] == 0) {
+            throw new IllegalStateException("No sample read in " + seconds + " s");
+        }
+        return new Mean((int)(sums[0] / sums[2]), (int)(sums[1] / sums[2]));
+    }
+
+    private Sample observe(int seconds, int intervalS, Consumer<Sample> onSample) {
         Sample last = null;
         long end = System.currentTimeMillis() + seconds * 1000L;
         while (System.currentTimeMillis() < end) {
@@ -366,6 +487,7 @@ public class SolaxVppExperimentTest extends AbstractSolaxInverterTestBase {
                 last = sample();
                 log.info("{} {}", elapsed(), last);
                 trackVppMode(last);
+                onSample.accept(last);
             } catch (RuntimeException e) {
                 log.warn("{} sample failed: {}", elapsed(), e.toString());
             }
@@ -480,6 +602,17 @@ public class SolaxVppExperimentTest extends AbstractSolaxInverterTestBase {
             res.append(String.format("%04X ", value));
         }
         return res.toString().trim();
+    }
+
+    /**
+     * @param feedInW  positive exports
+     * @param batteryW positive charges
+     */
+    private record Mean(int feedInW, int batteryW) {
+        @Override
+        public String toString() {
+            return String.format("mean feedIn=%dW bat=%dW", feedInW, batteryW);
+        }
     }
 
     /**
