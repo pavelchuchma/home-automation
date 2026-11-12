@@ -44,8 +44,7 @@ public class InverterManager {
     private boolean forceDischargeEnabled;
     private double forceDischargeMinimalPrice = -1;
     private int forceDischargeMinimalSoc = -1;
-    /** True while we have switched the inverter into Manual/ForceDischarge ourselves. */
-    private volatile boolean forceDischargeActive = false;
+    private final VppBatteryControl vppBattery;
     private final IntervalScheduler highTariffScheduler = new IntervalScheduler(
             () -> applyMinBatterySoc(true),
             () -> applyMinBatterySoc(false)
@@ -58,6 +57,7 @@ public class InverterManager {
     public InverterManager(SolaxInverterModbusClient client, Options options, ElectricitySpotPriceMonitor priceMonitor,
                            int hardMaxExportPower, int batteryCapacityWh, int dischargePowerW) {
         this.client = client;
+        this.vppBattery = new VppBatteryControl(client);
         this.priceMonitor = priceMonitor;
         this.hardMaxExportPower = hardMaxExportPower;
         this.batteryCapacityWh = batteryCapacityWh;
@@ -123,7 +123,7 @@ public class InverterManager {
     }
 
     public boolean isForceDischargeActive() {
-        return forceDischargeActive;
+        return vppBattery.getOwner() == VppBatteryControl.Owner.FORCE_DISCHARGE;
     }
 
     public boolean isTurnOffOnNegativePrice() {
@@ -262,7 +262,7 @@ public class InverterManager {
         // Re-assert the export-priority battery mode every cycle. A write at the window boundary (e.g. 5:00)
         // can be ignored by the inverter while it is still powering up (right after setInverterOn at the start
         // of the export window), leaving it in SelfUse. This corrects it on the next run once the inverter is up.
-        // applyBatteryMode() is a no-op while force discharge is active or the export-priority timer is disabled.
+        // applyBatteryMode() is a no-op while a VPP mode holds the battery or the export-priority timer is disabled.
         applyBatteryMode(exportPriorityScheduler.isInInterval());
     }
 
@@ -296,8 +296,8 @@ public class InverterManager {
 
     void applyBatteryMode(boolean enteringExportPriority) {
         try {
-            if (forceDischargeActive) {
-                log.debug("applyBatteryMode skipped, force discharge active");
+            if (vppBattery.getOwner() != VppBatteryControl.Owner.NONE) {
+                log.debug("applyBatteryMode skipped, {} holds the battery", vppBattery.getOwner());
                 return;
             }
             if (!exportPriorityTimerEnabled) {
@@ -326,71 +326,80 @@ public class InverterManager {
     }
 
     /**
-     * Periodically (every minute) decides whether the battery should be force-discharged to the grid
-     * during the current price segment. While active the inverter is switched to Manual/ForceDischarge;
-     * once it should stop (segment no longer among the highest-price ones, SoC floor reached, or feature
-     * disabled) control is returned to the {@link #exportPriorityScheduler}.
+     * Every minute decides whether the battery should be force-discharged to the grid during the current price
+     * segment. The discharge runs as a VPP mode that is re-issued here while it should go on; once it should
+     * stop (segment no longer among the highest-price ones, SoC floor reached, feature disabled, or no prices)
+     * the mode is ended and control returns to the {@link #exportPriorityScheduler}.
      */
     void manageForceDischarge() {
         try {
+            InverterState state = client.getState();
+            if (state == null) {
+                log.warn("manageForceDischarge: failed to get inverter state");
+                return;
+            }
             // Force discharge feeds energy to the grid, so it must never run when disabled or not allowed
             // in this deployment (no export, or missing battery parameters).
-            if (!forceDischargeEnabled || !isForceDischargeAllowed()) {
-                stopForceDischarge();
+            boolean enabled = forceDischargeEnabled && isForceDischargeAllowed();
+            if (enabled && leaveStoredForceDischarge(state)) {
                 return;
             }
-            InverterState state = client.getState();
-            ElectricitySpotPriceMonitor.Prices dayPrices = priceMonitor.getDayPrices();
-            if (state == null || dayPrices == null) {
-                log.warn("manageForceDischarge: failed to get inverter state or day prices");
-                return;
+            vppBattery.clearLeftoverOnce(state);
+
+            int batteryW = 0;
+            if (enabled) {
+                ElectricitySpotPriceMonitor.Prices dayPrices = priceMonitor.getDayPrices();
+                if (dayPrices == null) {
+                    log.warn("manageForceDischarge: failed to get day prices");
+                } else if (shouldDischargeNow(dayPrices.prices(), System.currentTimeMillis(),
+                        state.getBatterySoc(), forceDischargeMinimalSoc, forceDischargeMinimalPrice,
+                        batteryCapacityWh, dischargePowerW)) {
+                    batteryW = getForceDischargeBatteryW(dischargePowerW, hardMaxExportPower,
+                            state.getPv1Power() + state.getPv2Power());
+                }
+                log.debug("manageForceDischarge: soc={}, minimalSoc={}, minimalPrice={} -> battery {} W",
+                        state.getBatterySoc(), forceDischargeMinimalSoc, forceDischargeMinimalPrice, batteryW);
             }
-            // Adopt a Manual/ForceDischarge state left by a previous run (e.g. after a restart during discharge)
-            // so stopForceDischarge() below can tear it down correctly instead of leaving the battery
-            // discharging to the grid unmanaged (stopForceDischarge() is a no-op while the flag is false).
-            if (state.getBatteryMode() == InverterState.BatteryMode.Manual
-                    && state.getManualMode() == InverterState.ManualMode.ForceDischarge) {
-                forceDischargeActive = true;
-            }
-            boolean discharge = shouldDischargeNow(dayPrices.prices(), System.currentTimeMillis(),
-                    state.getBatterySoc(), forceDischargeMinimalSoc, forceDischargeMinimalPrice,
-                    batteryCapacityWh, dischargePowerW);
-            log.debug("manageForceDischarge: soc={}, minimalSoc={}, minimalPrice={} -> discharge={}",
-                    state.getBatterySoc(), forceDischargeMinimalSoc, forceDischargeMinimalPrice, discharge);
-            if (discharge) {
-                startForceDischarge(state);
+            boolean wasActive = isForceDischargeActive();
+            if (batteryW > 0) {
+                vppBattery.hold(VppBatteryControl.Owner.FORCE_DISCHARGE, state, VppBatteryControl.PV_UNLIMITED_W,
+                        batteryW);
             } else {
-                stopForceDischarge();
+                vppBattery.release(VppBatteryControl.Owner.FORCE_DISCHARGE);
+            }
+            if (wasActive && !isForceDischargeActive()) {
+                // applyBatteryMode() was suppressed while the battery was held
+                exportPriorityScheduler.applyCallback();
             }
         } catch (Exception e) {
             log.error("manageForceDischarge failed", e);
         }
     }
 
-    private void startForceDischarge(InverterState state) {
-        if (state.getBatteryMode() != InverterState.BatteryMode.Manual) {
-            log.info("Force discharge: setting BatteryMode to Manual");
-            client.setBatteryMode(InverterState.BatteryMode.Manual);
+    /**
+     * Switches a stored Manual / ForceDischarge back to SelfUse. Force discharge used to run that way, so the
+     * state can be left by a previous version of the application; a VPP mode cannot start from it.
+     *
+     * @return whether the stored work mode was changed
+     */
+    private boolean leaveStoredForceDischarge(InverterState state) {
+        if (state.getBatteryMode() != InverterState.BatteryMode.Manual
+                || state.getManualMode() != InverterState.ManualMode.ForceDischarge) {
+            return false;
         }
-        if (state.getManualMode() != InverterState.ManualMode.ForceDischarge) {
-            log.info("Force discharge: setting ManualMode to ForceDischarge");
-            client.setManualMode(InverterState.ManualMode.ForceDischarge);
-        }
-        forceDischargeActive = true;
+        log.info("Force discharge: leaving the stored Manual / ForceDischarge mode");
+        client.setBatteryMode(InverterState.BatteryMode.SelfUse);
+        // overrides SelfUse with FeedInPriority when an export-priority window is active
+        exportPriorityScheduler.applyCallback();
+        return true;
     }
 
-    private void stopForceDischarge() {
-        if (!forceDischargeActive) {
-            return;
-        }
-        log.info("Force discharge: stopping, returning control to export priority scheduler");
-        // Clear the flag first so applyBatteryMode() is no longer suppressed.
-        forceDischargeActive = false;
-        // Leave Manual mode back to the normal self-use baseline; applyCallback() below overrides it
-        // with FeedInPriority when an export-priority window is currently active (it is a no-op when the
-        // export-priority timer is disabled, hence the explicit SelfUse here).
-        client.setBatteryMode(InverterState.BatteryMode.SelfUse);
-        exportPriorityScheduler.applyCallback();
+    /**
+     * Battery discharge power that keeps the export within the allowed one. PV counts in full and the house
+     * load is ignored, which errs on the low side. Not positive when PV alone fills the allowance.
+     */
+    static int getForceDischargeBatteryW(int dischargePowerW, int hardMaxExportPower, int pvPowerW) {
+        return Math.min(dischargePowerW, hardMaxExportPower - pvPowerW);
     }
 
     /**

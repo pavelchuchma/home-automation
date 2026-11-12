@@ -152,7 +152,7 @@ public class SolaxInverterModbusClient {
      * @throws UnsupportedOperationException when the inverter firmware has no VPP
      */
     public synchronized void vppDisable() {
-        log.info("vppDisable()");
+        log.debug("vppDisable()");
         requireVpp();
         client.writeMultipleRegisterValues(VPP_BLOCK_ADDRESS, new int[]{0});
     }
@@ -166,7 +166,7 @@ public class SolaxInverterModbusClient {
      * @throws UnsupportedOperationException when the inverter firmware has no VPP
      */
     public synchronized void vppPvBattery(int pvLimitW, int batteryW, int durationS) {
-        log.info("vppPvBattery(pvLimitW={}, batteryW={}, durationS={})", pvLimitW, batteryW, durationS);
+        log.debug("vppPvBattery(pvLimitW={}, batteryW={}, durationS={})", pvLimitW, batteryW, durationS);
         requireVpp();
         client.writeMultipleRegisterValues(VPP_BLOCK_ADDRESS, buildVppPvBatteryBlock(pvLimitW, batteryW, durationS));
     }

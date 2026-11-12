@@ -153,7 +153,8 @@ for the rest of the duration, which at 5.9 kW and 180 s is up to about 0.3 kWh (
 
 ### Owner state in `InverterManager`
 
-`forceDischargeActive` becomes an owner enum, e.g. `NONE / FORCE_DISCHARGE / NEGATIVE_PRICE` (005 adds
+`forceDischargeActive` became an owner enum in `VppBatteryControl`, which sends the VPP commands for the
+manager: `NONE / FORCE_DISCHARGE` so far, `NEGATIVE_PRICE` comes with the negative price case (005 adds
 `GRID_CHARGE`). While an owner holds the battery:
 
 - `applyBatteryMode` (export priority) is skipped, as it is for force discharge today;
@@ -167,13 +168,25 @@ The negative price check moves from the 15-minute `doPowerManagement` to a one-m
 ### Leftovers of the old control
 
 The new code no longer writes 0x001C or 0x001F for these features, so a state left by the old version
-(deployment or restart in the middle of a window) would stay forever. Independent of any option:
+(deployment or restart in the middle of a window) would stay forever:
 
-- stored Manual / ForceDischarge is still adopted and switched back to SelfUse, as today;
+- stored Manual / ForceDischarge is switched back to SelfUse while force discharge is enabled and
+  allowed, the same condition under which the old code adopted it. Without that condition a Manual /
+  ForceDischarge set by hand would be reverted within a minute, also in a deployment that never used
+  the feature;
 - `setInverterOn(true)` is still written when the inverter is `Waiting` outside a negative price window.
 
-A VPP mode must not be started from the Manual work mode (protocol rule). With any other stored Manual
-state (Stop, ForceCharge) the manager leaves the inverter alone and logs a warning.
+A VPP mode is not started when the inverter cannot take it, and a mode the owner had running is ended.
+This is a refusal, not an exception: the check runs every minute and a sleeping inverter is an expected
+state. The reason is logged as a warning with the SoC and the stored min SoC, once until it changes or
+the owner stops wanting the battery, so every discharge block reports it again.
+`VppBatteryControl.getRefusal(owner)` keeps it for the status in step 5. The reasons:
+
+- the stored work mode is Manual (protocol rule), whatever the manual mode;
+- the inverter is not running (`Idle`, `Waiting`, a fault). It is not woken from `Idle`, see the open
+  points;
+- the firmware has no VPP. Force discharge then never starts; it no longer falls back to Manual /
+  ForceDischarge.
 
 ### Duration and refresh
 
@@ -187,8 +200,10 @@ is the failsafe: an app crash or a lost Modbus connection ends the mode within o
   (experiment). The writes are RAM-only, so re-issuing every minute is fine.
 - Alternative: one command per block with the duration up to the block end. Fewer writes, but a crash
   leaves the mode running until then.
-- At startup, and whenever the owner is `NONE`, a non-zero 0x0100 is cleared with VPP mode 0. Mode 0
-  ends a running mode within about 5 s and is harmless when none runs (experiment).
+- At startup a non-zero 0x0100 is cleared with VPP mode 0, once, in the first minute. Mode 0 ends a
+  running mode within about 5 s and is harmless when none runs (experiment). Later a mode without an
+  owner is left alone: it ends by its own duration, and clearing it every minute would also end the
+  modes of `SolaxVppExperimentTest`.
 
 ### Metrics and status
 
@@ -221,7 +236,7 @@ are in `doc/inverter/solax_vpp_protocol.md`, section "Verified on the home inver
 | 7 | Mode 8 with `PvWTarget = 0` by day: PV off, battery charging from the grid, how fast PV goes down and comes back, what happens at SoC 100 % | **open**; needs PV |
 | 8 | Mode 4 through 0x00A0 | works |
 | 9 | For 005: register offsets of modes 5–7 | as in SolaX's tables (duration at 0xA1) |
-| 9 | For 005: a charge command while `Idle` | **open**; `VPPExitIdleEn` (read 0x00B4 / write 0x00F4 ★) is disabled |
+| 9 | For 005: a charge command while `Idle` | **open**, not needed for force discharge; `VPPExitIdleEn` (read 0x00B4 / write 0x00F4 ★) is disabled |
 
 The open rows of step 6 decide whether the manager has to limit the battery target itself; step 7 comes
 before the negative price case is implemented.
@@ -242,10 +257,14 @@ re-issued within 10 minutes and always ended with mode 0.
   the configured fee against an invoice before enabling mode 8 charging; the current turn-off relies on
   the same assumption.
 - **Import limit:** mode 8 charging adds ~4.8 kW to the house load; check against the main breaker.
-- **Start from `Idle`:** not measured. Negative prices come with PV, so the inverter is `Normal` then,
-  but a force discharge in the evening starts from `Idle` whenever the stored min SoC is above the SoC
-  (as now, with the min SoC at 100 %). A Manual / ForceCharge write wakes the inverter (measured on
-  2026-11-08, see 005); a VPP command may not, with `VPPExitIdleEn` disabled.
+- **Start from `Idle`:** decided not to wake the inverter, and not measured. The inverter sleeps only
+  when the SoC is below the stored min SoC, and force discharge wants the SoC above
+  `forceDischargeMinimalSoc`, so both hold only with the stored min SoC above that floor: a min SoC set
+  to 100 % by hand, or the `HOLD` state of 005, which is planned for cheap hours. Force discharge is
+  refused then (see the leftovers section). If it is needed later: a Manual / ForceCharge write and a
+  lowered min SoC wake the inverter in about 5 minutes (see 005) at two stored writes per block; whether
+  a VPP command does, with `VPPExitIdleEn` (write 0x00F4 ★, now disabled) enabled or not, is the open
+  experiment row.
 - **Deployments:** `PiPeConfigurator` has no export (`hardMaxExportPower = 0`) and no battery parameters
   for force discharge; the negative price behavior there must stay as it is or be configurable.
 
@@ -256,8 +275,10 @@ re-issued within 10 minutes and always ended with mode 0.
 2. Client layer: `ModbusClient.writeMultipleRegisterValues`, the mode 8 block builder with its layout
    test (`SolaxVppBlockTest`), `vppPvBattery` and `vppDisable` with the firmware gate, `getVppMode()`
    and the run mode 20, shown in the metrics, Grafana and the UI. Done.
-3. Owner enum in `InverterManager`; force discharge on mode 8 with the SoC floor; leftovers of the old
-   control; startup cleanup of a running VPP mode; tests.
+3. Owner enum (`VppBatteryControl`); force discharge on mode 8 with the SoC floor and the battery target
+   limited to `hardMaxExportPower − PV power`; leftovers of the old control; startup cleanup of a running
+   VPP mode; tests (`VppBatteryControlTest`, `ForceDischargeTest`). Done, not yet run against the
+   inverter.
 4. Negative price on mode 8 in a one-minute task, with the old turn-off kept behind an option until the
    first real negative day is checked. Needs step 7 of the experiment first.
 5. Metrics, `InverterHandler` status and `doc/metrics.md`.

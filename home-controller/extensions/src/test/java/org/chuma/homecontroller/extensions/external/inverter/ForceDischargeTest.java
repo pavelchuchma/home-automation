@@ -93,4 +93,14 @@ public class ForceDischargeTest extends TestCase {
     public void testNullPrices() {
         assertFalse(InverterManager.shouldDischargeNow(null, at(18, 0), 50, 20, 1.0, CAPACITY_WH, DISCHARGE_W));
     }
+
+    public void testBatteryPowerLimitedByExportAllowance() {
+        // no PV: the full discharge power fits into the allowance
+        assertEquals(5900, InverterManager.getForceDischargeBatteryW(5900, 8500, 0));
+        // PV takes a part of the allowance
+        assertEquals(4500, InverterManager.getForceDischargeBatteryW(5900, 8500, 4000));
+        // PV alone fills it
+        assertEquals(0, InverterManager.getForceDischargeBatteryW(5900, 8500, 8500));
+        assertTrue(InverterManager.getForceDischargeBatteryW(5900, 8500, 9000) < 0);
+    }
 }
