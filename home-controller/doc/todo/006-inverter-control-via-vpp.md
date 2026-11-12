@@ -188,6 +188,32 @@ the owner stops wanting the battery, so every discharge block reports it again.
 - the firmware has no VPP. Force discharge then never starts; it no longer falls back to Manual /
   ForceDischarge.
 
+### Deployments without export
+
+Added 2026-11-12 after an audit of every write to the inverter. A deployment with
+`hardMaxExportPower = 0` (`PiPeConfigurator`) must never feed the grid, whatever the options, the UI or a
+VPP mode ask for; `InverterManager.isExportAllowed()` is the single switch.
+
+- ✅ `VppBatteryControl` refuses every mode that can export, with the reason "export is not allowed in
+  this deployment": a discharging battery, and any PV limit above 0, because mode 8 sends what the house
+  does not take to the grid and the export limit is not known to apply to it (open experiment row).
+  Charging with PV off passes, which is what the negative price case and 005 need.
+- ✅ Force discharge was already tied to `hardMaxExportPower > 0`; the battery target
+  `min(dischargePowerW, hardMaxExportPower − PV power)` is never positive there either.
+- ✅ The feed-in priority timer no longer writes the work mode there (`getTimerBatteryMode`). Before, the
+  option switched the inverter to FeedInPriority and only the inverter's own limit stood against export.
+- ✅ Pgrid bias `Grid` (feed-in held at ~+40 W) is rejected by the `InverterHandler` action there.
+- ✅ The inverter dialog hides the feed-in priority timer, force discharge and Pgrid bias where the status
+  says `exportAllowed` is false. The options stay editable on the Options page, without effect.
+- ✅ No active correction of the inverter's own settings (decided by the owner: changing them takes the
+  admin password, so it does not happen by accident). `doPowerManagement` logs an error, once until it
+  changes, when the stored export limit is not 0 or Pgrid bias is `Grid`.
+- The export limit register (0x0042) was and is written only where export is allowed.
+
+Not covered: what is set at the inverter itself, and how fast its zero-export regulation follows a load
+drop. The hardware tests (`SolaxVppExperimentTest`, `SolaxInverterModbusClientTest`) discharge to the grid
+and change the export limit; they must never be pointed at such an inverter.
+
 ### Duration and refresh
 
 Every VPP command carries `ExecDuration`; when it runs out the inverter returns to the stored work mode
@@ -270,7 +296,8 @@ re-issued within 10 minutes and always ended with mode 0.
   a VPP command does, with `VPPExitIdleEn` (write 0x00F4 ★, now disabled) enabled or not, is the open
   experiment row.
 - **Deployments:** `PiPeConfigurator` has no export (`hardMaxExportPower = 0`) and no battery parameters
-  for force discharge; the negative price behavior there must stay as it is or be configurable.
+  for force discharge; the negative price behavior there must stay as it is or be configurable. Export
+  itself is closed there, see "Deployments without export" (2026-11-12).
 
 ## Implementation steps
 
@@ -294,8 +321,9 @@ re-issued within 10 minutes and always ended with mode 0.
 
 ## Current state (2026-11-12)
 
-Steps 1 (night part), 2, 3 and 5 are committed on the branch `sunCalculator`, not pushed. The build and
-the hardware-free tests pass. Force discharge through VPP has not run on the inverter, and the feature is
+Steps 1 (night part), 2, 3 and 5 are committed on the branch `sunCalculator`, not pushed. The export
+guards for deployments without export ("Deployments without export") are done on top of them. The build
+and the hardware-free tests pass. Force discharge through VPP has not run on the inverter, and the feature is
 disabled in the configuration (`inverter.manager.force.discharge=false`), so deploying changes nothing
 by itself.
 
@@ -304,15 +332,18 @@ Next:
 - ✅ Step 5: `battery_owner` in `home-inverter-manager`, the owner and the refusal reason in the
   `InverterHandler` status and the inverter dialog (2026-11-12).
 - The day part of the experiment needs PV and the owner's permission for every run:
-  `testStep7PvOffGridCharge`, `testStep6PvTargetAbovePeak`, and the export limit row, which has no test
-  method yet. Step 4 waits for it.
+  `testStep7PvOffGridCharge` and `testStep6PvTargetAbovePeak`. Step 4 waits for it.
+- The export limit row of step 6 needs no PV and can run at night: lower the export limit below the
+  discharge power, discharge in mode 8 and watch the feed-in. It has no test method yet and costs two
+  stored writes of 0x0042.
 
 Loose ends:
 
 - `grafana/home-energy.json` has the "VPP mode" and "Battery owner" rows, but the dashboard is not
   pushed to Grafana (`script/grafana_dashboards.py push`).
 - The UI changes (icon on the inverter item, the "Remote control", "Battery held by" and
-  "<feature> cannot run" rows in the dialog) were not seen in a browser.
+  "<feature> cannot run" rows in the dialog, the settings hidden without export) were not seen in a
+  browser.
 - `SolaxInverterModbusClient.State.getBatteryMode()` and `getManualMode()` index the enum by the register
   value; a work mode code above 3 (PeakShaving, TOU) would throw. `getMode()` was fixed the same way in
   this work.

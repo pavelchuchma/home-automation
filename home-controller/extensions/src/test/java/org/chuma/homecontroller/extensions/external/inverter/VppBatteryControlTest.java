@@ -46,7 +46,7 @@ public class VppBatteryControlTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         client = new RecordingClient();
-        control = new VppBatteryControl(client);
+        control = new VppBatteryControl(client, true);
     }
 
     /**
@@ -155,6 +155,36 @@ public class VppBatteryControlTest extends TestCase {
 
         control.hold(Owner.FORCE_DISCHARGE, normal(), 30000, 5900);
         assertNull(control.getBatteryRefusal());
+    }
+
+    public void testNoExportRefusesDischarge() {
+        VppBatteryControl noExport = new VppBatteryControl(client, false);
+
+        assertFalse(noExport.hold(Owner.FORCE_DISCHARGE, normal(), 0, 5900));
+        assertFalse(noExport.hold(Owner.FORCE_DISCHARGE, normal(), 0, 1));
+
+        assertEquals(List.of(), client.commands);
+        assertEquals(Owner.NONE, noExport.getOwner());
+        assertEquals("export is not allowed in this deployment", noExport.getRefusal(Owner.FORCE_DISCHARGE));
+    }
+
+    public void testNoExportRefusesAnyPv() {
+        VppBatteryControl noExport = new VppBatteryControl(client, false);
+
+        // even with the battery charging, PV above the house load would go to the grid
+        assertFalse(noExport.hold(Owner.FORCE_DISCHARGE, normal(), 30000, -4800));
+        assertFalse(noExport.hold(Owner.FORCE_DISCHARGE, normal(), 1, 0));
+
+        assertEquals(List.of(), client.commands);
+    }
+
+    public void testNoExportAllowsChargingWithPvOff() {
+        VppBatteryControl noExport = new VppBatteryControl(client, false);
+
+        assertTrue(noExport.hold(Owner.FORCE_DISCHARGE, normal(), 0, -4800));
+        assertTrue(noExport.hold(Owner.FORCE_DISCHARGE, normal(), 0, 0));
+
+        assertEquals(List.of("pvBattery 0 -4800 180", "pvBattery 0 0 180"), client.commands);
     }
 
     public void testLeftoverModeIsEndedOnce() {

@@ -179,6 +179,22 @@ lives at different addresses for read vs write:
 Do not infer register addresses from commit messages, related code, or memory.
 Look them up in the spec's "Write" section.
 
+### Deployments without export
+
+A deployment built with `hardMaxExportPower = 0` (`PiPeConfigurator`) has no permission from the grid
+operator to feed the grid, and any export is fined. `InverterManager.isExportAllowed()` is the single
+switch. Where it is false, nothing in the application may start an export — no option, no UI action, no
+VPP mode:
+
+- Existing guards: the feed-in priority timer (`getTimerBatteryMode`), force discharge
+  (`isForceDischargeAllowed`), every VPP mode with PV or a discharging battery (`VppBatteryControl`),
+  Pgrid bias `Grid` (`InverterHandler.applyAction`); the export limit register is never written there.
+  The inverter dialog hides these settings (`needsExport` in `inverterItem.js`).
+- Every new feature that writes to the inverter must check `isExportAllowed()` and have a test for the
+  no-export case. Do not rely on the inverter's own export limit: it is not known to apply to VPP modes.
+- The application does not correct the inverter's own settings there. It logs an error, once, when the
+  stored export limit is not 0 or Pgrid bias is `Grid`.
+
 ## Repository hygiene
 
 - Do not edit anything in `out/` or `*/out/` folders — they are generated.

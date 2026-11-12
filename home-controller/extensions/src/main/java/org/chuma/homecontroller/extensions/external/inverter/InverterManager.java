@@ -45,6 +45,7 @@ public class InverterManager {
     private double forceDischargeMinimalPrice = -1;
     private int forceDischargeMinimalSoc = -1;
     private final VppBatteryControl vppBattery;
+    private String exportSettingsProblem;
     private final IntervalScheduler highTariffScheduler = new IntervalScheduler(
             () -> applyMinBatterySoc(true),
             () -> applyMinBatterySoc(false)
@@ -57,9 +58,9 @@ public class InverterManager {
     public InverterManager(SolaxInverterModbusClient client, Options options, ElectricitySpotPriceMonitor priceMonitor,
                            int hardMaxExportPower, int batteryCapacityWh, int dischargePowerW) {
         this.client = client;
-        this.vppBattery = new VppBatteryControl(client);
         this.priceMonitor = priceMonitor;
         this.hardMaxExportPower = hardMaxExportPower;
+        this.vppBattery = new VppBatteryControl(client, isExportAllowed());
         this.batteryCapacityWh = batteryCapacityWh;
         this.dischargePowerW = dischargePowerW;
 
@@ -120,6 +121,14 @@ public class InverterManager {
 
     public boolean isExportPriority() {
         return exportPriorityScheduler.isInInterval();
+    }
+
+    /**
+     * Whether this deployment may feed the grid at all. When it may not, nothing here may start an export:
+     * no feed-in priority, no battery discharge to the grid, no Pgrid bias towards the grid.
+     */
+    public boolean isExportAllowed() {
+        return hardMaxExportPower > 0;
     }
 
     public boolean isForceDischargeActive() {
@@ -196,6 +205,9 @@ public class InverterManager {
 
     public void setExportPriorityTimerEnabled(boolean enabled) {
         log.debug("setExportPriorityTimerEnabled({})", enabled);
+        if (enabled && !isExportAllowed()) {
+            log.warn("Export priority timer enabled but export is not allowed in this deployment; it will never activate");
+        }
         this.exportPriorityTimerEnabled = enabled;
     }
 
@@ -219,7 +231,7 @@ public class InverterManager {
      * are configured ({@code batteryCapacityWh > 0} and {@code dischargePowerW > 0}).
      */
     private boolean isForceDischargeAllowed() {
-        return hardMaxExportPower > 0 && batteryCapacityWh > 0 && dischargePowerW > 0;
+        return isExportAllowed() && batteryCapacityWh > 0 && dischargePowerW > 0;
     }
 
     public void setForceDischargeMinimalPrice(double price) {
@@ -265,7 +277,9 @@ public class InverterManager {
             }
         }
 
-        if (hardMaxExportPower > 0) {
+        if (!isExportAllowed()) {
+            reportExportSettings(state);
+        } else {
             // turn off export on negative export price
             double netSellPrice = netSellPrice(currentPrice);
             int maxExport = (netSellPrice > 0) ? hardMaxExportPower : 0;
@@ -284,6 +298,43 @@ public class InverterManager {
         // of the export window), leaving it in SelfUse. This corrects it on the next run once the inverter is up.
         // applyBatteryMode() is a no-op while a VPP mode holds the battery or the export-priority timer is disabled.
         applyBatteryMode(exportPriorityScheduler.isInInterval());
+    }
+
+    /**
+     * Logs an inverter setting that feeds the grid although export is not allowed. Nothing is written: such a
+     * setting was made on purpose at the inverter. Logged once, until it changes.
+     */
+    private void reportExportSettings(InverterState state) {
+        String problem = getExportSettingsProblem(state.getExportControlUserLimit(), state.getPgridBias());
+        if (problem != null && !problem.equals(exportSettingsProblem)) {
+            log.error("Export is not allowed in this deployment, but {}", problem);
+        }
+        exportSettingsProblem = problem;
+    }
+
+    /**
+     * Inverter settings that feed the grid; null when there are none.
+     */
+    static String getExportSettingsProblem(int exportLimitW, InverterState.PgridBias pgridBias) {
+        List<String> problems = new ArrayList<>();
+        if (exportLimitW != 0) {
+            problems.add("the inverter's export limit is " + exportLimitW + " W");
+        }
+        if (pgridBias == InverterState.PgridBias.Grid) {
+            problems.add("Pgrid bias is Grid");
+        }
+        return problems.isEmpty() ? null : String.join(" and ", problems);
+    }
+
+    /**
+     * Stored work mode the export priority timer wants; null when the timer must not touch it.
+     */
+    static InverterState.BatteryMode getTimerBatteryMode(boolean exportAllowed, boolean timerEnabled,
+                                                         boolean inExportPriority) {
+        if (!exportAllowed || !timerEnabled) {
+            return null;
+        }
+        return inExportPriority ? InverterState.BatteryMode.FeedInPriority : InverterState.BatteryMode.SelfUse;
     }
 
     void applyMinBatterySoc(boolean enteringHighTariff) {
@@ -320,13 +371,12 @@ public class InverterManager {
                 log.debug("applyBatteryMode skipped, {} holds the battery", vppBattery.getOwner());
                 return;
             }
-            if (!exportPriorityTimerEnabled) {
-                log.debug("applyBatteryMode skipped, export priority timer disabled");
+            InverterState.BatteryMode desired = getTimerBatteryMode(isExportAllowed(), exportPriorityTimerEnabled,
+                    enteringExportPriority);
+            if (desired == null) {
+                log.debug("applyBatteryMode skipped, export priority timer disabled or export not allowed");
                 return;
             }
-            InverterState.BatteryMode desired = enteringExportPriority
-                    ? InverterState.BatteryMode.FeedInPriority
-                    : InverterState.BatteryMode.SelfUse;
             InverterState.BatteryMode current = client.getState().getBatteryMode();
             if (current != desired) {
                 log.debug("setBatteryMode: {} -> {}", current, desired);

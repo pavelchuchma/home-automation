@@ -70,7 +70,7 @@ public class InverterHandlerTest {
     public void pgridBiasOn() throws Exception {
         RecordingClient client = new RecordingClient();
 
-        InverterHandler.applyAction(client, params("id", "inverter", "pgridBias", "true"));
+        InverterHandler.applyAction(client, true, params("id", "inverter", "pgridBias", "true"));
 
         Assert.assertEquals(List.of(InverterState.PgridBias.Grid), client.pgridBias);
     }
@@ -79,7 +79,26 @@ public class InverterHandlerTest {
     public void pgridBiasOff() throws Exception {
         RecordingClient client = new RecordingClient();
 
-        InverterHandler.applyAction(client, params("id", "inverter", "pgridBias", "false"));
+        InverterHandler.applyAction(client, true, params("id", "inverter", "pgridBias", "false"));
+
+        Assert.assertEquals(List.of(InverterState.PgridBias.Disable), client.pgridBias);
+    }
+
+    @Test
+    public void pgridBiasOnRejectedWithoutExport() throws Exception {
+        RecordingClient client = new RecordingClient();
+
+        Assert.assertThrows(IllegalStateException.class,
+                () -> InverterHandler.applyAction(client, false, params("id", "inverter", "pgridBias", "true")));
+
+        Assert.assertTrue(client.pgridBias.isEmpty());
+    }
+
+    @Test
+    public void pgridBiasOffWithoutExport() throws Exception {
+        RecordingClient client = new RecordingClient();
+
+        InverterHandler.applyAction(client, false, params("id", "inverter", "pgridBias", "false"));
 
         Assert.assertEquals(List.of(InverterState.PgridBias.Disable), client.pgridBias);
     }
@@ -88,7 +107,7 @@ public class InverterHandlerTest {
     public void nothingWrittenWithoutParam() throws Exception {
         RecordingClient client = new RecordingClient();
 
-        InverterHandler.applyAction(client, params("id", "inverter"));
+        InverterHandler.applyAction(client, true, params("id", "inverter"));
 
         Assert.assertTrue(client.pgridBias.isEmpty());
     }

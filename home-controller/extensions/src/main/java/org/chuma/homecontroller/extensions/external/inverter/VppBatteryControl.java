@@ -28,12 +28,17 @@ class VppBatteryControl {
 
     private static final Logger log = LoggerFactory.getLogger(VppBatteryControl.class.getName());
     private final SolaxInverterModbusClient client;
+    private final boolean exportAllowed;
     private volatile Owner owner = Owner.NONE;
     private final Map<Owner, String> refusals = new EnumMap<>(Owner.class);
     private boolean leftoverChecked;
 
-    VppBatteryControl(SolaxInverterModbusClient client) {
+    /**
+     * @param exportAllowed false refuses every mode that could feed the grid
+     */
+    VppBatteryControl(SolaxInverterModbusClient client, boolean exportAllowed) {
         this.client = client;
+        this.exportAllowed = exportAllowed;
     }
 
     Owner getOwner() {
@@ -63,7 +68,9 @@ class VppBatteryControl {
      * the battery. A mode the owner had running is ended then.
      */
     synchronized boolean hold(Owner newOwner, InverterState state, int pvLimitW, int batteryW) {
-        String refusal = (owner != Owner.NONE && owner != newOwner)
+        String refusal = (!exportAllowed && canExport(pvLimitW, batteryW))
+                ? "export is not allowed in this deployment"
+                : (owner != Owner.NONE && owner != newOwner)
                 ? owner + " holds the battery"
                 : getRefusal(client.isVppSupported(), state.getMode(), state.getBatteryMode());
         if (refusal != null) {
@@ -117,6 +124,14 @@ class VppBatteryControl {
             log.info("Ending VPP mode {} left running", state.getVppMode());
             client.vppDisable();
         }
+    }
+
+    /**
+     * Whether the mode can feed the grid: a discharging battery, or any PV, because the mode sends what the
+     * house does not take to the grid and the inverter's export limit is not known to apply to it.
+     */
+    static boolean canExport(int pvLimitW, int batteryW) {
+        return pvLimitW > 0 || batteryW > 0;
     }
 
     /**

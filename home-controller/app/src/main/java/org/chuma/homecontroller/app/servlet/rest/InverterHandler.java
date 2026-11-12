@@ -37,6 +37,7 @@ public class InverterHandler extends AbstractMonitorRestHandler<SolaxInverterMon
         jw.addAttribute("batMode", state.getBatteryMode().toString());
         jw.addAttribute("manualMode", state.getManualMode().toString());
         jw.addAttribute("vppMode", state.getVppMode());
+        jw.addAttribute("exportAllowed", isExportAllowed());
         if (manager != null) {
             writeBatteryOwner(jw, manager.getBatteryOwner(), manager.getBatteryRefusal());
         }
@@ -63,17 +64,26 @@ public class InverterHandler extends AbstractMonitorRestHandler<SolaxInverterMon
 
     @Override
     void processAction(SolaxInverterMonitor monitor, Map<String, String[]> requestParameters) {
-        applyAction(monitor.getClient(), requestParameters);
+        applyAction(monitor.getClient(), isExportAllowed(), requestParameters);
         // show the result without waiting for the next periodic refresh
         monitor.getStateSync(true);
     }
 
+    private boolean isExportAllowed() {
+        return manager != null && manager.isExportAllowed();
+    }
+
     /**
-     * Optional pgridBias: true targets the feed-in to ~+40 W (Grid), false to ~0 W (Disable).
+     * Optional pgridBias: true targets the feed-in to ~+40 W (Grid), false to ~0 W (Disable). Grid is an
+     * export, so it is rejected where export is not allowed.
      */
-    static void applyAction(SolaxInverterModbusClient client, Map<String, String[]> requestParameters) {
+    static void applyAction(SolaxInverterModbusClient client, boolean exportAllowed,
+                            Map<String, String[]> requestParameters) {
         Boolean pgridBias = getBooleanParam(requestParameters, "pgridBias");
         if (pgridBias != null) {
+            if (pgridBias && !exportAllowed) {
+                throw new IllegalStateException("Pgrid bias Grid rejected, export is not allowed in this deployment");
+            }
             client.setPgridBias(pgridBias ? InverterState.PgridBias.Grid : InverterState.PgridBias.Disable);
         }
     }

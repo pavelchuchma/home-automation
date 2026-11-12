@@ -94,6 +94,34 @@ public class ForceDischargeTest extends TestCase {
         assertFalse(InverterManager.shouldDischargeNow(null, at(18, 0), 50, 20, 1.0, CAPACITY_WH, DISCHARGE_W));
     }
 
+    public void testTimerNeverTouchesTheWorkModeWithoutExport() {
+        for (boolean timerEnabled : new boolean[]{false, true}) {
+            for (boolean inExportPriority : new boolean[]{false, true}) {
+                assertNull(InverterManager.getTimerBatteryMode(false, timerEnabled, inExportPriority));
+            }
+        }
+    }
+
+    public void testTimerBatteryMode() {
+        assertEquals(InverterState.BatteryMode.FeedInPriority, InverterManager.getTimerBatteryMode(true, true, true));
+        assertEquals(InverterState.BatteryMode.SelfUse, InverterManager.getTimerBatteryMode(true, true, false));
+        assertNull(InverterManager.getTimerBatteryMode(true, false, true));
+    }
+
+    public void testNoDischargePowerWithoutExport() {
+        assertTrue(InverterManager.getForceDischargeBatteryW(5900, 0, 0) <= 0);
+        assertTrue(InverterManager.getForceDischargeBatteryW(5900, 0, 3000) <= 0);
+    }
+
+    public void testExportSettingsProblem() {
+        assertNull(InverterManager.getExportSettingsProblem(0, InverterState.PgridBias.Disable));
+        assertNull(InverterManager.getExportSettingsProblem(0, InverterState.PgridBias.Inv));
+        assertEquals("the inverter's export limit is 8500 W",
+                InverterManager.getExportSettingsProblem(8500, InverterState.PgridBias.Disable));
+        assertEquals("the inverter's export limit is 10 W and Pgrid bias is Grid",
+                InverterManager.getExportSettingsProblem(10, InverterState.PgridBias.Grid));
+    }
+
     public void testBatteryPowerLimitedByExportAllowance() {
         // no PV: the full discharge power fits into the allowance
         assertEquals(5900, InverterManager.getForceDischargeBatteryW(5900, 8500, 0));

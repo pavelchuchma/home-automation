@@ -101,7 +101,7 @@ class AdditionalSvgToolItem extends BaseItem {
         canvas.style.cursor = 'pointer';
         canvas.addEventListener('click', () => {
             if (this.hasData()) {
-                SettingsSheet.open(sheetConfig, this);
+                SettingsSheet.open(typeof sheetConfig === 'function' ? sheetConfig(this) : sheetConfig, this);
             }
         });
     }

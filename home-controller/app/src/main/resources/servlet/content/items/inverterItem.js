@@ -31,13 +31,14 @@ const INVERTER_STORE = {
     },
 };
 
+// needsExport: offered only where the deployment may feed the grid, see inverterSettings()
 const INVERTER_SETTINGS = {
     title: 'Inverter',
     store: INVERTER_STORE,
     details: {optionKeys: ['inverter.phase.breaker.amps'], render: inverterDetailsHtml},
     lanes: [
         {key: 'inverter.manager.high.tariff.times', label: 'High tariff', color: '#c0392b'},
-        {key: 'inverter.manager.export.priority.times', label: 'Feed-in priority', color: '#2e6fb7'},
+        {key: 'inverter.manager.export.priority.times', label: 'Feed-in priority', color: '#2e6fb7', needsExport: true},
     ],
     groups: [
         {title: 'Battery', fields: [
@@ -49,23 +50,37 @@ const INVERTER_SETTINGS = {
             {type: 'stepper', key: 'inverter.manager.high.tariff.battery.reserve', label: 'Reserve',
                 hint: 'Battery kept for the high tariff hours', step: 5, min: 0, max: 100, unit: '%'},
         ]},
-        {title: 'Feed-in priority timer', toggle: 'inverter.manager.export.priority.timer.enabled',
+        {title: 'Feed-in priority timer', toggle: 'inverter.manager.export.priority.timer.enabled', needsExport: true,
             hint: 'FeedInPriority in these ranges, SelfUse outside', fields: [
                 {type: 'ranges', key: 'inverter.manager.export.priority.times'},
             ]},
-        {title: 'Force discharge', toggle: 'inverter.manager.force.discharge',
+        {title: 'Force discharge', toggle: 'inverter.manager.force.discharge', needsExport: true,
             hint: 'Sell to the grid in the most expensive segments of the day', fields: [
                 {type: 'stepper', key: 'inverter.manager.force.discharge.minimal.price', label: 'Minimal net price',
                     hint: 'CZK/kWh after fees, incl. VAT', step: 0.5, min: 0, max: 50, unit: '', decimals: 1},
                 {type: 'stepper', key: 'inverter.manager.force.discharge.minimal.soc', label: 'Discharge down to',
                     step: 5, min: 0, max: 100, unit: '%'},
             ]},
-        {title: 'Grid', fields: [
+        {title: 'Grid', needsExport: true, fields: [
             {type: 'switch', key: 'pgridBias', label: 'Pgrid bias',
                 hint: 'Keep ~40 W flowing to the grid instead of ~0 W, so the house never draws from it'},
         ]},
     ],
 };
+
+/**
+ * The dialog without the settings that feed the grid, unless the server says export is allowed.
+ */
+function inverterSettings(item) {
+    if (item.exportAllowed === true) {
+        return INVERTER_SETTINGS;
+    }
+    return {
+        ...INVERTER_SETTINGS,
+        lanes: INVERTER_SETTINGS.lanes.filter(l => !l.needsExport),
+        groups: INVERTER_SETTINGS.groups.filter(g => !g.needsExport),
+    };
+}
 
 class InverterItem extends AdditionalSvgToolItem {
     constructor() {
@@ -74,6 +89,7 @@ class InverterItem extends AdditionalSvgToolItem {
         this.batMode = undefined;
         this.manualMode = undefined;
         this.vppMode = undefined;
+        this.exportAllowed = undefined;
         this.batteryOwner = undefined;
         this.refusedOwner = undefined;
         this.refusal = undefined;
@@ -101,7 +117,7 @@ class InverterItem extends AdditionalSvgToolItem {
             this.textLines.push(this.svg.text('?').move(5, i * 17).font(this.baseFont));
         }
         this.batModeIcon = this.svg.text('?').move(this.canvasWidth - 17, 0).font(this.baseFont);
-        this.openSettingsOnClick(INVERTER_SETTINGS);
+        this.openSettingsOnClick(inverterSettings);
         this.showOnData.push(...this.textLines, this.batModeIcon);
         this.hideOnNoData.push(...this.textLines, this.batModeIcon);
     }
