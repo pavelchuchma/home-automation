@@ -10,6 +10,8 @@ const VPP_MODE_LABELS = {
     6: 'Self-consume', 7: 'Self-consume, charge only', 8: 'PV and battery', 9: 'PV and battery to SoC',
     11: 'Max input', 12: 'Max output',
 };
+// features of InverterManager that can hold the battery through a VPP mode
+const BATTERY_OWNER_LABELS = {FORCE_DISCHARGE: 'Force discharge'};
 
 // dialog keys written to the inverter by the REST action, see InverterHandler; the rest are options
 const INVERTER_DEVICE_KEYS = ['pgridBias'];
@@ -72,6 +74,9 @@ class InverterItem extends AdditionalSvgToolItem {
         this.batMode = undefined;
         this.manualMode = undefined;
         this.vppMode = undefined;
+        this.batteryOwner = undefined;
+        this.refusedOwner = undefined;
+        this.refusal = undefined;
         this.pgridBias = undefined;
         this.pvPwr = undefined;
         this.acPwr = undefined;
@@ -161,6 +166,25 @@ function gridPhaseHtml(w, voltage, breakerAmps) {
 }
 
 /**
+ * Rows telling which feature holds the battery through a VPP mode, and which one wants it and cannot get it.
+ * Empty when the inverter is not managed.
+ */
+function batteryOwnerRowsHtml(item) {
+    if (item.batteryOwner === undefined) {
+        return '';
+    }
+    const label = owner => BATTERY_OWNER_LABELS[owner] || owner;
+    const held = item.batteryOwner !== 'NONE';
+    let html = `<div class="settings-row"><span class="settings-label">Battery held by<span class="settings-hint">The feature that runs the remote control mode</span></span>
+                ${held ? `<span class="settings-chip">${label(item.batteryOwner)}</span>` : '<span class="settings-muted">Nobody</span>'}</div>`;
+    if (item.refusal) {
+        html += `<div class="settings-row"><span class="settings-label">${label(item.refusedOwner)} cannot run<span class="settings-hint">Wanted now, but not started</span></span>
+                <span class="settings-chip settings-fault">${item.refusal}</span></div>`;
+    }
+    return html;
+}
+
+/**
  * Details tab: modes, the house load per phase and the grid current per phase, bars scaled to the main breaker.
  */
 function inverterDetailsHtml(item, options) {
@@ -187,6 +211,7 @@ function inverterDetailsHtml(item, options) {
             <div class="settings-row"><span class="settings-label">Battery</span><span class="settings-value">${item.batMode}</span></div>
             <div class="settings-row"><span class="settings-label">Remote control<span class="settings-hint">A temporary VPP mode overrides the battery mode</span></span>
                 ${item.vppMode > 0 ? `<span class="settings-chip">${vppLabel}</span>` : '<span class="settings-muted">Off</span>'}</div>
+            ${batteryOwnerRowsHtml(item)}
             <div class="settings-row"><span class="settings-label">Pgrid bias</span><span class="settings-value">${item.pgridBias}</span></div>
             <div class="settings-row"><span class="settings-label">Manual mode<span class="settings-hint">Applies only while the battery mode is Manual</span></span>
                 ${manual ? `<span class="settings-chip">${manualLabel}</span>` : `<span class="settings-muted">${manualLabel}</span>`}</div>

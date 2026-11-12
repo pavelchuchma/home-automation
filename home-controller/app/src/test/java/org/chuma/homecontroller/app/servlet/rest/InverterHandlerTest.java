@@ -8,6 +8,8 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
+import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
+import org.chuma.homecontroller.extensions.external.inverter.InverterManager;
 import org.chuma.homecontroller.extensions.external.inverter.InverterState;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterModbusClient;
 
@@ -34,6 +36,34 @@ public class InverterHandlerTest {
             map.put(keyValues[i], new String[]{keyValues[i + 1]});
         }
         return map;
+    }
+
+    private static String batteryOwnerJson(String owner, InverterManager.BatteryRefusal refusal) {
+        JsonWriter writer = new JsonWriter(false);
+        try (JsonWriter root = writer.startObject()) {
+            InverterHandler.writeBatteryOwner(root, owner, refusal);
+        }
+        return writer.toString();
+    }
+
+    @Test
+    public void batteryOwnerWithoutRefusal() {
+        String json = batteryOwnerJson("FORCE_DISCHARGE", null);
+
+        Assert.assertTrue(json, json.contains("\"batteryOwner\":\"FORCE_DISCHARGE\""));
+        // written as null, a missing attribute would keep the previous refusal in the UI
+        Assert.assertTrue(json, json.contains("\"refusedOwner\":null"));
+        Assert.assertTrue(json, json.contains("\"refusal\":null"));
+    }
+
+    @Test
+    public void batteryOwnerRefused() {
+        String json = batteryOwnerJson("NONE",
+                new InverterManager.BatteryRefusal("FORCE_DISCHARGE", "the inverter is Idle"));
+
+        Assert.assertTrue(json, json.contains("\"batteryOwner\":\"NONE\""));
+        Assert.assertTrue(json, json.contains("\"refusedOwner\":\"FORCE_DISCHARGE\""));
+        Assert.assertTrue(json, json.contains("\"refusal\":\"the inverter is Idle\""));
     }
 
     @Test

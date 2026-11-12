@@ -70,6 +70,7 @@ public class InverterMetrics implements MetricSource {
             LineProtocolWriter.Line line = writer.line("inverter-manager", nowMs)
                     .field("high_tariff", manager.isHighTariff())
                     .field("export_priority", manager.isExportPriority())
+                    .field("battery_owner", manager.getBatteryOwner())
                     .field("force_discharge", manager.isForceDischargeActive())
                     .field("inverter_off_negative_price", manager.isTurnOffOnNegativePrice());
             if (manager.getMinimalSoc() >= 0 && manager.getBatteryReserve() >= 0) {

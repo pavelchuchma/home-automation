@@ -212,9 +212,13 @@ The mode the inverter itself reports (0x0100) is already there: `vpp_mode` in `h
 `InverterHandler` status, and in the UI an icon on the inverter item and a "Remote control" row in the
 dialog.
 
-Still to add: the owner as `battery_owner` (string) in `home-inverter-manager`, with `force_discharge`
-and `inverter_off_negative_price` kept as derived bools for the existing Grafana panels, and the owner
-in the `InverterHandler` status and the dialog. Document in `doc/metrics.md`.
+The owner is the string field `battery_owner` (`NONE`, `FORCE_DISCHARGE`) in `home-inverter-manager`,
+with a "Battery owner" row in the same panel; `force_discharge` stays as a bool derived from it for the
+existing row. The `InverterHandler` status has `batteryOwner`, and `refusedOwner` with `refusal` (both
+null when nothing is refused); the dialog shows a "Battery held by" row and, while a feature is refused,
+a "<feature> cannot run" row with the reason. The refusal reason is in the dialog and the log only, not
+in the metrics. `inverter_off_negative_price` still reports the option, not a state; it becomes derived
+from the owner with the negative price case (step 4).
 
 ## Experiment on the real inverter
 
@@ -281,7 +285,43 @@ re-issued within 10 minutes and always ended with mode 0.
    inverter.
 4. Negative price on mode 8 in a one-minute task, with the old turn-off kept behind an option until the
    first real negative day is checked. Needs step 7 of the experiment first.
-5. Metrics, `InverterHandler` status and `doc/metrics.md`.
+5. Metrics, `InverterHandler` status and `doc/metrics.md`. Done (2026-11-12): `battery_owner` in the
+   metrics and Grafana, the owner and the refusal reason in the status and the dialog. Not seen in a
+   browser, dashboard not pushed.
 6. Inverter documentation section on VPP ownership (new `doc/inverter.md` or similar), referenced from
    `CLAUDE.md`.
 7. Manual verification by the owner on the real inverter.
+
+## Current state (2026-11-12)
+
+Steps 1 (night part), 2, 3 and 5 are committed on the branch `sunCalculator`, not pushed. The build and
+the hardware-free tests pass. Force discharge through VPP has not run on the inverter, and the feature is
+disabled in the configuration (`inverter.manager.force.discharge=false`), so deploying changes nothing
+by itself.
+
+Next:
+
+- ✅ Step 5: `battery_owner` in `home-inverter-manager`, the owner and the refusal reason in the
+  `InverterHandler` status and the inverter dialog (2026-11-12).
+- The day part of the experiment needs PV and the owner's permission for every run:
+  `testStep7PvOffGridCharge`, `testStep6PvTargetAbovePeak`, and the export limit row, which has no test
+  method yet. Step 4 waits for it.
+
+Loose ends:
+
+- `grafana/home-energy.json` has the "VPP mode" and "Battery owner" rows, but the dashboard is not
+  pushed to Grafana (`script/grafana_dashboards.py push`).
+- The UI changes (icon on the inverter item, the "Remote control", "Battery held by" and
+  "<feature> cannot run" rows in the dialog) were not seen in a browser.
+- `SolaxInverterModbusClient.State.getBatteryMode()` and `getManualMode()` index the enum by the register
+  value; a work mode code above 3 (PeakShaving, TOU) would throw. `getMode()` was fixed the same way in
+  this work.
+- The firmware gate checks the ARM version only, not the inverter model. The model of the inverter in
+  the second deployment is not known.
+- 005 does not have two findings of the experiment yet: `VPPExitIdleEn` is disabled, and VPP modes 5–7
+  take the duration at 0x00A1 as in SolaX's tables.
+- The application log on the Pi from the experiment night (2026-11-11 23:35 to 2026-11-12 00:23) was
+  not read. The version running then could not map the run mode 20.
+- In `SolaxVppExperimentTest`, `testStep9ChargeOnlyExampleLayout` was left out on purpose (the table
+  layout was confirmed), and `PV_NO_LIMIT_W = 10_000` is a guess, the PV peak power is not in the
+  repository.

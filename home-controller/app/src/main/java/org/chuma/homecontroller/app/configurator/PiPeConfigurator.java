@@ -188,7 +188,7 @@ public class PiPeConfigurator extends AbstractConfigurator {
                 new PwmLightsHandler(lddActors),
                 new OnOffHandler(onOffActors),
                 new PirHandler(pirStatusList),
-                new InverterHandler(inverterMonitor),
+                new InverterHandler(inverterMonitor, inverterManager),
                 new ElectricitySpotPriceHandler(priceMonitor));
 //        configureSimulator(pages, wsHandlers, false);
         // rest/all handler

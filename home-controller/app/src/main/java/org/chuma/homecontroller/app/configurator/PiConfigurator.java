@@ -889,7 +889,7 @@ public class PiConfigurator extends AbstractConfigurator {
                 new WaterPumpHandler(waterPumpMonitor, waterTankMonitor),
                 new WaterTankHandler(waterTankMonitor),
                 new HvacHandler(hvacActor),
-                new InverterHandler(inverterMonitor),
+                new InverterHandler(inverterMonitor, inverterManager),
                 new FuturaHandler(futuraMonitor),
                 new BoilerHandler(boilerManager.getBoilerMonitor()),
                 new FloorHeaterHandler(floorHeaterManager),

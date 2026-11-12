@@ -126,6 +126,26 @@ public class InverterManager {
         return vppBattery.getOwner() == VppBatteryControl.Owner.FORCE_DISCHARGE;
     }
 
+    /**
+     * A feature that wants the battery and cannot get it.
+     */
+    public record BatteryRefusal(String owner, String reason) {
+    }
+
+    /**
+     * The feature holding the battery through a VPP mode; NONE while the stored work mode applies.
+     */
+    public String getBatteryOwner() {
+        return vppBattery.getOwner().name();
+    }
+
+    /**
+     * @return null when no feature is refused
+     */
+    public BatteryRefusal getBatteryRefusal() {
+        return vppBattery.getBatteryRefusal();
+    }
+
     public boolean isTurnOffOnNegativePrice() {
         return turnOffOnNegativePrice;
     }

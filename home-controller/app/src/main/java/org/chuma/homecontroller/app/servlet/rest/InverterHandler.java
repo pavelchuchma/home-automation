@@ -4,13 +4,20 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 import org.chuma.homecontroller.app.servlet.rest.impl.JsonWriter;
+import org.chuma.homecontroller.extensions.external.inverter.InverterManager;
 import org.chuma.homecontroller.extensions.external.inverter.InverterState;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterModbusClient;
 import org.chuma.homecontroller.extensions.external.inverter.impl.SolaxInverterMonitor;
 
 public class InverterHandler extends AbstractMonitorRestHandler<SolaxInverterMonitor> {
-    public InverterHandler(SolaxInverterMonitor monitor) {
+    private final InverterManager manager;
+
+    /**
+     * @param manager null when the inverter is not managed
+     */
+    public InverterHandler(SolaxInverterMonitor monitor, InverterManager manager) {
         super("inverter", monitor);
+        this.manager = manager;
     }
 
     @Override
@@ -30,6 +37,9 @@ public class InverterHandler extends AbstractMonitorRestHandler<SolaxInverterMon
         jw.addAttribute("batMode", state.getBatteryMode().toString());
         jw.addAttribute("manualMode", state.getManualMode().toString());
         jw.addAttribute("vppMode", state.getVppMode());
+        if (manager != null) {
+            writeBatteryOwner(jw, manager.getBatteryOwner(), manager.getBatteryRefusal());
+        }
         jw.addAttribute("pgridBias", state.getPgridBias().toString());
         jw.addAttribute("pvPwr", pv);
         jw.addAttribute("acPwr", acPower);
@@ -66,6 +76,16 @@ public class InverterHandler extends AbstractMonitorRestHandler<SolaxInverterMon
         if (pgridBias != null) {
             client.setPgridBias(pgridBias ? InverterState.PgridBias.Grid : InverterState.PgridBias.Disable);
         }
+    }
+
+    /**
+     * Who holds the battery through a VPP mode, and who wants it and cannot get it. The refusal attributes
+     * are written as null too: the UI keeps the last value of an attribute that is missing.
+     */
+    static void writeBatteryOwner(JsonWriter jw, String owner, InverterManager.BatteryRefusal refusal) {
+        jw.addAttribute("batteryOwner", owner);
+        jw.addAttribute("refusedOwner", refusal != null ? refusal.owner() : null);
+        jw.addAttribute("refusal", refusal != null ? refusal.reason() : null);
     }
 
     /**

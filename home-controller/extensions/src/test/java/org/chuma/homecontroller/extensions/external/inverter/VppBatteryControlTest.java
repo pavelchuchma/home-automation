@@ -146,6 +146,17 @@ public class VppBatteryControlTest extends TestCase {
         assertNull(control.getRefusal(Owner.FORCE_DISCHARGE));
     }
 
+    public void testBatteryRefusalNamesTheOwner() {
+        assertNull(control.getBatteryRefusal());
+
+        control.hold(Owner.FORCE_DISCHARGE, state(Mode.Idle, BatteryMode.SelfUse, 0), 30000, 5900);
+        assertEquals(new InverterManager.BatteryRefusal("FORCE_DISCHARGE", "the inverter is Idle"),
+                control.getBatteryRefusal());
+
+        control.hold(Owner.FORCE_DISCHARGE, normal(), 30000, 5900);
+        assertNull(control.getBatteryRefusal());
+    }
+
     public void testLeftoverModeIsEndedOnce() {
         control.clearLeftoverOnce(state(Mode.RemoteControl, BatteryMode.SelfUse, 8));
         control.clearLeftoverOnce(state(Mode.RemoteControl, BatteryMode.SelfUse, 8));

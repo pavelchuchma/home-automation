@@ -1757,6 +1757,38 @@
           {
             "matcher": {
               "id": "byFrameRefID",
+              "options": "J"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Battery owner"
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "FORCE_DISCHARGE": {
+                        "color": "purple",
+                        "index": 1,
+                        "text": "Force discharge"
+                      },
+                      "NONE": {
+                        "color": "transparent",
+                        "index": 0,
+                        "text": "off"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
               "options": "D"
             },
             "properties": [
@@ -1877,6 +1909,14 @@
           },
           "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter\")\n  |> filter(fn: (r) => r[\"_field\"] == \"vpp_mode\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: true)",
           "refId": "I"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "P951FEA4DE68E13C5"
+          },
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"${prefix}-inverter-manager\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_owner\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: true)",
+          "refId": "J"
         },
         {
           "datasource": {

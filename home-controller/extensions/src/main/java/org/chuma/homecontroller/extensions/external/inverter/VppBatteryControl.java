@@ -48,6 +48,14 @@ class VppBatteryControl {
     }
 
     /**
+     * The first owner whose mode is wanted and not running; null when there is none.
+     */
+    synchronized InverterManager.BatteryRefusal getBatteryRefusal() {
+        return refusals.entrySet().stream().findFirst()
+                .map(e -> new InverterManager.BatteryRefusal(e.getKey().name(), e.getValue())).orElse(null);
+    }
+
+    /**
      * Starts the battery mode for the owner, or refreshes it when the owner already holds the battery.
      *
      * @param batteryW battery power in W, positive discharges, negative charges
