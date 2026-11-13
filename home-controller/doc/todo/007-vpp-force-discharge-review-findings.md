@@ -10,10 +10,10 @@ created: 2026-11-13
 
 # Resolve the code review findings of the VPP force discharge work
 
-**Status 2026-11-13:** 4 findings decided otherwise (1, 3, 5, 10), 7 open. Findings 3, 5 and 10 are
-closed by removing the code they are about: `leaveStoredForceDischarge`, because no
-migration from the old version is needed, and `clearLeftoverOnce`, because a VPP mode ends by its own
-duration.
+**Status 2026-11-13:** finding 8 fixed, 4 decided otherwise (1, 3, 5, 10), 6 open.
+Findings 3, 5 and 10 are closed by removing the code they are about: `leaveStoredForceDischarge`,
+because no migration from the old version is needed, and `clearLeftoverOnce`, because a VPP mode ends
+by its own duration.
 
 ## Summary
 
@@ -112,7 +112,7 @@ on an executor after the response is sent.
   feed-in and force discharge settings and Pgrid bias `Grid` is rejected.
 - Fix: pass the deployment's export permission to the handler instead of inferring it from the manager.
 
-### 8. ⬜ `Mode.Unknown` counts as "not running" in the negative price turn-off
+### 8. ✅ `Mode.Unknown` counts as "not running" in the negative price turn-off
 
 `InverterManager.doPowerManagement` (line 274) with `turnOffOnNegativePrice`: `Mode.Unknown.isRunning()`
 is false.
@@ -121,6 +121,10 @@ is false.
   a stored write) is sent every quarter of an hour while the price is not negative, and the inverter is
   not turned off when it is. Before this work the unknown code threw and nothing was written.
 - Fix: decide only on known modes; skip the block for `Unknown`.
+- 2026-11-13, done: `setInverterOn(true)` is written only in the `Waiting` run mode
+  and `setInverterOn(false)` only to a running inverter (`InverterManager.getInverterOnWrite`), so
+  `Unknown` writes nothing either way. The change was made to stop the writes of 0x001C every quarter
+  of an hour while the inverter sleeps, see step 4 of 006. Not run against the inverter.
 
 ### 9. ⬜ A firmware without VPP takes the client lock at every poll
 

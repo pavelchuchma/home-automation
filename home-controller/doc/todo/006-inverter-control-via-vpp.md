@@ -95,6 +95,9 @@ modes 4, 7 and 8 ended on time.
   `BatWTarget = −chargePowerW` while SoC < 100 %, otherwise 0. The house runs from the grid as today, the
   battery additionally charges from the grid while the buy price is negative, and the inverter stays on.
   0x001C is no longer written.
+  - 2026-11-13, decided by the owner: where the firmware has VPP, the turn-off through 0x001C is
+    replaced in one go, with no option to switch back to it. Where it has no VPP, the turn-off stays,
+    with fewer writes of 0x001C (see step 4).
 
 The export during force discharge must not exceed `hardMaxExportPower`. Whether a VPP mode obeys
 `ExportControl_User_Limit` (0x0042) is not measured yet. If it does not, the manager limits the battery
@@ -191,6 +194,9 @@ The new code no longer writes 0x001C or 0x001F for these features, so a state le
     The application never writes 0x001F for force discharge. A Manual work mode set by hand stays, and
     force discharge is refused meanwhile with "the stored work mode is Manual";
 - `setInverterOn(true)` is still written when the inverter is `Waiting` outside a negative price window.
+  - ❌ 2026-11-13, decided by the owner: no migration from the old version is needed, so with VPP this
+    write is not kept as a cleanup. It is the live "on" half of the turn-off in `doPowerManagement`,
+    which stays for a firmware without VPP (see step 4).
 
 A VPP mode is not started when the inverter cannot take it, and a mode the owner had running is ended.
 This is a refusal, not an exception: the check runs every minute and a sleeping inverter is an expected
@@ -319,6 +325,11 @@ re-issued within 10 minutes and always ended with mode 0.
 - **Deployments:** `PiPeConfigurator` has no export (`hardMaxExportPower = 0`) and no battery parameters
   for force discharge; the negative price behavior there must stay as it is or be configurable. Export
   itself is closed there, see "Deployments without export" (2026-11-12).
+  - 2026-11-13, decided by the owner: the firmware decides, not the deployment and not an option.
+    With VPP the negative price case runs as mode 8; mode 8 with PV off and the battery charging or idle
+    is allowed without export (`testNoExportAllowsChargingWithPvOff`). Without VPP the inverter is
+    turned off through 0x001C as today (see step 4). The firmware version of the second deployment is
+    not known.
 
 ## Implementation steps
 
@@ -333,6 +344,45 @@ re-issued within 10 minutes and always ended with mode 0.
    inverter.
 4. Negative price on mode 8 in a one-minute task, with the old turn-off kept behind an option until the
    first real negative day is checked. Needs step 7 of the experiment first.
+   - 2026-11-13, decided by the owner: ❌ no option for the old turn-off. A negative day can be months
+     away and the option would be dead code until then. Step 7 of the experiment measures what mode 8
+     does with `PvWTarget = 0`; the price condition does not need the inverter and is covered by unit
+     tests. Once step 7 confirms it, mode 8 replaces the turn-off at once where the firmware has VPP.
+   - 2026-11-13, decided by the owner: a firmware without VPP (`isVppSupported()` false) keeps the
+     turn-off through 0x001C, so that code stays, chosen by the firmware. It must not write 0x001C more
+     than needed. Today `setInverterOn(true)` is written every 15 minutes whenever the inverter is not
+     running and the price is not negative, that is all night in `Idle`.
+   - ✅ Proposed 2026-11-13, decided and done the same day (see below): write `setInverterOn(true)`
+     only in the `Waiting` run mode, which is what
+     a turned-off inverter reports (`SolaxInverterModbusClientTest.testSetSystemOff` waits for it); the
+     spec has no read register for `SystemON_OFF`, so the stored value cannot be compared. It needs no
+     state, so an application restart inside a negative window still turns the inverter back on, and a
+     lost write is repeated at the next quarter of an hour. That leaves one write per turn-off and one
+     per turn-on. Also closes finding 8 of 007 (`Mode.Unknown` no longer triggers a write). To check
+     first: that a turned-off inverter stays in `Waiting` for the whole window, also after sunset, and
+     does not go to `Idle`; the run mode of a past negative day is in the metrics. This can be done
+     now, before step 7 of the experiment.
+   - 2026-11-13, InfluxDB checked (`home-price`, `home-inverter`, `home-inverter-manager`, data from
+     2026-10-17): no interval with a negative buy price, the lowest is 3.33 CZK/kWh, so what a
+     turned-off inverter reports over a whole window is still not known. The option is on at home
+     in every sample. The inverter was not running for about 6760 minutes (`Idle` 6602, `Checking` 155,
+     `Waiting` 6), which is about 450 writes of `setInverterOn(true)` in four weeks. `Waiting` by itself
+     shows only as a single one-minute sample when the inverter wakes from `Idle`, before `Checking`
+     (6 times, none at a quarter of an hour), so the `Waiting` condition would leave almost no write
+     outside a negative window.
+   - 2026-11-13, application logs on the Pi checked (2026-08-15 to today, the price and the run mode
+     are logged at every 15-minute check): the lowest buy price is 1.03 CZK/kWh and
+     `setInverterOn(false)` was never written, so the logs do not show a turned-off inverter either.
+     `setInverterOn(true)` was written 823 times: 810 in `Idle`, 12 in `Checking`, 1 in `Waiting`. With
+     the `Waiting` condition it would have been one write in three months. Whether a turned-off
+     inverter stays in `Waiting` can only be seen by turning it off (`testSetSystemOff`, two writes of
+     0x001C) and watching the run mode for a few hours, or on the next negative day.
+   - ✅ 2026-11-13, decided by the owner and done: turned on only from `Waiting`, with no further
+     safeguard (`InverterManager.getInverterOnWrite`, tested in `ForceDischargeTest`). Accepted risk: if
+     a turned-off inverter leaves `Waiting` during a long window, it is not turned back on; that will
+     show as an inverter that stays off after a negative price, and is fixed then. Not run against the
+     inverter. The change is independent of the rest of step 4, which still waits for step 7 of the
+     experiment.
 5. Metrics, `InverterHandler` status and `doc/metrics.md`. Done (2026-11-12): `battery_owner` in the
    metrics and Grafana, the owner and the refusal reason in the status and the dialog. Not seen in a
    browser, dashboard not pushed.
@@ -369,6 +419,12 @@ Next:
 - 2026-11-13: findings 3, 5 and 10 are decided otherwise, by removing code: the
   cleanup of a stored Manual / ForceDischarge, see "Leftovers of the old control", and the startup
   cleanup of a running VPP mode, see "Duration and refresh". Both were part of step 3.
+- 2026-11-13: step 4 is changed by the owner: where the firmware has VPP, the negative price turn-off
+  is replaced by mode 8 in one go once step 7 of the experiment is done, with no option for the old
+  turn-off and no wait for a negative day. A firmware without VPP keeps the turn-off through 0x001C.
+- 2026-11-13: the turn-off writes `setInverterOn(true)` only from `Waiting` now, instead of every
+  15 minutes while the inverter is not running (823 writes in three months of logs). Not run
+  against the inverter. Closes finding 8 of 007.
 
 Loose ends:
 

@@ -263,17 +263,9 @@ public class InverterManager {
         log.debug("buy price: {}, inverterMode: {}", currentPrice.price(), state.getMode());
         // Turn inverter off on negative import price
         if (turnOffOnNegativePrice) {
-            if (currentPrice.price() < 0) {
-                if (state.getMode().isRunning()) {
-                    client.setInverterOn(false);
-                }
-            } else {
-                if (state.getMode() == InverterState.Mode.Waiting) {
-                    log.info("turning on inverter");
-                }
-                if (!state.getMode().isRunning()) {
-                    client.setInverterOn(true);
-                }
+            Boolean inverterOn = getInverterOnWrite(currentPrice.price() < 0, state.getMode());
+            if (inverterOn != null) {
+                client.setInverterOn(inverterOn);
             }
         }
 
@@ -298,6 +290,18 @@ public class InverterManager {
         // of the export window), leaving it in SelfUse. This corrects it on the next run once the inverter is up.
         // applyBatteryMode() is a no-op while a VPP mode holds the battery or the export-priority timer is disabled.
         applyBatteryMode(exportPriorityScheduler.isInInterval());
+    }
+
+    /**
+     * What the negative price turn-off writes to the inverter's on/off switch; null when nothing. A running
+     * inverter is turned off at a negative price. It is turned back on only from Waiting, the run mode of a
+     * turned-off inverter, so one that sleeps or starts up is not written to.
+     */
+    static Boolean getInverterOnWrite(boolean priceNegative, InverterState.Mode mode) {
+        if (priceNegative) {
+            return mode.isRunning() ? Boolean.FALSE : null;
+        }
+        return mode == InverterState.Mode.Waiting ? Boolean.TRUE : null;
     }
 
     /**

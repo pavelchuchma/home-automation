@@ -122,6 +122,26 @@ public class ForceDischargeTest extends TestCase {
                 InverterManager.getExportSettingsProblem(10, InverterState.PgridBias.Grid));
     }
 
+    public void testRunningInverterIsTurnedOffAtNegativePrice() {
+        assertEquals(Boolean.FALSE, InverterManager.getInverterOnWrite(true, InverterState.Mode.Normal));
+        assertEquals(Boolean.FALSE, InverterManager.getInverterOnWrite(true, InverterState.Mode.RemoteControl));
+    }
+
+    public void testInverterIsTurnedOnOnlyFromWaiting() {
+        assertEquals(Boolean.TRUE, InverterManager.getInverterOnWrite(false, InverterState.Mode.Waiting));
+    }
+
+    public void testNoOnOffWriteOtherwise() {
+        for (InverterState.Mode mode : InverterState.Mode.values()) {
+            if (!mode.isRunning()) {
+                assertNull(mode.name(), InverterManager.getInverterOnWrite(true, mode));
+            }
+            if (mode != InverterState.Mode.Waiting) {
+                assertNull(mode.name(), InverterManager.getInverterOnWrite(false, mode));
+            }
+        }
+    }
+
     public void testBatteryPowerLimitedByExportAllowance() {
         // no PV: the full discharge power fits into the allowance
         assertEquals(5900, InverterManager.getForceDischargeBatteryW(5900, 8500, 0));
