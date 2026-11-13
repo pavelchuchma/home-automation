@@ -425,6 +425,8 @@ Next:
 - 2026-11-13: the turn-off writes `setInverterOn(true)` only from `Waiting` now, instead of every
   15 minutes while the inverter is not running (823 writes in three months of logs). Not run
   against the inverter. Closes finding 8 of 007.
+- 2026-11-13: the code review (007) is closed: findings 8 and 11 fixed, the other nine decided
+  otherwise, see there.
 
 Loose ends:
 

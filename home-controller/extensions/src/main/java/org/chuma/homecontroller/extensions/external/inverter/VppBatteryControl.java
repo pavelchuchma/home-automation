@@ -112,7 +112,8 @@ class VppBatteryControl {
 
     /**
      * Whether the mode can feed the grid: a discharging battery, or any PV, because the mode sends what the
-     * house does not take to the grid and the inverter's export limit is not known to apply to it.
+     * house does not take to the grid. The inverter's export limit is not relied on: it is measured only for
+     * a battery discharge without PV and with a limit above 0.
      */
     static boolean canExport(int pvLimitW, int batteryW) {
         return pvLimitW > 0 || batteryW > 0;

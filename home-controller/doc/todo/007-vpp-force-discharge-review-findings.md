@@ -2,19 +2,24 @@
 id: 007
 title: Resolve the code review findings of the VPP force discharge work
 type: task
-status: open
+status: done
 priority: high
 component: inverter
 created: 2026-11-13
+resolved: 2026-11-13
 ---
 
 # Resolve the code review findings of the VPP force discharge work
 
-**Status 2026-11-13:** finding 8 fixed, 6 decided otherwise (1, 2, 3, 4, 5, 10), 4 open (6, 7, 9, 11).
-Findings 2 and 4 are not fixed for now: a hypothesis, and it would show at once if it happened.
-Findings 3, 5 and 10 are closed by removing the code they are about: `leaveStoredForceDischarge`,
-because no migration from the old version is needed, and `clearLeftoverOnce`, because a VPP mode ends
-by its own duration.
+**Status 2026-11-13:** closed. Findings 8 and 11 are fixed, the other nine are decided otherwise, none
+is open.
+
+- Findings 3, 5 and 10 are closed by removing the code they are about: `leaveStoredForceDischarge`,
+  because no migration from the old version is needed, and `clearLeftoverOnce`, because a VPP mode ends
+  by its own duration.
+- Findings 2 and 4 are not fixed for now: a hypothesis, and it would show at once if it happened.
+  Reopen if the inverter starts to reject the VPP status register.
+- Findings 1, 6, 7 and 9 need no change.
 
 ## Summary
 
@@ -114,7 +119,7 @@ and calls `vppDisable()`.
   it ends by itself within three minutes or is taken over by the next `hold`; `SolaxVppExperimentTest`
   ends its own modes.
 
-### 6. ⬜ A rejected Pgrid bias `Grid` is answered with HTTP 202
+### 6. ❌ A rejected Pgrid bias `Grid` is answered with HTTP 202
 
 `InverterHandler.applyAction` (line 90) throws inside `processAction`, which `AbstractRestHandler` runs
 on an executor after the response is sent.
@@ -123,8 +128,12 @@ on an executor after the response is sent.
   save, nothing is written and the switch goes back at the next refresh. The rejection is only in the
   log.
 - Fix: check before the response is sent and return an error status.
+- 2026-11-13, decided by the owner: no change. The inverter dialog does not offer Pgrid bias where
+  export is not allowed (`needsExport`), so the rejection is reached only by a direct REST call. The
+  guard itself works, nothing is written; only the caller's feedback is missing, and that is not worth
+  a validation hook in `AbstractRestHandler`.
 
-### 7. ⬜ `InverterHandler` takes "no manager" for "no export"
+### 7. ❌ `InverterHandler` takes "no manager" for "no export"
 
 `InverterHandler.isExportAllowed` (line 76) returns false when `manager` is null.
 
@@ -132,6 +141,10 @@ on an executor after the response is sent.
   example on a bad option. The status reports `exportAllowed = false`, the dialog hides the Grid,
   feed-in and force discharge settings and Pgrid bias `Grid` is rejected.
 - Fix: pass the deployment's export permission to the handler instead of inferring it from the manager.
+- 2026-11-13, decided by the owner: no change. It errs on the safe side, export is refused, not
+  allowed by mistake. Without a manager the feed-in priority timer and force discharge do not work
+  anyway, so only Pgrid bias `Grid` is lost, and the failed manager is the bigger problem and is logged
+  at the start ("Failed to init solax inverter client").
 
 ### 8. ✅ `Mode.Unknown` counts as "not running" in the negative price turn-off
 
@@ -147,7 +160,7 @@ is false.
   `Unknown` writes nothing either way. The change was made to stop the writes of 0x001C every quarter
   of an hour while the inverter sleeps, see step 4 of 006. Not run against the inverter.
 
-### 9. ⬜ A firmware without VPP takes the client lock at every poll
+### 9. ❌ A firmware without VPP takes the client lock at every poll
 
 `SolaxInverterModbusClient.getState` (line 56) enters the synchronized `startVppStatusPolling()` and
 `isVppSupported()` at every call when the firmware has no VPP.
@@ -155,6 +168,9 @@ is false.
 - Failure: a write holds the same lock for up to its 3 s timeout and the monitor's `getState()` waits
   behind it, although the firmware answer never changes.
 - Fix: remember the negative answer in a volatile flag.
+- 2026-11-13, decided by the owner: no change. It concerns only an inverter without VPP, and the
+  effect is one state refresh delayed by up to 3 s when it meets a slow write, which are rare. Nothing
+  breaks, so it is not worth another flag in the client.
 
 ### 10. ❌ Javadoc of `leaveStoredForceDischarge` tells the code's history
 
@@ -165,10 +181,12 @@ previous version of the application".
   SelfUse; a VPP mode cannot start from it."
 - 2026-11-13: no longer applies, the method is removed with finding 3.
 
-### 11. ⬜ Javadoc of `VppBatteryControl.canExport` is out of date
+### 11. ✅ Javadoc of `VppBatteryControl.canExport` is out of date
 
 Not from the review, noticed on 2026-11-13: the Javadoc (line 131) says the inverter's export limit "is
 not known to apply" to a VPP mode. Since `testStep6ExportLimit` it is measured for a battery discharge
 without PV and with a limit above 0, as `CLAUDE.md` and 006 already say.
 
 - Fix: reword it to match; the refusal itself stays.
+- 2026-11-13, done: the Javadoc says the export limit is not relied on, because it is measured only for
+  a battery discharge without PV and with a limit above 0.
