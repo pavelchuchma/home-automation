@@ -10,7 +10,8 @@ created: 2026-11-13
 
 # Resolve the code review findings of the VPP force discharge work
 
-**Status 2026-11-13:** finding 8 fixed, 4 decided otherwise (1, 3, 5, 10), 6 open.
+**Status 2026-11-13:** finding 8 fixed, 6 decided otherwise (1, 2, 3, 4, 5, 10), 4 open (6, 7, 9, 11).
+Findings 2 and 4 are not fixed for now: a hypothesis, and it would show at once if it happened.
 Findings 3, 5 and 10 are closed by removing the code they are about: `leaveStoredForceDischarge`,
 because no migration from the old version is needed, and `clearLeftoverOnce`, because a VPP mode ends
 by its own duration.
@@ -40,7 +41,7 @@ target worked out once a minute from the PV power at that moment
   fast as possible at the highest price, so PV on top of it is welcome. Recorded in 006, section
   "Scope".
 
-### 2. ⬜ No fallback once the VPP status register is polled
+### 2. ❌ No fallback once the VPP status register is polled
 
 `SolaxInverterModbusClient.startVppStatusPolling` (line 73) replaces the client with one that also reads
 input 0x0100 and never goes back, although its Javadoc says the register is "dropped again when the read
@@ -50,6 +51,19 @@ keeps failing".
   `refreshData()` then throws on every `getState()`, and the monitor, the metrics, `InverterManager` and
   the REST status lose the whole inverter state until the application restarts.
 - Fix: count failures of the extended read and fall back to the basic client after a few in a row.
+- 2026-11-13, checked against the code: a whole network outage does no lasting harm today. Every
+  `getState()` fails at the first range and works again when the network is back. The fix must keep
+  that: a failure counts only when the other ranges were read and 0x0100 alone failed. Counting every
+  failed refresh would drop the register after about 15 s of any outage. Reading 0x0100 as an optional
+  read of its own, whose failure does not fail the refresh and which is tried again later, would cover
+  this finding and finding 4 together.
+- 2026-11-13, decided by the owner: not fixed for now. That the inverter starts to reject 0x0100 later
+  is a hypothesis, not seen, and the fix makes the client more complex. It would not go unnoticed: the
+  inverter widget and dialog lose their values, the `home-inverter` graphs in Grafana stop, the log
+  gets "Failed to refresh SolaxInverter state" at every poll, and `InverterManager` stops controlling
+  (export limit, negative price, min SoC), while the inverter runs on with its stored settings.
+  Restarting the application recovers it: the client starts without 0x0100 and gives the register up
+  after three failed attempts. Reopen if it happens.
 
 ### 3. ❌ A stored Manual / ForceDischarge is cleared only while force discharge is enabled
 
@@ -66,7 +80,7 @@ keeps failing".
   mode set by hand at the inverter stays; force discharge is refused meanwhile with "the stored work
   mode is Manual" (`VppBatteryControl.getRefusal`, `testNoStartFromManualWorkMode`).
 
-### 4. ⬜ VPP status polling is given up for good after one short outage
+### 4. ❌ VPP status polling is given up for good after one short outage
 
 `SolaxInverterModbusClient` (line 76): the three attempts of `VPP_STATUS_ATTEMPTS` come on consecutive
 `getState()` calls, about 15 s at the monitor's 5 s period.
@@ -78,6 +92,13 @@ keeps failing".
   that has VPP.
 - 2026-11-13: `clearLeftoverOnce` is removed (finding 5), so only the wrong "Remote control: Off" in
   the dialog is left of the failure.
+- 2026-11-13, checked against the code: a whole network outage does not use up the attempts.
+  `getState()` reads with the basic client first and throws before `startVppStatusPolling` is reached.
+  An attempt is lost only when the basic read passes and the extended read right after it fails, so it
+  takes an unstable connection or an inverter that rejects 0x0100, three times. The finding is narrower
+  than stated.
+- 2026-11-13: not fixed for now, with finding 2, whose mechanism would have covered it. What is left
+  is a wrong "Remote control: Off" in the dialog until the application restarts.
 
 ### 5. ❌ `clearLeftoverOnce` marks the check done before it has succeeded
 
