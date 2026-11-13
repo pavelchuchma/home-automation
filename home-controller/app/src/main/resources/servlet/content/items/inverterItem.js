@@ -31,10 +31,32 @@ const INVERTER_STORE = {
     },
 };
 
+const MIN_SOC_KEY = 'inverter.manager.minimal.soc';
+const RESERVE_KEY = 'inverter.manager.high.tariff.battery.reserve';
+
+/**
+ * Minimal SoC plus the reserve is the SoC kept outside high tariff, so the sum is at most 100 %:
+ * raising one of them lowers the other once the sum reaches it.
+ */
+function limitSocSum(state, key) {
+    const other = key === MIN_SOC_KEY ? RESERVE_KEY : key === RESERVE_KEY ? MIN_SOC_KEY : null;
+    if (!other) {
+        return [];
+    }
+    const max = 100 - Number(state[key]);
+    if (Number(state[other]) <= max) {
+        return [];
+    }
+    state[other] = String(max);
+    return [other];
+}
+
 // needsExport: offered only where the deployment may feed the grid, see inverterSettings()
+// stepper limits follow the validation in InverterManager
 const INVERTER_SETTINGS = {
     title: 'Inverter',
     store: INVERTER_STORE,
+    adjust: limitSocSum,
     details: {optionKeys: ['inverter.phase.breaker.amps'], render: inverterDetailsHtml},
     lanes: [
         {key: 'inverter.manager.high.tariff.times', label: 'High tariff', color: '#c0392b'},
@@ -42,13 +64,14 @@ const INVERTER_SETTINGS = {
     ],
     groups: [
         {title: 'Battery', fields: [
-            {type: 'stepper', key: 'inverter.manager.minimal.soc', label: 'Minimal SoC', hint: 'Battery never discharges below this',
-                step: 5, min: 0, max: 100, unit: '%'},
+            {type: 'stepper', key: MIN_SOC_KEY, label: 'Minimal SoC', hint: 'Battery never discharges below this',
+                step: 5, min: 10, max: 100, unit: '%'},
         ]},
         {title: 'High tariff', fields: [
-            {type: 'ranges', key: 'inverter.manager.high.tariff.times'},
-            {type: 'stepper', key: 'inverter.manager.high.tariff.battery.reserve', label: 'Reserve',
-                hint: 'Battery kept for the high tariff hours', step: 5, min: 0, max: 100, unit: '%'},
+            {type: 'ranges', key: 'inverter.manager.high.tariff.times',
+                emptyHint: 'No ranges, so the reserve below is kept all day.'},
+            {type: 'stepper', key: RESERVE_KEY, label: 'Reserve',
+                hint: 'Battery kept for the high tariff hours', step: 5, min: 0, max: 90, unit: '%'},
         ]},
         {title: 'Feed-in priority timer', toggle: 'inverter.manager.export.priority.timer.enabled', needsExport: true,
             hint: 'FeedInPriority in these ranges, SelfUse outside', fields: [
@@ -59,7 +82,7 @@ const INVERTER_SETTINGS = {
                 {type: 'stepper', key: 'inverter.manager.force.discharge.minimal.price', label: 'Minimal net price',
                     hint: 'CZK/kWh after fees, incl. VAT', step: 0.5, min: 0, max: 50, unit: '', decimals: 1},
                 {type: 'stepper', key: 'inverter.manager.force.discharge.minimal.soc', label: 'Discharge down to',
-                    step: 5, min: 0, max: 100, unit: '%'},
+                    step: 5, min: 10, max: 100, unit: '%'},
             ]},
         {title: 'Grid', needsExport: true, fields: [
             {type: 'switch', key: 'pgridBias', label: 'Pgrid bias',

@@ -18,11 +18,14 @@
  * Optional sync(item) returns the current values of the keys from the widget's live data; on every refresh the
  * values the user has not changed follow it, so the dialog shows what the server did (e.g. a one-shot that ended).
  * Optional enabledIf(state, item) of a group disables its controls while it returns false.
+ * Optional adjust(state, key) runs after a stepper changed the value of key; it may change other values in state to
+ * keep them consistent and returns the keys it changed, so their controls are redrawn.
  * The timeline is drawn only when there are lanes.
  * Field types: 'stepper' {key, label, hint, step, min, max, unit, decimals, format} (format(value) renders the text,
  * the input is then read-only), 'switch' {key, label, hint},
  * 'choice' {key, label, options: [{value, label, icon}]} (one of buttons),
- * 'ranges' {key} (time ranges "H:mm-H:mm;..." drawn on the timeline in the color of the lane with the same key),
+ * 'ranges' {key, emptyHint} (time ranges "H:mm-H:mm;..." drawn on the timeline in the color of the lane with the same
+ * key; emptyHint replaces the text shown without ranges),
  * 'dateRanges' {key, colors: {kind: color}, labels, newKind, summary} (absolute ranges
  * "P2026-11-04T02:15/2026-11-04T02:30;M...", the prefix is the kind of the range, a new one is added with the kind of
  * newKind; the optional summary(value, item) returns HTML shown under a valid list).
@@ -453,12 +456,13 @@ class SettingsSheet {
 
     rangesHtml(key) {
         const lane = this.cfg.lanes.find(l => l.key === key);
+        const empty = this.fieldDef(key).emptyHint || 'No ranges, never active.';
         const rows = SettingsSheet.parseRanges(this.state[key]).map(([a, b], i) => `<div class="settings-range-row">
                 <span class="settings-swatch" style="background:${lane.color}"></span>
                 ${SettingsSheet.timeFieldHtml(a, i, 0)}<span>–</span>${SettingsSheet.timeFieldHtml(b, i, 1)}
                 <button type="button" class="settings-icon-btn" data-remove="${i}" aria-label="Remove range ${i + 1}">✕</button></div>`)
             .join('');
-        return `<div class="settings-ranges">${rows || '<span class="settings-hint">No ranges, never active.</span>'}
+        return `<div class="settings-ranges">${rows || `<span class="settings-hint">${empty}</span>`}
             <span class="settings-err" hidden></span>
             <button type="button" class="settings-add-range">+ Add range</button></div>`;
     }
@@ -500,7 +504,7 @@ class SettingsSheet {
             const clamped = Math.min(f.max, Math.max(f.min, Math.round(v / f.step) * f.step));
             this.state[key] = f.decimals ? clamped.toFixed(f.decimals) : String(Math.round(clamped));
             input.value = this.stepperText(f);
-            this.refresh();
+            this.updateFields(this.cfg.adjust ? this.cfg.adjust(this.state, key) : []);
         };
         if (!f.format) {
             input.addEventListener('change', () => {
