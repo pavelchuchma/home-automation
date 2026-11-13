@@ -31,7 +31,6 @@ class VppBatteryControl {
     private final boolean exportAllowed;
     private volatile Owner owner = Owner.NONE;
     private final Map<Owner, String> refusals = new EnumMap<>(Owner.class);
-    private boolean leftoverChecked;
 
     /**
      * @param exportAllowed false refuses every mode that could feed the grid
@@ -109,21 +108,6 @@ class VppBatteryControl {
         log.info("{}: released", oldOwner);
         owner = Owner.NONE;
         return true;
-    }
-
-    /**
-     * Ends a VPP mode left running by a previous run of the application. Done once, at the first call: later
-     * a mode without an owner here is somebody else's and ends by its own duration.
-     */
-    synchronized void clearLeftoverOnce(InverterState state) {
-        if (leftoverChecked) {
-            return;
-        }
-        leftoverChecked = true;
-        if (owner == Owner.NONE && state.getVppMode() != 0) {
-            log.info("Ending VPP mode {} left running", state.getVppMode());
-            client.vppDisable();
-        }
     }
 
     /**

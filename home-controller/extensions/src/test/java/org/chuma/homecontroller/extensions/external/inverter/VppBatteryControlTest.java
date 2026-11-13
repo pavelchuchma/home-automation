@@ -187,28 +187,6 @@ public class VppBatteryControlTest extends TestCase {
         assertEquals(List.of("pvBattery 0 -4800 180", "pvBattery 0 0 180"), client.commands);
     }
 
-    public void testLeftoverModeIsEndedOnce() {
-        control.clearLeftoverOnce(state(Mode.RemoteControl, BatteryMode.SelfUse, 8));
-        control.clearLeftoverOnce(state(Mode.RemoteControl, BatteryMode.SelfUse, 8));
-
-        assertEquals(List.of("disable"), client.commands);
-    }
-
-    public void testNoLeftoverSendsNothing() {
-        control.clearLeftoverOnce(normal());
-
-        assertEquals(List.of(), client.commands);
-    }
-
-    public void testOwnModeIsNotTakenForLeftover() {
-        control.hold(Owner.FORCE_DISCHARGE, normal(), 30000, 5900);
-        client.commands.clear();
-
-        control.clearLeftoverOnce(state(Mode.RemoteControl, BatteryMode.SelfUse, 8));
-
-        assertEquals(List.of(), client.commands);
-    }
-
     public void testRefusalReasons() {
         assertNull(VppBatteryControl.getRefusal(true, Mode.Normal, BatteryMode.SelfUse));
         assertNull(VppBatteryControl.getRefusal(true, Mode.RemoteControl, BatteryMode.FeedInPriority));

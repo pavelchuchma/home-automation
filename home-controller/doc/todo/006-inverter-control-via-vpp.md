@@ -106,6 +106,13 @@ Measured 2026-11-12: the inverter does obey the limit in mode 8 (4 kW discharge,
 implemented (step 3) and stays as a second guard: the measurement was without PV and with a limit
 above 0.
 
+Decided 2026-11-13 (code review, finding 1 of `007-vpp-force-discharge-review-findings.md`): the battery
+target is worked out once a minute from the PV power at that moment, so PV that rises between two
+re-issues adds to the export. That is accepted and `PvWTarget` stays unlimited. The inverter's export
+limit, which `doPowerManagement` keeps at `hardMaxExportPower` while the net sell price is positive, is
+the cap, and force discharge is there to empty the battery as fast as possible at the highest price, so
+PV on top of it is welcome. The limit with PV running is still an open row of the experiment.
+
 A VPP discharge does not stop at `SelfUse_Discharge_MinSoC` (experiment: with the min SoC at 42 % it ran
 at full power from 43 % to 39 %, until the test ended it). The only floor is `forceDischargeMinimalSoc`,
 which `shouldDischargeNow` evaluates every minute; `manageForceDischarge` must end the mode with VPP
@@ -179,6 +186,10 @@ The new code no longer writes 0x001C or 0x001F for these features, so a state le
   allowed, the same condition under which the old code adopted it. Without that condition a Manual /
   ForceDischarge set by hand would be reverted within a minute, also in a deployment that never used
   the feature;
+  - ❌ 2026-11-13, decided by the owner (finding 3 of `007-vpp-force-discharge-review-findings.md`): no
+    migration from the old version is needed, so this cleanup (`leaveStoredForceDischarge`) is removed.
+    The application never writes 0x001F for force discharge. A Manual work mode set by hand stays, and
+    force discharge is refused meanwhile with "the stored work mode is Manual";
 - `setInverterOn(true)` is still written when the inverter is `Waiting` outside a negative price window.
 
 A VPP mode is not started when the inverter cannot take it, and a mode the owner had running is ended.
@@ -236,6 +247,10 @@ is the failsafe: an app crash or a lost Modbus connection ends the mode within o
   running mode within about 5 s and is harmless when none runs (experiment). Later a mode without an
   owner is left alone: it ends by its own duration, and clearing it every minute would also end the
   modes of `SolaxVppExperimentTest`.
+  - ❌ 2026-11-13, decided by the owner (finding 5 of `007-vpp-force-discharge-review-findings.md`):
+    the startup cleanup (`clearLeftoverOnce`) is removed. The 180 s duration is the failsafe after a
+    restart as well, and the experiment test ends its own modes. Register 0x0100 now serves the status
+    display only.
 
 ### Metrics and status
 
@@ -347,6 +362,13 @@ Next:
   quarter of an hour, so the test starts only 30 s to 9 min after one, and it refuses to start outside
   the `Normal` run mode, below SoC 30 % or with the stored limit below 4 kW. With a feed-in below 2 kW
   in the first phase (house load too high) it ends before any stored write.
+
+- 2026-11-13: the code review of the branch is in `007-vpp-force-discharge-review-findings.md`. Finding 1
+  (export not capped when PV rises) is decided as no change, see "Scope"; the other ten are
+  open.
+- 2026-11-13: findings 3, 5 and 10 are decided otherwise, by removing code: the
+  cleanup of a stored Manual / ForceDischarge, see "Leftovers of the old control", and the startup
+  cleanup of a running VPP mode, see "Duration and refresh". Both were part of step 3.
 
 Loose ends:
 

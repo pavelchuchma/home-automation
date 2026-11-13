@@ -411,10 +411,6 @@ public class InverterManager {
             // Force discharge feeds energy to the grid, so it must never run when disabled or not allowed
             // in this deployment (no export, or missing battery parameters).
             boolean enabled = forceDischargeEnabled && isForceDischargeAllowed();
-            if (enabled && leaveStoredForceDischarge(state)) {
-                return;
-            }
-            vppBattery.clearLeftoverOnce(state);
 
             int batteryW = 0;
             if (enabled) {
@@ -444,24 +440,6 @@ public class InverterManager {
         } catch (Exception e) {
             log.error("manageForceDischarge failed", e);
         }
-    }
-
-    /**
-     * Switches a stored Manual / ForceDischarge back to SelfUse. Force discharge used to run that way, so the
-     * state can be left by a previous version of the application; a VPP mode cannot start from it.
-     *
-     * @return whether the stored work mode was changed
-     */
-    private boolean leaveStoredForceDischarge(InverterState state) {
-        if (state.getBatteryMode() != InverterState.BatteryMode.Manual
-                || state.getManualMode() != InverterState.ManualMode.ForceDischarge) {
-            return false;
-        }
-        log.info("Force discharge: leaving the stored Manual / ForceDischarge mode");
-        client.setBatteryMode(InverterState.BatteryMode.SelfUse);
-        // overrides SelfUse with FeedInPriority when an export-priority window is active
-        exportPriorityScheduler.applyCallback();
-        return true;
     }
 
     /**
